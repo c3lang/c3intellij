@@ -1,0 +1,123 @@
+{
+    parserClass = "org.c3lang.intellijplugin.parser.C3Parser"
+    extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix = "C3"
+    psiImplClassSuffix = "Impl"
+    psiPackage = "org.c3lang.intellijplugin.parser.psi"
+    psiImplPackage = "org.c3lang.intellijplugin.parser.psi"
+
+    elementTypeHolderClass = "org.c3lang.intellijplugin.parser.psi.C3Types"
+    elementTypeClass = "org.c3lang.intellijplugin.parser.psi.C3ElementType"
+    tokenTypeClass = "org.c3lang.intellijplugin.parser.psi.C3TokenType"
+
+    psiImplUtilClass="org.c3lang.intellijplugin.parser.psi.C3PsiImplUtil"
+}
+
+translation_unit ::= module? import_decl* top_level_statement*
+
+import_decl ::= IMPORT_KW import_path EOS
+
+import_path ::= IDENT (SCOPE IDENT)*
+
+module_param ::= CT_IDENT | HASH_IDENT | TYPE_IDENT | CT_TYPE_IDENT | IDENT
+
+module_params ::= module_param (COMMA module_param)*
+
+module ::= MODULE_KW import_path (LP module_params RP)? EOS
+
+top_level_statement ::= visibility? top_level
+
+visibility ::= LOCAL_KW PUBLIC_KW? | PUBLIC_KW LOCAL_KW?
+
+top_level ::= global_declaration | const_declaration | func_definition
+
+global_declaration ::= type IDENT (EQ initializer)? EOS
+
+ident_expression ::= CONST_IDENT | IDENT | CT_IDENT | CT_CONST_IDENT
+
+path ::= TODO
+
+constant ::= INT_LITERAL
+
+grouped_expression ::= LP expression RP
+
+primary_expression ::= constant
+    | path? ident_expression
+    | base_type initializer_list
+    | grouped_expression
+    | type DOT (IDENT | TYPEID)
+    | NULL
+    | STRING_LITERAL
+
+const_declaration ::= CONST_KW (type CONST_IDENT | CT_CONST_IDENT) EQ initializer EOS
+
+initializer_list ::= LBR initializer (COMMA initializer)* RBR
+
+initializer ::= expression | initializer_list
+
+integer_type ::= CHAR_KW | BYTE_KW | SHORT_KW | USHORT_KW | INT_KW | UINT_KW | LONG_KW | ULONG_KW
+
+float_type ::= HALF_KW | FLOAT_KW | DOUBLE_KW | QUAD_KW
+
+base_type ::= VOID_KW | BOOL_KW | integer_type | float_type | TYPE_IDENT | path TYPE_IDENT | CT_TYPE_IDENT
+
+type ::= base_type (STAR | LB RB)?
+
+failable_type ::= type BANG?
+
+func_name ::= path TYPE_IDENT DOT IDENT | TYPE_IDENT DOT IDENT | IDENT
+
+postfix_op ::= LB expression RB | LP RP | DOT IDENT | INC_OP | DEC_OP
+
+postfix_expression ::= primary_expression postfix_op*
+
+unary_op ::= AMP | STAR | ADD_OP | SUB_OP | NEG_MOD | BIT_NEG | BANG | AT | INC_OP | DEC_OP
+
+unary_expression ::= unary_op* postfix_expression
+
+multiplicative_op ::= STAR | MULT_MOD | DIV_OP | MOD_OP
+
+multiplicative_expression ::= unary_expression (multiplicative_op unary_expression)*
+
+shift_expression ::= multiplicative_expression ((LEFT_OP | RIGHT_OP) multiplicative_expression)*
+
+bit_op ::= AMP | BIT_XOR_OP | BIT_OR_OP
+
+bit_expression ::= shift_expression (bit_op shift_expression)*
+
+additive_op ::= ADD_OP | ADD_MOD_OP | SUB_OP | SUB_MOD_OP
+
+additive_expression ::= bit_expression (additive_op bit_expression)*
+
+relational_op ::= LT_OP | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP
+
+relational_expression ::= additive_expression (relational_op additive_expression)*
+
+logical_expression ::= relational_expression ((AND_OP | OR_OP) relational_expression)*
+
+conditional_expression ::= logical_expression ((ELVIS | QUESTION expression COLON) logical_expression)*
+
+constant_expression ::= conditional_expression
+
+error_expression ::= conditional_expression BANG?
+
+assignment_expression ::= error_expression | unary_expression EQ (assignment_expression | initializer_list)
+
+expression ::= TRY_KW expression | assignment_expression (ELSE_KW assignment_expression)?
+
+declaration ::= failable_type IDENT (EQ initializer)?
+
+param_declaration ::= type (IDENT (EQ initializer)?)?
+
+parameter_list ::= param_declaration (COMMA param_declaration)*
+
+parameter_type_list ::= LP (parameter_list (',' type? ELLIPSIS)?)? RP
+
+func_declaration ::= FUNC_KW failable_type func_name parameter_type_list // opt_parameter_type_list opt_attributes
+
+func_definition ::=  func_declaration compound_statement?
+
+compound_statement ::= LBR RBR
+
+old ::= COLON

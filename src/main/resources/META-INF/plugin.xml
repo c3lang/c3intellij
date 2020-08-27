@@ -1,19 +1,63 @@
+<!-- Copyright 2000-2020 JetBrains s.r.o. and other contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file. -->
+
 <idea-plugin>
-    <id>com.github.lerno.intellijplugin</id>
-    <name>intellij-plugin</name>
-    <vendor>lerno</vendor>
 
-    <!-- Product and plugin compatibility requirements -->
-    <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
-    <depends>com.intellij.modules.platform</depends>
+  <!-- Unique id for this plugin. Must stay constant for the life of the plugin. -->
+  <id>org.c3lang.intellijplugin</id>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.lerno.intellijplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.lerno.intellijplugin.services.MyProjectService"/>
-    </extensions>
+  <!-- Text to display as name on Preferences/Settings | Plugin page -->
+  <name>C3</name>
 
-    <projectListeners>
-        <listener class="com.github.lerno.intellijplugin.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </projectListeners>
+  <!-- Product and plugin compatibility requirements -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.java</depends>
+
+  <!-- Text to display as description on Preferences/Settings | Plugin page -->
+  <description>
+    <![CDATA[
+      Support for the C3 Language
+    ]]>
+  </description>
+  <change-notes>
+    <![CDATA[
+      <ul>
+        <li><b>0.0.1</b> Unfinished.</li>
+      </ul>
+    ]]>
+  </change-notes>
+
+  <!-- Text to display as company information on Preferences/Settings | Plugin page -->
+  <vendor url="https://www.c3-lang.org">C3 Lang</vendor>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType name="C3 File" implementationClass="org.c3lang.intellijplugin.C3SourceFileType" fieldName="INSTANCE"
+              language="C3" extensions="c3"/>
+    <lang.parserDefinition language="C3" implementationClass="org.c3lang.intellijplugin.parser.C3ParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="C3"
+                                   implementationClass="org.c3lang.intellijplugin.C3SyntaxHighlighterFactory"/>
+      <!--
+      <fileType name="C3 Interface" implementationClass="org.c3lang.C3Interface" fieldName="INSTANCE"
+                language="C3" extensions="c3i"/>
+    <colorSettingsPage implementation="org.intellij.sdk.language.SimpleColorSettingsPage"/>
+    <annotator language="JAVA" implementationClass="org.intellij.sdk.language.SimpleAnnotator"/>
+    <codeInsight.lineMarkerProvider language="JAVA"
+                                    implementationClass="org.intellij.sdk.language.SimpleLineMarkerProvider"/>
+    <completion.contributor language="Simple"
+                            implementationClass="org.intellij.sdk.language.SimpleCompletionContributor"/>
+    <psi.referenceContributor implementation="org.intellij.sdk.language.SimpleReferenceContributor"/>
+    <lang.refactoringSupport language="Simple"
+                             implementationClass="org.intellij.sdk.language.SimpleRefactoringSupportProvider"/>
+    <lang.findUsagesProvider language="Simple"
+                             implementationClass="org.intellij.sdk.language.SimpleFindUsagesProvider"/>
+    <lang.foldingBuilder language="JAVA" implementationClass="org.intellij.sdk.language.SimpleFoldingBuilder"/>
+    <gotoSymbolContributor implementation="org.intellij.sdk.language.SimpleChooseByNameContributor"/>
+    <lang.psiStructureViewFactory language="Simple"
+                                  implementationClass="org.intellij.sdk.language.SimpleStructureViewFactory"/>
+    <lang.formatter language="Simple" implementationClass="org.intellij.sdk.language.SimpleFormattingModelBuilder"/>
+    <codeStyleSettingsProvider implementation="org.intellij.sdk.language.SimpleCodeStyleSettingsProvider"/>
+    <langCodeStyleSettingsProvider implementation="org.intellij.sdk.language.SimpleLanguageCodeStyleSettingsProvider"/>
+    <lang.commenter language="Simple" implementationClass="org.intellij.sdk.language.SimpleCommenter"/>
+    -->
+  </extensions>
+
 </idea-plugin>
