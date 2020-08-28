@@ -16,9 +16,18 @@
 
 translation_unit ::= module? import_decl* top_level_statement*
 
-import_decl ::= IMPORT_KW import_path EOS
+specified_import ::= IDENT (AS IDENT)?
+    | CONST_IDENT (AS CONST_IDENT)?
+    | TYPE_IDENT (AS TYPE_IDENT)?
+    | AT IDENT (AS AT IDENT)?
+
+specified_import_list ::= specified_import (COMMA specified_import)*
+
+import_decl ::= IMPORT_KW import_path (COLON specified_import_list)? EOS
 
 import_path ::= IDENT (SCOPE IDENT)*
+
+path ::= (IDENT SCOPE)+
 
 module_param ::= CT_IDENT | HASH_IDENT | TYPE_IDENT | CT_TYPE_IDENT | IDENT
 
@@ -30,25 +39,70 @@ top_level_statement ::= visibility? top_level
 
 visibility ::= LOCAL_KW PUBLIC_KW? | PUBLIC_KW LOCAL_KW?
 
-top_level ::= global_declaration | const_declaration | func_definition
+top_level ::= global_declaration
+    | const_declaration
+    | func_definition
+    | conditional_compilation
+    | struct_declaration
+    | attribute_declaration
+    | enum_declaration
+    | error_declaration
+    | macro_declaration
+    | generics_declaration
+    | typedef_declaration
+
+top_level_block ::= LBR top_level_statement* RBR
+
+conditional_compilation ::= ct_if top_level_block tl_ct_else_body?
+    | ct_switch LBR tl_ct_switch_body RBR
+
+tl_ct_elif_body ::= (ct_elif top_level_block)*
+
+tl_ct_else_body ::= tl_ct_elif_body (CTELSE_KW top_level_block)?
+
+tl_ct_case ::= (CTDEFAULT_KW | CTCASE_KW type_list) COLON top_level_statement*
+
+tl_ct_switch_body ::= tl_ct_case+
+
+type_list ::= type (COMMA type)*
+
+macro_declaration ::= MACRO_KW type? IDENT LP macro_argument_list? RP compound_statement
+
+struct_or_union ::= STRUCT_KW | UNION_KW
+struct_declaration ::= struct_or_union TYPE_IDENT attributes? struct_body
+
+func_typedef ::= FUNC_KW failable_type parameter_type_list
+
+typedef_declaration ::= TYPEDEF_KW (type | func_typedef) AS TYPE_IDENT EOS
+
+struct_body ::= LBR struct_declaration_list RBR
+
+struct_declaration_list ::= struct_member_declaration*
+
+struct_member_declaration ::= type identifier_list attributes? EOS
+    | struct_or_union IDENT attributes? struct_body
+    | struct_or_union attributes? struct_body
+
+enum_declaration ::= ENUM_KW TYPE_IDENT (COLON type)? attributes? LBR enumerator_list RBR
 
 global_declaration ::= type IDENT (EQ initializer)? EOS
 
 ident_expression ::= CONST_IDENT | IDENT | CT_IDENT | CT_CONST_IDENT
-
-path ::= TODO
 
 constant ::= INT_LITERAL
 
 grouped_expression ::= LP expression RP
 
 primary_expression ::= constant
+    | STRING_LITERAL
+    | NULL_KW
     | path? ident_expression
     | base_type initializer_list
     | grouped_expression
     | type DOT (IDENT | TYPEID)
-    | NULL
-    | STRING_LITERAL
+    | LP type RP (IDENT | TYPEID)
+    | FN_BLOCK_START statement_list FN_BLOCK_END
+    | CAST_KW LP expression AS_KW type RP
 
 const_declaration ::= CONST_KW (type CONST_IDENT | CT_CONST_IDENT) EQ initializer EOS
 
@@ -60,15 +114,105 @@ integer_type ::= CHAR_KW | BYTE_KW | SHORT_KW | USHORT_KW | INT_KW | UINT_KW | L
 
 float_type ::= HALF_KW | FLOAT_KW | DOUBLE_KW | QUAD_KW
 
-base_type ::= VOID_KW | BOOL_KW | integer_type | float_type | TYPE_IDENT | path TYPE_IDENT | CT_TYPE_IDENT
+base_type ::= VOID_KW
+    | BOOL_KW
+    | integer_type
+    | float_type
+    | TYPE_IDENT
+    | path TYPE_IDENT
+    | CT_TYPE_IDENT
 
-type ::= base_type (STAR | LB RB)?
+
+type_suffix ::= STAR | LB (constant_expression | ADD_OP)? RB
+
+type ::= base_type type_suffix*
 
 failable_type ::= type BANG?
 
-func_name ::= path TYPE_IDENT DOT IDENT | TYPE_IDENT DOT IDENT | IDENT
+ct_if ::= CTIF_KW LP expression RP
 
-postfix_op ::= LB expression RB | LP RP | DOT IDENT | INC_OP | DEC_OP
+ct_elif ::= CTELIF_KW LP expression RP
+
+ct_switch ::= CTSWITCH_KW LP expression RP
+
+ct_case_stmt ::= CTCASE_KW type_list COLON statement | CTDEFAULT_KW COLON statement
+
+ct_elif_body ::= (ct_elif compound_statement)+
+
+ct_else_body ::= ct_elif_body (CTELSE_KW compound_statement)? | CTELSE_KW compound_statement
+
+ct_switch_body ::= ct_case_stmt+
+
+ct_for_stmt ::= CTFOR_KW LP CT_IDENT (COMMA CT_IDENT) IN_KW expression RP statement
+
+ct_stmt ::= ct_if compound_statement ct_else_body?
+    | ct_switch LBR ct_switch_body RBR
+    | ct_for_stmt
+
+statement ::= compound_statement
+    | labelled_statement
+    | expression_statement
+    | selection_statement
+    | iteration_statement
+    | jump_statement
+    | declaration_statement
+    | catch_statement
+    | try_statement
+    | defer_statement
+    | ct_stmt
+
+defer_catch_body ::= compound_statement
+    | expression_statement
+    | jump_statement
+    | iteration_statement
+    | selection_statement
+
+
+selection_statement ::= SWITCH_KW LP decl_expr_list RP compound_statement
+    | IF_KW LP decl_expr_list RP statement
+    | IF_KW LP decl_expr_list RP compound_statement ELSE_KW compound_statement
+
+
+declaration_statement ::= declaration EOS
+
+expression_list ::= expression (COMMA expression)*
+
+decl_expr_list ::= (expression | declaration) (COMMA (expression | declaration))*
+
+for_statement ::= FOR_KW LP decl_expr_list EOS expression_statement expression_list? RP statement
+
+iteration_statement ::= for_statement
+    | WHILE_KW LP expression RP statement
+    | DO_KW statement (WHILE_KW LP expression RP)? EOS
+
+jump_statement ::= (CONTINUE_KW | BREAK_KW) (CONST_IDENT | CT_CONST_IDENT)? EOS
+    | NEXT_KW expression? EOS
+    | RETURN_KW expression? EOS
+
+defer_statement ::= DEFER_KW (defer_catch_body | catch_statement)
+
+catch_statement ::= CATCH_KW LP expression RP defer_catch_body
+
+try_statement ::= TRY_KW (selection_statement | iteration_statement | jump_statement)
+
+labelled_statement ::= CASE_KW constant_expression (DOTDOT constant_expression)? COLON | DEFAULT_KW COLON
+
+compound_statement ::= LBR statement_list? RBR
+
+statement_list ::= statement+
+
+expression_statement ::= expression? EOS
+
+
+func_name ::= (path? TYPE_IDENT DOT)? IDENT
+
+argument_expression_list ::= expression (COMMA expression)*
+
+postfix_op ::= LB expression RB
+    | LP argument_expression_list? RP
+    | DOT IDENT
+    | INC_OP
+    | DEC_OP
 
 postfix_expression ::= primary_expression postfix_op*
 
@@ -80,7 +224,9 @@ multiplicative_op ::= STAR | MULT_MOD | DIV_OP | MOD_OP
 
 multiplicative_expression ::= unary_expression (multiplicative_op unary_expression)*
 
-shift_expression ::= multiplicative_expression ((LEFT_OP | RIGHT_OP) multiplicative_expression)*
+shift_op ::= LEFT_OP | RIGHT_OP
+
+shift_expression ::= multiplicative_expression (shift_op multiplicative_expression)*
 
 bit_op ::= AMP | BIT_XOR_OP | BIT_OR_OP
 
@@ -94,7 +240,9 @@ relational_op ::= LT_OP | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP
 
 relational_expression ::= additive_expression (relational_op additive_expression)*
 
-logical_expression ::= relational_expression ((AND_OP | OR_OP) relational_expression)*
+logical_op ::= AND_OP | OR_OP
+
+logical_expression ::= relational_expression (logical_op relational_expression)*
 
 conditional_expression ::= logical_expression ((ELVIS | QUESTION expression COLON) logical_expression)*
 
@@ -102,9 +250,34 @@ constant_expression ::= conditional_expression
 
 error_expression ::= conditional_expression BANG?
 
-assignment_expression ::= error_expression | unary_expression EQ (assignment_expression | initializer_list)
+assignment_op ::= EQ
+    | MUL_ASSIGN
+    | MUL_MOD_ASSIGN
+    | DIV_ASSIGN
+    | ADD_ASSIGN
+    | ADD_MOD_ASSIGN
+    | SUB_ASSIGN
+    | SUB_MOD_ASSIGN
+    | SHR_ASSIGN
+    | SHL_ASSIGN
+    | AND_ASSIGN
+    | XOR_ASSIGN
+    | OR_ASSIGN
+
+assignment_expression ::= error_expression
+    | unary_expression ((EQ initializer_list) | (assignment_op assignment_expression))*
 
 expression ::= TRY_KW expression | assignment_expression (ELSE_KW assignment_expression)?
+
+enumerator ::= CONST_IDENT (EQ constant_expression)?
+
+enumerator_list ::= enumerator (COMMA enumerator)* COMMA?
+
+identifier_list ::= IDENT (COMMA IDENT)*
+
+macro_argument ::= type? (CT_IDENT | IDENT)
+
+macro_argument_list ::= macro_argument (',' macro_argument)*
 
 declaration ::= failable_type IDENT (EQ initializer)?
 
@@ -114,10 +287,8 @@ parameter_list ::= param_declaration (COMMA param_declaration)*
 
 parameter_type_list ::= LP (parameter_list (',' type? ELLIPSIS)?)? RP
 
-func_declaration ::= FUNC_KW failable_type func_name parameter_type_list // opt_parameter_type_list opt_attributes
+func_declaration ::= FUNC_KW failable_type func_name parameter_type_list attributes?
 
 func_definition ::=  func_declaration compound_statement?
 
-compound_statement ::= LBR RBR
-
-old ::= COLON
+error_declaration ::= ERROR_KW TYPE_IDENT ((LBR struct_body RBR) | EOS)

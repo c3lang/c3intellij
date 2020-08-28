@@ -8,6 +8,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.c3lang.intellijplugin.lexer.C3LexerAdapter;
+import org.c3lang.intellijplugin.parser.psi.C3Type;
 import org.c3lang.intellijplugin.parser.psi.C3Types;
 import org.graalvm.compiler.lir.LIRInstruction;
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +72,20 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
                    C3Types.MODULE_KW,
                    C3Types.IMPORT_KW,
                    C3Types.CONST_KW,
-                   C3Types.FUNC_KW);
+                   C3Types.FUNC_KW,
+                   C3Types.MACRO_KW,
+                   C3Types.CASE_KW,
+                   C3Types.DEFAULT_KW,
+                   C3Types.SWITCH_KW,
+                   C3Types.FOR_KW,
+                   C3Types.ELSE_KW,
+                   C3Types.CTELSE_KW,
+                   C3Types.CTELIF_KW,
+                   C3Types.NEXT_KW,
+                   C3Types.BREAK_KW,
+                   C3Types.CONTINUE_KW,
+                   C3Types.IF_KW,
+                   C3Types.CTIF_KW);
         addMapping("C3_BRACES", DefaultLanguageHighlighterColors.BRACES, C3Types.LBR, C3Types.RBR);
         addMapping("C3_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS, C3Types.LB, C3Types.RB);
         addMapping("C3_PARENS", DefaultLanguageHighlighterColors.PARENTHESES, C3Types.LP, C3Types.RP);

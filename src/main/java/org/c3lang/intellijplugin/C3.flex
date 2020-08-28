@@ -54,15 +54,42 @@ HEX_DIGITS      = {HEX_DIGIT} ("_"* {HEX_DIGIT})*
 
 <YYINITIAL> {
 
+    "as" { return C3Types.AS_KW; }
+    "break" { return C3Types.BREAK_KW; }
+    "case" { return C3Types.CASE_KW; }
+    "cast" { return C3Types.CAST_KW; }
     "const" { return C3Types.CONST_KW; }
+    "continue" { return C3Types.CONTINUE_KW; }
+    "default" { return C3Types.DEFAULT_KW; }
+    "defer" { return C3Types.DEFER_KW; }
+    "do" { return C3Types.DO_KW; }
     "else" { return C3Types.ELSE_KW; }
+    "error" { return C3Types.ELSE_KW; }
+    "enum" { return C3Types.ENUM_KW; }
+    "for" { return C3Types.FOR_KW; }
     "func" { return C3Types.FUNC_KW; }
+    "if" { return C3Types.IF_KW; }
+    "in" { return C3Types.IN_KW; }
     "import" { return C3Types.IMPORT_KW; }
+    "macro" { return C3Types.MACRO_KW; }
     "module" { return C3Types.MODULE_KW; }
+    "next" { return C3Types.NEXT_KW; }
+    "null" { return C3Types.NULL_KW; }
     "local" { return C3Types.LOCAL_KW; }
     "public" { return C3Types.PUBLIC_KW; }
+    "return" { return C3Types.PUBLIC_KW; }
+    "switch" { return C3Types.SWITCH_KW; }
     "try" { return C3Types.TRY_KW; }
-
+    "typedef" { return C3Types.TYPEDEF_KW; }
+    "union" { return C3Types.UNION_KW; }
+    "while" { return C3Types.WHILE_KW; }
+    "$for" { return C3Types.CTFOR_KW; }
+    "$if" { return C3Types.CTIF_KW; }
+    "$else" { return C3Types.CTELSE_KW; }
+    "$elif" { return C3Types.CTELIF_KW; }
+    "$switch" { return C3Types.CTSWITCH_KW; }
+    "$case" { return C3Types.CTCASE_KW; }
+    "$default" { return C3Types.CTDEFAULT_KW; }
 
     "void" { return C3Types.VOID_KW; }
     "bool" { return C3Types.BOOL_KW; }
@@ -83,13 +110,21 @@ HEX_DIGITS      = {HEX_DIGIT} ("_"* {HEX_DIGIT})*
 
     "..." { return C3Types.ELLIPSIS; }
     "::" { return C3Types.SCOPE; }
+    "({" { return C3Types.FN_BLOCK_START; }
+    "})" { return C3Types.FN_BLOCK_END; }
+    ".." { return C3Types.DOTDOT; }
+    "<=" { return C3Types.LE_OP; }
+    ">=" { return C3Types.GE_OP; }
     "+%" { return C3Types.ADD_MOD_OP; }
     "-%" { return C3Types.SUB_MOD_OP; }
     "++" { return C3Types.INC_OP; }
     "--" { return C3Types.DEC_OP; }
+    "@" { return C3Types.AT; }
     "?:" { return C3Types.ELVIS; }
-    ":" { return C3Types.COLON; }
     "?" { return C3Types.QUESTION; }
+    ":" { return C3Types.COLON; }
+    "<" { return C3Types.LT_OP; }
+    ">" { return C3Types.GT_OP; }
     "+" { return C3Types.ADD_OP; }
     "-" { return C3Types.SUB_OP; }
     "=" { return C3Types.EQ; }
@@ -115,9 +150,13 @@ HEX_DIGITS      = {HEX_DIGIT} ("_"* {HEX_DIGIT})*
     {INTEGER} { return C3Types.INT_LITERAL; }
 
     {CONST_IDENT}  { return C3Types.CONST_IDENT; }
-    {TYPE_IDENT}  { return C3Types.TYPE_IDENT; }
     {CT_CONST_IDENT} { return C3Types.CT_CONST_IDENT; }
+
+    {TYPE_IDENT}  { return C3Types.TYPE_IDENT; }
+    {CT_TYPE_IDENT} { return C3Types.CT_TYPE_IDENT; }
+
     {IDENTIFIER} { return C3Types.IDENT; }
+    {CT_IDENT} { return C3Types.CT_IDENT; }
 
     {WHITESPACE} { return TokenType.WHITE_SPACE; }
 }
