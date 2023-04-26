@@ -9,10 +9,12 @@ import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.c3lang.intellijplugin.C3Language;
 import org.c3lang.intellijplugin.lexer.C3LexerAdapter;
+import org.c3lang.intellijplugin.parser.psi.C3ElementType;
 import org.c3lang.intellijplugin.parser.psi.C3File;
 import org.c3lang.intellijplugin.parser.psi.C3Types;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +27,14 @@ import org.jetbrains.annotations.NotNull;
 public class C3ParserDefinition implements ParserDefinition
 {
     public static TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static TokenSet COMMENTS = TokenSet.create();
+
+    public static IElementType LINE_COMMENT = new C3ElementType("LINE_COMMENT");
+    public static IElementType MULTI_COMMENT = new C3ElementType("MULTI_COMMENT_LEAD");
+    public static IElementType LINE_DOC_COMMENT = new C3ElementType("LINE_DOC_COMMENT");
+    public static IElementType DOC_COMMENT = new C3ElementType("DOC_COMMENT");
+
+    public static TokenSet COMMENTS = TokenSet.create(LINE_COMMENT, MULTI_COMMENT, LINE_DOC_COMMENT, DOC_COMMENT);
+    public static TokenSet STRINGS = TokenSet.create(C3Types.STRING_LIT);
 
     public static IFileElementType FILE = new IFileElementType(C3Language.INSTANCE);
 
@@ -55,7 +64,7 @@ public class C3ParserDefinition implements ParserDefinition
     @Override
     public TokenSet getStringLiteralElements()
     {
-        return TokenSet.EMPTY;
+        return STRINGS;
     }
 
     @NotNull
