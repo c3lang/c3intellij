@@ -30,12 +30,12 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("C3_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
-
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{ BAD_CHARACTER };
     private static final TextAttributesKey[] BRACES_KEYS = new TextAttributesKey[]{ BRACES };
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
     static Map<IElementType, TextAttributesKey[]> s_mapping = new HashMap<>();
+
 
     private static void addMapping(String name, TextAttributesKey fallbackAttributeKey, IElementType... mapped)
     {

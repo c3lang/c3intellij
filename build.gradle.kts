@@ -8,7 +8,6 @@ fun environment(key: String) = providers.environmentVariable(key)
 
 plugins {
     id("java") // Java support
-    alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
@@ -47,6 +46,7 @@ intellij {
     version = properties("platformVersion")
     type = properties("platformType")
     updateSinceUntilBuild.set(true)
+    downloadSources = false
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins = properties("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
 }
@@ -73,7 +73,7 @@ kover.xmlReport {
 // generate code
 val generateC3Parser = task<GenerateParserTask>("generateC3Parser") {
     source.set("src/main/java/org/c3lang/intellij/C3.bnf")
-    targetRoot.set("src/main/gen")
+    targetRoot.set("src/main/gen/java")
     pathToParser.set("/org/c3lang/intellij/parser/C3Parser.java")
     pathToPsiRoot.set("org/c3lang/intellij/parser/psi")
     purgeOldFiles.set(true)

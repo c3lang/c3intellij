@@ -13,6 +13,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.c3lang.intellij.C3Language;
+import org.c3lang.intellij.C3TokenSets;
 import org.c3lang.intellij.lexer.C3LexerAdapter;
 import org.c3lang.intellij.parser.psi.C3ElementType;
 import org.c3lang.intellij.parser.psi.C3File;
@@ -24,17 +25,13 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Christoffer Lerno
  */
-public class C3ParserDefinition implements ParserDefinition
+public class C3ParserDefinition implements ParserDefinition, C3TokenSets
 {
-    public static TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
 
     public static IElementType LINE_COMMENT = new C3ElementType("LINE_COMMENT");
     public static IElementType MULTI_COMMENT = new C3ElementType("MULTI_COMMENT_LEAD");
     public static IElementType LINE_DOC_COMMENT = new C3ElementType("LINE_DOC_COMMENT");
     public static IElementType DOC_COMMENT = new C3ElementType("DOC_COMMENT");
-
-    public static TokenSet COMMENTS = TokenSet.create(LINE_COMMENT, MULTI_COMMENT, LINE_DOC_COMMENT, DOC_COMMENT);
-    public static TokenSet STRINGS = TokenSet.create(C3Types.STRING_LIT);
 
     public static IFileElementType FILE = new IFileElementType(C3Language.INSTANCE);
 
@@ -74,19 +71,21 @@ public class C3ParserDefinition implements ParserDefinition
         return new C3Parser();
     }
 
-    @Override
+    @NotNull @Override
     public IFileElementType getFileNodeType()
     {
         return FILE;
     }
 
+    @NotNull
     @Override
-    public PsiFile createFile(FileViewProvider viewProvider)
+    public PsiFile createFile(@NotNull FileViewProvider viewProvider)
     {
         return new C3File(viewProvider);
     }
 
     @Override
+    @NotNull
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right)
     {
         return SpaceRequirements.MAY;
