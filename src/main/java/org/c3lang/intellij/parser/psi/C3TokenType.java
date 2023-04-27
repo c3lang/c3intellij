@@ -1,7 +1,7 @@
-package org.c3lang.intellijplugin.parser.psi;
+package org.c3lang.intellij.parser.psi;
 
 import com.intellij.psi.tree.IElementType;
-import org.c3lang.intellijplugin.C3Language;
+import org.c3lang.intellij.C3Language;
 import org.jetbrains.annotations.NotNull;
 
 /**

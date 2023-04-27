@@ -1,10 +1,10 @@
-package org.c3lang.intellijplugin.parser.psi;
+package org.c3lang.intellij.parser.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
-import org.c3lang.intellijplugin.C3Language;
-import org.c3lang.intellijplugin.C3SourceFileType;
+import org.c3lang.intellij.C3Language;
+import org.c3lang.intellij.C3SourceFileType;
 import org.jetbrains.annotations.NotNull;
 
 /**

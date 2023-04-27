@@ -1,17 +1,17 @@
 {
-    parserClass = "org.c3lang.intellijplugin.parser.C3Parser"
+    parserClass = "org.c3lang.intellij.parser.C3Parser"
     extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
 
     psiClassPrefix = "C3"
     psiImplClassSuffix = "Impl"
-    psiPackage = "org.c3lang.intellijplugin.parser.psi"
-    psiImplPackage = "org.c3lang.intellijplugin.parser.psi"
+    psiPackage = "org.c3lang.intellij.parser.psi"
+    psiImplPackage = "org.c3lang.intellij.parser.psi"
 
-    elementTypeHolderClass = "org.c3lang.intellijplugin.parser.psi.C3Types"
-    elementTypeClass = "org.c3lang.intellijplugin.parser.psi.C3ElementType"
-    tokenTypeClass = "org.c3lang.intellijplugin.parser.psi.C3TokenType"
+    elementTypeHolderClass = "org.c3lang.intellij.parser.psi.C3Types"
+    elementTypeClass = "org.c3lang.intellij.parser.psi.C3ElementType"
+    tokenTypeClass = "org.c3lang.intellij.parser.psi.C3TokenType"
 
-    psiImplUtilClass="org.c3lang.intellijplugin.parser.psi.C3PsiImplUtil"
+    psiImplUtilClass="org.c3lang.intellij.parser.psi.C3PsiImplUtil"
 
 }
 
@@ -102,7 +102,7 @@ struct_member_declaration ::=
     type identifier_list attributes? EOS
     | INLINE_KW type IDENT? attributes? EOS
     | struct_or_union IDENT? attributes? struct_body
-    | BITSTRUCT IDENT? ':' type attributes bitstruct_body
+    | BITSTRUCT_KW IDENT? ':' type attributes? bitstruct_body
 
 bitstruct_body ::= LB (bitstruct_def+ | bitstruct_simple_def+)? RB
 bitstruct_def ::= base_type IDENT COLON constant_expr (DOTDOT constant_expr)? EOS
@@ -292,7 +292,7 @@ cond_repeat ::= decl_or_expr (COMMA decl_or_expr)*
 decl_or_expr ::= var_decl | optional_type local_decl_after_type | expr
 for_cond ::= expression_list? EOS cond? EOS expression_list?
 for_stmt ::= FOR_KW label? LP for_cond RP statement
-foreach_stmt ::= (FOREACH_KW | FOREACH_R_KW) label? LP foreach_vars COLON expr RP statement
+foreach_stmt ::= (FOREACH_KW | FOREACH_R_KW) label? LP foreach_vars COLON expr_or_list RP statement
 foreach_vars ::= foreach_var (COMMA foreach_var)?
 foreach_var ::= optional_type? AMP? IDENT
 continue_stmt ::= CONTINUE_KW CONST_IDENT? EOS

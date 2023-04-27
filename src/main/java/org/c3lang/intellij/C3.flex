@@ -1,10 +1,11 @@
-package org.c3lang.intellijplugin.lexer;
+package org.c3lang.intellij.lexer;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import org.c3lang.intellijplugin.parser.C3Parser;import org.c3lang.intellijplugin.parser.C3ParserDefinition;import org.c3lang.intellijplugin.parser.psi.C3Type;
-import org.c3lang.intellijplugin.parser.psi.C3Types;
-import com.intellij.psi.TokenType;import org.intellij.grammar.livePreview.LivePreviewElementType;import sun.tools.jstat.Token;
+import org.c3lang.intellij.parser.C3ParserDefinition;
+import org.c3lang.intellij.parser.psi.C3Type;
+import org.c3lang.intellij.parser.psi.C3Types;
+import com.intellij.psi.TokenType;
 
 %%
 

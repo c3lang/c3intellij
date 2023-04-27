@@ -1,4 +1,4 @@
-package org.c3lang.intellijplugin;
+package org.c3lang.intellij;
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;

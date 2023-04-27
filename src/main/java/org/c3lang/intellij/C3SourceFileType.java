@@ -1,4 +1,4 @@
-package org.c3lang.intellijplugin;
+package org.c3lang.intellij;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package org.c3lang.intellijplugin.lexer;
+package org.c3lang.intellij.lexer;
 
 import com.intellij.lexer.FlexAdapter;
 

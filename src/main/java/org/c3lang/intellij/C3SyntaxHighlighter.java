@@ -1,4 +1,4 @@
-package org.c3lang.intellijplugin;
+package org.c3lang.intellij;
 
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
@@ -7,11 +7,10 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import org.c3lang.intellijplugin.lexer.C3LexerAdapter;
-import org.c3lang.intellijplugin.parser.C3ParserDefinition;
-import org.c3lang.intellijplugin.parser.psi.C3Type;
-import org.c3lang.intellijplugin.parser.psi.C3Types;
-import org.graalvm.compiler.lir.LIRInstruction;
+import org.c3lang.intellij.lexer.C3LexerAdapter;
+import org.c3lang.intellij.parser.C3ParserDefinition;
+import org.c3lang.intellij.parser.psi.C3Type;
+import org.c3lang.intellij.parser.psi.C3Types;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

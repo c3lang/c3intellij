@@ -1,4 +1,4 @@
-package org.c3lang.intellijplugin.parser;
+package org.c3lang.intellij.parser;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -12,11 +12,11 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import org.c3lang.intellijplugin.C3Language;
-import org.c3lang.intellijplugin.lexer.C3LexerAdapter;
-import org.c3lang.intellijplugin.parser.psi.C3ElementType;
-import org.c3lang.intellijplugin.parser.psi.C3File;
-import org.c3lang.intellijplugin.parser.psi.C3Types;
+import org.c3lang.intellij.C3Language;
+import org.c3lang.intellij.lexer.C3LexerAdapter;
+import org.c3lang.intellij.parser.psi.C3ElementType;
+import org.c3lang.intellij.parser.psi.C3File;
+import org.c3lang.intellij.parser.psi.C3Types;
 import org.jetbrains.annotations.NotNull;
 
 /**
