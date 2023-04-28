@@ -95,8 +95,8 @@ STRING_LIT          = \x22 {STR_LIT_BYTE}* \x22
 RAW_ESCAPE          = "``"
 RAW_STR_LIT         = "`" ([^`]|{RAW_ESCAPE})* "`"
 
-LINE_COMMENT    = "//" [^\n]* [\n]
-LINE_DOC_COMMENT= "///" [^\n]* [\n]
+LINE_COMMENT    = "//" .*
+LINE_DOC_COMMENT= "///" .*
 
 %state IN_COMMENT, RAW_STRING
 

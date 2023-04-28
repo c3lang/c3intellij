@@ -11,5 +11,6 @@ import javax.swing.*;
  */
 public class C3Icons
 {
-    public static final Icon FILE = IconLoader.getIcon("/icons/6.png");
+    public static final Icon FILE = IconLoader.getIcon("/icons/c3.svg", C3Icons.class.getClassLoader());
+    public static final Icon LIB_FILE = IconLoader.getIcon("/icons/c3l.svg", C3Icons.class.getClassLoader());
 }

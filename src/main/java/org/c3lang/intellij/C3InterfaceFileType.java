@@ -1,6 +1,7 @@
 package org.c3lang.intellij;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -10,34 +11,39 @@ import javax.swing.*;
  *
  * @author Christoffer Lerno
  */
-public class C3SourceFileType extends LanguageFileType
+public class C3InterfaceFileType extends LanguageFileType
 {
-    public static final C3SourceFileType INSTANCE = new C3SourceFileType();
+    public static final C3InterfaceFileType INSTANCE = new C3InterfaceFileType();
 
-    private C3SourceFileType()
+    private C3InterfaceFileType()
     {
         super(C3Language.INSTANCE);
+    }
+
+    @Override public @Nls @NotNull String getDisplayName()
+    {
+        return "C3 Interface";
     }
 
     @NotNull
     @Override
     public String getName()
     {
-        return "C3 File";
+        return "C3 Interface File";
     }
 
     @Override
     @NotNull
     public String getDescription()
     {
-        return "C3 source file";
+        return "C3 interface file";
     }
 
     @Override
     @NotNull
     public String getDefaultExtension()
     {
-        return "c3";
+        return "c3i";
     }
 
     @Override

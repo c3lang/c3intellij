@@ -15,7 +15,11 @@
 
 }
 
-translation_unit ::= top_level*
+translation_unit ::= default_module_section? module_section*
+
+default_module_section ::= top_level+
+
+module_section ::= module top_level*
 
 module ::= MODULE_KW path_ident (LT_OP module_params GT_OP)? attributes? EOS
 
@@ -26,14 +30,14 @@ path_ident ::= path? IDENT
 path_at_ident ::= path? AT_IDENT
 
 
-define_attribute ::= AT_TYPE_IDENT ('(' parameter_list ')')? attributes? EQ LB attributes? RB
+define_attribute ::= AT_TYPE_IDENT (LP parameter_list RP)? attributes? EQ LB attributes? RB
 define_ident ::= (ident_alias | const_alias | attr_alias) generic_parameters?
 ident_alias ::= IDENT EQ path_ident
 const_alias ::= CONST_IDENT EQ path_const
 attr_alias ::= AT_IDENT EQ path_at_ident
 
 
-module_param ::= CT_IDENT | HASH_IDENT | TYPE_IDENT | CT_TYPE_IDENT | IDENT
+module_param ::= TYPE_IDENT | CONST_IDENT
 
 module_params ::= module_param (COMMA module_param)*
 
@@ -43,8 +47,8 @@ import_paths ::= path_ident (COMMA path_ident)*
 
 ct_include_stmt ::= CT_INCLUDE_KW LP string_expr RP EOS
 
-top_level ::= module
-    | import_decl
+
+top_level ::= import_decl
     | EXTERN_KW? (func_definition | const_declaration | global_declaration)
     | ct_assert_stmt
     | ct_echo_stmt
@@ -111,16 +115,16 @@ bitstruct_simple_def ::= base_type IDENT EOS
 enum_declaration ::= ENUM_KW TYPE_IDENT (COLON enum_spec)? attributes? LB enum_list RB
 enum_spec ::= type enum_param_list?
 enum_param_list ::= LP enum_param_decl (COMMA enum_param_decl)* RP
-enum_param_decl ::= type (IDENT (EQ expr_or_list)?)?
+enum_param_decl ::= type (IDENT (EQ expr)?)?
 enum_list ::= enum_constant (COMMA enum_constant)* COMMA?
 enum_constant ::= CONST_IDENT (LP arg_list COMMA? RP)?
 arg_list ::= arg (COMMA arg)*
-arg ::= (param_path EQ)? (expr_or_list | type) | CT_VASPLAT_KW LP constant_expr? RP | ELLIPSIS expr
+arg ::= (param_path EQ)? (expr | type) | CT_VASPLAT_KW LP range_exp? RP | ELLIPSIS expr
 
 
 global_declaration ::= TLOCAL_KW? optional_type IDENT (global_multi_declaration | global_single_declaration) EOS
 global_multi_declaration ::= multi_declaration attributes?
-global_single_declaration ::= attributes? (EQ expr_or_list)?
+global_single_declaration ::= attributes? (EQ expr)?
 multi_declaration ::= (COMMA IDENT)+
 
 ident_expr ::= CONST_IDENT | IDENT | AT_IDENT
@@ -130,7 +134,7 @@ grouped_expression ::= LP expr RP
 
 expr_block ::= LBRAPIPE statement_list? RBRAPIPE
 
-access_ident ::= IDENT | AT_IDENT | HASH_IDENT | CT_EVAL '(' expr ')' | TYPEID_KW
+access_ident ::= IDENT | AT_IDENT | HASH_IDENT | CT_EVAL_KW '(' expr ')' | TYPEID_KW
 
 type_access ::= type DOT (access_ident | CONST_IDENT)
 
@@ -138,6 +142,7 @@ call_arg_list ::= arg_list? (EOS parameter_list?)?
 call_invocation ::= LP call_arg_list RP AT_IDENT*
 
 call_expr ::= primary_expr call_expr_tail*
+call_stmt_expr ::= base_expr call_expr_tail*
 
 call_expr_tail ::= call_invocation compound_statement?
     | LBT (range_exp | range_loc) RBT
@@ -154,7 +159,7 @@ ct_analyze ::= CT_EVAL_KW | CT_SIZEOF_KW | CT_STRINGIFY_KW
 
 string_expr ::= STRING_LIT+
 
-primary_expr ::= constant
+base_expr ::= constant
     | string_expr
     | INT_LITERAL
     | BYTES
@@ -178,6 +183,8 @@ primary_expr ::= constant
     | CT_CHECKS_KW LP expression_list RP
     | lambda_decl compound_statement
 
+primary_expr ::= base_expr | initializer_list
+
 flat_path ::= primary_expr param_path? | type
 param_path ::= param_path_element+
 param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT IDENT
@@ -187,20 +194,17 @@ range_loc ::= BIT_XOR? expr
 lambda_decl ::= FN_KW optional_type? fn_parameter_list attributes?
 optional_type ::= type BANG?
 fn_parameter_list ::= LP parameter_list? RP
-param_decl ::= parameter (EQ expr_or_list)?
+param_decl ::= parameter (EQ expr)?
 parameter_list ::= param_decl (COMMA param_decl)*
 parameter ::= type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDENT | AMP IDENT) attributes? | attributes?)
     | ELLIPSIS | AMP IDENT attributes? | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
     | CT_IDENT | CT_IDENT ELLIPSIS
 
-
-expr_or_list ::= expr | initializer_list
-
-const_declaration ::= CONST_KW type? CONST_IDENT attributes? EQ expr_or_list EOS
+const_declaration ::= CONST_KW type? CONST_IDENT attributes? EQ expr EOS
 
 ct_assert_stmt ::= CT_ASSERT_KW LP constant_expr (COMMA constant_expr)? RP EOS
 ct_echo_stmt ::= CT_ECHO_KW const_paren_expr EOS
-assert_stmt ::= ASSERT_KW LP expr (COMMA expr)? RP EOS
+assert_stmt ::= ASSERT_KW LP (try_unwrap_chain | expr) (COMMA expr)? RP EOS
 ct_if_stmt ::= CT_IF_KW const_paren_expr statement_list? (CT_ELSE_KW statement_list?)? CT_ENDIF_KW
 ct_switch_stmt ::= ct_switch ct_switch_body CT_ENDSWITCH_KW
 initializer_list ::= LB (arg_list COMMA?)? RB
@@ -236,10 +240,10 @@ ct_switch ::= CT_SWITCH_KW (LP (constant_expr | type) RP)?
 
 ct_case_stmt ::= (CT_CASE_KW (constant_expr | type) | CT_DEFAULT_KW) COLON statement_list?
 ct_switch_body ::= ct_case_stmt+
-ct_foreach_stmt ::= CT_FOREACH_KW LP CT_IDENT COLON expr_or_list RP statement_list? CT_ENDFOREACH_KW
+ct_foreach_stmt ::= CT_FOREACH_KW LP CT_IDENT (COMMA CT_IDENT)? COLON expr RP statement_list? CT_ENDFOREACH_KW
 ct_for_stmt ::= CT_FOR_KW LP for_cond RP statement_list? CT_ENDFOR_KW
 
-var_decl ::= VAR_KW (IDENT EQ expr_or_list | CT_TYPE_IDENT (EQ type)? | CT_IDENT (EQ expr_or_list)?)
+var_decl ::= VAR_KW (IDENT EQ expr | CT_TYPE_IDENT (EQ type)? | CT_IDENT (EQ expr)?)
 var_stmt ::= var_decl EOS
 
 
@@ -264,17 +268,18 @@ statement ::= compound_statement
     | ct_switch_stmt
     | ct_foreach_stmt
     | ct_for_stmt
-    | expr EOS
+    | expr_no_list EOS
     | assert_stmt
     | EOS
 
 
 local_decl_storage ::= STATIC_KW | TLOCAL_KW
-local_decl_after_type ::= CT_IDENT (EQ constant_expr)? | IDENT attributes? (EQ expr_or_list)?
-decl_stmt_after_type ::= local_decl_after_type (COMMA identifier_list)?
+
+local_decl_after_type ::= CT_IDENT (EQ constant_expr)? | IDENT attributes? (EQ expr)?
+decl_stmt_after_type ::= local_decl_after_type (COMMA local_decl_after_type)*
 
 declaration_stmt ::= const_declaration | local_decl_storage? optional_type decl_stmt_after_type EOS
-return_stmt ::= RETURN_KW expr_or_list? EOS
+return_stmt ::= RETURN_KW expr? EOS
 label ::= CONST_IDENT COLON
 paren_cond ::= LP cond RP
 if_stmt ::= IF_KW label? paren_cond (LB switch_body RB else_part? | compound_statement else_part | statement)
@@ -292,19 +297,19 @@ cond_repeat ::= decl_or_expr (COMMA decl_or_expr)*
 decl_or_expr ::= var_decl | optional_type local_decl_after_type | expr
 for_cond ::= expression_list? EOS cond? EOS expression_list?
 for_stmt ::= FOR_KW label? LP for_cond RP statement
-foreach_stmt ::= (FOREACH_KW | FOREACH_R_KW) label? LP foreach_vars COLON expr_or_list RP statement
+foreach_stmt ::= (FOREACH_KW | FOREACH_R_KW) label? LP foreach_vars COLON expr RP statement
 foreach_vars ::= foreach_var (COMMA foreach_var)?
 foreach_var ::= optional_type? AMP? IDENT
 continue_stmt ::= CONTINUE_KW CONST_IDENT? EOS
 break_stmt ::= BREAK_KW CONST_IDENT? EOS
-nextcase_stmt ::= NEXTCASE_KW ((CONST_IDENT COLON)? expr)? EOS
+nextcase_stmt ::= NEXTCASE_KW ((CONST_IDENT COLON)? (type | expr))? EOS
 
 asm_block_stmt ::= ASM_KW (LP expr RP | LB asm_stmt* RB)
 asm_stmt ::= asm_instr asm_exprs? EOS
 asm_instr ::= (INT_KW | IDENT) (DOT IDENT)?
 asm_exprs ::= asm_expr (COMMA asm_expr)*
 asm_expr ::= CT_IDENT | CT_CONST_IDENT | AMP? IDENT | CONST_IDENT
-    | FLOAT_LITERAL | INT_LITERAL | grouped_expression | LB asm_addr RB
+    | FLOAT_LITERAL | INT_LITERAL | grouped_expression | LBT asm_addr RBT
 asm_addr ::= asm_expr (additive_op asm_expr asm_addr_trailing?)?
 asm_addr_trailing ::= STAR INT_LITERAL (additive_op INT_LITERAL)? | (shift_op | additive_op) INT_LITERAL
 
@@ -317,50 +322,65 @@ statement_list ::= statement+
 unary_op ::= AMP | AND | STAR | PLUS | MINUS | NEG_MOD | BIT_NOT | BANG | PLUSPLUS | MINUSMINUS | LP type RP
 
 unary_expr ::= unary_op* call_expr
-
+unary_stmt_expr ::= call_stmt_expr | unary_op+ call_expr
 
 mult_op ::= STAR | DIV | MOD
 
-mult ::= unary_expr (mult_op unary_expr)*
+mult_expr ::= unary_expr (mult_op unary_expr)*
+mult_stmt_expr ::= unary_stmt_expr (mult_op unary_expr)*
 
 shift_op ::= SHL | SHR
 
-shift_expr ::= mult (shift_op mult)*
+shift_expr ::= mult_expr (shift_op mult_expr)*
+shift_stmt_expr ::= mult_stmt_expr (shift_op mult_expr)*
 
 bit_op ::= AMP | BIT_XOR | BIT_OR
 
 bit_expr ::= shift_expr (bit_op shift_expr)*
+bit_stmt_expr ::= shift_stmt_expr (bit_op shift_expr)*
 
 additive_op ::= PLUS | MINUS
 
 additive_expr ::= bit_expr (additive_op bit_expr)*
+additive_stmt_expr ::= bit_stmt_expr (additive_op bit_expr)*
 
 relational_op ::= LT_OP | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP
 
-relational_expr ::= additive_expr (relational_op (additive_expr | initializer_list))*
+relational_expr ::= additive_expr (relational_op additive_expr)*
+relational_stmt_expr ::= additive_stmt_expr (relational_op additive_expr)*
 
-rel_expr_or_list ::= relational_expr | lambda_decl IMPLIES relational_expr | initializer_list
+rel_or_lambda_expr ::= relational_expr | lambda_decl IMPLIES relational_expr
 
-catch_unwrap_list ::= rel_expr_or_list (COMMA rel_expr_or_list)*
+catch_unwrap_list ::= rel_or_lambda_expr (COMMA rel_or_lambda_expr)*
 
 catch_unwrap ::= CATCH_KW (type? IDENT EQ)? catch_unwrap_list
 
-try_unwrap ::= TRY_KW (type? IDENT EQ)? rel_expr_or_list
+try_unwrap ::= TRY_KW (type? IDENT EQ)? rel_or_lambda_expr
 
-try_unwrap_chain ::= try_unwrap (AND (try_unwrap | rel_expr_or_list))*
+try_unwrap_chain ::= try_unwrap (AND (try_unwrap | rel_or_lambda_expr))*
 
 and_expr ::= relational_expr (AND relational_expr)*
-
+and_stmt_expr ::= relational_stmt_expr (AND relational_expr)*
 
 or_expr ::= and_expr (OR and_expr)*
+or_stmt_expr ::= and_stmt_expr (OR and_expr)*
 
-ternary_or_list ::= ternary_expr | initializer_list
-ternary_expr ::= (or_expr ternary_op)* (or_expr (QUESTION BANG?)? | lambda_decl implies_body)
-ternary_op ::= QUESTION expr COLON | ELVIS | OPTELSE
+or_expr_with_suffix ::= or_expr (QUESTION BANG?)?
+or_stmr_expr_with_suffix ::= or_stmt_expr (QUESTION BANG?)?
 
-implies_body ::= IMPLIES expr_or_list
+ternary_expr ::= or_expr QUESTION expr COLON ternary_expr
+    | or_expr_with_suffix (ELVIS | OPTELSE) ternary_expr
+    | or_expr_with_suffix
+    | lambda_decl implies_body
 
-constant_expr ::= ternary_or_list
+ternary_stmt_expr ::= or_stmt_expr QUESTION expr COLON ternary_expr
+    | or_stmr_expr_with_suffix (ELVIS | OPTELSE) ternary_expr
+    | or_stmr_expr_with_suffix
+    | lambda_decl implies_body
+
+implies_body ::= IMPLIES expr
+
+constant_expr ::= ternary_expr
 
 assignment_op ::= EQ
     | MULT_ASSIGN
@@ -374,10 +394,12 @@ assignment_op ::= EQ
     | BIT_XOR_ASSIGN
     | BIT_OR_ASSIGN
 
-assignment_expr ::= CT_TYPE_IDENT EQ type | unary_expr assignment_op (assignment_expr | initializer_list) | ternary_expr
+assignment_expr ::= CT_TYPE_IDENT EQ type | unary_expr assignment_op assignment_expr | ternary_expr
+assignment_stmt_expr ::= CT_TYPE_IDENT EQ type | unary_stmt_expr assignment_op assignment_expr | ternary_stmt_expr
 
 
 expr ::= assignment_expr
+expr_no_list ::= assignment_stmt_expr
 
 identifier_list ::= IDENT (COMMA IDENT)*
 
