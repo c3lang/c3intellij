@@ -1,11 +1,10 @@
 package org.c3lang.intellij.lexer;
 
-import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import org.c3lang.intellij.parser.C3ParserDefinition;
-import org.c3lang.intellij.parser.psi.C3Type;
-import org.c3lang.intellij.parser.psi.C3Types;
+import org.c3lang.intellij.C3ParserDefinition;
+import org.c3lang.intellij.psi.C3Types;
 import com.intellij.psi.TokenType;
+import com.intellij.lexer.FlexLexer;
 
 %%
 
@@ -96,7 +95,6 @@ RAW_ESCAPE          = "``"
 RAW_STR_LIT         = "`" ([^`]|{RAW_ESCAPE})* "`"
 
 LINE_COMMENT    = "//" .*
-LINE_DOC_COMMENT= "///" .*
 
 %state IN_COMMENT, RAW_STRING
 
@@ -106,107 +104,107 @@ LINE_DOC_COMMENT= "///" .*
 <YYINITIAL> {
 
 
-    "any" { return C3Types.ANY_KW; }
-    "anyfault" { return C3Types.ANYFAULT_KW; }
-    "asm" { return C3Types.ASM_KW; }
-    "assert" { return C3Types.ASSERT_KW; }
-    "bitstruct" { return C3Types.BITSTRUCT_KW; }
-    "break" { return C3Types.BREAK_KW; }
-    "case" { return C3Types.CASE_KW; }
-    "catch" { return C3Types.CATCH_KW; }
-    "const" { return C3Types.CONST_KW; }
-    "continue" { return C3Types.CONTINUE_KW; }
-    "define" { return C3Types.DEFINE_KW; }
-    "default" { return C3Types.DEFAULT_KW; }
-    "defer" { return C3Types.DEFER_KW; }
-    "distinct" { return C3Types.DISTINCT_KW; }
-    "do" { return C3Types.DO_KW; }
-    "else" { return C3Types.ELSE_KW; }
-    "enum" { return C3Types.ENUM_KW; }
-    "extern" { return C3Types.EXTERN_KW; }
-    "foreach" { return C3Types.FOREACH_KW; }
-    "foreach_r" { return C3Types.FOREACH_R_KW; }
-    "false" { return C3Types.FALSE_KW; }
-    "fault" { return C3Types.FAULT_KW; }
-    "for" { return C3Types.FOR_KW; }
-    "fn" { return C3Types.FN_KW; }
-    "if" { return C3Types.IF_KW; }
-    "inline" { return C3Types.INLINE_KW; }
-    "import" { return C3Types.IMPORT_KW; }
-    "macro" { return C3Types.MACRO_KW; }
-    "module" { return C3Types.MODULE_KW; }
-    "nextcase" { return C3Types.NEXTCASE_KW; }
-    "null" { return C3Types.NULL_KW; }
-    "return" { return C3Types.RETURN_KW; }
-    "static" { return C3Types.STATIC_KW; }
-    "struct" { return C3Types.STRUCT_KW; }
-    "switch" { return C3Types.SWITCH_KW; }
-    "tlocal" { return C3Types.TLOCAL_KW; }
-    "true" { return C3Types.TRUE_KW; }
-    "try" { return C3Types.TRY_KW; }
-    "typedef" { return C3Types.TYPEDEF_KW; }
-    "typeid" { return C3Types.TYPEID_KW; }
-    "union" { return C3Types.UNION_KW; }
-    "var" { return C3Types.VAR_KW; }
-    "while" { return C3Types.WHILE_KW; }
-    "$alignof" { return C3Types.CT_ALIGNOF_KW; }
-    "$assert" { return C3Types.CT_ASSERT_KW; }
-    "$case" { return C3Types.CT_CASE_KW; }
-    "$checks" { return C3Types.CT_CHECKS_KW; }
-    "$default" { return C3Types.CT_DEFAULT_KW; }
-    "$defined" { return C3Types.CT_DEFINED_KW; }
-    "$echo" { return C3Types.CT_ECHO_KW; }
-    "$else" { return C3Types.CT_ELSE_KW; }
-    "$endfor" { return C3Types.CT_ENDFOR_KW; }
-    "$endforeach" { return C3Types.CT_ENDFOREACH_KW; }
-    "$endif" { return C3Types.CT_ENDIF_KW; }
-    "$endswitch" { return C3Types.CT_ENDSWITCH_KW; }
-    "$eval" { return C3Types.CT_EVAL_KW; }
-    "$evaltype" { return C3Types.CT_EVALTYPE_KW; }
-    "$extnameof" { return C3Types.CT_EXTNAMEOF_KW; }
-    "$for" { return C3Types.CT_FOR_KW; }
-    "$foreach" { return C3Types.CT_FOREACH_KW; }
-    "$if" { return C3Types.CT_IF_KW; }
-    "$include" { return C3Types.CT_INCLUDE_KW; }
-    "$nameof" { return C3Types.CT_NAMEOF_KW; }
-    "$sizeof" { return C3Types.CT_SIZEOF_KW; }
-    "$stringify" { return C3Types.CT_STRINGIFY_KW; }
-    "$switch" { return C3Types.CT_SWITCH_KW; }
-    "$typeof" { return C3Types.CT_TYPEOF_KW; }
-    "$typefrom" { return C3Types.CT_TYPEFROM_KW; }
-    "$qnameof" { return C3Types.CT_QNAMEOF_KW; }
-    "$vacount" { return C3Types.CT_VACOUNT_KW; }
-    "$vaconst" { return C3Types.CT_VACONST_KW; }
-    "$vatype" { return C3Types.CT_VATYPE_KW; }
-    "$vaarg" { return C3Types.CT_VAARG_KW; }
-    "$varef" { return C3Types.CT_VAREF_KW; }
-    "$vaexpr" { return C3Types.CT_VAEXPR_KW; }
-    "$vasplat" { return C3Types.CT_VASPLAT_KW; }
+    "any" { return C3Types.KW_ANY; }
+    "anyfault" { return C3Types.KW_ANYFAULT; }
+    "asm" { return C3Types.KW_ASM; }
+    "assert" { return C3Types.KW_ASSERT; }
+    "bitstruct" { return C3Types.KW_BITSTRUCT; }
+    "break" { return C3Types.KW_BREAK; }
+    "case" { return C3Types.KW_CASE; }
+    "catch" { return C3Types.KW_CATCH; }
+    "const" { return C3Types.KW_CONST; }
+    "continue" { return C3Types.KW_CONTINUE; }
+    "define" { return C3Types.KW_DEFINE; }
+    "default" { return C3Types.KW_DEFAULT; }
+    "defer" { return C3Types.KW_DEFER; }
+    "distinct" { return C3Types.KW_DISTINCT; }
+    "do" { return C3Types.KW_DO; }
+    "else" { return C3Types.KW_ELSE; }
+    "enum" { return C3Types.KW_ENUM; }
+    "extern" { return C3Types.KW_EXTERN; }
+    "foreach" { return C3Types.KW_FOREACH; }
+    "foreach_r" { return C3Types.KW_FOREACH_R; }
+    "false" { return C3Types.KW_FALSE; }
+    "fault" { return C3Types.KW_FAULT; }
+    "for" { return C3Types.KW_FOR; }
+    "fn" { return C3Types.KW_FN; }
+    "if" { return C3Types.KW_IF; }
+    "inline" { return C3Types.KW_INLINE; }
+    "import" { return C3Types.KW_IMPORT; }
+    "macro" { return C3Types.KW_MACRO; }
+    "module" { return C3Types.KW_MODULE; }
+    "nextcase" { return C3Types.KW_NEXTCASE; }
+    "null" { return C3Types.KW_NULL; }
+    "return" { return C3Types.KW_RETURN; }
+    "static" { return C3Types.KW_STATIC; }
+    "struct" { return C3Types.KW_STRUCT; }
+    "switch" { return C3Types.KW_SWITCH; }
+    "tlocal" { return C3Types.KW_TLOCAL; }
+    "true" { return C3Types.KW_TRUE; }
+    "try" { return C3Types.KW_TRY; }
+    "typedef" { return C3Types.KW_TYPEDEF; }
+    "typeid" { return C3Types.KW_TYPEID; }
+    "union" { return C3Types.KW_UNION; }
+    "var" { return C3Types.KW_VAR; }
+    "while" { return C3Types.KW_WHILE; }
+    "$alignof" { return C3Types.KW_CT_ALIGNOF; }
+    "$assert" { return C3Types.KW_CT_ASSERT; }
+    "$case" { return C3Types.KW_CT_CASE; }
+    "$checks" { return C3Types.KW_CT_CHECKS; }
+    "$default" { return C3Types.KW_CT_DEFAULT; }
+    "$defined" { return C3Types.KW_CT_DEFINED; }
+    "$echo" { return C3Types.KW_CT_ECHO; }
+    "$else" { return C3Types.KW_CT_ELSE; }
+    "$endfor" { return C3Types.KW_CT_ENDFOR; }
+    "$endforeach" { return C3Types.KW_CT_ENDFOREACH; }
+    "$endif" { return C3Types.KW_CT_ENDIF; }
+    "$endswitch" { return C3Types.KW_CT_ENDSWITCH; }
+    "$eval" { return C3Types.KW_CT_EVAL; }
+    "$evaltype" { return C3Types.KW_CT_EVALTYPE; }
+    "$extnameof" { return C3Types.KW_CT_EXTNAMEOF; }
+    "$for" { return C3Types.KW_CT_FOR; }
+    "$foreach" { return C3Types.KW_CT_FOREACH; }
+    "$if" { return C3Types.KW_CT_IF; }
+    "$include" { return C3Types.KW_CT_INCLUDE; }
+    "$nameof" { return C3Types.KW_CT_NAMEOF; }
+    "$sizeof" { return C3Types.KW_CT_SIZEOF; }
+    "$stringify" { return C3Types.KW_CT_STRINGIFY; }
+    "$switch" { return C3Types.KW_CT_SWITCH; }
+    "$typeof" { return C3Types.KW_CT_TYPEOF; }
+    "$typefrom" { return C3Types.KW_CT_TYPEFROM; }
+    "$qnameof" { return C3Types.KW_CT_QNAMEOF; }
+    "$vacount" { return C3Types.KW_CT_VACOUNT; }
+    "$vaconst" { return C3Types.KW_CT_VACONST; }
+    "$vatype" { return C3Types.KW_CT_VATYPE; }
+    "$vaarg" { return C3Types.KW_CT_VAARG; }
+    "$varef" { return C3Types.KW_CT_VAREF; }
+    "$vaexpr" { return C3Types.KW_CT_VAEXPR; }
+    "$vasplat" { return C3Types.KW_CT_VASPLAT; }
 
-    "void" { return C3Types.VOID_KW; }
-    "bool" { return C3Types.BOOL_KW; }
-    "char" { return C3Types.CHAR_KW; }
-    "ichar" { return C3Types.ICHAR_KW; }
-    "short" { return C3Types.SHORT_KW; }
-    "ushort" { return C3Types.USHORT_KW; }
-    "int" { return C3Types.INT_KW; }
-    "uint" { return C3Types.UINT_KW; }
-    "int" { return C3Types.INT_KW; }
-    "long" { return C3Types.LONG_KW; }
-    "ulong" { return C3Types.ULONG_KW; }
-    "uint128" { return C3Types.UINT128_KW; }
-    "int128" { return C3Types.INT128_KW; }
+    "void" { return C3Types.KW_VOID; }
+    "bool" { return C3Types.KW_BOOL; }
+    "char" { return C3Types.KW_CHAR; }
+    "ichar" { return C3Types.KW_ICHAR; }
+    "short" { return C3Types.KW_SHORT; }
+    "ushort" { return C3Types.KW_USHORT; }
+    "int" { return C3Types.KW_INT; }
+    "uint" { return C3Types.KW_UINT; }
+    "int" { return C3Types.KW_INT; }
+    "long" { return C3Types.KW_LONG; }
+    "ulong" { return C3Types.KW_ULONG; }
+    "uint128" { return C3Types.KW_UINT128; }
+    "int128" { return C3Types.KW_INT128; }
 
-    "bfloat16" { return C3Types.BFLOAT16_KW; }
-    "double" { return C3Types.DOUBLE_KW; }
-    "float" { return C3Types.FLOAT_KW; }
-    "float16" { return C3Types.FLOAT16_KW; }
-    "float128" { return C3Types.FLOAT128_KW; }
+    "bfloat16" { return C3Types.KW_BFLOAT16; }
+    "double" { return C3Types.KW_DOUBLE; }
+    "float" { return C3Types.KW_FLOAT; }
+    "float16" { return C3Types.KW_FLOAT16; }
+    "float128" { return C3Types.KW_FLOAT128; }
 
-    "uptr" { return C3Types.UPTR_KW; }
-    "iptr" { return C3Types.IPTR_KW; }
-    "usz" { return C3Types.USZ_KW; }
-    "isz" { return C3Types.ISZ_KW; }
+    "uptr" { return C3Types.KW_UPTR; }
+    "iptr" { return C3Types.KW_IPTR; }
+    "usz" { return C3Types.KW_USZ; }
+    "isz" { return C3Types.KW_ISZ; }
 
     "..." { return C3Types.ELLIPSIS; }
     "<<=" { return C3Types.SHL_ASSIGN; }
@@ -297,17 +295,16 @@ LINE_DOC_COMMENT= "///" .*
     {BUILTIN_CONST} { return C3Types.BUILTIN_CONST; }
 
     {WHITESPACE}+ { return TokenType.WHITE_SPACE; }
-    {LINE_DOC_COMMENT} { return C3ParserDefinition.LINE_DOC_COMMENT; }
     {LINE_COMMENT} { return C3ParserDefinition.LINE_COMMENT; }
-    "/*" { yybegin(IN_COMMENT); commentNesting = 1; return C3ParserDefinition.MULTI_COMMENT; }
+    "/*" { yybegin(IN_COMMENT); commentNesting = 1; return C3ParserDefinition.BLOCK_COMMENT; }
 }
 
 <IN_COMMENT> {
-    "*/" { if (--commentNesting == 0) { yybegin(YYINITIAL); return C3ParserDefinition.MULTI_COMMENT; } }
-    "/*" { commentNesting++; return C3ParserDefinition.MULTI_COMMENT; }
-     [^*/\n]+ { return C3ParserDefinition.MULTI_COMMENT; }
-     "*"|[/] { return C3ParserDefinition.MULTI_COMMENT; }
-     [\n] { return C3ParserDefinition.MULTI_COMMENT; }
+    "*/" { if (--commentNesting == 0) { yybegin(YYINITIAL); return C3ParserDefinition.BLOCK_COMMENT; } }
+    "/*" { commentNesting++; return C3ParserDefinition.BLOCK_COMMENT; }
+     [^*/\n]+ { return C3ParserDefinition.BLOCK_COMMENT; }
+     "*"|[/] { return C3ParserDefinition.BLOCK_COMMENT; }
+     [\n] { return C3ParserDefinition.BLOCK_COMMENT; }
 }
 
 [^]  { return TokenType.BAD_CHARACTER; }

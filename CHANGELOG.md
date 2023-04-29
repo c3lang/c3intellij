@@ -3,5 +3,14 @@
 # intellij-plugin Changelog
 
 ## [Unreleased]
-### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+### 0.0.1
+- First alpha
+
+### 0.0.2
+- Grammar fixes
+- icon updates
+
+### 0.0.3
+- Some semantic highlighting
+- Color settings
+- Commenter

@@ -23,15 +23,21 @@ repositories {
     mavenCentral()
 }
 
+idea {
+    module {
+        generatedSourceDirs.add(file("src/main/gen"))
+    }
+}
 sourceSets {
     main {
-        java.srcDirs("src/main/java/")
-        java.srcDirs("src/main/gen/")
+        java {
+            srcDirs("src/main/gen", "src/main/java")
+        }
     }
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_11
+  sourceCompatibility = JavaVersion.VERSION_17
 }
 
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
@@ -70,25 +76,29 @@ kover.xmlReport {
     onCheck = true
 }
 
-// generate code
-val generateC3Parser = task<GenerateParserTask>("generateC3Parser") {
-    source.set("src/main/java/org/c3lang/intellij/C3.bnf")
-    targetRoot.set("src/main/gen/java")
-    pathToParser.set("/org/c3lang/intellij/parser/C3Parser.java")
-    pathToPsiRoot.set("org/c3lang/intellij/parser/psi")
-    purgeOldFiles.set(true)
-}
 
-val generateC3Lexer = task<GenerateLexerTask>("generateC3Lexer") {
-    source.set("src/main/java/org/c3lang/intellij/C3.flex")
-    targetDir.set("src/main/gen/java/org/c3lang/intellij/lexer")
-    targetClass.set("C3Lexer")
-    purgeOldFiles.set(true)
-}
 
 tasks {
     wrapper {
         gradleVersion = properties("gradleVersion").get()
+    }
+
+    /* GrammarKit is broken, so we can't do this.
+    // generate code
+    val generateC3Parser = task<GenerateParserTask>("generateC3Parser") {
+        sourceFile.set(file("src/main/java/org/c3lang/intellij/C3.bnf"))
+        targetRoot.set("src/main/gen")
+        pathToParser.set("/org/c3lang/intellij/parser/C3Parser.java")
+        pathToPsiRoot.set("/org/c3lang/intellij/psi")
+        purgeOldFiles.set(true)
+    }*/
+
+
+    val generateC3Lexer = task<GenerateLexerTask>("generateC3Lexer") {
+        sourceFile.set(file("src/main/java/org/c3lang/intellij/C3.flex"))
+        targetDir.set("src/main/gen/org/c3lang/intellij/lexer")
+        targetClass.set("C3Lexer")
+        purgeOldFiles.set(true)
     }
 
     patchPluginXml {
@@ -149,6 +159,7 @@ tasks {
     }
 
     compileJava {
-        dependsOn(generateC3Parser, generateC3Lexer)
+        dependsOn(generateC3Lexer)
     }
+
 }

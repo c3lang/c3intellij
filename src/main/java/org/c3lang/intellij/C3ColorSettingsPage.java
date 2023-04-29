@@ -1,5 +1,6 @@
 package org.c3lang.intellij;
 
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
@@ -13,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.Map;
 
+import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
+
 /**
  * Undocumented Class
  *
@@ -20,10 +23,36 @@ import java.util.Map;
  */
 public class C3ColorSettingsPage implements ColorSettingsPage
 {
-    private static AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[] {
+    private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[] {
         new AttributesDescriptor("Syntax error", C3SyntaxHighlighter.BAD_CHARACTER),
-        new AttributesDescriptor("Braces", C3SyntaxHighlighter.BRACES),
+        new AttributesDescriptor("Identifiers", C3SyntaxHighlighter.IDENTIFIER_KEY),
+        new AttributesDescriptor("Numbers", C3SyntaxHighlighter.NUMBER_KEY),
+        new AttributesDescriptor("Strings", C3SyntaxHighlighter.STRING_KEY),
+        new AttributesDescriptor("Types", C3SyntaxHighlighter.TYPE_KEY),
+        new AttributesDescriptor("Constants", C3SyntaxHighlighter.CONSTANT_KEY),
+        new AttributesDescriptor("Attributes", C3SyntaxHighlighter.ATTRIBUTE_KEY),
+        new AttributesDescriptor("Function & macro declarations//Function", C3SyntaxHighlighter.FUNCTION_KEY),
+        new AttributesDescriptor("Function & macro declarations//Macro", C3SyntaxHighlighter.MACRO_KEY),
+        new AttributesDescriptor("Function & macro declarations//@Macro", C3SyntaxHighlighter.AT_MACRO_KEY),
+        new AttributesDescriptor("Function & macro declarations//Method", C3SyntaxHighlighter.METHOD_KEY),
+        new AttributesDescriptor("Function & macro declarations//Macro method", C3SyntaxHighlighter.MACRO_METHOD_KEY),
+        new AttributesDescriptor("Function & macro declarations//@Macro method", C3SyntaxHighlighter.AT_MACRO_METHOD_KEY),
+        new AttributesDescriptor("Keywords", C3SyntaxHighlighter.KEYWORD_KEY),
+        new AttributesDescriptor("Keywords (compile time)", C3SyntaxHighlighter.CT_KEYWORD_KEY),
+        new AttributesDescriptor("Braces and Operators//Braces", C3SyntaxHighlighter.BRACES_KEY),
+        new AttributesDescriptor("Braces and Operators//Brackets", C3SyntaxHighlighter.BRACKETS_KEY),
+        new AttributesDescriptor("Braces and Operators//Comma", C3SyntaxHighlighter.COMMA_KEY),
+        new AttributesDescriptor("Braces and Operators//Dot", C3SyntaxHighlighter.DOT_KEY),
+        new AttributesDescriptor("Braces and Operators//Parentheses", C3SyntaxHighlighter.PARENTHESES_KEY),
+        new AttributesDescriptor("Type definition", C3SyntaxHighlighter.TYPE_DEFINITION_KEY),
+        new AttributesDescriptor("Type definition//Enum", C3SyntaxHighlighter.ENUM_NAME_KEY),
+        new AttributesDescriptor("Type definition//Struct", C3SyntaxHighlighter.STRUCT_NAME_KEY),
+        new AttributesDescriptor("Type definition//Union", C3SyntaxHighlighter.UNION_NAME_KEY),
+        new AttributesDescriptor("Type definition//Fault", C3SyntaxHighlighter.FAULT_NAME_KEY),
+        new AttributesDescriptor("Type definition//Bitstruct", C3SyntaxHighlighter.BITSTRUCT_NAME_KEY),
+        new AttributesDescriptor("Type definition//Typedef", C3SyntaxHighlighter.TYPEDEF_NAME_KEY),
     };
+
 
     @Override
     public @Nullable Icon getIcon() {
@@ -48,10 +77,6 @@ public class C3ColorSettingsPage implements ColorSettingsPage
                 "    Type* elems;\n" +
                 "}\n" +
                 "\n" +
-                "// The type methods offers dot syntax calls,\n" +
-                "// so this function can either be called \n" +
-                "// Stack.push(&my_stack, ...) or\n" +
-                "// my_stack.push(...)\n" +
                 "fn void Stack.push(Stack* this, Type element)\n" +
                 "{\n" +
                 "    if (this.capacity == this.size)\n" +
@@ -69,7 +94,7 @@ public class C3ColorSettingsPage implements ColorSettingsPage
                 "    return this.elems[--this.size];\n" +
                 "}\n" +
                 "\n" +
-                "fn bool Stack.empty(Stack* this)\n" +
+                "macro bool Stack.empty(Stack* this)\n" +
                 "{\n" +
                 "    return !this.size;\n" +
                 "}";
