@@ -116,8 +116,8 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
         addMapping(PARENTHESES_KEY, C3TokenSets.PARENTHESES);
         addMapping(IDENTIFIER_KEY, C3TokenSets.IDENTIFIER);
         addMapping(COMMA_KEY, C3Types.COMMA);
-        addMapping(LABEL_KEY, C3Types.LABEL);
         addMapping(EOS_KEY, C3Types.EOS);
+        addMapping(TYPE_KEY, C3TokenSets.TYPES);
         addMapping(LINE_COMMENT_KEY, C3ParserDefinition.LINE_COMMENT);
         addMapping(BLOCK_COMMENT_KEY, C3ParserDefinition.BLOCK_COMMENT);
         addMapping(DOC_COMMENT_KEY, C3ParserDefinition.DOC_COMMENT);

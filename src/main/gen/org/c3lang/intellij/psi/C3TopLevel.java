@@ -23,6 +23,9 @@ public interface C3TopLevel extends PsiElement {
   C3CtIncludeStmt getCtIncludeStmt();
 
   @Nullable
+  C3DefDeclaration getDefDeclaration();
+
+  @Nullable
   C3DefineDeclaration getDefineDeclaration();
 
   @Nullable

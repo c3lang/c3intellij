@@ -11,6 +11,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAnyIdent(@NotNull C3AnyIdent o) {
+    visitPsiElement(o);
+  }
+
   public void visitArg(@NotNull C3Arg o) {
     visitPsiElement(o);
   }
@@ -267,6 +271,18 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitDefAttrValues(@NotNull C3DefAttrValues o) {
+    visitPsiElement(o);
+  }
+
+  public void visitDefDeclaration(@NotNull C3DefDeclaration o) {
+    visitPsiElement(o);
+  }
+
+  public void visitDefDeclarationSource(@NotNull C3DefDeclarationSource o) {
+    visitPsiElement(o);
+  }
+
   public void visitDefaultModuleSection(@NotNull C3DefaultModuleSection o) {
     visitPsiElement(o);
   }
@@ -424,6 +440,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitIdentAlias(@NotNull C3IdentAlias o) {
+    visitPsiElement(o);
+  }
+
+  public void visitIdentAliasName(@NotNull C3IdentAliasName o) {
     visitPsiElement(o);
   }
 

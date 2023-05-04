@@ -9,6 +9,7 @@ import org.c3lang.intellij.psi.impl.*;
 public interface C3Types {
 
   IElementType ACCESS_IDENT = new C3ElementType("ACCESS_IDENT");
+  IElementType ANY_IDENT = new C3ElementType("ANY_IDENT");
   IElementType ARG = new C3ElementType("ARG");
   IElementType ARG_LIST = new C3ElementType("ARG_LIST");
   IElementType ASM_ADDR = new C3ElementType("ASM_ADDR");
@@ -79,6 +80,9 @@ public interface C3Types {
   IElementType DEFINE_ATTRIBUTE = new C3ElementType("DEFINE_ATTRIBUTE");
   IElementType DEFINE_DECLARATION = new C3ElementType("DEFINE_DECLARATION");
   IElementType DEFINE_IDENT = new C3ElementType("DEFINE_IDENT");
+  IElementType DEF_ATTR_VALUES = new C3ElementType("DEF_ATTR_VALUES");
+  IElementType DEF_DECLARATION = new C3ElementType("DEF_DECLARATION");
+  IElementType DEF_DECLARATION_SOURCE = new C3ElementType("DEF_DECLARATION_SOURCE");
   IElementType DISTINCT_INLINE = new C3ElementType("DISTINCT_INLINE");
   IElementType DO_STMT = new C3ElementType("DO_STMT");
   IElementType ELSE_PART = new C3ElementType("ELSE_PART");
@@ -114,6 +118,7 @@ public interface C3Types {
   IElementType GROUPED_EXPRESSION = new C3ElementType("GROUPED_EXPRESSION");
   IElementType IDENTIFIER_LIST = new C3ElementType("IDENTIFIER_LIST");
   IElementType IDENT_ALIAS = new C3ElementType("IDENT_ALIAS");
+  IElementType IDENT_ALIAS_NAME = new C3ElementType("IDENT_ALIAS_NAME");
   IElementType IF_STMT = new C3ElementType("IF_STMT");
   IElementType IMPLIES_BODY = new C3ElementType("IMPLIES_BODY");
   IElementType IMPORT_DECL = new C3ElementType("IMPORT_DECL");
@@ -273,6 +278,7 @@ public interface C3Types {
   IElementType KW_CT_VAREF = new C3TokenType("KW_CT_VAREF");
   IElementType KW_CT_VASPLAT = new C3TokenType("KW_CT_VASPLAT");
   IElementType KW_CT_VATYPE = new C3TokenType("KW_CT_VATYPE");
+  IElementType KW_DEF = new C3TokenType("KW_DEF");
   IElementType KW_DEFAULT = new C3TokenType("KW_DEFAULT");
   IElementType KW_DEFER = new C3TokenType("KW_DEFER");
   IElementType KW_DEFINE = new C3TokenType("KW_DEFINE");
@@ -363,6 +369,9 @@ public interface C3Types {
       IElementType type = node.getElementType();
       if (type == ACCESS_IDENT) {
         return new C3AccessIdentImpl(node);
+      }
+      else if (type == ANY_IDENT) {
+        return new C3AnyIdentImpl(node);
       }
       else if (type == ARG) {
         return new C3ArgImpl(node);
@@ -571,6 +580,15 @@ public interface C3Types {
       else if (type == DEFINE_IDENT) {
         return new C3DefineIdentImpl(node);
       }
+      else if (type == DEF_ATTR_VALUES) {
+        return new C3DefAttrValuesImpl(node);
+      }
+      else if (type == DEF_DECLARATION) {
+        return new C3DefDeclarationImpl(node);
+      }
+      else if (type == DEF_DECLARATION_SOURCE) {
+        return new C3DefDeclarationSourceImpl(node);
+      }
       else if (type == DISTINCT_INLINE) {
         return new C3DistinctInlineImpl(node);
       }
@@ -672,6 +690,9 @@ public interface C3Types {
       }
       else if (type == IDENT_ALIAS) {
         return new C3IdentAliasImpl(node);
+      }
+      else if (type == IDENT_ALIAS_NAME) {
+        return new C3IdentAliasNameImpl(node);
       }
       else if (type == IF_STMT) {
         return new C3IfStmtImpl(node);

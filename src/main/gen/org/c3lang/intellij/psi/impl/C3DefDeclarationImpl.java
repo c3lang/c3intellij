@@ -11,20 +11,26 @@ import static org.c3lang.intellij.psi.C3Types.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3FaultDeclarationImpl extends ASTWrapperPsiElement implements C3FaultDeclaration {
+public class C3DefDeclarationImpl extends ASTWrapperPsiElement implements C3DefDeclaration {
 
-  public C3FaultDeclarationImpl(@NotNull ASTNode node) {
+  public C3DefDeclarationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitFaultDeclaration(this);
+    visitor.visitDefDeclaration(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public C3AnyIdent getAnyIdent() {
+    return findNotNullChildByClass(C3AnyIdent.class);
   }
 
   @Override
@@ -35,8 +41,20 @@ public class C3FaultDeclarationImpl extends ASTWrapperPsiElement implements C3Fa
 
   @Override
   @NotNull
-  public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+  public C3DefDeclarationSource getDefDeclarationSource() {
+    return findNotNullChildByClass(C3DefDeclarationSource.class);
+  }
+
+  @Override
+  @Nullable
+  public C3DistinctInline getDistinctInline() {
+    return findChildByClass(C3DistinctInline.class);
+  }
+
+  @Override
+  @Nullable
+  public C3ParameterList getParameterList() {
+    return findChildByClass(C3ParameterList.class);
   }
 
 }

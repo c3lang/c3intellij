@@ -11,32 +11,20 @@ import static org.c3lang.intellij.psi.C3Types.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3IdentAliasImpl extends ASTWrapperPsiElement implements C3IdentAlias {
+public class C3AnyIdentImpl extends ASTWrapperPsiElement implements C3AnyIdent {
 
-  public C3IdentAliasImpl(@NotNull ASTNode node) {
+  public C3AnyIdentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitIdentAlias(this);
+    visitor.visitAnyIdent(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public C3IdentAliasName getIdentAliasName() {
-    return findNotNullChildByClass(C3IdentAliasName.class);
-  }
-
-  @Override
-  @NotNull
-  public C3PathIdent getPathIdent() {
-    return findNotNullChildByClass(C3PathIdent.class);
   }
 
 }

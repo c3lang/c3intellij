@@ -114,6 +114,7 @@ LINE_COMMENT    = "//" .*
     "catch" { return C3Types.KW_CATCH; }
     "const" { return C3Types.KW_CONST; }
     "continue" { return C3Types.KW_CONTINUE; }
+    "def" { return C3Types.KW_DEF; }
     "define" { return C3Types.KW_DEFINE; }
     "default" { return C3Types.KW_DEFAULT; }
     "defer" { return C3Types.KW_DEFER; }
