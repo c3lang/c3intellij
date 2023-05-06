@@ -160,6 +160,7 @@ LINE_COMMENT    = "//" .*
     "$endforeach" { return C3Types.KW_CT_ENDFOREACH; }
     "$endif" { return C3Types.KW_CT_ENDIF; }
     "$endswitch" { return C3Types.KW_CT_ENDSWITCH; }
+    "$error" { return C3Types.KW_CT_ERROR; }
     "$eval" { return C3Types.KW_CT_EVAL; }
     "$evaltype" { return C3Types.KW_CT_EVALTYPE; }
     "$extnameof" { return C3Types.KW_CT_EXTNAMEOF; }

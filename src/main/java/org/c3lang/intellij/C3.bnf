@@ -49,7 +49,7 @@ module_params ::= module_param (COMMA module_param)*
 import_decl ::= KW_IMPORT import_paths attributes? EOS
 import_paths ::= path_ident (COMMA path_ident)*
 
-ct_include_stmt ::= KW_CT_INCLUDE LP string_expr RP EOS
+ct_include_stmt ::= KW_CT_INCLUDE string_expr EOS
 
 
 top_level ::= import_decl
@@ -73,7 +73,7 @@ top_level ::= import_decl
 
 static_declaration ::= KW_STATIC IDENT attributes? compound_statement
 
-tl_ct_if ::= KW_CT_IF const_paren_expr top_level* (KW_CT_ELSE top_level*)? KW_CT_ENDIF
+tl_ct_if ::= KW_CT_IF constant_expr COLON top_level* (KW_CT_ELSE top_level*)? KW_CT_ENDIF
 
 tl_ct_switch ::= ct_switch tl_ct_case* KW_CT_ENDSWITCH
 
@@ -187,10 +187,11 @@ parameter ::= type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDE
 
 const_declaration ::= KW_CONST type? CONST_IDENT attributes? EQ expr EOS
 
-ct_assert_stmt ::= KW_CT_ASSERT LP constant_expr (COMMA constant_expr)? RP EOS
-ct_echo_stmt ::= KW_CT_ECHO const_paren_expr EOS
+ct_assert_stmt ::= KW_CT_ERROR constant_expr EOS | KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
+ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS
 assert_stmt ::= KW_ASSERT LP (try_unwrap_chain | expr) (COMMA expr)? RP EOS
-ct_if_stmt ::= KW_CT_IF const_paren_expr statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
+ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
+
 ct_switch_stmt ::= ct_switch ct_switch_body KW_CT_ENDSWITCH
 initializer_list ::= LB (arg_list COMMA?)? RB
 

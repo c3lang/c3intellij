@@ -95,6 +95,7 @@ public interface C3TokenSets
                                            C3Types.KW_CT_ENDFOREACH,
                                            C3Types.KW_CT_ENDIF,
                                            C3Types.KW_CT_ENDSWITCH,
+                                           C3Types.KW_CT_ERROR,
                                            C3Types.KW_CT_EVAL,
                                            C3Types.KW_CT_EXTNAMEOF,
                                            C3Types.KW_CT_FOR,

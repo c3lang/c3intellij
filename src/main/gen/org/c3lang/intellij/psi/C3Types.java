@@ -256,6 +256,7 @@ public interface C3Types {
   IElementType KW_CT_ENDFOREACH = new C3TokenType("KW_CT_ENDFOREACH");
   IElementType KW_CT_ENDIF = new C3TokenType("KW_CT_ENDIF");
   IElementType KW_CT_ENDSWITCH = new C3TokenType("KW_CT_ENDSWITCH");
+  IElementType KW_CT_ERROR = new C3TokenType("KW_CT_ERROR");
   IElementType KW_CT_EVAL = new C3TokenType("KW_CT_EVAL");
   IElementType KW_CT_EVALTYPE = new C3TokenType("KW_CT_EVALTYPE");
   IElementType KW_CT_EXTNAMEOF = new C3TokenType("KW_CT_EXTNAMEOF");

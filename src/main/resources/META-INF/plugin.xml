@@ -24,7 +24,8 @@
     <lang.parserDefinition language="C3" implementationClass="org.c3lang.intellij.C3ParserDefinition"/>
     <lang.syntaxHighlighterFactory language="C3"
                                    implementationClass="org.c3lang.intellij.C3SyntaxHighlighterFactory"/>
-
+    <sdkType implementation="org.c3lang.intellij.C3SdkType"/>
+    <lang.braceMatcher language="C3" implementationClass="org.c3lang.intellij.C3BraceMatcher"/>
     <completion.contributor language="C3"
                             implementationClass="org.c3lang.intellij.C3CompletionContributor"/>
     <colorSettingsPage implementation="org.c3lang.intellij.C3ColorSettingsPage"/>
@@ -34,7 +35,7 @@
                              implementationClass="org.c3lang.intellij.C3FindUsagesProvider"/> -->
     <lang.commenter language="C3" implementationClass="org.c3lang.intellij.C3Commenter"/>
     <annotator language="C3" implementationClass="org.c3lang.intellij.C3Annotator"/>
-
+    <breadcrumbsInfoProvider implementation="org.c3lang.intellij.C3BreadcrumbsProvider"/>
       <!--
       <fileType name="C3 Interface" implementationClass="org.c3lang.C3Interface" fieldName="INSTANCE"
                 language="C3" extensions="c3i"/>

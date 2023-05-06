@@ -1533,33 +1533,56 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_CT_ASSERT LP constant_expr (COMMA constant_expr)? RP EOS
+  // KW_CT_ERROR constant_expr EOS | KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
   public static boolean ct_assert_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ct_assert_stmt")) return false;
-    if (!nextTokenIs(b, KW_CT_ASSERT)) return false;
+    if (!nextTokenIs(b, "<ct assert stmt>", KW_CT_ASSERT, KW_CT_ERROR)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, KW_CT_ASSERT, LP);
-    r = r && constant_expr(b, l + 1);
-    r = r && ct_assert_stmt_3(b, l + 1);
-    r = r && consumeTokens(b, 0, RP, EOS);
-    exit_section_(b, m, CT_ASSERT_STMT, r);
+    Marker m = enter_section_(b, l, _NONE_, CT_ASSERT_STMT, "<ct assert stmt>");
+    r = ct_assert_stmt_0(b, l + 1);
+    if (!r) r = ct_assert_stmt_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // (COMMA constant_expr)?
-  private static boolean ct_assert_stmt_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ct_assert_stmt_3")) return false;
-    ct_assert_stmt_3_0(b, l + 1);
+  // KW_CT_ERROR constant_expr EOS
+  private static boolean ct_assert_stmt_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_assert_stmt_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, KW_CT_ERROR);
+    r = r && constant_expr(b, l + 1);
+    r = r && consumeToken(b, EOS);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
+  private static boolean ct_assert_stmt_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_assert_stmt_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, KW_CT_ASSERT);
+    r = r && constant_expr(b, l + 1);
+    r = r && ct_assert_stmt_1_2(b, l + 1);
+    r = r && consumeToken(b, EOS);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (COLON constant_expr)?
+  private static boolean ct_assert_stmt_1_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_assert_stmt_1_2")) return false;
+    ct_assert_stmt_1_2_0(b, l + 1);
     return true;
   }
 
-  // COMMA constant_expr
-  private static boolean ct_assert_stmt_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ct_assert_stmt_3_0")) return false;
+  // COLON constant_expr
+  private static boolean ct_assert_stmt_1_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_assert_stmt_1_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
+    r = consumeToken(b, COLON);
     r = r && constant_expr(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1634,14 +1657,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_CT_ECHO const_paren_expr EOS
+  // KW_CT_ECHO constant_expr EOS
   public static boolean ct_echo_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ct_echo_stmt")) return false;
     if (!nextTokenIs(b, KW_CT_ECHO)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, KW_CT_ECHO);
-    r = r && const_paren_expr(b, l + 1);
+    r = r && constant_expr(b, l + 1);
     r = r && consumeToken(b, EOS);
     exit_section_(b, m, CT_ECHO_STMT, r);
     return r;
@@ -1713,63 +1736,64 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_CT_IF const_paren_expr statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
+  // KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
   public static boolean ct_if_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ct_if_stmt")) return false;
     if (!nextTokenIs(b, KW_CT_IF)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, KW_CT_IF);
-    r = r && const_paren_expr(b, l + 1);
-    r = r && ct_if_stmt_2(b, l + 1);
+    r = r && constant_expr(b, l + 1);
+    r = r && consumeToken(b, COLON);
     r = r && ct_if_stmt_3(b, l + 1);
+    r = r && ct_if_stmt_4(b, l + 1);
     r = r && consumeToken(b, KW_CT_ENDIF);
     exit_section_(b, m, CT_IF_STMT, r);
     return r;
   }
 
   // statement_list?
-  private static boolean ct_if_stmt_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ct_if_stmt_2")) return false;
+  private static boolean ct_if_stmt_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_if_stmt_3")) return false;
     statement_list(b, l + 1);
     return true;
   }
 
   // (KW_CT_ELSE statement_list?)?
-  private static boolean ct_if_stmt_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ct_if_stmt_3")) return false;
-    ct_if_stmt_3_0(b, l + 1);
+  private static boolean ct_if_stmt_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_if_stmt_4")) return false;
+    ct_if_stmt_4_0(b, l + 1);
     return true;
   }
 
   // KW_CT_ELSE statement_list?
-  private static boolean ct_if_stmt_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ct_if_stmt_3_0")) return false;
+  private static boolean ct_if_stmt_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_if_stmt_4_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, KW_CT_ELSE);
-    r = r && ct_if_stmt_3_0_1(b, l + 1);
+    r = r && ct_if_stmt_4_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // statement_list?
-  private static boolean ct_if_stmt_3_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ct_if_stmt_3_0_1")) return false;
+  private static boolean ct_if_stmt_4_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ct_if_stmt_4_0_1")) return false;
     statement_list(b, l + 1);
     return true;
   }
 
   /* ********************************************************** */
-  // KW_CT_INCLUDE LP string_expr RP EOS
+  // KW_CT_INCLUDE string_expr EOS
   public static boolean ct_include_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ct_include_stmt")) return false;
     if (!nextTokenIs(b, KW_CT_INCLUDE)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, KW_CT_INCLUDE, LP);
+    r = consumeToken(b, KW_CT_INCLUDE);
     r = r && string_expr(b, l + 1);
-    r = r && consumeTokens(b, 0, RP, EOS);
+    r = r && consumeToken(b, EOS);
     exit_section_(b, m, CT_INCLUDE_STMT, r);
     return r;
   }
@@ -4823,57 +4847,58 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_CT_IF const_paren_expr top_level* (KW_CT_ELSE top_level*)? KW_CT_ENDIF
+  // KW_CT_IF constant_expr COLON top_level* (KW_CT_ELSE top_level*)? KW_CT_ENDIF
   public static boolean tl_ct_if(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tl_ct_if")) return false;
     if (!nextTokenIs(b, KW_CT_IF)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, KW_CT_IF);
-    r = r && const_paren_expr(b, l + 1);
-    r = r && tl_ct_if_2(b, l + 1);
+    r = r && constant_expr(b, l + 1);
+    r = r && consumeToken(b, COLON);
     r = r && tl_ct_if_3(b, l + 1);
+    r = r && tl_ct_if_4(b, l + 1);
     r = r && consumeToken(b, KW_CT_ENDIF);
     exit_section_(b, m, TL_CT_IF, r);
     return r;
   }
 
   // top_level*
-  private static boolean tl_ct_if_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "tl_ct_if_2")) return false;
+  private static boolean tl_ct_if_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "tl_ct_if_3")) return false;
     while (true) {
       int c = current_position_(b);
       if (!top_level(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "tl_ct_if_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "tl_ct_if_3", c)) break;
     }
     return true;
   }
 
   // (KW_CT_ELSE top_level*)?
-  private static boolean tl_ct_if_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "tl_ct_if_3")) return false;
-    tl_ct_if_3_0(b, l + 1);
+  private static boolean tl_ct_if_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "tl_ct_if_4")) return false;
+    tl_ct_if_4_0(b, l + 1);
     return true;
   }
 
   // KW_CT_ELSE top_level*
-  private static boolean tl_ct_if_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "tl_ct_if_3_0")) return false;
+  private static boolean tl_ct_if_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "tl_ct_if_4_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, KW_CT_ELSE);
-    r = r && tl_ct_if_3_0_1(b, l + 1);
+    r = r && tl_ct_if_4_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // top_level*
-  private static boolean tl_ct_if_3_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "tl_ct_if_3_0_1")) return false;
+  private static boolean tl_ct_if_4_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "tl_ct_if_4_0_1")) return false;
     while (true) {
       int c = current_position_(b);
       if (!top_level(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "tl_ct_if_3_0_1", c)) break;
+      if (!empty_element_parsed_guard_(b, "tl_ct_if_4_0_1", c)) break;
     }
     return true;
   }
