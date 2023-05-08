@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+- Smart brace pair.
+- Allow IDE .c3 file association.
+
 ## [0.0.5] - 2023-05-06
 
 ### Added

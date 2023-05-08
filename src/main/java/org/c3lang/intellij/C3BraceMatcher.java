@@ -8,14 +8,6 @@ import org.c3lang.intellij.psi.C3Types;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-/**
- * Undocumented Class
- *
- * @author Christoffer Lerno
- */
 public class C3BraceMatcher implements PairedBraceMatcher
 {
     @Override public BracePair @NotNull [] getPairs()
@@ -30,7 +22,7 @@ public class C3BraceMatcher implements PairedBraceMatcher
 
     @Override public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType iElementType,@Nullable IElementType iElementType1)
     {
-        return false;
+        return true;
     }
 
     @Override public int getCodeConstructStart(PsiFile psiFile, int offset)

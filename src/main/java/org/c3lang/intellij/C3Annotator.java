@@ -26,7 +26,7 @@ public class C3Annotator implements Annotator
         {
             return C3SyntaxHighlighter.ENUM_NAME_KEY;
         }
-        else if (definition instanceof C3TypedefDeclaration || definition instanceof C3DefDeclaration)
+        else if (definition instanceof C3TypedefDeclaration || definition instanceof C3DefDecl)
         {
             return C3SyntaxHighlighter.TYPEDEF_NAME_KEY;
         }
@@ -37,7 +37,7 @@ public class C3Annotator implements Annotator
         return C3SyntaxHighlighter.TYPE_DEFINITION_KEY;
     }
 
-    private void annotate(@NotNull C3DefDeclaration element, @NotNull AnnotationHolder annotationHolder)
+    private void annotate(@NotNull C3DefDecl element, @NotNull AnnotationHolder annotationHolder)
     {
         C3AnyIdent ident = element.getAnyIdent();
         ASTNode ident_node = ident.getNode();
@@ -130,7 +130,7 @@ public class C3Annotator implements Annotator
 
     @Override public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder)
     {
-        if (psiElement instanceof C3DefDeclaration element)
+        if (psiElement instanceof C3DefDecl element)
         {
             annotate(element, annotationHolder);
         }

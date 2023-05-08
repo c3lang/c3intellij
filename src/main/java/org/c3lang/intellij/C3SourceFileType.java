@@ -1,6 +1,7 @@
 package org.c3lang.intellij;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import com.intellij.openapi.fileTypes.OSFileIdeAssociation;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -10,7 +11,7 @@ import javax.swing.*;
  *
  * @author Christoffer Lerno
  */
-public class C3SourceFileType extends LanguageFileType
+public class C3SourceFileType extends LanguageFileType implements OSFileIdeAssociation
 {
     public static final C3SourceFileType INSTANCE = new C3SourceFileType();
 
@@ -45,5 +46,15 @@ public class C3SourceFileType extends LanguageFileType
     public Icon getIcon()
     {
         return C3Icons.FILE;
+    }
+
+    @Override public @NotNull ExtensionMode getExtensionMode()
+    {
+        return ExtensionMode.All;
+    }
+
+    @Override public boolean isFileAssociationAllowed()
+    {
+        return true;
     }
 }

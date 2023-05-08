@@ -20,13 +20,13 @@ public class C3BreadcrumbsProvider implements BreadcrumbsProvider
                 | psiElement instanceof C3BitstructDeclaration
                 | psiElement instanceof C3EnumDeclaration
                 | psiElement instanceof C3FaultDeclaration
-                | psiElement instanceof C3MacroDeclaration
+                | psiElement instanceof C3MacroDefinition
                 | psiElement instanceof C3FuncDefinition
-                | psiElement instanceof C3StaticDeclaration
+                | psiElement instanceof C3StaticDecl
                 | psiElement instanceof C3StructMemberDeclaration
                 | psiElement instanceof C3BitstructDef
                 | psiElement instanceof C3BitstructSimpleDef
-                | psiElement instanceof C3DefDeclaration;
+                | psiElement instanceof C3DefDecl;
     }
 
     @Override public @NotNull String getElementInfo(@NotNull PsiElement psiElement)
@@ -43,7 +43,7 @@ public class C3BreadcrumbsProvider implements BreadcrumbsProvider
         {
             return decl.getTypeName().getText();
         }
-        else if (psiElement instanceof C3MacroDeclaration decl)
+        else if (psiElement instanceof C3MacroDefinition decl)
         {
             return decl.getMacroHeader().getMacroName().getText();
         }
@@ -67,11 +67,11 @@ public class C3BreadcrumbsProvider implements BreadcrumbsProvider
             if (element == null) return "anonymous";
             return element.getText();
         }
-        else if (psiElement instanceof C3DefDeclaration decl)
+        else if (psiElement instanceof C3DefDecl decl)
         {
             return decl.getAnyIdent().getText();
         }
-        else if (psiElement instanceof C3StaticDeclaration decl)
+        else if (psiElement instanceof C3StaticDecl decl)
         {
             return "static " + decl.getText();
         }
