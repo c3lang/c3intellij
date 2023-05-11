@@ -33,8 +33,6 @@ TYPE        = [_]*{UC}{UA}*{DC}{AN}*
 IDENTIFIER  = [_]*{DC}{AN}*
 E			= [Ee][+-]?{D}+
 P           = [Pp][+-]?{D}+
-B64         = [ \t\v\n\f]?[A-Za-z0-9+/][ \t\v\n\fA-Za-z0-9+/=]+
-HEX         = [ \t\v\n\f]?{H}[ \t\v\n\fA-Fa-f0-9]+
 SIZES       = 8|16|32|64|128
 INTTYPE     = [uU] ([lL] | {SIZES}?) | [iI] {SIZES}
 REALTYPE    = [fF]{SIZES}?
@@ -73,13 +71,6 @@ DECIMAL_LIT         = {INT}
 REAL                = ({DEC_FLOAT_LIT} | {HEX_FLOAT_LIT}) {REALTYPE}?
 DEC_FLOAT_LIT       = {INT}{E} | {INT} "." {INT} {E}?
 HEX_FLOAT_LIT       = "0"[xX]{HINT}("."{HINT})?{P}
-
-CHAR_ESCAPE         = [abefnrtv\'\"\\0] | "x" {H}{2} | "u" {H}{4} | "U" {H}{8}
-
-CHARACTER_LIT       = \' ( [^\\\'\r\n] | \\[^\r\r] | "\\x" {H}+ | "\\u" {H}+
-                        | "\\U" {H}+ | \\ [abefnrtv\'\"0] )+ \'
-
-STRING_LIT          = \" ([^\\\"\r\n] | \\[^\r\n])* \"
 
 LINE_COMMENT    = "//" .*
 
