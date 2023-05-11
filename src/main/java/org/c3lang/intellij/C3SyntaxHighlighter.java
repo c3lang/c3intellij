@@ -32,7 +32,10 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
 
     static Map<IElementType, TextAttributesKey[]> s_mapping = new HashMap<>();
 
+    public final static TextAttributesKey ESCAPE_SEQ_KEY = createTextAttributesKey("C3_ESCSEQ", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
+    public final static TextAttributesKey INVALID_ESCAPE_SEQ_KEY = createTextAttributesKey("C3_INVALID_ESCSEQ", DefaultLanguageHighlighterColors.INVALID_STRING_ESCAPE);
     public final static TextAttributesKey STRING_KEY = createTextAttributesKey("C3_STRING", DefaultLanguageHighlighterColors.STRING);
+    public final static TextAttributesKey BYTES_KEY = createTextAttributesKey("C3_BYTES", DefaultLanguageHighlighterColors.NUMBER);
     public final static TextAttributesKey TYPE_KEY = createTextAttributesKey("C3_TYPE", DefaultLanguageHighlighterColors.CLASS_NAME);
     public final static TextAttributesKey CONSTANT_KEY = createTextAttributesKey("C3_CONSTANT", DefaultLanguageHighlighterColors.CONSTANT);
     public final static TextAttributesKey NUMBER_KEY = createTextAttributesKey("C3_NUMBER", DefaultLanguageHighlighterColors.NUMBER);
@@ -105,6 +108,7 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
 
     static
     {
+        addMapping(BYTES_KEY, C3TokenSets.BYTES);
         addMapping(STRING_KEY, C3TokenSets.STRINGS);
         addMapping(CONSTANT_KEY, C3TokenSets.CONSTANTS);
         addMapping(NUMBER_KEY, C3TokenSets.NUMBER);

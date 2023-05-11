@@ -2,6 +2,7 @@ package org.c3lang.intellij;
 
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.TokenSet;
+import groovyjarjarantlr.Token;
 import org.c3lang.intellij.psi.C3Types;
 
 
@@ -15,9 +16,9 @@ public interface C3TokenSets
 {
     TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     TokenSet COMMENTS = TokenSet.create(C3ParserDefinition.LINE_COMMENT, C3ParserDefinition.BLOCK_COMMENT, C3ParserDefinition.DOC_COMMENT);
-    TokenSet STRINGS = TokenSet.create(C3Types.STRING_LIT);
-
+    TokenSet STRINGS = TokenSet.create(C3Types.STRING_LIT, C3Types.CHAR_LIT);
     TokenSet IDENTIFIERS = TokenSet.create(C3Types.IDENT);
+    TokenSet BYTES = TokenSet.create(C3Types.BYTES);
     TokenSet INTEGER = TokenSet.create(C3Types.INT_LITERAL);
     TokenSet FLOAT = TokenSet.create(C3Types.FLOAT_LITERAL);
     TokenSet NUMBER = TokenSet.orSet(INTEGER, FLOAT);

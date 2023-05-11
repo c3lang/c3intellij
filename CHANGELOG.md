@@ -4,8 +4,17 @@
 
 ## [Unreleased]
 
-- Smart brace pair.
+## [0.0.6] - 2023-05-11
+
+### Added
+
 - Allow IDE .c3 file association.
+- Smart brace pair.
+
+### Updated
+
+- String parsing stability.
+- b64 and hex bytes correctly parsed and checked.
 
 ## [0.0.5] - 2023-05-06
 

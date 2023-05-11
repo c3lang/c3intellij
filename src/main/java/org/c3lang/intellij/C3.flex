@@ -70,39 +70,25 @@ OCTAL_LIT           = "0" [oO] {OINT}
 BINARY_LIT          = "0" [bB] {BINT}
 DECIMAL_LIT         = {INT}
 
-BYTES               = {HEXBYTES1} | {HEXBYTES2} | {HEXBYTES3} | {B64BYTES}
-HEXBYTES1           = "x'" {HEX}+ "'"
-HEXBYTES2           = "x\"" {HEX}+ "\""
-HEXBYTES3           = "x`" {HEX}+ "`"
-
-B64BYTES            = "b64" ({STRING_LIT} | {RAW_STR_LIT} | {CHARACTER_LIT})
-
 REAL                = ({DEC_FLOAT_LIT} | {HEX_FLOAT_LIT}) {REALTYPE}?
 DEC_FLOAT_LIT       = {INT}{E} | {INT} "." {INT} {E}?
 HEX_FLOAT_LIT       = "0"[xX]{HINT}("."{HINT})?{P}
 
-STR_ELEMENT         = [^\\\"\r\n]
-CHAR_ELEMENT        = [^\\\'\r\n]
-CHAR_LIT_BYTE       = {CHAR_ELEMENT} | \x5C {CHAR_ESCAPE}
-STR_LIT_BYTE        = {STR_ELEMENT} | \x5C {CHAR_ESCAPE}
 CHAR_ESCAPE         = [abefnrtv\'\"\\0] | "x" {H}{2} | "u" {H}{4} | "U" {H}{8}
 
-CHARACTER_LIT       = \x27 {CHAR_LIT_BYTE}+ \x27
+CHARACTER_LIT       = \' ( [^\\\'\r\n] | \\[^\r\r] | "\\x" {H}+ | "\\u" {H}+
+                        | "\\U" {H}+ | \\ [abefnrtv\'\"0] )+ \'
 
-STRING_LIT          = \x22 {STR_LIT_BYTE}* \x22
-
-RAW_ESCAPE          = "``"
-RAW_STR_LIT         = "`" ([^`]|{RAW_ESCAPE})* "`"
+STRING_LIT          = \" ([^\\\"\r\n] | \\[^\r\n])* \"
 
 LINE_COMMENT    = "//" .*
 
-%state IN_COMMENT, RAW_STRING
+%state IN_COMMENT, IN_RAW_STRING, IN_STRING, IN_CHAR, IN_BYTES_STRING, IN_BYTES_CHAR, IN_BYTES_RAW_STRING
 
 %%
 
 
 <YYINITIAL> {
-
 
     "any" { return C3Types.KW_ANY; }
     "anyfault" { return C3Types.KW_ANYFAULT; }
@@ -271,12 +257,8 @@ LINE_COMMENT    = "//" .*
     "*" { return C3Types.STAR; }
 
 
-    {STRING_LIT} { return C3Types.STRING_LIT; }
-    {RAW_STR_LIT} { return C3Types.STRING_LIT; }
-    {CHARACTER_LIT} { return C3Types.CHAR_LIT; }
     {INTEGER} { return C3Types.INT_LITERAL; }
     {REAL} { return C3Types.FLOAT_LITERAL; }
-    {BYTES} { return C3Types.BYTES; }
 
     {HASH_CONST_IDENT} { return TokenType.BAD_CHARACTER; }
     {AT_CONST_IDENT} { return TokenType.BAD_CHARACTER; }
@@ -298,7 +280,64 @@ LINE_COMMENT    = "//" .*
 
     {WHITESPACE}+ { return TokenType.WHITE_SPACE; }
     {LINE_COMMENT} { return C3ParserDefinition.LINE_COMMENT; }
+    "b64\"" { yybegin(IN_BYTES_STRING); }
+    "x\"" { yybegin(IN_BYTES_STRING); }
+    "b64\`" { yybegin(IN_BYTES_RAW_STRING); }
+    "x\`" { yybegin(IN_BYTES_RAW_STRING); }
+    "b64\'" { yybegin(IN_BYTES_CHAR); }
+    "x\'" { yybegin(IN_BYTES_CHAR); }
+    "\"" { yybegin(IN_STRING); }
+    "`" { yybegin(IN_RAW_STRING); }
+    "'" { yybegin(IN_CHAR); }
     "/*" { yybegin(IN_COMMENT); commentNesting = 1; return C3ParserDefinition.BLOCK_COMMENT; }
+}
+
+<IN_RAW_STRING> {
+    "``" { }
+    "`"  { yybegin(YYINITIAL); return C3Types.STRING_LIT; }
+    [\n\r] { }
+    . {}
+
+}
+
+<IN_BYTES_RAW_STRING> {
+    "`" {WHITESPACE}* ([\r\n] {WHITESPACE}*)* "`" { } // Wrapping
+    "`"  { yybegin(YYINITIAL); return C3Types.BYTES; }
+    [\n\r] { }
+    . {}
+}
+
+
+<IN_CHAR> {
+    "\'" { yybegin(YYINITIAL); return C3Types.CHAR_LIT; }
+    [^\x00-\x1f\\\']+ { }
+    [\r\n] { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
+    "\\" [^\x00-\x1f] {  }
+    . { return TokenType.BAD_CHARACTER; }
+}
+
+<IN_BYTES_CHAR> {
+    "\'" {WHITESPACE}* ([\r\n] {WHITESPACE}*)* "\'" { } // Wrapping
+    "\'" { yybegin(YYINITIAL); return C3Types.BYTES; }
+    [^\x00-\x1f\']+ { }
+    [\r\n] { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
+    . { return TokenType.BAD_CHARACTER; }
+}
+
+<IN_STRING> {
+    "\"" { yybegin(YYINITIAL); return C3Types.STRING_LIT; }
+    [^\x00-\x1f\\\"]+ { }
+    [\r\n] { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
+    "\\" [^\x00-\x1f] {  }
+    . { return TokenType.BAD_CHARACTER; }
+}
+
+<IN_BYTES_STRING> {
+    "\"" {WHITESPACE}* ([\r\n] {WHITESPACE}*)* "\"" { } // Wrapping
+    "\"" { yybegin(YYINITIAL); return C3Types.BYTES; }
+    [^\x00-\x1f\"]+ { }
+    [\r\n] { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
+    . { return TokenType.BAD_CHARACTER; }
 }
 
 <IN_COMMENT> {
