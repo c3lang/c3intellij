@@ -110,7 +110,7 @@ define_declaration ::= KW_DEFINE (define_ident | define_attribute) EOS
 any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
 def_attr_values ::= LB attributes? RB
-def_declaration_source ::= (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameter?
+def_declaration_source ::= (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameters?
 def_decl ::= KW_DEF any_ident (LP parameter_list RP)? attributes? EQ distinct_inline? def_declaration_source EOS
 
 define_attribute ::= AT_TYPE_IDENT (LP parameter_list RP)? attributes? EQ LB attributes? RB

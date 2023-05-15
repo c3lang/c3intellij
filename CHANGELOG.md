@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 
+## [0.0.7] - 2023-05-15
+
+### Added
+
+- Pair quotes.
+- Initial run configuration.
+- Breadcrumbs for some constructs.
+
+### Fixed
+
+- Incorrect parsing of `def` with generic parameters.
+
 ## [0.0.6] - 2023-05-11
 
 ### Added

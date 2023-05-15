@@ -22,10 +22,15 @@ public class C3SdkType extends SdkType
         return null;
     }
 
-    @Override public boolean isValidSdkHome(@NotNull String s)
+    public static boolean isSdkHome(@NotNull String s)
     {
         if (!Files.exists(Paths.get(s, "c3c.exe")) && !Files.exists(Paths.get(s, "c3c"))) return false;
         return Files.exists(Paths.get(s, "lib", "std")) || Files.exists(Paths.get(s, "..", "lib", "std"));
+    }
+
+    @Override public boolean isValidSdkHome(@NotNull String s)
+    {
+        return isSdkHome(s);
     }
 
     @Override public @NotNull String suggestSdkName(@Nullable String s, @NotNull String s1)

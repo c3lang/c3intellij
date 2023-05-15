@@ -257,10 +257,27 @@ public class C3Annotator implements Annotator
                         case 'U':
                             checked_follow = 8;
                             break;
-                        default:
+                        case 'a':
+                        case 'b':
+                        case 'e':
+                        case 'f':
+                        case 'n':
+                        case 'r':
+                        case 't':
+                        case 'v':
+                        case '"':
+                        case '\'':
+                        case '\\':
+                        case '0':
                             annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
                                             .range(new TextRange(start_range_offset + i - 1, start_range_offset + i + 1))
                                             .textAttributes(C3SyntaxHighlighter.ESCAPE_SEQ_KEY).create();
+                            continue;
+                        default:
+                            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Invalid escape sequence.")
+                                            .textAttributes(C3SyntaxHighlighter.INVALID_ESCAPE_SEQ_KEY)
+                                            .range(new TextRange(start_range_offset + i - 1, start_range_offset + i + 1))
+                                            .create();
                             continue;
                     }
                     i++;
