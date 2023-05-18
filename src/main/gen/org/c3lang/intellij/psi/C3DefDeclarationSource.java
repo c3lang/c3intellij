@@ -14,7 +14,7 @@ public interface C3DefDeclarationSource extends PsiElement {
   C3DefAttrValues getDefAttrValues();
 
   @Nullable
-  C3GenericParameter getGenericParameter();
+  C3GenericParameters getGenericParameters();
 
   @Nullable
   C3PathConst getPathConst();

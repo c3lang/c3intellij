@@ -18,11 +18,6 @@ import org.c3lang.intellij.psi.C3File;
 import org.c3lang.intellij.psi.C3Types;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Undocumented Class
- *
- * @author Christoffer Lerno
- */
 public class C3ParserDefinition implements ParserDefinition, C3TokenSets
 {
 

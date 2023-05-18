@@ -2035,7 +2035,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameter?
+  // (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameters?
   public static boolean def_declaration_source(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "def_declaration_source")) return false;
     boolean r;
@@ -2058,10 +2058,10 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // generic_parameter?
+  // generic_parameters?
   private static boolean def_declaration_source_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "def_declaration_source_1")) return false;
-    generic_parameter(b, l + 1);
+    generic_parameters(b, l + 1);
     return true;
   }
 

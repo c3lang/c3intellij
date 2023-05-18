@@ -1,0 +1,4 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="cidr.debugger">
+    </extensions>
+</idea-plugin>

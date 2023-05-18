@@ -41,8 +41,8 @@ public class C3DefDeclarationSourceImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
-  public C3GenericParameter getGenericParameter() {
-    return findChildByClass(C3GenericParameter.class);
+  public C3GenericParameters getGenericParameters() {
+    return findChildByClass(C3GenericParameters.class);
   }
 
   @Override

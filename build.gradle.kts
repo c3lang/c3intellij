@@ -50,13 +50,20 @@ dependencies {
 
 // Configure Gradle IntelliJ Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
+    val platformType = properties("platformType").get()
     pluginName = properties("pluginName")
     version = properties("platformVersion")
-    type = properties("platformType")
+    type = platformType
     updateSinceUntilBuild.set(true)
     downloadSources = false
+    val platformPlugins = when (platformType) {
+        "IU" -> properties("ideaPlugins")
+        "IC" -> properties("ideaCommunityPlugins")
+        "CL" -> properties("clionPlugins")
+        else -> throw IllegalArgumentException("Unknown IDE type: $type, supported types: IU, IC, CL")
+    }
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
-    plugins = properties("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
+    plugins = platformPlugins.map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin

@@ -10,6 +10,7 @@
 
   <!-- Product and plugin compatibility requirements -->
   <depends>com.intellij.modules.platform</depends>
+  <depends optional="true" config-file="cidrdebugger.xml">com.intellij.modules.cidr.debugger</depends>
 
   <!-- Text to display as company information on Preferences/Settings | Plugin page -->
   <vendor url="https://www.c3-lang.org">C3 Lang</vendor>

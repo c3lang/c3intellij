@@ -77,11 +77,11 @@ public class C3Annotator implements Annotator
         {
             if (source.getDefAttrValues() != null)
             {
-                if (source.getGenericParameter() != null)
+                if (source.getGenericParameters() != null)
                 {
                     annotationHolder.newAnnotation(HighlightSeverity.ERROR,
                                                    "Attributes may not have generic parameterization.")
-                                    .range(source.getGenericParameter())
+                                    .range(source.getGenericParameters())
                                     .create();
                 }
                 return;
@@ -90,6 +90,18 @@ public class C3Annotator implements Annotator
                             .range(ident)
                             .create();
             return;
+        }
+        if (is_ident || is_const)
+        {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                            .textAttributes(C3SyntaxHighlighter.FUNCTION_KEY)
+                            .range(ident)
+                            .create();
+        }
+        else if (is_type)
+        {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                            .textAttributes(C3SyntaxHighlighter.TYPE_KEY).range(ident).create();
         }
         if (source.getAnyIdent() != null)
         {
