@@ -2,6 +2,7 @@ package org.c3lang.intellij.psi;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
+import com.intellij.psi.tree.IElementType;
 import org.c3lang.intellij.C3SourceFileType;
 
 public class C3ElementFactory
@@ -16,4 +17,11 @@ public class C3ElementFactory
         String name = "dummy.c3";
         return (C3File) PsiFileFactory.getInstance(project).createFileFromText(name, C3SourceFileType.INSTANCE, text);
     }
+
+    public static IElementType stubFactory(String name)
+    {
+        if ("MODULE_SECTION".equals(name)) return new C3ModuleSectionStubElementType();
+        throw new RuntimeException();
+    }
+
 }

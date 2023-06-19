@@ -30,7 +30,7 @@ public class C3CtChecksExprImpl extends C3ExprImpl implements C3CtChecksExpr {
   @Override
   @NotNull
   public C3ExpressionList getExpressionList() {
-    return findNotNullChildByClass(C3ExpressionList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ExpressionList.class));
   }
 
 }

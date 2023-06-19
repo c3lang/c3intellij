@@ -30,7 +30,7 @@ public class C3DefAttrValuesImpl extends ASTWrapperPsiElement implements C3DefAt
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
 }

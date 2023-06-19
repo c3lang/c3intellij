@@ -30,13 +30,13 @@ public class C3MacroFuncBodyImpl extends ASTWrapperPsiElement implements C3Macro
   @Override
   @Nullable
   public C3CompoundStatement getCompoundStatement() {
-    return findChildByClass(C3CompoundStatement.class);
+    return PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class);
   }
 
   @Override
   @Nullable
   public C3ImpliesBody getImpliesBody() {
-    return findChildByClass(C3ImpliesBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3ImpliesBody.class);
   }
 
 }

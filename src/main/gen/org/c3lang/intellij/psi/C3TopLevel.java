@@ -23,9 +23,6 @@ public interface C3TopLevel extends PsiElement {
   C3DefDecl getDefDecl();
 
   @Nullable
-  C3DefineDeclaration getDefineDeclaration();
-
-  @Nullable
   C3Expr getExpr();
 
   @Nullable
@@ -45,12 +42,6 @@ public interface C3TopLevel extends PsiElement {
 
   @Nullable
   C3StaticDecl getStaticDecl();
-
-  @Nullable
-  C3TlCtIf getTlCtIf();
-
-  @Nullable
-  C3TlCtSwitch getTlCtSwitch();
 
   @Nullable
   C3TypeDecl getTypeDecl();

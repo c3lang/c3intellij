@@ -30,19 +30,19 @@ public class C3WhileStmtImpl extends ASTWrapperPsiElement implements C3WhileStmt
   @Override
   @Nullable
   public C3Label getLabel() {
-    return findChildByClass(C3Label.class);
+    return PsiTreeUtil.getChildOfType(this, C3Label.class);
   }
 
   @Override
   @NotNull
   public C3ParenCond getParenCond() {
-    return findNotNullChildByClass(C3ParenCond.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ParenCond.class));
   }
 
   @Override
   @NotNull
   public C3Statement getStatement() {
-    return findNotNullChildByClass(C3Statement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
   }
 
 }

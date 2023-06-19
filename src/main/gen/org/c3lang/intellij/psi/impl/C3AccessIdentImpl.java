@@ -30,7 +30,7 @@ public class C3AccessIdentImpl extends ASTWrapperPsiElement implements C3AccessI
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

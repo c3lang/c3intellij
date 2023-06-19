@@ -4,8 +4,9 @@ package org.c3lang.intellij.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.StubBasedPsiElement;
 
-public interface C3ModuleSection extends PsiElement {
+public interface C3ModuleSection extends PsiElement, StubBasedPsiElement<C3ModuleSectionStub> {
 
   @NotNull
   C3Module getModule();

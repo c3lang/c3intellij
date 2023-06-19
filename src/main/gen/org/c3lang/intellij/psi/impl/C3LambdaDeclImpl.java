@@ -30,19 +30,19 @@ public class C3LambdaDeclImpl extends ASTWrapperPsiElement implements C3LambdaDe
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3FnParameterList getFnParameterList() {
-    return findNotNullChildByClass(C3FnParameterList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3FnParameterList.class));
   }
 
   @Override
   @Nullable
   public C3OptionalType getOptionalType() {
-    return findChildByClass(C3OptionalType.class);
+    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
   }
 
 }

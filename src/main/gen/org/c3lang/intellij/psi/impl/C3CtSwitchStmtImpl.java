@@ -30,13 +30,13 @@ public class C3CtSwitchStmtImpl extends ASTWrapperPsiElement implements C3CtSwit
   @Override
   @NotNull
   public C3CtSwitch getCtSwitch() {
-    return findNotNullChildByClass(C3CtSwitch.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtSwitch.class));
   }
 
   @Override
   @NotNull
   public C3CtSwitchBody getCtSwitchBody() {
-    return findNotNullChildByClass(C3CtSwitchBody.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtSwitchBody.class));
   }
 
 }

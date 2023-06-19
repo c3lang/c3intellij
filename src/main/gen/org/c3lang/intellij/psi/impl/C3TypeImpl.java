@@ -30,7 +30,7 @@ public class C3TypeImpl extends ASTWrapperPsiElement implements C3Type {
   @Override
   @NotNull
   public C3BaseType getBaseType() {
-    return findNotNullChildByClass(C3BaseType.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3BaseType.class));
   }
 
   @Override

@@ -10,15 +10,20 @@
 
   <!-- Product and plugin compatibility requirements -->
   <depends>com.intellij.modules.platform</depends>
-  <depends optional="true" config-file="cidrdebugger.xml">com.intellij.modules.cidr.debugger</depends>
+  <!-- <depends optional="true" config-file="cidrdebugger.xml">com.intellij.modules.cidr.debugger</depends> -->
 
   <!-- Text to display as company information on Preferences/Settings | Plugin page -->
   <vendor url="https://www.c3-lang.org">C3 Lang</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
+
     <fileType name="C3 File" implementationClass="org.c3lang.intellij.C3SourceFileType" fieldName="INSTANCE" language="C3" extensions="c3;c3t"/>
     <fileType name="C3 Interface File" implementationClass="org.c3lang.intellij.C3InterfaceFileType" fieldName="INSTANCE" language="C3" extensions="c3i"/>
     <fileType name="C3 Library File" implementationClass="org.c3lang.intellij.C3LibFileType" fieldName="INSTANCE" language="C3" extensions="c3l"/>
+
+    <stubIndex implementation="org.c3lang.intellij.stubs.C3ModulesIndex"/>
+    <stubElementTypeHolder externalIdPrefix="c3." class="org.c3lang.intellij.psi.C3Types"/>
+
     <lang.parserDefinition language="C3" implementationClass="org.c3lang.intellij.C3ParserDefinition"/>
     <lang.syntaxHighlighterFactory language="C3" implementationClass="org.c3lang.intellij.C3SyntaxHighlighterFactory"/>
     <sdkType implementation="org.c3lang.intellij.C3SdkType"/>

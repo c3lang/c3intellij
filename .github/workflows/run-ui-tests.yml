@@ -41,6 +41,7 @@ jobs:
         with:
           distribution: corretto
           java-version: 17
+          cache: gradle
 
       # Run IDEA prepared for UI testing
       - name: Run IDE

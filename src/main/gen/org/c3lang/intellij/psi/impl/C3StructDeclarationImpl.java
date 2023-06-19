@@ -30,19 +30,19 @@ public class C3StructDeclarationImpl extends ASTWrapperPsiElement implements C3S
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3StructBody getStructBody() {
-    return findNotNullChildByClass(C3StructBody.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3StructBody.class));
   }
 
   @Override
   @NotNull
   public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));
   }
 
 }

@@ -30,7 +30,7 @@ public class C3GroupedExpressionImpl extends ASTWrapperPsiElement implements C3G
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
 }

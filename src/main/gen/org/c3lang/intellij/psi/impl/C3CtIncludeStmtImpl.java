@@ -28,9 +28,15 @@ public class C3CtIncludeStmtImpl extends ASTWrapperPsiElement implements C3CtInc
   }
 
   @Override
+  @Nullable
+  public C3Attributes getAttributes() {
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+  }
+
+  @Override
   @NotNull
-  public C3StringExpr getStringExpr() {
-    return findNotNullChildByClass(C3StringExpr.class);
+  public C3Expr getExpr() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
 }

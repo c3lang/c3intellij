@@ -30,19 +30,19 @@ public class C3DoStmtImpl extends ASTWrapperPsiElement implements C3DoStmt {
   @Override
   @NotNull
   public C3CompoundStatement getCompoundStatement() {
-    return findNotNullChildByClass(C3CompoundStatement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class));
   }
 
   @Override
   @Nullable
   public C3GroupedExpression getGroupedExpression() {
-    return findChildByClass(C3GroupedExpression.class);
+    return PsiTreeUtil.getChildOfType(this, C3GroupedExpression.class);
   }
 
   @Override
   @Nullable
   public C3Label getLabel() {
-    return findChildByClass(C3Label.class);
+    return PsiTreeUtil.getChildOfType(this, C3Label.class);
   }
 
 }

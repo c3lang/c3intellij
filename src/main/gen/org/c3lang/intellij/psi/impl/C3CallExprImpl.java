@@ -30,13 +30,13 @@ public class C3CallExprImpl extends C3ExprImpl implements C3CallExpr {
   @Override
   @NotNull
   public C3CallExprTail getCallExprTail() {
-    return findNotNullChildByClass(C3CallExprTail.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CallExprTail.class));
   }
 
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
 }

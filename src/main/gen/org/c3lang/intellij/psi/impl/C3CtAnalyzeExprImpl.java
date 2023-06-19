@@ -30,13 +30,13 @@ public class C3CtAnalyzeExprImpl extends C3ExprImpl implements C3CtAnalyzeExpr {
   @Override
   @NotNull
   public C3CtAnalyze getCtAnalyze() {
-    return findNotNullChildByClass(C3CtAnalyze.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtAnalyze.class));
   }
 
   @Override
   @NotNull
   public C3GroupedExpression getGroupedExpression() {
-    return findNotNullChildByClass(C3GroupedExpression.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3GroupedExpression.class));
   }
 
 }

@@ -30,13 +30,13 @@ public class C3ParamDeclImpl extends ASTWrapperPsiElement implements C3ParamDecl
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
   @Override
   @NotNull
   public C3Parameter getParameter() {
-    return findNotNullChildByClass(C3Parameter.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Parameter.class));
   }
 
 }

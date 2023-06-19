@@ -4,9 +4,14 @@
 
 ## [Unreleased]
 
+## [0.0.8] - 2023-06-19
+
 ### Updated
 
 - `def` syntax annotation updated.
+- `define` and `typedef` removed.
+- Updated `$include` syntax.
+- Fix of `.#x` syntax
 
 ## [0.0.7] - 2023-05-15
 

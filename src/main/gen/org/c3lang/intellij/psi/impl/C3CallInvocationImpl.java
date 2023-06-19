@@ -30,7 +30,7 @@ public class C3CallInvocationImpl extends ASTWrapperPsiElement implements C3Call
   @Override
   @NotNull
   public C3CallArgList getCallArgList() {
-    return findNotNullChildByClass(C3CallArgList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CallArgList.class));
   }
 
 }

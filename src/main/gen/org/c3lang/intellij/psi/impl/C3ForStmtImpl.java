@@ -30,19 +30,19 @@ public class C3ForStmtImpl extends ASTWrapperPsiElement implements C3ForStmt {
   @Override
   @NotNull
   public C3ForCond getForCond() {
-    return findNotNullChildByClass(C3ForCond.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ForCond.class));
   }
 
   @Override
   @Nullable
   public C3Label getLabel() {
-    return findChildByClass(C3Label.class);
+    return PsiTreeUtil.getChildOfType(this, C3Label.class);
   }
 
   @Override
   @NotNull
   public C3Statement getStatement() {
-    return findNotNullChildByClass(C3Statement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
   }
 
 }

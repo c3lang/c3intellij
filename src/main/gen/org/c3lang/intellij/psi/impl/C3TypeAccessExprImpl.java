@@ -30,13 +30,13 @@ public class C3TypeAccessExprImpl extends C3ExprImpl implements C3TypeAccessExpr
   @Override
   @Nullable
   public C3AccessIdent getAccessIdent() {
-    return findChildByClass(C3AccessIdent.class);
+    return PsiTreeUtil.getChildOfType(this, C3AccessIdent.class);
   }
 
   @Override
   @NotNull
   public C3Type getType() {
-    return findNotNullChildByClass(C3Type.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
 }

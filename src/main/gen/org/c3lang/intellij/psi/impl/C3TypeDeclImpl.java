@@ -29,31 +29,25 @@ public class C3TypeDeclImpl extends C3NamedElementImpl implements C3TypeDecl {
   @Override
   @Nullable
   public C3BitstructDeclaration getBitstructDeclaration() {
-    return findChildByClass(C3BitstructDeclaration.class);
+    return PsiTreeUtil.getChildOfType(this, C3BitstructDeclaration.class);
   }
 
   @Override
   @Nullable
   public C3EnumDeclaration getEnumDeclaration() {
-    return findChildByClass(C3EnumDeclaration.class);
+    return PsiTreeUtil.getChildOfType(this, C3EnumDeclaration.class);
   }
 
   @Override
   @Nullable
   public C3FaultDeclaration getFaultDeclaration() {
-    return findChildByClass(C3FaultDeclaration.class);
+    return PsiTreeUtil.getChildOfType(this, C3FaultDeclaration.class);
   }
 
   @Override
   @Nullable
   public C3StructDeclaration getStructDeclaration() {
-    return findChildByClass(C3StructDeclaration.class);
-  }
-
-  @Override
-  @Nullable
-  public C3TypedefDeclaration getTypedefDeclaration() {
-    return findChildByClass(C3TypedefDeclaration.class);
+    return PsiTreeUtil.getChildOfType(this, C3StructDeclaration.class);
   }
 
   @Override

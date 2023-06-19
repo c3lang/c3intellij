@@ -30,7 +30,7 @@ public class C3DefaultStmtImpl extends ASTWrapperPsiElement implements C3Default
   @Override
   @Nullable
   public C3StatementList getStatementList() {
-    return findChildByClass(C3StatementList.class);
+    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
   }
 
 }

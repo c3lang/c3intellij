@@ -30,25 +30,25 @@ public class C3MacroDefinitionImpl extends ASTWrapperPsiElement implements C3Mac
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3MacroFuncBody getMacroFuncBody() {
-    return findNotNullChildByClass(C3MacroFuncBody.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3MacroFuncBody.class));
   }
 
   @Override
   @NotNull
   public C3MacroHeader getMacroHeader() {
-    return findNotNullChildByClass(C3MacroHeader.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3MacroHeader.class));
   }
 
   @Override
   @NotNull
   public C3MacroParams getMacroParams() {
-    return findNotNullChildByClass(C3MacroParams.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3MacroParams.class));
   }
 
 }

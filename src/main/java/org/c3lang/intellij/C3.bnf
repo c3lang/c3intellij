@@ -19,6 +19,8 @@
     mixin("type_decl") = "org.c3lang.intellij.psi.impl.C3NamedElementImpl"
     implements("type_decl") = "org.c3lang.intellij.psi.C3NamedElement"
     methods("type_decl") = [getName setName getNameIdentifier]
+    stubClass("module_section") = "org.c3lang.intellij.psi.C3ModuleSectionStub"
+    elementTypeFactory("module_section") = "org.c3lang.intellij.psi.C3ElementFactory.stubFactory"
 }
 
 
@@ -32,7 +34,6 @@ module ::= KW_MODULE path_ident (LT_OP module_params GT_OP)? attributes? EOS {
 type_decl ::= struct_declaration
     | fault_declaration
     | enum_declaration
-    | typedef_declaration
     | bitstruct_declaration
 
 fake binary_expr ::= expr+ {
@@ -54,7 +55,7 @@ module_params ::= module_param (COMMA module_param)*
 import_decl ::= KW_IMPORT import_paths attributes? EOS
 import_paths ::= path_ident (COMMA path_ident)*
 
-ct_include_stmt ::= KW_CT_INCLUDE string_expr EOS
+ct_include_stmt ::= KW_CT_INCLUDE expr attributes? EOS
 
 
 top_level ::= import_decl
@@ -62,24 +63,15 @@ top_level ::= import_decl
     | ct_assert_stmt
     | ct_echo_stmt
     | ct_include_stmt
-    | tl_ct_if
-    | tl_ct_switch
     | type_decl
     | def_decl
     | fault_declaration
-    | define_declaration
     | macro_definition
     | static_decl
     | KW_ASM expr EOS
 
 
 static_decl ::= KW_STATIC IDENT attributes? compound_statement
-
-tl_ct_if ::= KW_CT_IF constant_expr COLON top_level* (KW_CT_ELSE top_level*)? KW_CT_ENDIF
-
-tl_ct_switch ::= ct_switch tl_ct_case* KW_CT_ENDSWITCH
-
-tl_ct_case ::= (KW_CT_DEFAULT | KW_CT_CASE (constant_expr | type)) COLON top_level*
 
 private const_paren_expr ::= LP constant_expr RP
 
@@ -102,24 +94,14 @@ func_typedef ::= KW_FN optional_type fn_parameter_list
 
 
 distinct_inline ::= KW_DISTINCT KW_INLINE? | KW_INLINE KW_DISTINCT?
-typedef_declaration ::= KW_TYPEDEF type_name attributes? EQ distinct_inline? typedef_type EOS
 typedef_type ::= func_typedef | type generic_parameters?
 generic_parameter ::= expr | type
 generic_parameters ::= LT_OP generic_parameter (COMMA generic_parameter)* GT_OP
-define_declaration ::= KW_DEFINE (define_ident | define_attribute) EOS
 any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
 def_attr_values ::= LB attributes? RB
 def_declaration_source ::= (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameters?
-def_decl ::= KW_DEF any_ident (LP parameter_list RP)? attributes? EQ distinct_inline? def_declaration_source EOS
-
-define_attribute ::= AT_TYPE_IDENT (LP parameter_list RP)? attributes? EQ LB attributes? RB
-define_ident ::= (ident_alias | const_alias | attr_alias) generic_parameters?
-ident_alias_name ::= IDENT
-ident_alias ::= ident_alias_name EQ path_ident
-const_alias ::= CONST_IDENT EQ path_const
-attr_alias ::= AT_IDENT EQ path_at_ident
-
+def_decl ::= KW_DEF any_ident (LP parameter_list RP)? EQ distinct_inline? def_declaration_source attributes? EOS
 
 struct_body ::= LB struct_member_declaration* RB
 
@@ -170,7 +152,7 @@ ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY
 
 flat_path ::= primary_group param_path? | type
 param_path ::= param_path_element+
-param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT IDENT
+param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT primary_group
 
 range_exp ::= range_loc? (DOTDOT | COLON) range_loc?
 range_loc ::= BIT_XOR? expr

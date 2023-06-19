@@ -30,7 +30,7 @@ public class C3ParenCondImpl extends ASTWrapperPsiElement implements C3ParenCond
   @Override
   @NotNull
   public C3Cond getCond() {
-    return findNotNullChildByClass(C3Cond.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Cond.class));
   }
 
 }

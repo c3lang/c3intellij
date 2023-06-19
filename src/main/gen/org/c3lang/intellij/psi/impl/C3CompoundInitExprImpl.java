@@ -30,13 +30,13 @@ public class C3CompoundInitExprImpl extends C3ExprImpl implements C3CompoundInit
   @Override
   @NotNull
   public C3InitializerList getInitializerList() {
-    return findNotNullChildByClass(C3InitializerList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3InitializerList.class));
   }
 
   @Override
   @NotNull
   public C3Type getType() {
-    return findNotNullChildByClass(C3Type.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
 }

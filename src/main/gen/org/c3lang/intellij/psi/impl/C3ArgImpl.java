@@ -30,25 +30,25 @@ public class C3ArgImpl extends ASTWrapperPsiElement implements C3Arg {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3ParamPath getParamPath() {
-    return findChildByClass(C3ParamPath.class);
+    return PsiTreeUtil.getChildOfType(this, C3ParamPath.class);
   }
 
   @Override
   @Nullable
   public C3RangeExp getRangeExp() {
-    return findChildByClass(C3RangeExp.class);
+    return PsiTreeUtil.getChildOfType(this, C3RangeExp.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

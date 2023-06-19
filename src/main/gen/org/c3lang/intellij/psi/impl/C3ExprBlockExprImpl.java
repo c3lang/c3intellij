@@ -30,7 +30,7 @@ public class C3ExprBlockExprImpl extends C3ExprImpl implements C3ExprBlockExpr {
   @Override
   @Nullable
   public C3StatementList getStatementList() {
-    return findChildByClass(C3StatementList.class);
+    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
   }
 
 }

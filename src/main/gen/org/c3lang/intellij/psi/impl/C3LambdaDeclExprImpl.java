@@ -30,13 +30,13 @@ public class C3LambdaDeclExprImpl extends C3ExprImpl implements C3LambdaDeclExpr
   @Override
   @NotNull
   public C3CompoundStatement getCompoundStatement() {
-    return findNotNullChildByClass(C3CompoundStatement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class));
   }
 
   @Override
   @NotNull
   public C3LambdaDecl getLambdaDecl() {
-    return findNotNullChildByClass(C3LambdaDecl.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3LambdaDecl.class));
   }
 
 }

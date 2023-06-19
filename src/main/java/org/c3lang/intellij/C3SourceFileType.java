@@ -1,5 +1,6 @@
 package org.c3lang.intellij;
 
+import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.OSFileIdeAssociation;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import javax.swing.*;
  *
  * @author Christoffer Lerno
  */
+
 public class C3SourceFileType extends LanguageFileType implements OSFileIdeAssociation
 {
     public static final C3SourceFileType INSTANCE = new C3SourceFileType();

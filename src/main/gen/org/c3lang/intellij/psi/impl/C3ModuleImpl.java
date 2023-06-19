@@ -30,19 +30,19 @@ public class C3ModuleImpl extends ASTWrapperPsiElement implements C3Module {
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3ModuleParams getModuleParams() {
-    return findChildByClass(C3ModuleParams.class);
+    return PsiTreeUtil.getChildOfType(this, C3ModuleParams.class);
   }
 
   @Override
   @NotNull
   public C3PathIdent getPathIdent() {
-    return findNotNullChildByClass(C3PathIdent.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3PathIdent.class));
   }
 
 }

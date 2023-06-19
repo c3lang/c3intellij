@@ -30,7 +30,7 @@ public class C3BitstructSimpleDefImpl extends ASTWrapperPsiElement implements C3
   @Override
   @NotNull
   public C3BaseType getBaseType() {
-    return findNotNullChildByClass(C3BaseType.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3BaseType.class));
   }
 
 }

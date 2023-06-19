@@ -30,13 +30,13 @@ public class C3TryUnwrapImpl extends ASTWrapperPsiElement implements C3TryUnwrap
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

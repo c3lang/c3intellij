@@ -30,37 +30,37 @@ public class C3DefDeclarationSourceImpl extends ASTWrapperPsiElement implements 
   @Override
   @Nullable
   public C3AnyIdent getAnyIdent() {
-    return findChildByClass(C3AnyIdent.class);
+    return PsiTreeUtil.getChildOfType(this, C3AnyIdent.class);
   }
 
   @Override
   @Nullable
   public C3DefAttrValues getDefAttrValues() {
-    return findChildByClass(C3DefAttrValues.class);
+    return PsiTreeUtil.getChildOfType(this, C3DefAttrValues.class);
   }
 
   @Override
   @Nullable
   public C3GenericParameters getGenericParameters() {
-    return findChildByClass(C3GenericParameters.class);
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
   }
 
   @Override
   @Nullable
   public C3PathConst getPathConst() {
-    return findChildByClass(C3PathConst.class);
+    return PsiTreeUtil.getChildOfType(this, C3PathConst.class);
   }
 
   @Override
   @Nullable
   public C3PathIdent getPathIdent() {
-    return findChildByClass(C3PathIdent.class);
+    return PsiTreeUtil.getChildOfType(this, C3PathIdent.class);
   }
 
   @Override
   @Nullable
   public C3TypedefType getTypedefType() {
-    return findChildByClass(C3TypedefType.class);
+    return PsiTreeUtil.getChildOfType(this, C3TypedefType.class);
   }
 
 }

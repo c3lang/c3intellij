@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface C3CtIncludeStmt extends PsiElement {
 
+  @Nullable
+  C3Attributes getAttributes();
+
   @NotNull
-  C3StringExpr getStringExpr();
+  C3Expr getExpr();
 
 }

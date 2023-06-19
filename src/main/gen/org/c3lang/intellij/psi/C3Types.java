@@ -26,7 +26,6 @@ public interface C3Types {
   IElementType ATTRIBUTE_NAME = new C3ElementType("ATTRIBUTE_NAME");
   IElementType ATTRIBUTE_OPERATOR_EXPR = new C3ElementType("ATTRIBUTE_OPERATOR_EXPR");
   IElementType ATTRIBUTE_PARAM_LIST = new C3ElementType("ATTRIBUTE_PARAM_LIST");
-  IElementType ATTR_ALIAS = new C3ElementType("ATTR_ALIAS");
   IElementType ATTR_PARAM = new C3ElementType("ATTR_PARAM");
   IElementType BASE_TYPE = new C3ElementType("BASE_TYPE");
   IElementType BINARY_EXPR = new C3ElementType("BINARY_EXPR");
@@ -51,7 +50,6 @@ public interface C3Types {
   IElementType COND = new C3ElementType("COND");
   IElementType COND_REPEAT = new C3ElementType("COND_REPEAT");
   IElementType CONSTANT_EXPR = new C3ElementType("CONSTANT_EXPR");
-  IElementType CONST_ALIAS = new C3ElementType("CONST_ALIAS");
   IElementType CONST_DECL = new C3ElementType("CONST_DECL");
   IElementType CONTINUE_STMT = new C3ElementType("CONTINUE_STMT");
   IElementType CT_ANALYZE = new C3ElementType("CT_ANALYZE");
@@ -77,9 +75,6 @@ public interface C3Types {
   IElementType DEFAULT_MODULE_SECTION = new C3ElementType("DEFAULT_MODULE_SECTION");
   IElementType DEFAULT_STMT = new C3ElementType("DEFAULT_STMT");
   IElementType DEFER_STMT = new C3ElementType("DEFER_STMT");
-  IElementType DEFINE_ATTRIBUTE = new C3ElementType("DEFINE_ATTRIBUTE");
-  IElementType DEFINE_DECLARATION = new C3ElementType("DEFINE_DECLARATION");
-  IElementType DEFINE_IDENT = new C3ElementType("DEFINE_IDENT");
   IElementType DEF_ATTR_VALUES = new C3ElementType("DEF_ATTR_VALUES");
   IElementType DEF_DECL = new C3ElementType("DEF_DECL");
   IElementType DEF_DECLARATION_SOURCE = new C3ElementType("DEF_DECLARATION_SOURCE");
@@ -117,8 +112,6 @@ public interface C3Types {
   IElementType GROUPED_EXPR = new C3ElementType("GROUPED_EXPR");
   IElementType GROUPED_EXPRESSION = new C3ElementType("GROUPED_EXPRESSION");
   IElementType IDENTIFIER_LIST = new C3ElementType("IDENTIFIER_LIST");
-  IElementType IDENT_ALIAS = new C3ElementType("IDENT_ALIAS");
-  IElementType IDENT_ALIAS_NAME = new C3ElementType("IDENT_ALIAS_NAME");
   IElementType IF_STMT = new C3ElementType("IF_STMT");
   IElementType IMPLIES_BODY = new C3ElementType("IMPLIES_BODY");
   IElementType IMPORT_DECL = new C3ElementType("IMPORT_DECL");
@@ -143,7 +136,7 @@ public interface C3Types {
   IElementType MODULE = new C3ElementType("MODULE");
   IElementType MODULE_PARAM = new C3ElementType("MODULE_PARAM");
   IElementType MODULE_PARAMS = new C3ElementType("MODULE_PARAMS");
-  IElementType MODULE_SECTION = new C3ElementType("MODULE_SECTION");
+  IElementType MODULE_SECTION = C3ElementFactory.stubFactory("MODULE_SECTION");
   IElementType MULTI_DECLARATION = new C3ElementType("MULTI_DECLARATION");
   IElementType NEXTCASE_STMT = new C3ElementType("NEXTCASE_STMT");
   IElementType OPTIONAL_EXPR = new C3ElementType("OPTIONAL_EXPR");
@@ -174,15 +167,11 @@ public interface C3Types {
   IElementType SWITCH_BODY = new C3ElementType("SWITCH_BODY");
   IElementType SWITCH_STMT = new C3ElementType("SWITCH_STMT");
   IElementType TERNARY_EXPR = new C3ElementType("TERNARY_EXPR");
-  IElementType TL_CT_CASE = new C3ElementType("TL_CT_CASE");
-  IElementType TL_CT_IF = new C3ElementType("TL_CT_IF");
-  IElementType TL_CT_SWITCH = new C3ElementType("TL_CT_SWITCH");
   IElementType TOP_LEVEL = new C3ElementType("TOP_LEVEL");
   IElementType TRAILING_BLOCK_PARAM = new C3ElementType("TRAILING_BLOCK_PARAM");
   IElementType TRY_UNWRAP = new C3ElementType("TRY_UNWRAP");
   IElementType TRY_UNWRAP_CHAIN = new C3ElementType("TRY_UNWRAP_CHAIN");
   IElementType TYPE = new C3ElementType("TYPE");
-  IElementType TYPEDEF_DECLARATION = new C3ElementType("TYPEDEF_DECLARATION");
   IElementType TYPEDEF_TYPE = new C3ElementType("TYPEDEF_TYPE");
   IElementType TYPE_ACCESS_EXPR = new C3ElementType("TYPE_ACCESS_EXPR");
   IElementType TYPE_DECL = new C3ElementType("TYPE_DECL");
@@ -283,7 +272,6 @@ public interface C3Types {
   IElementType KW_DEF = new C3TokenType("KW_DEF");
   IElementType KW_DEFAULT = new C3TokenType("KW_DEFAULT");
   IElementType KW_DEFER = new C3TokenType("KW_DEFER");
-  IElementType KW_DEFINE = new C3TokenType("KW_DEFINE");
   IElementType KW_DISTINCT = new C3TokenType("KW_DISTINCT");
   IElementType KW_DO = new C3TokenType("KW_DO");
   IElementType KW_DOUBLE = new C3TokenType("KW_DOUBLE");
@@ -320,7 +308,6 @@ public interface C3Types {
   IElementType KW_TLOCAL = new C3TokenType("KW_TLOCAL");
   IElementType KW_TRUE = new C3TokenType("KW_TRUE");
   IElementType KW_TRY = new C3TokenType("KW_TRY");
-  IElementType KW_TYPEDEF = new C3TokenType("KW_TYPEDEF");
   IElementType KW_TYPEID = new C3TokenType("KW_TYPEID");
   IElementType KW_UINT = new C3TokenType("KW_UINT");
   IElementType KW_UINT128 = new C3TokenType("KW_UINT128");
@@ -423,9 +410,6 @@ public interface C3Types {
       else if (type == ATTRIBUTE_PARAM_LIST) {
         return new C3AttributeParamListImpl(node);
       }
-      else if (type == ATTR_ALIAS) {
-        return new C3AttrAliasImpl(node);
-      }
       else if (type == ATTR_PARAM) {
         return new C3AttrParamImpl(node);
       }
@@ -494,9 +478,6 @@ public interface C3Types {
       }
       else if (type == COND_REPEAT) {
         return new C3CondRepeatImpl(node);
-      }
-      else if (type == CONST_ALIAS) {
-        return new C3ConstAliasImpl(node);
       }
       else if (type == CONST_DECL) {
         return new C3ConstDeclImpl(node);
@@ -572,15 +553,6 @@ public interface C3Types {
       }
       else if (type == DEFER_STMT) {
         return new C3DeferStmtImpl(node);
-      }
-      else if (type == DEFINE_ATTRIBUTE) {
-        return new C3DefineAttributeImpl(node);
-      }
-      else if (type == DEFINE_DECLARATION) {
-        return new C3DefineDeclarationImpl(node);
-      }
-      else if (type == DEFINE_IDENT) {
-        return new C3DefineIdentImpl(node);
       }
       else if (type == DEF_ATTR_VALUES) {
         return new C3DefAttrValuesImpl(node);
@@ -689,12 +661,6 @@ public interface C3Types {
       }
       else if (type == IDENTIFIER_LIST) {
         return new C3IdentifierListImpl(node);
-      }
-      else if (type == IDENT_ALIAS) {
-        return new C3IdentAliasImpl(node);
-      }
-      else if (type == IDENT_ALIAS_NAME) {
-        return new C3IdentAliasNameImpl(node);
       }
       else if (type == IF_STMT) {
         return new C3IfStmtImpl(node);
@@ -861,15 +827,6 @@ public interface C3Types {
       else if (type == TERNARY_EXPR) {
         return new C3TernaryExprImpl(node);
       }
-      else if (type == TL_CT_CASE) {
-        return new C3TlCtCaseImpl(node);
-      }
-      else if (type == TL_CT_IF) {
-        return new C3TlCtIfImpl(node);
-      }
-      else if (type == TL_CT_SWITCH) {
-        return new C3TlCtSwitchImpl(node);
-      }
       else if (type == TOP_LEVEL) {
         return new C3TopLevelImpl(node);
       }
@@ -884,9 +841,6 @@ public interface C3Types {
       }
       else if (type == TYPE) {
         return new C3TypeImpl(node);
-      }
-      else if (type == TYPEDEF_DECLARATION) {
-        return new C3TypedefDeclarationImpl(node);
       }
       else if (type == TYPEDEF_TYPE) {
         return new C3TypedefTypeImpl(node);

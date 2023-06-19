@@ -30,7 +30,7 @@ public class C3CompoundStatementImpl extends ASTWrapperPsiElement implements C3C
   @Override
   @Nullable
   public C3StatementList getStatementList() {
-    return findChildByClass(C3StatementList.class);
+    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
   }
 
 }

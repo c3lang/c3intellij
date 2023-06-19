@@ -30,7 +30,7 @@ public class C3CtIfStmtImpl extends ASTWrapperPsiElement implements C3CtIfStmt {
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
   @Override

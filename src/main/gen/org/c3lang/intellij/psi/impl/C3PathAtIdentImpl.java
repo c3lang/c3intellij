@@ -30,7 +30,7 @@ public class C3PathAtIdentImpl extends ASTWrapperPsiElement implements C3PathAtI
   @Override
   @Nullable
   public C3Path getPath() {
-    return findChildByClass(C3Path.class);
+    return PsiTreeUtil.getChildOfType(this, C3Path.class);
   }
 
 }

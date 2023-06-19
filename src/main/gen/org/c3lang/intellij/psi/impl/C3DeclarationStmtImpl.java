@@ -30,25 +30,25 @@ public class C3DeclarationStmtImpl extends ASTWrapperPsiElement implements C3Dec
   @Override
   @Nullable
   public C3ConstDecl getConstDecl() {
-    return findChildByClass(C3ConstDecl.class);
+    return PsiTreeUtil.getChildOfType(this, C3ConstDecl.class);
   }
 
   @Override
   @Nullable
   public C3DeclStmtAfterType getDeclStmtAfterType() {
-    return findChildByClass(C3DeclStmtAfterType.class);
+    return PsiTreeUtil.getChildOfType(this, C3DeclStmtAfterType.class);
   }
 
   @Override
   @Nullable
   public C3LocalDeclStorage getLocalDeclStorage() {
-    return findChildByClass(C3LocalDeclStorage.class);
+    return PsiTreeUtil.getChildOfType(this, C3LocalDeclStorage.class);
   }
 
   @Override
   @Nullable
   public C3OptionalType getOptionalType() {
-    return findChildByClass(C3OptionalType.class);
+    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
   }
 
 }

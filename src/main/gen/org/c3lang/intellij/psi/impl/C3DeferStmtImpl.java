@@ -30,7 +30,7 @@ public class C3DeferStmtImpl extends ASTWrapperPsiElement implements C3DeferStmt
   @Override
   @NotNull
   public C3Statement getStatement() {
-    return findNotNullChildByClass(C3Statement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
   }
 
 }

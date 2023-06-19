@@ -19,9 +19,6 @@ public interface C3TypeDecl extends C3NamedElement {
   @Nullable
   C3StructDeclaration getStructDeclaration();
 
-  @Nullable
-  C3TypedefDeclaration getTypedefDeclaration();
-
   String getName();
 
   PsiElement setName(String newName);

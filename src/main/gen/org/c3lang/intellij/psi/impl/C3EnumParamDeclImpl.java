@@ -30,13 +30,13 @@ public class C3EnumParamDeclImpl extends ASTWrapperPsiElement implements C3EnumP
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
   @Override
   @NotNull
   public C3Type getType() {
-    return findNotNullChildByClass(C3Type.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
 }

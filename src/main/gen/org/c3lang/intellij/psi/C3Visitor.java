@@ -59,10 +59,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
-  public void visitAttrAlias(@NotNull C3AttrAlias o) {
-    visitPsiElement(o);
-  }
-
   public void visitAttrParam(@NotNull C3AttrParam o) {
     visitPsiElement(o);
   }
@@ -172,10 +168,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitCondRepeat(@NotNull C3CondRepeat o) {
-    visitPsiElement(o);
-  }
-
-  public void visitConstAlias(@NotNull C3ConstAlias o) {
     visitPsiElement(o);
   }
 
@@ -292,18 +284,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitDeferStmt(@NotNull C3DeferStmt o) {
-    visitPsiElement(o);
-  }
-
-  public void visitDefineAttribute(@NotNull C3DefineAttribute o) {
-    visitPsiElement(o);
-  }
-
-  public void visitDefineDeclaration(@NotNull C3DefineDeclaration o) {
-    visitPsiElement(o);
-  }
-
-  public void visitDefineIdent(@NotNull C3DefineIdent o) {
     visitPsiElement(o);
   }
 
@@ -436,14 +416,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitGroupedExpression(@NotNull C3GroupedExpression o) {
-    visitPsiElement(o);
-  }
-
-  public void visitIdentAlias(@NotNull C3IdentAlias o) {
-    visitPsiElement(o);
-  }
-
-  public void visitIdentAliasName(@NotNull C3IdentAliasName o) {
     visitPsiElement(o);
   }
 
@@ -671,18 +643,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
-  public void visitTlCtCase(@NotNull C3TlCtCase o) {
-    visitPsiElement(o);
-  }
-
-  public void visitTlCtIf(@NotNull C3TlCtIf o) {
-    visitPsiElement(o);
-  }
-
-  public void visitTlCtSwitch(@NotNull C3TlCtSwitch o) {
-    visitPsiElement(o);
-  }
-
   public void visitTopLevel(@NotNull C3TopLevel o) {
     visitPsiElement(o);
   }
@@ -716,10 +676,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitTypeSuffix(@NotNull C3TypeSuffix o) {
-    visitPsiElement(o);
-  }
-
-  public void visitTypedefDeclaration(@NotNull C3TypedefDeclaration o) {
     visitPsiElement(o);
   }
 

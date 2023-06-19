@@ -30,31 +30,31 @@ public class C3DefDeclImpl extends ASTWrapperPsiElement implements C3DefDecl {
   @Override
   @NotNull
   public C3AnyIdent getAnyIdent() {
-    return findNotNullChildByClass(C3AnyIdent.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3AnyIdent.class));
   }
 
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3DefDeclarationSource getDefDeclarationSource() {
-    return findNotNullChildByClass(C3DefDeclarationSource.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3DefDeclarationSource.class));
   }
 
   @Override
   @Nullable
   public C3DistinctInline getDistinctInline() {
-    return findChildByClass(C3DistinctInline.class);
+    return PsiTreeUtil.getChildOfType(this, C3DistinctInline.class);
   }
 
   @Override
   @Nullable
   public C3ParameterList getParameterList() {
-    return findChildByClass(C3ParameterList.class);
+    return PsiTreeUtil.getChildOfType(this, C3ParameterList.class);
   }
 
 }

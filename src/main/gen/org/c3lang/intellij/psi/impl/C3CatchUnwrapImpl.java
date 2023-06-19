@@ -30,13 +30,13 @@ public class C3CatchUnwrapImpl extends ASTWrapperPsiElement implements C3CatchUn
   @Override
   @NotNull
   public C3CatchUnwrapList getCatchUnwrapList() {
-    return findNotNullChildByClass(C3CatchUnwrapList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CatchUnwrapList.class));
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

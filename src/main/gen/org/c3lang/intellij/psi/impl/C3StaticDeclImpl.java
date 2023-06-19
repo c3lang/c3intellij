@@ -30,13 +30,13 @@ public class C3StaticDeclImpl extends ASTWrapperPsiElement implements C3StaticDe
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3CompoundStatement getCompoundStatement() {
-    return findNotNullChildByClass(C3CompoundStatement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class));
   }
 
 }

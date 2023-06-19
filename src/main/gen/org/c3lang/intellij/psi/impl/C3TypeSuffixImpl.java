@@ -30,7 +30,7 @@ public class C3TypeSuffixImpl extends ASTWrapperPsiElement implements C3TypeSuff
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

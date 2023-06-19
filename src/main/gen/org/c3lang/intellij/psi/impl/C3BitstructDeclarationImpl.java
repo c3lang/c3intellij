@@ -30,25 +30,25 @@ public class C3BitstructDeclarationImpl extends ASTWrapperPsiElement implements 
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3BitstructBody getBitstructBody() {
-    return findNotNullChildByClass(C3BitstructBody.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3BitstructBody.class));
   }
 
   @Override
   @NotNull
   public C3Type getType() {
-    return findNotNullChildByClass(C3Type.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
   @Override
   @NotNull
   public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));
   }
 
 }

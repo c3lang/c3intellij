@@ -92,7 +92,6 @@ LINE_COMMENT    = "//" .*
     "const" { return C3Types.KW_CONST; }
     "continue" { return C3Types.KW_CONTINUE; }
     "def" { return C3Types.KW_DEF; }
-    "define" { return C3Types.KW_DEFINE; }
     "default" { return C3Types.KW_DEFAULT; }
     "defer" { return C3Types.KW_DEFER; }
     "distinct" { return C3Types.KW_DISTINCT; }
@@ -120,7 +119,6 @@ LINE_COMMENT    = "//" .*
     "tlocal" { return C3Types.KW_TLOCAL; }
     "true" { return C3Types.KW_TRUE; }
     "try" { return C3Types.KW_TRY; }
-    "typedef" { return C3Types.KW_TYPEDEF; }
     "typeid" { return C3Types.KW_TYPEID; }
     "union" { return C3Types.KW_UNION; }
     "var" { return C3Types.KW_VAR; }

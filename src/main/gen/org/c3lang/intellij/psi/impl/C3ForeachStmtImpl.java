@@ -30,25 +30,25 @@ public class C3ForeachStmtImpl extends ASTWrapperPsiElement implements C3Foreach
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
   @Override
   @NotNull
   public C3ForeachVars getForeachVars() {
-    return findNotNullChildByClass(C3ForeachVars.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ForeachVars.class));
   }
 
   @Override
   @Nullable
   public C3Label getLabel() {
-    return findChildByClass(C3Label.class);
+    return PsiTreeUtil.getChildOfType(this, C3Label.class);
   }
 
   @Override
   @NotNull
   public C3Statement getStatement() {
-    return findNotNullChildByClass(C3Statement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
   }
 
 }

@@ -30,6 +30,7 @@ jobs:
         with:
           distribution: corretto
           java-version: 17
+          cache: gradle
 
       # Set environment variables
       - name: Export Properties

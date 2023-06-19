@@ -30,7 +30,7 @@ public class C3OptionalTypeImpl extends ASTWrapperPsiElement implements C3Option
   @Override
   @NotNull
   public C3Type getType() {
-    return findNotNullChildByClass(C3Type.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
 }

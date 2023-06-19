@@ -127,7 +127,6 @@ public interface C3TokenSets
                                         C3Types.KW_DEF,
                                         C3Types.KW_DEFAULT,
                                         C3Types.KW_DEFER,
-                                        C3Types.KW_DEFINE,
                                         C3Types.KW_DISTINCT,
                                         C3Types.KW_DO,
                                         C3Types.KW_ELSE,
@@ -153,7 +152,6 @@ public interface C3TokenSets
                                         C3Types.KW_TLOCAL,
                                         C3Types.KW_TRUE,
                                         C3Types.KW_TRY,
-                                        C3Types.KW_TYPEDEF,
                                         C3Types.KW_UNION,
                                         C3Types.KW_VAR,
                                         C3Types.KW_WHILE);

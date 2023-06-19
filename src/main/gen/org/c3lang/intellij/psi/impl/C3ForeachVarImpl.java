@@ -30,7 +30,7 @@ public class C3ForeachVarImpl extends ASTWrapperPsiElement implements C3ForeachV
   @Override
   @Nullable
   public C3OptionalType getOptionalType() {
-    return findChildByClass(C3OptionalType.class);
+    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
   }
 
 }

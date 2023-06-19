@@ -30,25 +30,25 @@ public class C3FuncDefinitionImpl extends ASTWrapperPsiElement implements C3Func
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3FnParameterList getFnParameterList() {
-    return findNotNullChildByClass(C3FnParameterList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3FnParameterList.class));
   }
 
   @Override
   @NotNull
   public C3FuncHeader getFuncHeader() {
-    return findNotNullChildByClass(C3FuncHeader.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3FuncHeader.class));
   }
 
   @Override
   @Nullable
   public C3MacroFuncBody getMacroFuncBody() {
-    return findChildByClass(C3MacroFuncBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3MacroFuncBody.class);
   }
 
 }

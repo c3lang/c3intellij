@@ -30,7 +30,7 @@ public class C3VarStmtImpl extends ASTWrapperPsiElement implements C3VarStmt {
   @Override
   @NotNull
   public C3VarDecl getVarDecl() {
-    return findNotNullChildByClass(C3VarDecl.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3VarDecl.class));
   }
 
 }

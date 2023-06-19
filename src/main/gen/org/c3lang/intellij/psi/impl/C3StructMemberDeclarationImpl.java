@@ -30,31 +30,31 @@ public class C3StructMemberDeclarationImpl extends ASTWrapperPsiElement implemen
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3BitstructBody getBitstructBody() {
-    return findChildByClass(C3BitstructBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3BitstructBody.class);
   }
 
   @Override
   @Nullable
   public C3IdentifierList getIdentifierList() {
-    return findChildByClass(C3IdentifierList.class);
+    return PsiTreeUtil.getChildOfType(this, C3IdentifierList.class);
   }
 
   @Override
   @Nullable
   public C3StructBody getStructBody() {
-    return findChildByClass(C3StructBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3StructBody.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

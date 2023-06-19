@@ -30,7 +30,7 @@ public class C3PathAtIdentExprImpl extends C3ExprImpl implements C3PathAtIdentEx
   @Override
   @NotNull
   public C3PathAtIdent getPathAtIdent() {
-    return findNotNullChildByClass(C3PathAtIdent.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3PathAtIdent.class));
   }
 
 }
