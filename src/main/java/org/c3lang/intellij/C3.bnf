@@ -169,7 +169,7 @@ const_decl ::= KW_CONST type? CONST_IDENT attributes? EQ expr EOS
 
 ct_assert_stmt ::= KW_CT_ERROR constant_expr EOS | KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
 ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS
-assert_stmt ::= KW_ASSERT LP (try_unwrap_chain | expr) (COMMA expr)? RP EOS
+assert_stmt ::= KW_ASSERT LP (try_unwrap_chain | expr) (COMMA expr)* RP EOS
 ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
 
 ct_switch_stmt ::= ct_switch ct_switch_body KW_CT_ENDSWITCH

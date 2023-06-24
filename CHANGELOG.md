@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.0.9] - 2023-06-24
+
+### Updated
+- `assert` now accepts printf style arguments.
+
 ## [0.0.8] - 2023-06-19
 
 ### Updated

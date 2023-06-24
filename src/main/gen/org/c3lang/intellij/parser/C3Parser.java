@@ -521,7 +521,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_ASSERT LP (try_unwrap_chain | expr) (COMMA expr)? RP EOS
+  // KW_ASSERT LP (try_unwrap_chain | expr) (COMMA expr)* RP EOS
   public static boolean assert_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assert_stmt")) return false;
     if (!nextTokenIs(b, KW_ASSERT)) return false;
@@ -544,10 +544,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (COMMA expr)?
+  // (COMMA expr)*
   private static boolean assert_stmt_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assert_stmt_3")) return false;
-    assert_stmt_3_0(b, l + 1);
+    while (true) {
+      int c = current_position_(b);
+      if (!assert_stmt_3_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "assert_stmt_3", c)) break;
+    }
     return true;
   }
 
