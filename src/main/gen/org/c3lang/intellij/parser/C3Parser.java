@@ -36,14 +36,15 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
-    create_token_set_(ASM_EXPR, ASSIGN_TYPE_EXPR, ATTRIBUTE_OPERATOR_EXPR, BINARY_EXPR,
-      BUILTIN_CONST_EXPR, BUILTIN_EXPR, BYTES_EXPR, CALL_EXPR,
-      COMPOUND_INIT_EXPR, CONSTANT_EXPR, CT_ANALYZE_EXPR, CT_ARG_EXPR,
-      CT_CALL_EXPR, CT_CHECKS_EXPR, DECL_OR_EXPR, EXPR,
-      EXPR_BLOCK_EXPR, GROUPED_EXPR, INIT_LIST_EXPR, KEYWORD_EXPR,
-      LAMBDA_DECL_EXPR, LAMBDA_DECL_SHORT_EXPR, LITERAL_EXPR, LOCAL_IDENT_EXPR,
-      OPTIONAL_EXPR, PATH_AT_IDENT_EXPR, PATH_CONST_EXPR, PATH_IDENT_EXPR,
-      STRING_EXPR, TERNARY_EXPR, TYPE_ACCESS_EXPR, UNARY_EXPR),
+    create_token_set_(ADD_EXPR, ASM_EXPR, ASSIGN_TYPE_EXPR, ATTRIBUTE_OPERATOR_EXPR,
+      BINARY_EXPR, BUILTIN_CONST_EXPR, BUILTIN_EXPR, BYTES_EXPR,
+      CALL_EXPR, COMPOUND_INIT_EXPR, CONSTANT_EXPR, CT_ANALYZE_EXPR,
+      CT_ARG_EXPR, CT_CALL_EXPR, CT_CHECKS_EXPR, DECL_OR_EXPR,
+      EXPR, EXPR_BLOCK_EXPR, GROUPED_EXPR, INIT_LIST_EXPR,
+      KEYWORD_EXPR, LAMBDA_DECL_EXPR, LAMBDA_DECL_SHORT_EXPR, LITERAL_EXPR,
+      LOCAL_IDENT_EXPR, OPTIONAL_EXPR, PATH_AT_IDENT_EXPR, PATH_CONST_EXPR,
+      PATH_IDENT_EXPR, STRING_EXPR, TERNARY_EXPR, TYPE_ACCESS_EXPR,
+      UNARY_EXPR),
   };
 
   /* ********************************************************** */
@@ -83,6 +84,29 @@ public class C3Parser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, BINARY_OP, "<operator>");
     r = consumeToken(b, PLUS);
     if (!r) r = consumeToken(b, MINUS);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // add_bin_expr
+  //     | bit_bin_expr
+  //     | shift_bin_expr
+  //     | mult_bin_expr
+  //     | unary_expr
+  //     | call_expr
+  //     | primary_group
+  public static boolean add_expr(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "add_expr")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _COLLAPSE_, ADD_EXPR, "<add expr>");
+    r = expr(b, l + 1, 5);
+    if (!r) r = expr(b, l + 1, 6);
+    if (!r) r = expr(b, l + 1, 7);
+    if (!r) r = expr(b, l + 1, 8);
+    if (!r) r = unary_expr(b, l + 1);
+    if (!r) r = expr(b, l + 1, 10);
+    if (!r) r = expr(b, l + 1, 11);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2869,12 +2893,12 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expr | type
+  // add_expr | type
   public static boolean generic_parameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "generic_parameter")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, GENERIC_PARAMETER, "<generic parameter>");
-    r = expr(b, l + 1, -1);
+    r = add_expr(b, l + 1);
     if (!r) r = type(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;

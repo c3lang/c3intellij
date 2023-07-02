@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.0.10] - 2023-07-02
+
+### Fixed
+
+- Fixed incorrect parsing of integer generics.
+
 ## [0.0.9] - 2023-06-24
 
 ### Updated

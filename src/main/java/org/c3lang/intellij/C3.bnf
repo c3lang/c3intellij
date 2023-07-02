@@ -95,7 +95,7 @@ func_typedef ::= KW_FN optional_type fn_parameter_list
 
 distinct_inline ::= KW_DISTINCT KW_INLINE? | KW_INLINE KW_DISTINCT?
 typedef_type ::= func_typedef | type generic_parameters?
-generic_parameter ::= expr | type
+generic_parameter ::= add_expr | type
 generic_parameters ::= LT_OP generic_parameter (COMMA generic_parameter)* GT_OP
 any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
@@ -373,6 +373,14 @@ private primary_group ::= literal_expr
     | lambda_decl_expr
     | lambda_decl_short_expr
     | init_list_expr
+
+add_expr ::= add_bin_expr
+    | bit_bin_expr
+    | shift_bin_expr
+    | mult_bin_expr
+    | unary_expr
+    | call_expr
+    | primary_group
 
 expr ::= assign_bin_expr
     | assign_type_expr

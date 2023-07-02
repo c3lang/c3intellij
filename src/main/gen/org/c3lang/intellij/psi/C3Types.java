@@ -9,6 +9,7 @@ import org.c3lang.intellij.psi.impl.*;
 public interface C3Types {
 
   IElementType ACCESS_IDENT = new C3ElementType("ACCESS_IDENT");
+  IElementType ADD_EXPR = new C3ElementType("ADD_EXPR");
   IElementType ANY_IDENT = new C3ElementType("ANY_IDENT");
   IElementType ARG = new C3ElementType("ARG");
   IElementType ARG_LIST = new C3ElementType("ARG_LIST");
