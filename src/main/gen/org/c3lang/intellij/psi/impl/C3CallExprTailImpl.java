@@ -47,6 +47,12 @@ public class C3CallExprTailImpl extends ASTWrapperPsiElement implements C3CallEx
 
   @Override
   @Nullable
+  public C3GenericParameters getGenericParameters() {
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
+  }
+
+  @Override
+  @Nullable
   public C3RangeExp getRangeExp() {
     return PsiTreeUtil.getChildOfType(this, C3RangeExp.class);
   }

@@ -28,7 +28,7 @@ translation_unit ::= default_module_section? module_section*
 default_module_section ::= top_level+
 module_section ::= module top_level*
 
-module ::= KW_MODULE path_ident (LT_OP module_params GT_OP)? attributes? EOS {
+module ::= KW_MODULE path_ident (LGENPAR module_params RGENPAR)? attributes? EOS {
 }
 
 type_decl ::= struct_declaration
@@ -95,8 +95,8 @@ func_typedef ::= KW_FN optional_type fn_parameter_list
 
 distinct_inline ::= KW_DISTINCT KW_INLINE? | KW_INLINE KW_DISTINCT?
 typedef_type ::= func_typedef | type generic_parameters?
-generic_parameter ::= add_expr | type
-generic_parameters ::= LT_OP generic_parameter (COMMA generic_parameter)* GT_OP
+generic_parameter ::= expr | type
+generic_parameters ::= LGENPAR generic_parameter (COMMA generic_parameter)* RGENPAR
 any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
 def_attr_values ::= LB attributes? RB
@@ -139,6 +139,7 @@ call_invocation ::= LP call_arg_list RP AT_IDENT*
 
 call_expr_tail ::= call_invocation compound_statement?
     | LBT (range_exp | range_loc) RBT
+    | generic_parameters
     | DOT access_ident
     | PLUSPLUS
     | MINUSMINUS
@@ -190,7 +191,7 @@ base_type ::= KW_VOID
     | KW_ANYFAULT
     | KW_ANY
     | KW_TYPEID
-    | path? TYPE_IDENT
+    | path? TYPE_IDENT generic_parameters?
     | CT_TYPE_IDENT
     | KW_CT_TYPEOF grouped_expression
     | KW_CT_TYPEFROM const_paren_expr
@@ -373,14 +374,6 @@ private primary_group ::= literal_expr
     | lambda_decl_expr
     | lambda_decl_short_expr
     | init_list_expr
-
-add_expr ::= add_bin_expr
-    | bit_bin_expr
-    | shift_bin_expr
-    | mult_bin_expr
-    | unary_expr
-    | call_expr
-    | primary_group
 
 expr ::= assign_bin_expr
     | assign_type_expr

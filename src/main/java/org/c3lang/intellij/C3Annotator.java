@@ -27,7 +27,7 @@ public class C3Annotator implements Annotator
         {
             return C3SyntaxHighlighter.ENUM_NAME_KEY;
         }
-        else if (definition instanceof C3TypedefDeclaration || definition instanceof C3DefDecl)
+        else if (definition instanceof C3DefDecl)
         {
             return C3SyntaxHighlighter.TYPEDEF_NAME_KEY;
         }
@@ -333,10 +333,6 @@ public class C3Annotator implements Annotator
         else if (psiElement instanceof C3DefDecl element)
         {
             annotate(element, annotationHolder);
-        }
-        else if (psiElement instanceof C3IdentAliasName)
-        {
-            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES).textAttributes(C3SyntaxHighlighter.FUNCTION_KEY).create();
         }
         else if (psiElement instanceof C3Type || psiElement instanceof C3OptionalType)
         {

@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.0.11] - 2023-07-06
+
+### Updated
+
+- Support new generics syntax.
+
 ## [0.0.10] - 2023-07-02
 
 ### Fixed

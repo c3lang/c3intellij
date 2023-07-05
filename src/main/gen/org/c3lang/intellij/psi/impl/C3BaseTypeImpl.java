@@ -41,6 +41,12 @@ public class C3BaseTypeImpl extends ASTWrapperPsiElement implements C3BaseType {
 
   @Override
   @Nullable
+  public C3GenericParameters getGenericParameters() {
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
+  }
+
+  @Override
+  @Nullable
   public C3GroupedExpression getGroupedExpression() {
     return PsiTreeUtil.getChildOfType(this, C3GroupedExpression.class);
   }

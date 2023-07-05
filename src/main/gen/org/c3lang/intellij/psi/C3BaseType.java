@@ -14,6 +14,9 @@ public interface C3BaseType extends PsiElement {
   C3FloatType getFloatType();
 
   @Nullable
+  C3GenericParameters getGenericParameters();
+
+  @Nullable
   C3GroupedExpression getGroupedExpression();
 
   @Nullable

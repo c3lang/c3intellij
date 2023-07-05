@@ -201,6 +201,7 @@ LINE_COMMENT    = "//" .*
     "<=" { return C3Types.LE_OP; }
     "{|" { return C3Types.LBRAPIPE; }
     "[<" { return C3Types.LVEC; }
+    "(<" { return C3Types.LGENPAR; }
     "-=" { return C3Types.MINUS_ASSIGN; }
     "--" { return C3Types.MINUSMINUS; }
     "%=" { return C3Types.MOD_ASSIGN; }
@@ -211,6 +212,7 @@ LINE_COMMENT    = "//" .*
     "++" { return C3Types.PLUSPLUS; }
     "|}" { return C3Types.RBRAPIPE; }
     ">]" { return C3Types.RVEC; }
+    ">)" { return C3Types.RGENPAR; }
     "::" { return C3Types.SCOPE; }
     ">>" { return C3Types.SHR; }
     "<<" { return C3Types.SHL; }

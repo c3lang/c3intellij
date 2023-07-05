@@ -16,7 +16,9 @@ public class C3BraceMatcher implements PairedBraceMatcher
                 new BracePair(C3Types.LB, C3Types.RB, true),
                 new BracePair(C3Types.LP, C3Types.RP, false),
                 new BracePair(C3Types.LBT, C3Types.RBT, false),
-                new BracePair(C3Types.LBRAPIPE, C3Types.RBRAPIPE, true)
+                new BracePair(C3Types.LBRAPIPE, C3Types.RBRAPIPE, true),
+                new BracePair(C3Types.LVEC, C3Types.RVEC, false),
+                new BracePair(C3Types.LGENPAR, C3Types.RGENPAR, false)
         };
     }
 

@@ -17,6 +17,9 @@ public interface C3CallExprTail extends PsiElement {
   C3CompoundStatement getCompoundStatement();
 
   @Nullable
+  C3GenericParameters getGenericParameters();
+
+  @Nullable
   C3RangeExp getRangeExp();
 
   @Nullable

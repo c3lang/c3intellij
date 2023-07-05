@@ -37,8 +37,8 @@ public interface C3TokenSets
             LOGICAL_OPS, RELATIONAL_OPS, EQUALITY_OPS, BITWISE_OPS, ADDITIVE_OPS, MULTIPLICATIVE_OPS, SHIFT_OPS
     );
     TokenSet BRACES = TokenSet.create(C3Types.LB, C3Types.RB);
-    TokenSet BRACKETS = TokenSet.create(C3Types.LBT, C3Types.RBT);
-    TokenSet PARENTHESES = TokenSet.create(C3Types.LP, C3Types.RP);
+    TokenSet BRACKETS = TokenSet.create(C3Types.LBT, C3Types.RBT, C3Types.LVEC, C3Types.RVEC);
+    TokenSet PARENTHESES = TokenSet.create(C3Types.LP, C3Types.RP, C3Types.LGENPAR, C3Types.RGENPAR);
     TokenSet OTHER_OPERATORS = TokenSet.create(C3Types.BIT_NOT);
     TokenSet IDENTIFIER = TokenSet.create(C3Types.IDENT);
     TokenSet OPERATOR_ASSIGN_OPS = TokenSet.create(

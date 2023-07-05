@@ -9,7 +9,6 @@ import org.c3lang.intellij.psi.impl.*;
 public interface C3Types {
 
   IElementType ACCESS_IDENT = new C3ElementType("ACCESS_IDENT");
-  IElementType ADD_EXPR = new C3ElementType("ADD_EXPR");
   IElementType ANY_IDENT = new C3ElementType("ANY_IDENT");
   IElementType ARG = new C3ElementType("ARG");
   IElementType ARG_LIST = new C3ElementType("ARG_LIST");
@@ -324,6 +323,7 @@ public interface C3Types {
   IElementType LBRAPIPE = new C3TokenType("LBRAPIPE");
   IElementType LBT = new C3TokenType("LBT");
   IElementType LE_OP = new C3TokenType("LE_OP");
+  IElementType LGENPAR = new C3TokenType("LGENPAR");
   IElementType LP = new C3TokenType("LP");
   IElementType LT_OP = new C3TokenType("LT_OP");
   IElementType LVEC = new C3TokenType("LVEC");
@@ -343,6 +343,7 @@ public interface C3Types {
   IElementType RB = new C3TokenType("RB");
   IElementType RBRAPIPE = new C3TokenType("RBRAPIPE");
   IElementType RBT = new C3TokenType("RBT");
+  IElementType RGENPAR = new C3TokenType("RGENPAR");
   IElementType RP = new C3TokenType("RP");
   IElementType RVEC = new C3TokenType("RVEC");
   IElementType SCOPE = new C3TokenType("SCOPE");

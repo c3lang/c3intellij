@@ -26,7 +26,7 @@ public class C3ParserDefinition implements ParserDefinition, C3TokenSets
     public static IElementType BLOCK_COMMENT = new C3ElementType("BLOCK_COMMENT_LEAD");
     public static IElementType DOC_COMMENT = new C3ElementType("DOC_COMMENT");
 
-    public static IFileElementType FILE = new IStubFileElementType<>(C3Language.INSTANCE);
+    public static IFileElementType FILE = new IStubFileElementType<>("C3 file", C3Language.INSTANCE);
 
 
     @NotNull

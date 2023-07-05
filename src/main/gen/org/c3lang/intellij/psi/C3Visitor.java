@@ -11,10 +11,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitAddExpr(@NotNull C3AddExpr o) {
-    visitExpr(o);
-  }
-
   public void visitAnyIdent(@NotNull C3AnyIdent o) {
     visitPsiElement(o);
   }
