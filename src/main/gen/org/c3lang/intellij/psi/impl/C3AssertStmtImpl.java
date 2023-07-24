@@ -33,10 +33,4 @@ public class C3AssertStmtImpl extends ASTWrapperPsiElement implements C3AssertSt
     return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Expr.class);
   }
 
-  @Override
-  @Nullable
-  public C3TryUnwrapChain getTryUnwrapChain() {
-    return PsiTreeUtil.getChildOfType(this, C3TryUnwrapChain.class);
-  }
-
 }

@@ -521,26 +521,17 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_ASSERT LP (try_unwrap_chain | expr) (COMMA expr)* RP EOS
+  // KW_ASSERT LP expr (COMMA expr)* RP EOS
   public static boolean assert_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assert_stmt")) return false;
     if (!nextTokenIs(b, KW_ASSERT)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, KW_ASSERT, LP);
-    r = r && assert_stmt_2(b, l + 1);
+    r = r && expr(b, l + 1, -1);
     r = r && assert_stmt_3(b, l + 1);
     r = r && consumeTokens(b, 0, RP, EOS);
     exit_section_(b, m, ASSERT_STMT, r);
-    return r;
-  }
-
-  // try_unwrap_chain | expr
-  private static boolean assert_stmt_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "assert_stmt_2")) return false;
-    boolean r;
-    r = try_unwrap_chain(b, l + 1);
-    if (!r) r = expr(b, l + 1, -1);
     return r;
   }
 
@@ -3718,7 +3709,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_NEXTCASE ((CONST_IDENT COLON)? (type | expr))? EOS
+  // KW_NEXTCASE ((CONST_IDENT COLON)? (type | expr | KW_DEFAULT))? EOS
   public static boolean nextcase_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "nextcase_stmt")) return false;
     if (!nextTokenIs(b, KW_NEXTCASE)) return false;
@@ -3731,14 +3722,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ((CONST_IDENT COLON)? (type | expr))?
+  // ((CONST_IDENT COLON)? (type | expr | KW_DEFAULT))?
   private static boolean nextcase_stmt_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "nextcase_stmt_1")) return false;
     nextcase_stmt_1_0(b, l + 1);
     return true;
   }
 
-  // (CONST_IDENT COLON)? (type | expr)
+  // (CONST_IDENT COLON)? (type | expr | KW_DEFAULT)
   private static boolean nextcase_stmt_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "nextcase_stmt_1_0")) return false;
     boolean r;
@@ -3766,12 +3757,13 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // type | expr
+  // type | expr | KW_DEFAULT
   private static boolean nextcase_stmt_1_0_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "nextcase_stmt_1_0_1")) return false;
     boolean r;
     r = type(b, l + 1);
     if (!r) r = expr(b, l + 1, -1);
+    if (!r) r = consumeToken(b, KW_DEFAULT);
     return r;
   }
 

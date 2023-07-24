@@ -10,7 +10,4 @@ public interface C3AssertStmt extends PsiElement {
   @NotNull
   List<C3Expr> getExprList();
 
-  @Nullable
-  C3TryUnwrapChain getTryUnwrapChain();
-
 }

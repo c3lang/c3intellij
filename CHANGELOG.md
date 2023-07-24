@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [0.0.12] - 2023-07-24
+
+### Updated
+
+- Remove assert(try ...)
+- Support `nextcase default`.
+
 ## [0.0.11] - 2023-07-06
 
 ### Updated

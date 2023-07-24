@@ -170,7 +170,7 @@ const_decl ::= KW_CONST type? CONST_IDENT attributes? EQ expr EOS
 
 ct_assert_stmt ::= KW_CT_ERROR constant_expr EOS | KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
 ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS
-assert_stmt ::= KW_ASSERT LP (try_unwrap_chain | expr) (COMMA expr)* RP EOS
+assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS
 ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
 
 ct_switch_stmt ::= ct_switch ct_switch_body KW_CT_ENDSWITCH
@@ -269,7 +269,7 @@ foreach_vars ::= foreach_var (COMMA foreach_var)?
 foreach_var ::= optional_type? AMP? IDENT
 continue_stmt ::= KW_CONTINUE CONST_IDENT? EOS
 break_stmt ::= KW_BREAK CONST_IDENT? EOS
-nextcase_stmt ::= KW_NEXTCASE ((CONST_IDENT COLON)? (type | expr))? EOS
+nextcase_stmt ::= KW_NEXTCASE ((CONST_IDENT COLON)? (type | expr | KW_DEFAULT))? EOS
 
 asm_block_stmt ::= KW_ASM (LP expr RP | LB asm_stmt* RB)
 asm_stmt ::= asm_instr asm_exprs? EOS
