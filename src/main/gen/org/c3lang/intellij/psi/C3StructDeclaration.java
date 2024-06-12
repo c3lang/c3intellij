@@ -10,6 +10,9 @@ public interface C3StructDeclaration extends PsiElement {
   @Nullable
   C3Attributes getAttributes();
 
+  @Nullable
+  C3InterfaceImpl getInterfaceImpl();
+
   @NotNull
   C3StructBody getStructBody();
 

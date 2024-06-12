@@ -8,23 +8,29 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3DistinctInlineImpl extends ASTWrapperPsiElement implements C3DistinctInline {
+public class C3CtDefinedCheckExprImpl extends C3ExprImpl implements C3CtDefinedCheckExpr {
 
-  public C3DistinctInlineImpl(@NotNull ASTNode node) {
+  public C3CtDefinedCheckExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
+  @Override
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitDistinctInline(this);
+    visitor.visitCtDefinedCheckExpr(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @Nullable
+  public C3Type getType() {
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

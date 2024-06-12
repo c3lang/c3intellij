@@ -8,17 +8,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3EnumSpecImpl extends ASTWrapperPsiElement implements C3EnumSpec {
+public class C3CtCondExprImpl extends C3ExprImpl implements C3CtCondExpr {
 
-  public C3EnumSpecImpl(@NotNull ASTNode node) {
+  public C3CtCondExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
+  @Override
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitEnumSpec(this);
+    visitor.visitCtCondExpr(this);
   }
 
   @Override
@@ -28,15 +28,15 @@ public class C3EnumSpecImpl extends ASTWrapperPsiElement implements C3EnumSpec {
   }
 
   @Override
-  @Nullable
-  public C3EnumParamList getEnumParamList() {
-    return PsiTreeUtil.getChildOfType(this, C3EnumParamList.class);
+  @NotNull
+  public C3CtCond getCtCond() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtCond.class));
   }
 
   @Override
-  @Nullable
-  public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  @NotNull
+  public C3ExpressionList getExpressionList() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ExpressionList.class));
   }
 
 }

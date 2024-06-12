@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface C3EnumConstant extends PsiElement {
 
   @Nullable
-  C3ArgList getArgList();
+  C3Attributes getAttributes();
+
+  @Nullable
+  C3Expr getExpr();
 
 }

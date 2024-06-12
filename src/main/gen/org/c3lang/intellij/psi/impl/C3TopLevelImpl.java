@@ -29,6 +29,12 @@ public class C3TopLevelImpl extends ASTWrapperPsiElement implements C3TopLevel {
 
   @Override
   @Nullable
+  public C3Attributes getAttributes() {
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+  }
+
+  @Override
+  @Nullable
   public C3ConstDecl getConstDecl() {
     return PsiTreeUtil.getChildOfType(this, C3ConstDecl.class);
   }
@@ -55,6 +61,12 @@ public class C3TopLevelImpl extends ASTWrapperPsiElement implements C3TopLevel {
   @Nullable
   public C3DefDecl getDefDecl() {
     return PsiTreeUtil.getChildOfType(this, C3DefDecl.class);
+  }
+
+  @Override
+  @Nullable
+  public C3DistinctDeclaration getDistinctDeclaration() {
+    return PsiTreeUtil.getChildOfType(this, C3DistinctDeclaration.class);
   }
 
   @Override
@@ -89,14 +101,14 @@ public class C3TopLevelImpl extends ASTWrapperPsiElement implements C3TopLevel {
 
   @Override
   @Nullable
-  public C3MacroDefinition getMacroDefinition() {
-    return PsiTreeUtil.getChildOfType(this, C3MacroDefinition.class);
+  public C3InterfaceDefinition getInterfaceDefinition() {
+    return PsiTreeUtil.getChildOfType(this, C3InterfaceDefinition.class);
   }
 
   @Override
   @Nullable
-  public C3StaticDecl getStaticDecl() {
-    return PsiTreeUtil.getChildOfType(this, C3StaticDecl.class);
+  public C3MacroDefinition getMacroDefinition() {
+    return PsiTreeUtil.getChildOfType(this, C3MacroDefinition.class);
   }
 
   @Override

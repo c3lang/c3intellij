@@ -4,6 +4,22 @@
 
 ## [Unreleased]
 
+## [0.0.14] - 2024-06-12
+
+### Updated
+
+- 0.6.0 compatibility: Support new syntax for enums.
+
+## [0.0.13] - 2023-10-25
+
+### Updated
+
+- Support `$feature`, `$is_const`, `$and`, `$or`.
+- Support `asm` attributes.
+- Support new `$defined`.
+- Support `interface`.
+- Remove support for `$checks`.
+
 ## [0.0.12] - 2023-07-24
 
 ### Updated

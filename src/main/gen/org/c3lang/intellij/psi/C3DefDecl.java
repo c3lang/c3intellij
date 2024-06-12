@@ -17,9 +17,6 @@ public interface C3DefDecl extends PsiElement {
   C3DefDeclarationSource getDefDeclarationSource();
 
   @Nullable
-  C3DistinctInline getDistinctInline();
-
-  @Nullable
   C3ParameterList getParameterList();
 
 }

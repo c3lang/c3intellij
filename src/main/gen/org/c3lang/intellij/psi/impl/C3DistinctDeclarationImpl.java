@@ -11,14 +11,14 @@ import static org.c3lang.intellij.psi.C3Types.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3StructDeclarationImpl extends ASTWrapperPsiElement implements C3StructDeclaration {
+public class C3DistinctDeclarationImpl extends ASTWrapperPsiElement implements C3DistinctDeclaration {
 
-  public C3StructDeclarationImpl(@NotNull ASTNode node) {
+  public C3DistinctDeclarationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitStructDeclaration(this);
+    visitor.visitDistinctDeclaration(this);
   }
 
   @Override
@@ -35,14 +35,20 @@ public class C3StructDeclarationImpl extends ASTWrapperPsiElement implements C3S
 
   @Override
   @Nullable
+  public C3GenericParameters getGenericParameters() {
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
+  }
+
+  @Override
+  @Nullable
   public C3InterfaceImpl getInterfaceImpl() {
     return PsiTreeUtil.getChildOfType(this, C3InterfaceImpl.class);
   }
 
   @Override
   @NotNull
-  public C3StructBody getStructBody() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3StructBody.class));
+  public C3Type getType() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
   @Override

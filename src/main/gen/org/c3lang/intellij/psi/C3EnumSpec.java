@@ -10,7 +10,7 @@ public interface C3EnumSpec extends PsiElement {
   @Nullable
   C3EnumParamList getEnumParamList();
 
-  @NotNull
+  @Nullable
   C3Type getType();
 
 }

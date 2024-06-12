@@ -11,32 +11,20 @@ import static org.c3lang.intellij.psi.C3Types.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3StaticDeclImpl extends ASTWrapperPsiElement implements C3StaticDecl {
+public class C3CtCondImpl extends ASTWrapperPsiElement implements C3CtCond {
 
-  public C3StaticDeclImpl(@NotNull ASTNode node) {
+  public C3CtCondImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitStaticDecl(this);
+    visitor.visitCtCond(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
-  }
-
-  @Override
-  @NotNull
-  public C3CompoundStatement getCompoundStatement() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class));
   }
 
 }

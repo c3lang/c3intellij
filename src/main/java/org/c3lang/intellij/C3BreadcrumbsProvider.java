@@ -5,6 +5,7 @@ import com.intellij.lang.Language;
 import com.intellij.psi.PsiElement;
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider;
 import org.c3lang.intellij.psi.*;
+import org.c3lang.intellij.psi.impl.C3InterfaceDefinitionImpl;
 import org.jetbrains.annotations.NotNull;
 
 public class C3BreadcrumbsProvider implements BreadcrumbsProvider
@@ -47,9 +48,17 @@ public class C3BreadcrumbsProvider implements BreadcrumbsProvider
         {
             return decl.getMacroHeader().getMacroName().getText();
         }
+        else if (psiElement instanceof C3DistinctDeclaration decl)
+        {
+            return decl.getTypeName().getText();
+        }
+        else if (psiElement instanceof C3InterfaceDefinition decl)
+        {
+            return decl.getTypeName().getText();
+        }
         else if (psiElement instanceof C3FuncDefinition decl)
         {
-            return decl.getFuncHeader().getFuncName().getText();
+            return decl.getFuncDef().getFuncHeader().getFuncName().getText();
         }
         else if (psiElement instanceof C3BitstructDeclaration decl)
         {

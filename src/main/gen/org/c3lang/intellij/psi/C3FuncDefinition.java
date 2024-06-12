@@ -7,14 +7,8 @@ import com.intellij.psi.PsiElement;
 
 public interface C3FuncDefinition extends PsiElement {
 
-  @Nullable
-  C3Attributes getAttributes();
-
   @NotNull
-  C3FnParameterList getFnParameterList();
-
-  @NotNull
-  C3FuncHeader getFuncHeader();
+  C3FuncDef getFuncDef();
 
   @Nullable
   C3MacroFuncBody getMacroFuncBody();

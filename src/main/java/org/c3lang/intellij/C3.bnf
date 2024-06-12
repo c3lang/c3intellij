@@ -67,11 +67,9 @@ top_level ::= import_decl
     | def_decl
     | fault_declaration
     | macro_definition
-    | static_decl
-    | KW_ASM expr EOS
-
-
-static_decl ::= KW_STATIC IDENT attributes? compound_statement
+    | KW_ASM expr attributes? EOS
+    | interface_definition
+    | distinct_declaration
 
 private const_paren_expr ::= LP constant_expr RP
 
@@ -86,14 +84,13 @@ private struct_or_union ::= KW_STRUCT | KW_UNION
 
 type_name ::= TYPE_IDENT
 
-struct_declaration ::= struct_or_union type_name attributes? struct_body
+struct_declaration ::= struct_or_union type_name interface_impl? attributes? struct_body
 
-bitstruct_declaration ::= KW_BITSTRUCT type_name COLON type attributes? bitstruct_body
+bitstruct_declaration ::= KW_BITSTRUCT type_name interface_impl? COLON type attributes? bitstruct_body
 
 func_typedef ::= KW_FN optional_type fn_parameter_list
 
 
-distinct_inline ::= KW_DISTINCT KW_INLINE? | KW_INLINE KW_DISTINCT?
 typedef_type ::= func_typedef | type generic_parameters?
 generic_parameter ::= expr | type
 generic_parameters ::= LGENPAR generic_parameter (COMMA generic_parameter)* RGENPAR
@@ -101,7 +98,7 @@ any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CO
 
 def_attr_values ::= LB attributes? RB
 def_declaration_source ::= (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameters?
-def_decl ::= KW_DEF any_ident (LP parameter_list RP)? EQ distinct_inline? def_declaration_source attributes? EOS
+def_decl ::= KW_DEF any_ident (LP parameter_list RP)? EQ def_declaration_source attributes? EOS
 
 struct_body ::= LB struct_member_declaration* RB
 
@@ -115,13 +112,13 @@ bitstruct_body ::= LB (bitstruct_def+ | bitstruct_simple_def+)? RB
 bitstruct_def ::= base_type IDENT COLON constant_expr (DOTDOT constant_expr)? EOS
 bitstruct_simple_def ::= base_type IDENT EOS
 
-enum_declaration ::= KW_ENUM type_name (COLON enum_spec)? attributes? LB enum_list RB
-enum_spec ::= type enum_param_list?
-enum_param_list ::= LP enum_param_decl (COMMA enum_param_decl)* RP
-enum_param_decl ::= type (IDENT (EQ expr)?)?
-enum_list ::= enum_constant (COMMA enum_constant)* COMMA?
-enum_constant ::= CONST_IDENT (LP arg_list COMMA? RP)?
-arg_list ::= arg (COMMA arg)*
+enum_declaration ::= KW_ENUM type_name interface_impl? (COLON enum_spec)? attributes? LB enum_list RB
+enum_spec ::= enum_param_list | type enum_param_list?
+enum_param_list ::=  LP enum_param_decl (COMMA enum_param_decl)* RP
+enum_param_decl ::= type IDENT
+enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
+enum_constant ::= CONST_IDENT attributes? (EQ expr)?
+arg_list ::= arg (COMMA arg)* COMMA?
 arg ::= (param_path EQ)? (expr | type) | KW_CT_VASPLAT LP range_exp? RP | ELLIPSIS expr
 
 
@@ -147,13 +144,14 @@ call_expr_tail ::= call_invocation compound_statement?
     | BANGBANG
 
 
-ct_call ::= KW_CT_ALIGNOF | KW_CT_DEFINED | KW_CT_EXTNAMEOF | KW_CT_NAMEOF | KW_CT_OFFSETOF | KW_CT_QNAMEOF
+ct_call ::= KW_CT_ALIGNOF | KW_CT_EXTNAMEOF | KW_CT_NAMEOF | KW_CT_OFFSETOF | KW_CT_QNAMEOF
 ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR
-ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY
+ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_IS_CONST
+ct_cond ::= KW_CT_AND | KW_CT_OR
 
 flat_path ::= primary_group param_path? | type
 param_path ::= param_path_element+
-param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT primary_group
+param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT primary_group | DOT CT_TYPE_IDENT
 
 range_exp ::= range_loc? (DOTDOT | COLON) range_loc?
 range_loc ::= BIT_XOR? expr
@@ -162,7 +160,7 @@ optional_type ::= type BANG?
 fn_parameter_list ::= LP parameter_list? RP
 param_decl ::= parameter (EQ expr)?
 parameter_list ::= param_decl (COMMA param_decl)*
-parameter ::= type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDENT | AMP IDENT) attributes? | attributes?)
+parameter ::= KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDENT | AMP IDENT) attributes? | attributes?)
     | ELLIPSIS | AMP IDENT attributes? | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
     | CT_IDENT | CT_IDENT ELLIPSIS
 
@@ -271,7 +269,7 @@ continue_stmt ::= KW_CONTINUE CONST_IDENT? EOS
 break_stmt ::= KW_BREAK CONST_IDENT? EOS
 nextcase_stmt ::= KW_NEXTCASE ((CONST_IDENT COLON)? (type | expr | KW_DEFAULT))? EOS
 
-asm_block_stmt ::= KW_ASM (LP expr RP | LB asm_stmt* RB)
+asm_block_stmt ::= KW_ASM (LP expr RP attributes? | attributes? LB asm_stmt* RB)
 asm_stmt ::= asm_instr asm_exprs? EOS
 asm_instr ::= (KW_INT | IDENT) (DOT IDENT)?
 asm_exprs ::= asm_expr (COMMA asm_expr)*
@@ -338,9 +336,13 @@ local_ident_expr ::= CT_IDENT | HASH_IDENT
 type_access_expr ::= type DOT (access_ident | CONST_IDENT)
 expr_block_expr ::= LBRAPIPE statement_list? RBRAPIPE
 ct_call_expr ::= ct_call LP flat_path RP
+ct_feature_expr ::= KW_CT_FEATURE LP CONST_IDENT RP
 ct_arg_expr ::= ct_arg grouped_expression
 ct_analyze_expr ::= ct_analyze grouped_expression
-ct_checks_expr ::= KW_CT_CHECKS LP expression_list RP
+ct_defined_check_expr ::= expr | type
+ct_defined_check_expr_list ::= ct_defined_check_expr (COMMA ct_defined_check_expr)*
+ct_defined_expr ::= KW_CT_DEFINED LP ct_defined_check_expr_list RP
+ct_cond_expr ::= ct_cond LP expression_list RP
 lambda_decl_expr ::= lambda_decl compound_statement
 lambda_decl_short_expr ::= lambda_decl IMPLIES expr
 call_expr ::= expr call_expr_tail
@@ -368,16 +370,18 @@ private primary_group ::= literal_expr
     | type_access_expr
     | expr_block_expr
     | ct_call_expr
+    | ct_feature_expr
     | ct_arg_expr
     | ct_analyze_expr
-    | ct_checks_expr
+    | ct_defined_expr
+    | ct_cond_expr
     | lambda_decl_expr
     | lambda_decl_short_expr
     | init_list_expr
 
-expr ::= assign_bin_expr
+expr ::= ternary_group
+    | assign_bin_expr
     | assign_type_expr
-    | ternary_group
     | or_bin_expr
     | and_bin_expr
     | rel_bin_expr
@@ -392,15 +396,24 @@ expr ::= assign_bin_expr
 
 identifier_list ::= IDENT (COMMA IDENT)*
 
-func_definition ::= KW_FN func_header fn_parameter_list attributes? (macro_func_body | EOS)
+interface_definition ::= KW_INTERFACE type_name (COLON type (COMMA type)*)? interface_body
+
+interface_body ::= LB (func_def EOS)* RB
+
+func_def ::= KW_FN func_header fn_parameter_list attributes?
+func_definition ::= func_def (macro_func_body | EOS)
 
 macro_func_body ::= implies_body EOS | compound_statement
+
+interface_impl ::= LP type_name (COMMA type)* RP
+
+distinct_declaration ::= KW_DISTINCT type_name interface_impl? attributes? '=' KW_INLINE? type generic_parameters? EOS
 
 func_name ::= (type DOT)? IDENT
 
 func_header ::= optional_type func_name
 
-fault_declaration ::= KW_FAULT type_name attributes? LB CONST_IDENT (COMMA CONST_IDENT)* COMMA? RB
+fault_declaration ::= KW_FAULT type_name interface_impl? attributes? LB CONST_IDENT (COMMA CONST_IDENT)* COMMA? RB
 
 macro_name ::= (type DOT)? (AT_IDENT | IDENT)
 macro_definition ::= KW_MACRO macro_header LP macro_params RP attributes? macro_func_body

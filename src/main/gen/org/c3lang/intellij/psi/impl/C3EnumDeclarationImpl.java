@@ -46,6 +46,12 @@ public class C3EnumDeclarationImpl extends ASTWrapperPsiElement implements C3Enu
   }
 
   @Override
+  @Nullable
+  public C3InterfaceImpl getInterfaceImpl() {
+    return PsiTreeUtil.getChildOfType(this, C3InterfaceImpl.class);
+  }
+
+  @Override
   @NotNull
   public C3TypeName getTypeName() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));

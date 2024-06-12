@@ -29,8 +29,14 @@ public class C3EnumConstantImpl extends ASTWrapperPsiElement implements C3EnumCo
 
   @Override
   @Nullable
-  public C3ArgList getArgList() {
-    return PsiTreeUtil.getChildOfType(this, C3ArgList.class);
+  public C3Attributes getAttributes() {
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+  }
+
+  @Override
+  @Nullable
+  public C3Expr getExpr() {
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

@@ -215,12 +215,32 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitCtChecksExpr(@NotNull C3CtChecksExpr o) {
+  public void visitCtCond(@NotNull C3CtCond o) {
+    visitPsiElement(o);
+  }
+
+  public void visitCtCondExpr(@NotNull C3CtCondExpr o) {
+    visitExpr(o);
+  }
+
+  public void visitCtDefinedCheckExpr(@NotNull C3CtDefinedCheckExpr o) {
+    visitExpr(o);
+  }
+
+  public void visitCtDefinedCheckExprList(@NotNull C3CtDefinedCheckExprList o) {
+    visitPsiElement(o);
+  }
+
+  public void visitCtDefinedExpr(@NotNull C3CtDefinedExpr o) {
     visitExpr(o);
   }
 
   public void visitCtEchoStmt(@NotNull C3CtEchoStmt o) {
     visitPsiElement(o);
+  }
+
+  public void visitCtFeatureExpr(@NotNull C3CtFeatureExpr o) {
+    visitExpr(o);
   }
 
   public void visitCtForStmt(@NotNull C3CtForStmt o) {
@@ -287,7 +307,7 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitDistinctInline(@NotNull C3DistinctInline o) {
+  public void visitDistinctDeclaration(@NotNull C3DistinctDeclaration o) {
     visitPsiElement(o);
   }
 
@@ -375,6 +395,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitFuncDef(@NotNull C3FuncDef o) {
+    visitPsiElement(o);
+  }
+
   public void visitFuncDefinition(@NotNull C3FuncDefinition o) {
     visitPsiElement(o);
   }
@@ -448,6 +472,18 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitIntegerType(@NotNull C3IntegerType o) {
+    visitPsiElement(o);
+  }
+
+  public void visitInterfaceBody(@NotNull C3InterfaceBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitInterfaceDefinition(@NotNull C3InterfaceDefinition o) {
+    visitPsiElement(o);
+  }
+
+  public void visitInterfaceImpl(@NotNull C3InterfaceImpl o) {
     visitPsiElement(o);
   }
 
@@ -608,10 +644,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitStatementList(@NotNull C3StatementList o) {
-    visitPsiElement(o);
-  }
-
-  public void visitStaticDecl(@NotNull C3StaticDecl o) {
     visitPsiElement(o);
   }
 

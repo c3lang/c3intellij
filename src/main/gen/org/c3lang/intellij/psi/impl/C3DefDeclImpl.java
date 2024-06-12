@@ -47,12 +47,6 @@ public class C3DefDeclImpl extends ASTWrapperPsiElement implements C3DefDecl {
 
   @Override
   @Nullable
-  public C3DistinctInline getDistinctInline() {
-    return PsiTreeUtil.getChildOfType(this, C3DistinctInline.class);
-  }
-
-  @Override
-  @Nullable
   public C3ParameterList getParameterList() {
     return PsiTreeUtil.getChildOfType(this, C3ParameterList.class);
   }

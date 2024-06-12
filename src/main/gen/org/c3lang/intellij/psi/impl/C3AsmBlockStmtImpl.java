@@ -35,6 +35,12 @@ public class C3AsmBlockStmtImpl extends ASTWrapperPsiElement implements C3AsmBlo
 
   @Override
   @Nullable
+  public C3Attributes getAttributes() {
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+  }
+
+  @Override
+  @Nullable
   public C3Expr getExpr() {
     return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }

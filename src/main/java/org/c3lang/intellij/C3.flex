@@ -107,6 +107,7 @@ LINE_COMMENT    = "//" .*
     "fn" { return C3Types.KW_FN; }
     "if" { return C3Types.KW_IF; }
     "inline" { return C3Types.KW_INLINE; }
+    "interface" { return C3Types.KW_INTERFACE; }
     "import" { return C3Types.KW_IMPORT; }
     "macro" { return C3Types.KW_MACRO; }
     "module" { return C3Types.KW_MODULE; }
@@ -124,9 +125,9 @@ LINE_COMMENT    = "//" .*
     "var" { return C3Types.KW_VAR; }
     "while" { return C3Types.KW_WHILE; }
     "$alignof" { return C3Types.KW_CT_ALIGNOF; }
+    "$and" { return C3Types.KW_CT_AND; }
     "$assert" { return C3Types.KW_CT_ASSERT; }
     "$case" { return C3Types.KW_CT_CASE; }
-    "$checks" { return C3Types.KW_CT_CHECKS; }
     "$default" { return C3Types.KW_CT_DEFAULT; }
     "$defined" { return C3Types.KW_CT_DEFINED; }
     "$echo" { return C3Types.KW_CT_ECHO; }
@@ -139,11 +140,14 @@ LINE_COMMENT    = "//" .*
     "$eval" { return C3Types.KW_CT_EVAL; }
     "$evaltype" { return C3Types.KW_CT_EVALTYPE; }
     "$extnameof" { return C3Types.KW_CT_EXTNAMEOF; }
+    "$feature" { return C3Types.KW_CT_FEATURE; }
     "$for" { return C3Types.KW_CT_FOR; }
     "$foreach" { return C3Types.KW_CT_FOREACH; }
     "$if" { return C3Types.KW_CT_IF; }
+    "$is_const" { return C3Types.KW_CT_IS_CONST; }
     "$include" { return C3Types.KW_CT_INCLUDE; }
     "$nameof" { return C3Types.KW_CT_NAMEOF; }
+    "$or" { return C3Types.KW_CT_OR; }
     "$sizeof" { return C3Types.KW_CT_SIZEOF; }
     "$stringify" { return C3Types.KW_CT_STRINGIFY; }
     "$switch" { return C3Types.KW_CT_SWITCH; }

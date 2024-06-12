@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface C3TopLevel extends PsiElement {
 
   @Nullable
+  C3Attributes getAttributes();
+
+  @Nullable
   C3ConstDecl getConstDecl();
 
   @Nullable
@@ -21,6 +24,9 @@ public interface C3TopLevel extends PsiElement {
 
   @Nullable
   C3DefDecl getDefDecl();
+
+  @Nullable
+  C3DistinctDeclaration getDistinctDeclaration();
 
   @Nullable
   C3Expr getExpr();
@@ -38,10 +44,10 @@ public interface C3TopLevel extends PsiElement {
   C3ImportDecl getImportDecl();
 
   @Nullable
-  C3MacroDefinition getMacroDefinition();
+  C3InterfaceDefinition getInterfaceDefinition();
 
   @Nullable
-  C3StaticDecl getStaticDecl();
+  C3MacroDefinition getMacroDefinition();
 
   @Nullable
   C3TypeDecl getTypeDecl();

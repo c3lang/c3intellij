@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3CtChecksExpr extends C3Expr {
+public interface C3CtDefinedCheckExpr extends C3Expr {
 
-  @NotNull
-  C3ExpressionList getExpressionList();
+  @Nullable
+  C3Type getType();
 
 }

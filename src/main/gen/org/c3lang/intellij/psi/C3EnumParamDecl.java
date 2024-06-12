@@ -7,9 +7,6 @@ import com.intellij.psi.PsiElement;
 
 public interface C3EnumParamDecl extends PsiElement {
 
-  @Nullable
-  C3Expr getExpr();
-
   @NotNull
   C3Type getType();
 

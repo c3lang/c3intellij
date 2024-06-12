@@ -25,9 +25,4 @@ public class C3ModulesIndex extends StringStubIndexExtension<C3ModuleSection>
         return KEY;
     }
 
-    @Override
-    public Collection<C3ModuleSection> get(@NotNull String s, @NotNull Project project, @NotNull GlobalSearchScope scope)
-    {
-        return StubIndex.getElements(KEY, s, project, GlobalSearchScope.everythingScope(project), C3ModuleSection.class);
-    }
 }

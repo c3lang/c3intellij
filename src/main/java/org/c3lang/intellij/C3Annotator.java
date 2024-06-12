@@ -54,18 +54,6 @@ public class C3Annotator implements Annotator
                             .create();
             return;
         }
-        if (element.getDistinctInline() != null && !is_type)
-        {
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "'distinct' and 'inline' may only be used with types.")
-                            .range(element.getDistinctInline())
-                            .create();
-        }
-        if (element.getParameterList() != null && !is_attribute)
-        {
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Unexpected parameter list.")
-                            .range(element.getDistinctInline())
-                            .create();
-        }
         C3DefDeclarationSource source = element.getDefDeclarationSource();
         if (source.getDefAttrValues() != null && !is_attribute)
         {

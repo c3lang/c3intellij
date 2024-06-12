@@ -11,14 +11,14 @@ import static org.c3lang.intellij.psi.C3Types.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3EnumSpecImpl extends ASTWrapperPsiElement implements C3EnumSpec {
+public class C3InterfaceImplImpl extends ASTWrapperPsiElement implements C3InterfaceImpl {
 
-  public C3EnumSpecImpl(@NotNull ASTNode node) {
+  public C3InterfaceImplImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitEnumSpec(this);
+    visitor.visitInterfaceImpl(this);
   }
 
   @Override
@@ -28,15 +28,15 @@ public class C3EnumSpecImpl extends ASTWrapperPsiElement implements C3EnumSpec {
   }
 
   @Override
-  @Nullable
-  public C3EnumParamList getEnumParamList() {
-    return PsiTreeUtil.getChildOfType(this, C3EnumParamList.class);
+  @NotNull
+  public List<C3Type> getTypeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Type.class);
   }
 
   @Override
-  @Nullable
-  public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  @NotNull
+  public C3TypeName getTypeName() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));
   }
 
 }

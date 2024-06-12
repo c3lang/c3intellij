@@ -10,6 +10,9 @@ public interface C3FaultDeclaration extends PsiElement {
   @Nullable
   C3Attributes getAttributes();
 
+  @Nullable
+  C3InterfaceImpl getInterfaceImpl();
+
   @NotNull
   C3TypeName getTypeName();
 

@@ -8,17 +8,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3CtChecksExprImpl extends C3ExprImpl implements C3CtChecksExpr {
+public class C3CtDefinedCheckExprListImpl extends ASTWrapperPsiElement implements C3CtDefinedCheckExprList {
 
-  public C3CtChecksExprImpl(@NotNull ASTNode node) {
+  public C3CtDefinedCheckExprListImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitCtChecksExpr(this);
+    visitor.visitCtDefinedCheckExprList(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class C3CtChecksExprImpl extends C3ExprImpl implements C3CtChecksExpr {
 
   @Override
   @NotNull
-  public C3ExpressionList getExpressionList() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ExpressionList.class));
+  public List<C3Expr> getExprList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Expr.class);
   }
 
 }

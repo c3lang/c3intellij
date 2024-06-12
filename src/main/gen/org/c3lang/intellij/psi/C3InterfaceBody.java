@@ -5,15 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3AsmBlockStmt extends PsiElement {
+public interface C3InterfaceBody extends PsiElement {
 
   @NotNull
-  List<C3AsmStmt> getAsmStmtList();
-
-  @Nullable
-  C3Attributes getAttributes();
-
-  @Nullable
-  C3Expr getExpr();
+  List<C3FuncDef> getFuncDefList();
 
 }

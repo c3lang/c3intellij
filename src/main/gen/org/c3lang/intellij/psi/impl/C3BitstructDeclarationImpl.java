@@ -40,6 +40,12 @@ public class C3BitstructDeclarationImpl extends ASTWrapperPsiElement implements 
   }
 
   @Override
+  @Nullable
+  public C3InterfaceImpl getInterfaceImpl() {
+    return PsiTreeUtil.getChildOfType(this, C3InterfaceImpl.class);
+  }
+
+  @Override
   @NotNull
   public C3Type getType() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
