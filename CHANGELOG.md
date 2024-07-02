@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [0.0.15] - 2024-07-03
+
+- Added `$concat` and `$append` support.
+- Support `{ .foo, .bar }` bitstruct initialization.
+- Support `defer (catch err)`
+- Support of `213L`
+
 ## [0.0.14] - 2024-06-12
 
 ### Updated

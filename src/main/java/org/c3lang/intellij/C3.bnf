@@ -119,7 +119,7 @@ enum_param_decl ::= type IDENT
 enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
 enum_constant ::= CONST_IDENT attributes? (EQ expr)?
 arg_list ::= arg (COMMA arg)* COMMA?
-arg ::= (param_path EQ)? (expr | type) | KW_CT_VASPLAT LP range_exp? RP | ELLIPSIS expr
+arg ::= param_path (EQ (expr | type))? | expr | type | KW_CT_VASPLAT LP range_exp? RP | ELLIPSIS expr
 
 
 global_decl ::= KW_TLOCAL? optional_type IDENT (global_multi_declaration | global_single_declaration) EOS
@@ -148,6 +148,7 @@ ct_call ::= KW_CT_ALIGNOF | KW_CT_EXTNAMEOF | KW_CT_NAMEOF | KW_CT_OFFSETOF | KW
 ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR
 ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_IS_CONST
 ct_cond ::= KW_CT_AND | KW_CT_OR
+ct_concat ::= KW_CT_CONCAT | KW_CT_APPEND
 
 flat_path ::= primary_group param_path? | type
 param_path ::= param_path_element+
@@ -254,7 +255,7 @@ else_part ::= KW_ELSE (if_stmt | compound_statement)
 switch_body ::= (case_stmt | default_stmt)+
 case_stmt ::= KW_CASE (expr (DOTDOT expr)? | type) COLON statement_list?
 default_stmt ::= KW_DEFAULT COLON statement_list?
-switch_stmt ::= KW_SWITCH label? paren_cond? LB switch_body? RB
+switch_stmt ::= KW_SWITCH label? paren_cond? AT_IDENT? LB switch_body? RB
 expression_list ::= decl_or_expr (COMMA decl_or_expr)*
 
 cond ::= cond_repeat (COMMA (try_unwrap_chain | catch_unwrap))? | try_unwrap_chain | catch_unwrap
@@ -278,7 +279,7 @@ asm_expr ::= CT_IDENT | CT_CONST_IDENT | AMP? IDENT | CONST_IDENT
 asm_addr ::= asm_expr (add_bin_op asm_expr asm_addr_trailing?)?
 asm_addr_trailing ::= STAR INT_LITERAL (add_bin_op INT_LITERAL)? | (shift_bin_op | add_bin_op) INT_LITERAL
 
-defer_stmt ::= KW_DEFER (KW_TRY | KW_CATCH)? statement
+defer_stmt ::= KW_DEFER (KW_TRY | KW_CATCH | (LP KW_CATCH IDENT RP))? statement
 
 compound_statement ::= LB statement_list? RB
 
@@ -343,6 +344,7 @@ ct_defined_check_expr ::= expr | type
 ct_defined_check_expr_list ::= ct_defined_check_expr (COMMA ct_defined_check_expr)*
 ct_defined_expr ::= KW_CT_DEFINED LP ct_defined_check_expr_list RP
 ct_cond_expr ::= ct_cond LP expression_list RP
+ct_concat_expr ::= ct_concat LP expression_list RP
 lambda_decl_expr ::= lambda_decl compound_statement
 lambda_decl_short_expr ::= lambda_decl IMPLIES expr
 call_expr ::= expr call_expr_tail
@@ -375,6 +377,7 @@ private primary_group ::= literal_expr
     | ct_analyze_expr
     | ct_defined_expr
     | ct_cond_expr
+    | ct_concat_expr
     | lambda_decl_expr
     | lambda_decl_short_expr
     | init_list_expr

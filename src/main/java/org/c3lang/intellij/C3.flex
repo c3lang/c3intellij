@@ -34,7 +34,7 @@ IDENTIFIER  = [_]*{DC}{AN}*
 E			= [Ee][+-]?{D}+
 P           = [Pp][+-]?{D}+
 SIZES       = 8|16|32|64|128
-INTTYPE     = [uU] ([lL] | {SIZES}?) | [iI] {SIZES}
+INTTYPE     = [lL] | [uU][lL] | [uU] {SIZES}? | [iI] {SIZES}
 REALTYPE    = [fF]{SIZES}?
 INT         = {D}(_*{D})*
 HINT        = {H}(_*{H})*
@@ -126,6 +126,8 @@ LINE_COMMENT    = "//" .*
     "while" { return C3Types.KW_WHILE; }
     "$alignof" { return C3Types.KW_CT_ALIGNOF; }
     "$and" { return C3Types.KW_CT_AND; }
+    "$concat" { return C3Types.KW_CT_CONCAT; }
+    "$append" { return C3Types.KW_CT_APPEND; }
     "$assert" { return C3Types.KW_CT_ASSERT; }
     "$case" { return C3Types.KW_CT_CASE; }
     "$default" { return C3Types.KW_CT_DEFAULT; }
