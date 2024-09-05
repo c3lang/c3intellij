@@ -23,7 +23,6 @@ public class C3BreadcrumbsProvider implements BreadcrumbsProvider
                 | psiElement instanceof C3FaultDeclaration
                 | psiElement instanceof C3MacroDefinition
                 | psiElement instanceof C3FuncDefinition
-                | psiElement instanceof C3StaticDecl
                 | psiElement instanceof C3StructMemberDeclaration
                 | psiElement instanceof C3BitstructDef
                 | psiElement instanceof C3BitstructSimpleDef
@@ -79,10 +78,6 @@ public class C3BreadcrumbsProvider implements BreadcrumbsProvider
         else if (psiElement instanceof C3DefDecl decl)
         {
             return decl.getAnyIdent().getText();
-        }
-        else if (psiElement instanceof C3StaticDecl decl)
-        {
-            return "static " + decl.getText();
         }
         // TODO globals
         return "abc";

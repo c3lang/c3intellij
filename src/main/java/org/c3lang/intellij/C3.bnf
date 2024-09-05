@@ -120,7 +120,7 @@ enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
 enum_constant ::= CONST_IDENT attributes? (EQ expr)?
 arg_list ::= arg (COMMA arg)* COMMA?
 named_ident ::= CT_IDENT | HASH_IDENT | IDENT | CT_TYPE_IDENT
-arg ::= (named_ident COLON (expr | type)) | param_path (EQ (expr | type))? | expr | type | KW_CT_VASPLAT LP range_exp? RP | ELLIPSIS expr
+arg ::= (named_ident COLON (expr | type)) | param_path (EQ (expr | type))? | expr | type | KW_CT_VASPLAT (LBT range_exp RBT)? | ELLIPSIS expr
 
 
 global_decl ::= KW_TLOCAL? optional_type IDENT (global_multi_declaration | global_single_declaration) EOS
@@ -148,8 +148,6 @@ call_expr_tail ::= call_invocation compound_statement?
 ct_call ::= KW_CT_ALIGNOF | KW_CT_EXTNAMEOF | KW_CT_NAMEOF | KW_CT_OFFSETOF | KW_CT_QNAMEOF
 ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR
 ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_IS_CONST
-ct_cond ::= KW_CT_AND | KW_CT_OR
-ct_concat ::= KW_CT_CONCAT | KW_CT_APPEND
 
 flat_path ::= primary_group param_path? | type
 param_path ::= param_path_element+
@@ -195,7 +193,7 @@ base_type ::= KW_VOID
     | CT_TYPE_IDENT
     | KW_CT_TYPEOF grouped_expression
     | KW_CT_TYPEFROM const_paren_expr
-    | KW_CT_VATYPE const_paren_expr
+    | KW_CT_VATYPE LBT expr RBT
     | KW_CT_EVALTYPE const_paren_expr
 
 
@@ -339,13 +337,11 @@ type_access_expr ::= type DOT (access_ident | CONST_IDENT)
 expr_block_expr ::= LBRAPIPE statement_list? RBRAPIPE
 ct_call_expr ::= ct_call LP flat_path RP
 ct_feature_expr ::= KW_CT_FEATURE LP CONST_IDENT RP
-ct_arg_expr ::= ct_arg grouped_expression
+ct_arg_expr ::= ct_arg LBT expr RBT
 ct_analyze_expr ::= ct_analyze grouped_expression
 ct_defined_check_expr ::= expr | type
 ct_defined_check_expr_list ::= ct_defined_check_expr (COMMA ct_defined_check_expr)*
 ct_defined_expr ::= KW_CT_DEFINED LP ct_defined_check_expr_list RP
-ct_cond_expr ::= ct_cond LP expression_list RP
-ct_concat_expr ::= ct_concat LP expression_list RP
 lambda_decl_expr ::= lambda_decl compound_statement
 lambda_decl_short_expr ::= lambda_decl IMPLIES expr
 call_expr ::= expr call_expr_tail
@@ -377,8 +373,6 @@ private primary_group ::= literal_expr
     | ct_arg_expr
     | ct_analyze_expr
     | ct_defined_expr
-    | ct_cond_expr
-    | ct_concat_expr
     | lambda_decl_expr
     | lambda_decl_short_expr
     | init_list_expr

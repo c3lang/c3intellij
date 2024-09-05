@@ -60,10 +60,6 @@ public interface C3Types {
   IElementType CT_CALL = new C3ElementType("CT_CALL");
   IElementType CT_CALL_EXPR = new C3ElementType("CT_CALL_EXPR");
   IElementType CT_CASE_STMT = new C3ElementType("CT_CASE_STMT");
-  IElementType CT_CONCAT = new C3ElementType("CT_CONCAT");
-  IElementType CT_CONCAT_EXPR = new C3ElementType("CT_CONCAT_EXPR");
-  IElementType CT_COND = new C3ElementType("CT_COND");
-  IElementType CT_COND_EXPR = new C3ElementType("CT_COND_EXPR");
   IElementType CT_DEFINED_CHECK_EXPR = new C3ElementType("CT_DEFINED_CHECK_EXPR");
   IElementType CT_DEFINED_CHECK_EXPR_LIST = new C3ElementType("CT_DEFINED_CHECK_EXPR_LIST");
   IElementType CT_DEFINED_EXPR = new C3ElementType("CT_DEFINED_EXPR");
@@ -249,11 +245,8 @@ public interface C3Types {
   IElementType KW_CONST = new C3TokenType("KW_CONST");
   IElementType KW_CONTINUE = new C3TokenType("KW_CONTINUE");
   IElementType KW_CT_ALIGNOF = new C3TokenType("KW_CT_ALIGNOF");
-  IElementType KW_CT_AND = new C3TokenType("KW_CT_AND");
-  IElementType KW_CT_APPEND = new C3TokenType("KW_CT_APPEND");
   IElementType KW_CT_ASSERT = new C3TokenType("KW_CT_ASSERT");
   IElementType KW_CT_CASE = new C3TokenType("KW_CT_CASE");
-  IElementType KW_CT_CONCAT = new C3TokenType("KW_CT_CONCAT");
   IElementType KW_CT_DEFAULT = new C3TokenType("KW_CT_DEFAULT");
   IElementType KW_CT_DEFINED = new C3TokenType("KW_CT_DEFINED");
   IElementType KW_CT_ECHO = new C3TokenType("KW_CT_ECHO");
@@ -274,7 +267,6 @@ public interface C3Types {
   IElementType KW_CT_IS_CONST = new C3TokenType("KW_CT_IS_CONST");
   IElementType KW_CT_NAMEOF = new C3TokenType("KW_CT_NAMEOF");
   IElementType KW_CT_OFFSETOF = new C3TokenType("KW_CT_OFFSETOF");
-  IElementType KW_CT_OR = new C3TokenType("KW_CT_OR");
   IElementType KW_CT_QNAMEOF = new C3TokenType("KW_CT_QNAMEOF");
   IElementType KW_CT_SIZEOF = new C3TokenType("KW_CT_SIZEOF");
   IElementType KW_CT_STRINGIFY = new C3TokenType("KW_CT_STRINGIFY");
@@ -530,18 +522,6 @@ public interface C3Types {
       }
       else if (type == CT_CASE_STMT) {
         return new C3CtCaseStmtImpl(node);
-      }
-      else if (type == CT_CONCAT) {
-        return new C3CtConcatImpl(node);
-      }
-      else if (type == CT_CONCAT_EXPR) {
-        return new C3CtConcatExprImpl(node);
-      }
-      else if (type == CT_COND) {
-        return new C3CtCondImpl(node);
-      }
-      else if (type == CT_COND_EXPR) {
-        return new C3CtCondExprImpl(node);
       }
       else if (type == CT_DEFINED_CHECK_EXPR) {
         return new C3CtDefinedCheckExprImpl(node);

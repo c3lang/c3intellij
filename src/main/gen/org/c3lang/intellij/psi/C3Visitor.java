@@ -215,22 +215,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitCtConcat(@NotNull C3CtConcat o) {
-    visitPsiElement(o);
-  }
-
-  public void visitCtConcatExpr(@NotNull C3CtConcatExpr o) {
-    visitExpr(o);
-  }
-
-  public void visitCtCond(@NotNull C3CtCond o) {
-    visitPsiElement(o);
-  }
-
-  public void visitCtCondExpr(@NotNull C3CtCondExpr o) {
-    visitExpr(o);
-  }
-
   public void visitCtDefinedCheckExpr(@NotNull C3CtDefinedCheckExpr o) {
     visitExpr(o);
   }

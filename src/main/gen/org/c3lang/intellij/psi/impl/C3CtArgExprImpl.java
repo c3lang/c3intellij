@@ -34,9 +34,9 @@ public class C3CtArgExprImpl extends C3ExprImpl implements C3CtArgExpr {
   }
 
   @Override
-  @NotNull
-  public C3GroupedExpression getGroupedExpression() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3GroupedExpression.class));
+  @Nullable
+  public C3Expr getExpr() {
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

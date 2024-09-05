@@ -11,14 +11,14 @@ import static org.c3lang.intellij.psi.C3Types.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3CtCondImpl extends ASTWrapperPsiElement implements C3CtCond {
+public class C3NamedIdentImpl extends ASTWrapperPsiElement implements C3NamedIdent {
 
-  public C3CtCondImpl(@NotNull ASTNode node) {
+  public C3NamedIdentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitCtCond(this);
+    visitor.visitNamedIdent(this);
   }
 
   @Override

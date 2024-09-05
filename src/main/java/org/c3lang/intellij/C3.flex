@@ -125,9 +125,6 @@ LINE_COMMENT    = "//" .*
     "var" { return C3Types.KW_VAR; }
     "while" { return C3Types.KW_WHILE; }
     "$alignof" { return C3Types.KW_CT_ALIGNOF; }
-    "$and" { return C3Types.KW_CT_AND; }
-    "$concat" { return C3Types.KW_CT_CONCAT; }
-    "$append" { return C3Types.KW_CT_APPEND; }
     "$assert" { return C3Types.KW_CT_ASSERT; }
     "$case" { return C3Types.KW_CT_CASE; }
     "$default" { return C3Types.KW_CT_DEFAULT; }
@@ -149,7 +146,6 @@ LINE_COMMENT    = "//" .*
     "$is_const" { return C3Types.KW_CT_IS_CONST; }
     "$include" { return C3Types.KW_CT_INCLUDE; }
     "$nameof" { return C3Types.KW_CT_NAMEOF; }
-    "$or" { return C3Types.KW_CT_OR; }
     "$sizeof" { return C3Types.KW_CT_SIZEOF; }
     "$stringify" { return C3Types.KW_CT_STRINGIFY; }
     "$switch" { return C3Types.KW_CT_SWITCH; }

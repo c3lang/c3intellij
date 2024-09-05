@@ -8,6 +8,8 @@
 
 - Added `+++`, `&&&`, `|||` support.
 - Added support for new named parameters.
+- Updated $va-expression syntax.
+- Removed deprecated `$or` `$and` `$concat` `$append`.
 
 ## [0.0.15] - 2024-07-03
 
