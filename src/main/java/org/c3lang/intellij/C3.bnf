@@ -119,7 +119,8 @@ enum_param_decl ::= type IDENT
 enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
 enum_constant ::= CONST_IDENT attributes? (EQ expr)?
 arg_list ::= arg (COMMA arg)* COMMA?
-arg ::= param_path (EQ (expr | type))? | expr | type | KW_CT_VASPLAT LP range_exp? RP | ELLIPSIS expr
+named_ident ::= CT_IDENT | HASH_IDENT | IDENT | CT_TYPE_IDENT
+arg ::= (named_ident COLON (expr | type)) | param_path (EQ (expr | type))? | expr | type | KW_CT_VASPLAT LP range_exp? RP | ELLIPSIS expr
 
 
 global_decl ::= KW_TLOCAL? optional_type IDENT (global_multi_declaration | global_single_declaration) EOS
@@ -289,7 +290,7 @@ unary_op ::= AMP | AND | STAR | PLUS | MINUS | BIT_NOT | BANG | PLUSPLUS | MINUS
 mult_bin_op ::= STAR | DIV | MOD { name = "operator" }
 shift_bin_op ::= SHL | SHR { name = "operator "}
 bit_bin_op ::= AMP | BIT_XOR | BIT_OR { name = "operator" }
-add_bin_op ::= PLUS | MINUS { name = "operator" }
+add_bin_op ::= PLUS | MINUS | CT_PLUS { name = "operator" }
 rel_bin_op ::= LT_OP | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP { name = "operator" }
 
 catch_unwrap_list ::= expr (COMMA expr)*
@@ -319,8 +320,8 @@ add_bin_expr ::= expr add_bin_op expr
 bit_bin_expr ::= expr bit_bin_op expr
 shift_bin_expr ::= expr shift_bin_op expr
 mult_bin_expr ::= expr mult_bin_op expr
-and_bin_expr ::= expr AND expr
-or_bin_expr ::= expr OR expr
+and_bin_expr ::= expr (AND | CT_AND) expr
+or_bin_expr ::= expr (OR | CT_OR) expr
 
 literal_expr ::= INT_LITERAL | FLOAT_LITERAL
 keyword_expr ::= KW_NULL | KW_TRUE | KW_FALSE | KW_CT_VACOUNT

@@ -189,6 +189,9 @@ LINE_COMMENT    = "//" .*
     "usz" { return C3Types.KW_USZ; }
     "isz" { return C3Types.KW_ISZ; }
 
+    "&&&" { return C3Types.CT_AND; }
+    "|||" { return C3Types.CT_OR; }
+    "+++" { return C3Types.CT_PLUS; }
     "..." { return C3Types.ELLIPSIS; }
     "<<=" { return C3Types.SHL_ASSIGN; }
     ">>=" { return C3Types.SHR_ASSIGN; }

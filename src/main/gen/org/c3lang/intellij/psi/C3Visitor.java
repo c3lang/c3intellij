@@ -571,6 +571,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitNamedIdent(@NotNull C3NamedIdent o) {
+    visitPsiElement(o);
+  }
+
   public void visitNextcaseStmt(@NotNull C3NextcaseStmt o) {
     visitPsiElement(o);
   }

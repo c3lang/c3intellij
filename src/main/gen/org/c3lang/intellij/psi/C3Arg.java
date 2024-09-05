@@ -11,6 +11,9 @@ public interface C3Arg extends PsiElement {
   C3Expr getExpr();
 
   @Nullable
+  C3NamedIdent getNamedIdent();
+
+  @Nullable
   C3ParamPath getParamPath();
 
   @Nullable

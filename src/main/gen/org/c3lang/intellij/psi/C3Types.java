@@ -149,6 +149,7 @@ public interface C3Types {
   IElementType MODULE_PARAMS = new C3ElementType("MODULE_PARAMS");
   IElementType MODULE_SECTION = C3ElementFactory.stubFactory("MODULE_SECTION");
   IElementType MULTI_DECLARATION = new C3ElementType("MULTI_DECLARATION");
+  IElementType NAMED_IDENT = new C3ElementType("NAMED_IDENT");
   IElementType NEXTCASE_STMT = new C3ElementType("NEXTCASE_STMT");
   IElementType OPTIONAL_EXPR = new C3ElementType("OPTIONAL_EXPR");
   IElementType OPTIONAL_TYPE = new C3ElementType("OPTIONAL_TYPE");
@@ -212,8 +213,11 @@ public interface C3Types {
   IElementType COLON = new C3TokenType("COLON");
   IElementType COMMA = new C3TokenType("COMMA");
   IElementType CONST_IDENT = new C3TokenType("CONST_IDENT");
+  IElementType CT_AND = new C3TokenType("CT_AND");
   IElementType CT_CONST_IDENT = new C3TokenType("CT_CONST_IDENT");
   IElementType CT_IDENT = new C3TokenType("CT_IDENT");
+  IElementType CT_OR = new C3TokenType("CT_OR");
+  IElementType CT_PLUS = new C3TokenType("CT_PLUS");
   IElementType CT_TYPE_IDENT = new C3TokenType("CT_TYPE_IDENT");
   IElementType DIV = new C3TokenType("DIV");
   IElementType DIV_ASSIGN = new C3TokenType("DIV_ASSIGN");
@@ -790,6 +794,9 @@ public interface C3Types {
       }
       else if (type == MULTI_DECLARATION) {
         return new C3MultiDeclarationImpl(node);
+      }
+      else if (type == NAMED_IDENT) {
+        return new C3NamedIdentImpl(node);
       }
       else if (type == NEXTCASE_STMT) {
         return new C3NextcaseStmtImpl(node);

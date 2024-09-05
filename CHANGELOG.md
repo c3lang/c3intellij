@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.0.16] - 2024-09-05
+
+- Added `+++`, `&&&`, `|||` support.
+- Added support for new named parameters.
+
 ## [0.0.15] - 2024-07-03
 
 - Added `$concat` and `$append` support.

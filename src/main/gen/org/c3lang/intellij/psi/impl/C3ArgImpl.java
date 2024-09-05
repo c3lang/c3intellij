@@ -35,6 +35,12 @@ public class C3ArgImpl extends ASTWrapperPsiElement implements C3Arg {
 
   @Override
   @Nullable
+  public C3NamedIdent getNamedIdent() {
+    return PsiTreeUtil.getChildOfType(this, C3NamedIdent.class);
+  }
+
+  @Override
+  @Nullable
   public C3ParamPath getParamPath() {
     return PsiTreeUtil.getChildOfType(this, C3ParamPath.class);
   }
