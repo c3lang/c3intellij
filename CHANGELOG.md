@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.0.17] - 2024-10-09
+
+- Support `<* *>` doc comments.
+- Fix syntax for `-` in asm blocks.
+- Fix syntax for bytes blocks.
+
 ## [0.0.16] - 2024-09-05
 
 - Added `+++`, `&&&`, `|||` support.

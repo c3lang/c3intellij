@@ -274,7 +274,7 @@ asm_stmt ::= asm_instr asm_exprs? EOS
 asm_instr ::= (KW_INT | IDENT) (DOT IDENT)?
 asm_exprs ::= asm_expr (COMMA asm_expr)*
 asm_expr ::= CT_IDENT | CT_CONST_IDENT | AMP? IDENT | CONST_IDENT
-    | FLOAT_LITERAL | INT_LITERAL | grouped_expression | LBT asm_addr RBT
+    | MINUS? FLOAT_LITERAL | MINUS? INT_LITERAL | grouped_expression | LBT asm_addr RBT
 asm_addr ::= asm_expr (add_bin_op asm_expr asm_addr_trailing?)?
 asm_addr_trailing ::= STAR INT_LITERAL (add_bin_op INT_LITERAL)? | (shift_bin_op | add_bin_op) INT_LITERAL
 
@@ -329,7 +329,7 @@ path_ident_expr ::= path_ident
 path_const_expr ::= path_const
 path_at_ident_expr ::= path_at_ident
 string_expr ::= STRING_LIT+ | CHAR_LIT
-bytes_expr ::= BYTES
+bytes_expr ::= BYTES+
 compound_init_expr ::= type initializer_list
 grouped_expr ::= LP expr RP
 local_ident_expr ::= CT_IDENT | HASH_IDENT

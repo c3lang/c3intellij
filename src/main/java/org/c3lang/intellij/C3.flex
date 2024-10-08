@@ -74,7 +74,7 @@ HEX_FLOAT_LIT       = "0"[xX]{HINT}("."{HINT})?{P}
 
 LINE_COMMENT    = "//" .*
 
-%state IN_COMMENT, IN_RAW_STRING, IN_STRING, IN_CHAR, IN_BYTES_STRING, IN_BYTES_CHAR, IN_BYTES_RAW_STRING
+%state IN_COMMENT, IN_RAW_STRING, IN_DOC_COMMENT, IN_STRING, IN_CHAR, IN_BYTES_STRING, IN_BYTES_CHAR, IN_BYTES_RAW_STRING
 
 %%
 
@@ -285,6 +285,7 @@ LINE_COMMENT    = "//" .*
     "\"" { yybegin(IN_STRING); }
     "`" { yybegin(IN_RAW_STRING); }
     "'" { yybegin(IN_CHAR); }
+    "<*" { yybegin(IN_DOC_COMMENT); return C3ParserDefinition.DOC_COMMENT; }
     "/*" { yybegin(IN_COMMENT); commentNesting = 1; return C3ParserDefinition.BLOCK_COMMENT; }
 }
 
@@ -339,9 +340,14 @@ LINE_COMMENT    = "//" .*
 <IN_COMMENT> {
     "*/" { if (--commentNesting == 0) { yybegin(YYINITIAL); return C3ParserDefinition.BLOCK_COMMENT; } }
     "/*" { commentNesting++; return C3ParserDefinition.BLOCK_COMMENT; }
-     [^*/\n]+ { return C3ParserDefinition.BLOCK_COMMENT; }
-     "*"|[/] { return C3ParserDefinition.BLOCK_COMMENT; }
-     [\n] { return C3ParserDefinition.BLOCK_COMMENT; }
+     [^\*/\n]+ { return C3ParserDefinition.BLOCK_COMMENT; }
+     [^] { return C3ParserDefinition.BLOCK_COMMENT; }
+}
+
+<IN_DOC_COMMENT> {
+    "*>" { yybegin(YYINITIAL); return C3ParserDefinition.DOC_COMMENT; }
+    [^\*\n]+ { return C3ParserDefinition.DOC_COMMENT; }
+    [\*\n] { return C3ParserDefinition.DOC_COMMENT; }
 }
 
 [^]  { return TokenType.BAD_CHARACTER; }

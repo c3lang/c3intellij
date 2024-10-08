@@ -439,7 +439,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // CT_IDENT | CT_CONST_IDENT | AMP? IDENT | CONST_IDENT
-  //     | FLOAT_LITERAL | INT_LITERAL | grouped_expression | LBT asm_addr RBT
+  //     | MINUS? FLOAT_LITERAL | MINUS? INT_LITERAL | grouped_expression | LBT asm_addr RBT
   public static boolean asm_expr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "asm_expr")) return false;
     boolean r;
@@ -448,8 +448,8 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, CT_CONST_IDENT);
     if (!r) r = asm_expr_2(b, l + 1);
     if (!r) r = consumeToken(b, CONST_IDENT);
-    if (!r) r = consumeToken(b, FLOAT_LITERAL);
-    if (!r) r = consumeToken(b, INT_LITERAL);
+    if (!r) r = asm_expr_4(b, l + 1);
+    if (!r) r = asm_expr_5(b, l + 1);
     if (!r) r = grouped_expression(b, l + 1);
     if (!r) r = asm_expr_7(b, l + 1);
     exit_section_(b, l, m, r, false, null);
@@ -471,6 +471,42 @@ public class C3Parser implements PsiParser, LightPsiParser {
   private static boolean asm_expr_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "asm_expr_2_0")) return false;
     consumeToken(b, AMP);
+    return true;
+  }
+
+  // MINUS? FLOAT_LITERAL
+  private static boolean asm_expr_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "asm_expr_4")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = asm_expr_4_0(b, l + 1);
+    r = r && consumeToken(b, FLOAT_LITERAL);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // MINUS?
+  private static boolean asm_expr_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "asm_expr_4_0")) return false;
+    consumeToken(b, MINUS);
+    return true;
+  }
+
+  // MINUS? INT_LITERAL
+  private static boolean asm_expr_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "asm_expr_5")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = asm_expr_5_0(b, l + 1);
+    r = r && consumeToken(b, INT_LITERAL);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // MINUS?
+  private static boolean asm_expr_5_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "asm_expr_5_0")) return false;
+    consumeToken(b, MINUS);
     return true;
   }
 
@@ -5776,13 +5812,18 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BYTES
+  // BYTES+
   public static boolean bytes_expr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytes_expr")) return false;
     if (!nextTokenIsSmart(b, BYTES)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokenSmart(b, BYTES);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeTokenSmart(b, BYTES)) break;
+      if (!empty_element_parsed_guard_(b, "bytes_expr", c)) break;
+    }
     exit_section_(b, m, BYTES_EXPR, r);
     return r;
   }
