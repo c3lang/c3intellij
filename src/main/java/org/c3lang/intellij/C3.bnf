@@ -197,7 +197,7 @@ base_type ::= KW_VOID
     | KW_CT_EVALTYPE const_paren_expr
 
 
-type_suffix ::= STAR | LBT (STAR | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
+type_suffix ::= STAR | LBT PLUS RBT | LBT (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
 
 type ::= base_type type_suffix*
 
@@ -347,8 +347,8 @@ lambda_decl_short_expr ::= lambda_decl IMPLIES expr
 call_expr ::= expr call_expr_tail
 unary_expr ::= unary_op expr { rightAssociative=true }
 expr_terminator ::= EOS | RP | RBT | RB | COMMA | COLON
-ternary_expr ::= expr QUESTION !(BANG? expr_terminator) expr COLON expr { rightAssociative=true }
-optional_expr ::= expr QUESTION &(BANG? expr_terminator)
+ternary_expr ::= expr QUESTION !((BANGBANG | BANG)? expr_terminator) expr COLON expr { rightAssociative=true }
+optional_expr ::= expr QUESTION &((BANGBANG | BANG)? expr_terminator)
 elvis_bin_expr ::= expr ELVIS expr { rightAssociative=true }
 optelse_bin_expr ::= expr OPTELSE expr { rightAssociative=true }
 private ternary_group ::= elvis_bin_expr | optelse_bin_expr | ternary_expr | optional_expr

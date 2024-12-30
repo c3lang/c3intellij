@@ -5258,61 +5258,65 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // STAR | LBT (STAR | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
+  // STAR | LBT PLUS RBT | LBT (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
   public static boolean type_suffix(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_suffix")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, TYPE_SUFFIX, "<type suffix>");
     r = consumeToken(b, STAR);
-    if (!r) r = type_suffix_1(b, l + 1);
+    if (!r) r = parseTokens(b, 0, LBT, PLUS, RBT);
     if (!r) r = type_suffix_2(b, l + 1);
+    if (!r) r = type_suffix_3(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // LBT (STAR | constant_expr)? RBT
-  private static boolean type_suffix_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_suffix_1")) return false;
+  // LBT (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)? RBT
+  private static boolean type_suffix_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_suffix_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, LBT);
-    r = r && type_suffix_1_1(b, l + 1);
+    r = r && type_suffix_2_1(b, l + 1);
     r = r && consumeToken(b, RBT);
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // (STAR | constant_expr)?
-  private static boolean type_suffix_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_suffix_1_1")) return false;
-    type_suffix_1_1_0(b, l + 1);
+  // (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)?
+  private static boolean type_suffix_2_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_suffix_2_1")) return false;
+    type_suffix_2_1_0(b, l + 1);
     return true;
   }
 
-  // STAR | constant_expr
-  private static boolean type_suffix_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_suffix_1_1_0")) return false;
+  // STAR | QUESTION | DIV | UNDERSCORE | constant_expr
+  private static boolean type_suffix_2_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_suffix_2_1_0")) return false;
     boolean r;
     r = consumeToken(b, STAR);
+    if (!r) r = consumeToken(b, QUESTION);
+    if (!r) r = consumeToken(b, DIV);
+    if (!r) r = consumeToken(b, UNDERSCORE);
     if (!r) r = constant_expr(b, l + 1);
     return r;
   }
 
   // LVEC (STAR | constant_expr) RVEC
-  private static boolean type_suffix_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_suffix_2")) return false;
+  private static boolean type_suffix_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_suffix_3")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, LVEC);
-    r = r && type_suffix_2_1(b, l + 1);
+    r = r && type_suffix_3_1(b, l + 1);
     r = r && consumeToken(b, RVEC);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // STAR | constant_expr
-  private static boolean type_suffix_2_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_suffix_2_1")) return false;
+  private static boolean type_suffix_3_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_suffix_3_1")) return false;
     boolean r;
     r = consumeToken(b, STAR);
     if (!r) r = constant_expr(b, l + 1);
@@ -5632,7 +5636,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // QUESTION !(BANG? expr_terminator)
+  // QUESTION !((BANGBANG | BANG)? expr_terminator)
   private static boolean ternary_expr_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ternary_expr_0")) return false;
     boolean r;
@@ -5643,7 +5647,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // !(BANG? expr_terminator)
+  // !((BANGBANG | BANG)? expr_terminator)
   private static boolean ternary_expr_0_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ternary_expr_0_1")) return false;
     boolean r;
@@ -5653,7 +5657,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BANG? expr_terminator
+  // (BANGBANG | BANG)? expr_terminator
   private static boolean ternary_expr_0_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ternary_expr_0_1_0")) return false;
     boolean r;
@@ -5664,11 +5668,20 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BANG?
+  // (BANGBANG | BANG)?
   private static boolean ternary_expr_0_1_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ternary_expr_0_1_0_0")) return false;
-    consumeTokenSmart(b, BANG);
+    ternary_expr_0_1_0_0_0(b, l + 1);
     return true;
+  }
+
+  // BANGBANG | BANG
+  private static boolean ternary_expr_0_1_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ternary_expr_0_1_0_0_0")) return false;
+    boolean r;
+    r = consumeTokenSmart(b, BANGBANG);
+    if (!r) r = consumeTokenSmart(b, BANG);
+    return r;
   }
 
   // COLON expr
@@ -5682,7 +5695,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // QUESTION &(BANG? expr_terminator)
+  // QUESTION &((BANGBANG | BANG)? expr_terminator)
   private static boolean optional_expr_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_expr_0")) return false;
     boolean r;
@@ -5693,7 +5706,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // &(BANG? expr_terminator)
+  // &((BANGBANG | BANG)? expr_terminator)
   private static boolean optional_expr_0_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_expr_0_1")) return false;
     boolean r;
@@ -5703,7 +5716,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BANG? expr_terminator
+  // (BANGBANG | BANG)? expr_terminator
   private static boolean optional_expr_0_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_expr_0_1_0")) return false;
     boolean r;
@@ -5714,11 +5727,20 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BANG?
+  // (BANGBANG | BANG)?
   private static boolean optional_expr_0_1_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optional_expr_0_1_0_0")) return false;
-    consumeTokenSmart(b, BANG);
+    optional_expr_0_1_0_0_0(b, l + 1);
     return true;
+  }
+
+  // BANGBANG | BANG
+  private static boolean optional_expr_0_1_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optional_expr_0_1_0_0_0")) return false;
+    boolean r;
+    r = consumeTokenSmart(b, BANGBANG);
+    if (!r) r = consumeTokenSmart(b, BANG);
+    return r;
   }
 
   // CT_TYPE_IDENT EQ type

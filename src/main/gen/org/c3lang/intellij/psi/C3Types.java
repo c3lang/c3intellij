@@ -366,6 +366,7 @@ public interface C3Types {
   IElementType STAR = new C3TokenType("STAR");
   IElementType STRING_LIT = new C3TokenType("STRING_LIT");
   IElementType TYPE_IDENT = new C3TokenType("TYPE_IDENT");
+  IElementType UNDERSCORE = new C3TokenType("UNDERSCORE");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {

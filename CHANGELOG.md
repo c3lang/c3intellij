@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [0.0.18] - 2024-12-30
+
+- Fix `?!!` syntax. 
+
+## [0.0.18] - 2024-12-15
+
+- Allow for experimental array syntax.
+- Remove use of deprecated functions.
+
 ## [0.0.17] - 2024-10-09
 
 - Support `<* *>` doc comments.

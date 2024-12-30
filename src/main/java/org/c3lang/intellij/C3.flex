@@ -236,6 +236,7 @@ LINE_COMMENT    = "//" .*
     "=" { return C3Types.EQ; }
     ">" { return C3Types.GT_OP; }
     "/" { return C3Types.DIV; }
+    "_" { return C3Types.UNDERSCORE; }
     "$" { return TokenType.BAD_CHARACTER; } // DOLLAR
     "." { return C3Types.DOT; }
     "#" { return TokenType.BAD_CHARACTER; } // HASH

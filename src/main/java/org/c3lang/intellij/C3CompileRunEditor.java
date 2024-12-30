@@ -3,6 +3,7 @@ package org.c3lang.intellij;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
+import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBTextField;
@@ -45,16 +46,16 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
     private void createUIComponents()
     {
         fileSource = new TextFieldWithBrowseButton();
-        fileSource.addBrowseFolderListener("Select C3 Source File", "", null, new FileChooserDescriptor(true, false, false, false, false, false)
-                {
-                    @Override
-                    public boolean isFileSelectable(@Nullable VirtualFile file)
-                    {
-                        if (file == null) return false;
-                        if (!file.exists()) return false;
-                        if (file.isDirectory()) return false;
-                        return Objects.equals(file.getExtension(), "c3i") || Objects.equals(file.getExtension(), "c3");
-                    }
-                });
+        FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false)
+        {
+            @Override public boolean isFileSelectable(@Nullable VirtualFile file)
+            {
+                if (file == null) return false;
+                if (!file.exists()) return false;
+                if (file.isDirectory()) return false;
+                return Objects.equals(file.getExtension(), "c3i") || Objects.equals(file.getExtension(), "c3");
+            }
+        };
+        fileSource.addBrowseFolderListener(new TextBrowseFolderListener(descriptor.withTitle("Select C3 Source File")));
     }
 }

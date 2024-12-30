@@ -116,41 +116,41 @@ class C3Lexer implements FlexLexer {
     "\11\0\1\1\1\2\1\3\1\4\2\1\1\5\1\6"+
     "\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16"+
     "\1\17\2\20\1\21\1\22\1\23\1\24\1\25\1\26"+
-    "\1\1\1\27\1\30\1\31\1\32\1\1\1\33\22\34"+
-    "\1\35\1\36\1\37\1\40\4\41\1\42\1\43\3\44"+
-    "\1\45\1\42\1\43\1\1\1\42\1\46\1\42\1\47"+
-    "\1\42\2\47\1\50\1\51\1\1\1\0\1\52\1\0"+
-    "\1\53\1\0\14\54\1\55\1\56\1\57\1\60\1\61"+
-    "\1\62\1\63\1\64\1\65\1\66\1\67\1\70\1\71"+
-    "\4\0\1\20\1\0\1\20\2\0\1\72\1\73\1\74"+
-    "\1\75\1\76\1\77\1\100\1\101\1\102\1\103\1\104"+
-    "\1\105\1\1\1\0\1\106\1\107\1\110\1\111\1\0"+
-    "\14\34\1\112\5\34\1\113\2\34\1\114\30\34\1\115"+
-    "\1\116\1\117\1\120\1\121\1\122\1\123\1\124\1\125"+
-    "\1\126\3\0\1\127\1\130\1\131\14\54\1\132\11\54"+
-    "\1\133\1\134\1\135\1\136\1\20\1\0\1\136\3\0"+
-    "\2\20\1\137\1\140\1\141\1\142\1\143\11\34\1\144"+
-    "\10\34\1\145\3\34\1\146\1\34\1\147\14\34\1\150"+
-    "\6\34\1\151\1\152\2\34\1\153\13\54\1\154\16\54"+
-    "\1\136\6\0\4\34\1\155\1\34\1\156\1\34\1\157"+
-    "\6\34\1\160\1\161\12\34\1\162\1\163\3\34\1\164"+
-    "\6\34\1\165\1\34\1\166\2\34\1\167\1\34\1\170"+
-    "\1\34\2\54\1\171\2\54\1\172\1\173\4\54\1\174"+
-    "\21\54\3\0\1\136\1\0\4\34\1\175\1\176\1\177"+
-    "\2\34\1\200\3\34\1\201\1\202\1\203\1\34\1\204"+
-    "\4\34\1\205\3\34\1\206\6\34\1\207\1\210\1\34"+
-    "\1\211\5\54\1\212\1\54\1\213\15\54\1\214\3\54"+
-    "\1\215\2\54\2\0\1\34\1\216\5\34\1\217\1\220"+
-    "\2\34\1\221\1\222\1\223\1\34\1\224\1\34\1\225"+
-    "\1\226\1\227\1\230\1\231\1\232\1\34\1\233\1\54"+
-    "\1\234\2\54\1\235\7\54\1\236\1\54\1\237\1\54"+
-    "\1\240\1\54\1\241\2\54\1\242\1\54\1\243\4\34"+
-    "\1\244\2\34\1\245\1\246\2\34\1\247\1\250\1\251"+
-    "\1\252\4\54\1\253\1\254\1\255\1\54\1\256\2\54"+
-    "\1\257\1\260\1\261\1\262\1\263\1\34\1\264\1\265"+
-    "\1\266\2\34\1\267\2\54\1\270\1\54\1\271\1\54"+
-    "\1\272\1\273\1\274\1\275\1\54\1\276\1\277\1\300"+
-    "\1\301";
+    "\1\1\1\27\1\30\1\31\1\32\1\33\1\34\22\35"+
+    "\1\36\1\37\1\40\1\41\4\42\1\43\1\44\3\45"+
+    "\1\46\1\43\1\44\1\1\1\43\1\47\1\43\1\50"+
+    "\1\43\2\50\1\51\1\52\1\1\1\0\1\53\1\0"+
+    "\1\54\1\0\14\55\1\56\1\57\1\60\1\61\1\62"+
+    "\1\63\1\64\1\65\1\66\1\67\1\70\1\71\1\72"+
+    "\4\0\1\20\1\0\1\20\2\0\1\73\1\74\1\75"+
+    "\1\76\1\77\1\100\1\101\1\102\1\103\1\104\1\105"+
+    "\1\106\1\1\1\0\1\107\1\110\1\111\1\112\1\0"+
+    "\14\35\1\113\5\35\1\114\2\35\1\115\30\35\1\116"+
+    "\1\117\1\120\1\121\1\122\1\123\1\124\1\125\1\126"+
+    "\1\127\3\0\1\130\1\131\1\132\14\55\1\133\11\55"+
+    "\1\134\1\135\1\136\1\137\1\20\1\0\1\137\3\0"+
+    "\2\20\1\140\1\141\1\142\1\143\1\144\11\35\1\145"+
+    "\10\35\1\146\3\35\1\147\1\35\1\150\14\35\1\151"+
+    "\6\35\1\152\1\153\2\35\1\154\13\55\1\155\16\55"+
+    "\1\137\6\0\4\35\1\156\1\35\1\157\1\35\1\160"+
+    "\6\35\1\161\1\162\12\35\1\163\1\164\3\35\1\165"+
+    "\6\35\1\166\1\35\1\167\2\35\1\170\1\35\1\171"+
+    "\1\35\2\55\1\172\2\55\1\173\1\174\4\55\1\175"+
+    "\21\55\3\0\1\137\1\0\4\35\1\176\1\177\1\200"+
+    "\2\35\1\201\3\35\1\202\1\203\1\204\1\35\1\205"+
+    "\4\35\1\206\3\35\1\207\6\35\1\210\1\211\1\35"+
+    "\1\212\5\55\1\213\1\55\1\214\15\55\1\215\3\55"+
+    "\1\216\2\55\2\0\1\35\1\217\5\35\1\220\1\221"+
+    "\2\35\1\222\1\223\1\224\1\35\1\225\1\35\1\226"+
+    "\1\227\1\230\1\231\1\232\1\233\1\35\1\234\1\55"+
+    "\1\235\2\55\1\236\7\55\1\237\1\55\1\240\1\55"+
+    "\1\241\1\55\1\242\2\55\1\243\1\55\1\244\4\35"+
+    "\1\245\2\35\1\246\1\247\2\35\1\250\1\251\1\252"+
+    "\1\253\4\55\1\254\1\255\1\256\1\55\1\257\2\55"+
+    "\1\260\1\261\1\262\1\263\1\264\1\35\1\265\1\266"+
+    "\1\267\2\35\1\270\2\55\1\271\1\55\1\272\1\55"+
+    "\1\273\1\274\1\275\1\276\1\55\1\277\1\300\1\301"+
+    "\1\302";
 
   private static int [] zzUnpackAction() {
     int [] result = new int[578];
@@ -1159,967 +1159,972 @@ class C3Lexer implements FlexLexer {
             { return TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 194: break;
+          case 195: break;
           case 2:
             { return TokenType.WHITE_SPACE;
             }
           // fall through
-          case 195: break;
+          case 196: break;
           case 3:
             { return C3Types.BANG;
             }
           // fall through
-          case 196: break;
+          case 197: break;
           case 4:
             { yybegin(IN_STRING);
             }
           // fall through
-          case 197: break;
+          case 198: break;
           case 5:
             { return C3Types.MOD;
             }
           // fall through
-          case 198: break;
+          case 199: break;
           case 6:
             { return C3Types.AMP;
             }
           // fall through
-          case 199: break;
+          case 200: break;
           case 7:
             { yybegin(IN_CHAR);
             }
           // fall through
-          case 200: break;
+          case 201: break;
           case 8:
             { return C3Types.LP;
             }
           // fall through
-          case 201: break;
+          case 202: break;
           case 9:
             { return C3Types.RP;
             }
           // fall through
-          case 202: break;
+          case 203: break;
           case 10:
             { return C3Types.STAR;
             }
           // fall through
-          case 203: break;
+          case 204: break;
           case 11:
             { return C3Types.PLUS;
             }
           // fall through
-          case 204: break;
+          case 205: break;
           case 12:
             { return C3Types.COMMA;
             }
           // fall through
-          case 205: break;
+          case 206: break;
           case 13:
             { return C3Types.MINUS;
             }
           // fall through
-          case 206: break;
+          case 207: break;
           case 14:
             { return C3Types.DOT;
             }
           // fall through
-          case 207: break;
+          case 208: break;
           case 15:
             { return C3Types.DIV;
             }
           // fall through
-          case 208: break;
+          case 209: break;
           case 16:
             { return C3Types.INT_LITERAL;
             }
           // fall through
-          case 209: break;
+          case 210: break;
           case 17:
             { return C3Types.COLON;
             }
           // fall through
-          case 210: break;
+          case 211: break;
           case 18:
             { return C3Types.EOS;
             }
           // fall through
-          case 211: break;
+          case 212: break;
           case 19:
             { return C3Types.LT_OP;
             }
           // fall through
-          case 212: break;
+          case 213: break;
           case 20:
             { return C3Types.EQ;
             }
           // fall through
-          case 213: break;
+          case 214: break;
           case 21:
             { return C3Types.GT_OP;
             }
           // fall through
-          case 214: break;
+          case 215: break;
           case 22:
             { return C3Types.QUESTION;
             }
           // fall through
-          case 215: break;
+          case 216: break;
           case 23:
             { return C3Types.CONST_IDENT;
             }
           // fall through
-          case 216: break;
+          case 217: break;
           case 24:
             { return C3Types.LBT;
             }
           // fall through
-          case 217: break;
+          case 218: break;
           case 25:
             { return C3Types.RBT;
             }
           // fall through
-          case 218: break;
+          case 219: break;
           case 26:
             { return C3Types.BIT_XOR;
             }
           // fall through
-          case 219: break;
-          case 27:
-            { yybegin(IN_RAW_STRING);
-            }
-          // fall through
           case 220: break;
-          case 28:
-            { return C3Types.IDENT;
+          case 27:
+            { return C3Types.UNDERSCORE;
             }
           // fall through
           case 221: break;
-          case 29:
-            { return C3Types.LB;
+          case 28:
+            { yybegin(IN_RAW_STRING);
             }
           // fall through
           case 222: break;
-          case 30:
-            { return C3Types.BIT_OR;
+          case 29:
+            { return C3Types.IDENT;
             }
           // fall through
           case 223: break;
-          case 31:
-            { return C3Types.RB;
+          case 30:
+            { return C3Types.LB;
             }
           // fall through
           case 224: break;
-          case 32:
-            { return C3Types.BIT_NOT;
+          case 31:
+            { return C3Types.BIT_OR;
             }
           // fall through
           case 225: break;
-          case 33:
-            { return C3ParserDefinition.BLOCK_COMMENT;
+          case 32:
+            { return C3Types.RB;
             }
           // fall through
           case 226: break;
-          case 34:
-            { 
+          case 33:
+            { return C3Types.BIT_NOT;
             }
           // fall through
           case 227: break;
-          case 35:
-            { yybegin(YYINITIAL); return C3Types.STRING_LIT;
+          case 34:
+            { return C3ParserDefinition.BLOCK_COMMENT;
             }
           // fall through
           case 228: break;
-          case 36:
-            { return C3ParserDefinition.DOC_COMMENT;
+          case 35:
+            { 
             }
           // fall through
           case 229: break;
-          case 37:
-            { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER;
+          case 36:
+            { yybegin(YYINITIAL); return C3Types.STRING_LIT;
             }
           // fall through
           case 230: break;
-          case 38:
-            { yybegin(YYINITIAL); return C3Types.CHAR_LIT;
+          case 37:
+            { return C3ParserDefinition.DOC_COMMENT;
             }
           // fall through
           case 231: break;
-          case 39:
-            { yybegin(YYINITIAL); return C3Types.BYTES;
+          case 38:
+            { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER;
             }
           // fall through
           case 232: break;
-          case 40:
-            { return C3Types.BANGBANG;
+          case 39:
+            { yybegin(YYINITIAL); return C3Types.CHAR_LIT;
             }
           // fall through
           case 233: break;
-          case 41:
-            { return C3Types.NE_OP;
+          case 40:
+            { yybegin(YYINITIAL); return C3Types.BYTES;
             }
           // fall through
           case 234: break;
-          case 42:
-            { return C3Types.HASH_IDENT;
+          case 41:
+            { return C3Types.BANGBANG;
             }
           // fall through
           case 235: break;
-          case 43:
-            { return C3Types.CT_CONST_IDENT;
+          case 42:
+            { return C3Types.NE_OP;
             }
           // fall through
           case 236: break;
-          case 44:
-            { return C3Types.CT_IDENT;
+          case 43:
+            { return C3Types.HASH_IDENT;
             }
           // fall through
           case 237: break;
-          case 45:
-            { return C3Types.MOD_ASSIGN;
+          case 44:
+            { return C3Types.CT_CONST_IDENT;
             }
           // fall through
           case 238: break;
-          case 46:
-            { return C3Types.AND;
+          case 45:
+            { return C3Types.CT_IDENT;
             }
           // fall through
           case 239: break;
-          case 47:
-            { return C3Types.BIT_AND_ASSIGN;
+          case 46:
+            { return C3Types.MOD_ASSIGN;
             }
           // fall through
           case 240: break;
-          case 48:
-            { return C3Types.LGENPAR;
+          case 47:
+            { return C3Types.AND;
             }
           // fall through
           case 241: break;
-          case 49:
-            { return C3Types.MULT_ASSIGN;
+          case 48:
+            { return C3Types.BIT_AND_ASSIGN;
             }
           // fall through
           case 242: break;
-          case 50:
-            { return C3Types.PLUSPLUS;
+          case 49:
+            { return C3Types.LGENPAR;
             }
           // fall through
           case 243: break;
-          case 51:
-            { return C3Types.PLUS_ASSIGN;
+          case 50:
+            { return C3Types.MULT_ASSIGN;
             }
           // fall through
           case 244: break;
-          case 52:
-            { return C3Types.MINUSMINUS;
+          case 51:
+            { return C3Types.PLUSPLUS;
             }
           // fall through
           case 245: break;
-          case 53:
-            { return C3Types.MINUS_ASSIGN;
+          case 52:
+            { return C3Types.PLUS_ASSIGN;
             }
           // fall through
           case 246: break;
-          case 54:
-            { return C3Types.DOTDOT;
+          case 53:
+            { return C3Types.MINUSMINUS;
             }
           // fall through
           case 247: break;
-          case 55:
-            { yybegin(IN_COMMENT); commentNesting = 1; return C3ParserDefinition.BLOCK_COMMENT;
+          case 54:
+            { return C3Types.MINUS_ASSIGN;
             }
           // fall through
           case 248: break;
-          case 56:
-            { return C3ParserDefinition.LINE_COMMENT;
+          case 55:
+            { return C3Types.DOTDOT;
             }
           // fall through
           case 249: break;
-          case 57:
-            { return C3Types.DIV_ASSIGN;
+          case 56:
+            { yybegin(IN_COMMENT); commentNesting = 1; return C3ParserDefinition.BLOCK_COMMENT;
             }
           // fall through
           case 250: break;
-          case 58:
-            { return C3Types.SCOPE;
+          case 57:
+            { return C3ParserDefinition.LINE_COMMENT;
             }
           // fall through
           case 251: break;
-          case 59:
-            { yybegin(IN_DOC_COMMENT); return C3ParserDefinition.DOC_COMMENT;
+          case 58:
+            { return C3Types.DIV_ASSIGN;
             }
           // fall through
           case 252: break;
-          case 60:
-            { return C3Types.SHL;
+          case 59:
+            { return C3Types.SCOPE;
             }
           // fall through
           case 253: break;
-          case 61:
-            { return C3Types.LE_OP;
+          case 60:
+            { yybegin(IN_DOC_COMMENT); return C3ParserDefinition.DOC_COMMENT;
             }
           // fall through
           case 254: break;
-          case 62:
-            { return C3Types.EQ_OP;
+          case 61:
+            { return C3Types.SHL;
             }
           // fall through
           case 255: break;
-          case 63:
-            { return C3Types.IMPLIES;
+          case 62:
+            { return C3Types.LE_OP;
             }
           // fall through
           case 256: break;
-          case 64:
-            { return C3Types.RGENPAR;
+          case 63:
+            { return C3Types.EQ_OP;
             }
           // fall through
           case 257: break;
-          case 65:
-            { return C3Types.GE_OP;
+          case 64:
+            { return C3Types.IMPLIES;
             }
           // fall through
           case 258: break;
-          case 66:
-            { return C3Types.SHR;
+          case 65:
+            { return C3Types.RGENPAR;
             }
           // fall through
           case 259: break;
-          case 67:
-            { return C3Types.RVEC;
+          case 66:
+            { return C3Types.GE_OP;
             }
           // fall through
           case 260: break;
-          case 68:
-            { return C3Types.ELVIS;
+          case 67:
+            { return C3Types.SHR;
             }
           // fall through
           case 261: break;
-          case 69:
-            { return C3Types.OPTELSE;
+          case 68:
+            { return C3Types.RVEC;
             }
           // fall through
           case 262: break;
-          case 70:
-            { return C3Types.AT_IDENT;
+          case 69:
+            { return C3Types.ELVIS;
             }
           // fall through
           case 263: break;
-          case 71:
-            { return C3Types.TYPE_IDENT;
+          case 70:
+            { return C3Types.OPTELSE;
             }
           // fall through
           case 264: break;
-          case 72:
-            { return C3Types.LVEC;
+          case 71:
+            { return C3Types.AT_IDENT;
             }
           // fall through
           case 265: break;
-          case 73:
-            { return C3Types.BIT_XOR_ASSIGN;
+          case 72:
+            { return C3Types.TYPE_IDENT;
             }
           // fall through
           case 266: break;
-          case 74:
-            { return C3Types.KW_DO;
+          case 73:
+            { return C3Types.LVEC;
             }
           // fall through
           case 267: break;
-          case 75:
-            { return C3Types.KW_FN;
+          case 74:
+            { return C3Types.BIT_XOR_ASSIGN;
             }
           // fall through
           case 268: break;
-          case 76:
-            { return C3Types.KW_IF;
+          case 75:
+            { return C3Types.KW_DO;
             }
           // fall through
           case 269: break;
-          case 77:
-            { yybegin(IN_BYTES_STRING);
+          case 76:
+            { return C3Types.KW_FN;
             }
           // fall through
           case 270: break;
-          case 78:
-            { yybegin(IN_BYTES_CHAR);
+          case 77:
+            { return C3Types.KW_IF;
             }
           // fall through
           case 271: break;
-          case 79:
-            { yybegin(IN_BYTES_RAW_STRING);
+          case 78:
+            { yybegin(IN_BYTES_STRING);
             }
           // fall through
           case 272: break;
-          case 80:
-            { return C3Types.LBRAPIPE;
+          case 79:
+            { yybegin(IN_BYTES_CHAR);
             }
           // fall through
           case 273: break;
-          case 81:
-            { return C3Types.BIT_OR_ASSIGN;
+          case 80:
+            { yybegin(IN_BYTES_RAW_STRING);
             }
           // fall through
           case 274: break;
-          case 82:
-            { return C3Types.OR;
+          case 81:
+            { return C3Types.LBRAPIPE;
             }
           // fall through
           case 275: break;
-          case 83:
-            { return C3Types.RBRAPIPE;
+          case 82:
+            { return C3Types.BIT_OR_ASSIGN;
             }
           // fall through
           case 276: break;
-          case 84:
-            { if (--commentNesting == 0) { yybegin(YYINITIAL); return C3ParserDefinition.BLOCK_COMMENT; }
+          case 83:
+            { return C3Types.OR;
             }
           // fall through
           case 277: break;
-          case 85:
-            { commentNesting++; return C3ParserDefinition.BLOCK_COMMENT;
+          case 84:
+            { return C3Types.RBRAPIPE;
             }
           // fall through
           case 278: break;
-          case 86:
-            { yybegin(YYINITIAL); return C3ParserDefinition.DOC_COMMENT;
+          case 85:
+            { if (--commentNesting == 0) { yybegin(YYINITIAL); return C3ParserDefinition.BLOCK_COMMENT; }
             }
           // fall through
           case 279: break;
-          case 87:
-            { return C3Types.BUILTIN_CONST;
+          case 86:
+            { commentNesting++; return C3ParserDefinition.BLOCK_COMMENT;
             }
           // fall through
           case 280: break;
-          case 88:
-            { return C3Types.BUILTIN;
+          case 87:
+            { yybegin(YYINITIAL); return C3ParserDefinition.DOC_COMMENT;
             }
           // fall through
           case 281: break;
-          case 89:
-            { return C3Types.CT_TYPE_IDENT;
+          case 88:
+            { return C3Types.BUILTIN_CONST;
             }
           // fall through
           case 282: break;
-          case 90:
-            { return C3Types.KW_CT_IF;
+          case 89:
+            { return C3Types.BUILTIN;
             }
           // fall through
           case 283: break;
-          case 91:
-            { return C3Types.CT_AND;
+          case 90:
+            { return C3Types.CT_TYPE_IDENT;
             }
           // fall through
           case 284: break;
-          case 92:
-            { return C3Types.CT_PLUS;
+          case 91:
+            { return C3Types.KW_CT_IF;
             }
           // fall through
           case 285: break;
-          case 93:
-            { return C3Types.ELLIPSIS;
+          case 92:
+            { return C3Types.CT_AND;
             }
           // fall through
           case 286: break;
-          case 94:
-            { return C3Types.FLOAT_LITERAL;
+          case 93:
+            { return C3Types.CT_PLUS;
             }
           // fall through
           case 287: break;
-          case 95:
-            { return C3Types.SHL_ASSIGN;
+          case 94:
+            { return C3Types.ELLIPSIS;
             }
           // fall through
           case 288: break;
-          case 96:
-            { return C3Types.SHR_ASSIGN;
+          case 95:
+            { return C3Types.FLOAT_LITERAL;
             }
           // fall through
           case 289: break;
-          case 97:
-            { return C3Types.AT_TYPE_IDENT;
+          case 96:
+            { return C3Types.SHL_ASSIGN;
             }
           // fall through
           case 290: break;
-          case 98:
-            { return C3Types.KW_ANY;
+          case 97:
+            { return C3Types.SHR_ASSIGN;
             }
           // fall through
           case 291: break;
-          case 99:
-            { return C3Types.KW_ASM;
+          case 98:
+            { return C3Types.AT_TYPE_IDENT;
             }
           // fall through
           case 292: break;
-          case 100:
-            { return C3Types.KW_DEF;
+          case 99:
+            { return C3Types.KW_ANY;
             }
           // fall through
           case 293: break;
-          case 101:
-            { return C3Types.KW_FOR;
+          case 100:
+            { return C3Types.KW_ASM;
             }
           // fall through
           case 294: break;
-          case 102:
-            { return C3Types.KW_INT;
+          case 101:
+            { return C3Types.KW_DEF;
             }
           // fall through
           case 295: break;
-          case 103:
-            { return C3Types.KW_ISZ;
+          case 102:
+            { return C3Types.KW_FOR;
             }
           // fall through
           case 296: break;
-          case 104:
-            { return C3Types.KW_TRY;
+          case 103:
+            { return C3Types.KW_INT;
             }
           // fall through
           case 297: break;
-          case 105:
-            { return C3Types.KW_USZ;
+          case 104:
+            { return C3Types.KW_ISZ;
             }
           // fall through
           case 298: break;
-          case 106:
-            { return C3Types.KW_VAR;
+          case 105:
+            { return C3Types.KW_TRY;
             }
           // fall through
           case 299: break;
-          case 107:
-            { return C3Types.CT_OR;
+          case 106:
+            { return C3Types.KW_USZ;
             }
           // fall through
           case 300: break;
-          case 108:
-            { return C3Types.KW_CT_FOR;
+          case 107:
+            { return C3Types.KW_VAR;
             }
           // fall through
           case 301: break;
-          case 109:
-            { return C3Types.KW_BOOL;
+          case 108:
+            { return C3Types.CT_OR;
             }
           // fall through
           case 302: break;
-          case 110:
-            { return C3Types.KW_CASE;
+          case 109:
+            { return C3Types.KW_CT_FOR;
             }
           // fall through
           case 303: break;
-          case 111:
-            { return C3Types.KW_CHAR;
+          case 110:
+            { return C3Types.KW_BOOL;
             }
           // fall through
           case 304: break;
-          case 112:
-            { return C3Types.KW_ELSE;
+          case 111:
+            { return C3Types.KW_CASE;
             }
           // fall through
           case 305: break;
-          case 113:
-            { return C3Types.KW_ENUM;
+          case 112:
+            { return C3Types.KW_CHAR;
             }
           // fall through
           case 306: break;
-          case 114:
-            { return C3Types.KW_IPTR;
+          case 113:
+            { return C3Types.KW_ELSE;
             }
           // fall through
           case 307: break;
-          case 115:
-            { return C3Types.KW_LONG;
+          case 114:
+            { return C3Types.KW_ENUM;
             }
           // fall through
           case 308: break;
-          case 116:
-            { return C3Types.KW_NULL;
+          case 115:
+            { return C3Types.KW_IPTR;
             }
           // fall through
           case 309: break;
-          case 117:
-            { return C3Types.KW_TRUE;
+          case 116:
+            { return C3Types.KW_LONG;
             }
           // fall through
           case 310: break;
-          case 118:
-            { return C3Types.KW_UINT;
+          case 117:
+            { return C3Types.KW_NULL;
             }
           // fall through
           case 311: break;
-          case 119:
-            { return C3Types.KW_UPTR;
+          case 118:
+            { return C3Types.KW_TRUE;
             }
           // fall through
           case 312: break;
-          case 120:
-            { return C3Types.KW_VOID;
+          case 119:
+            { return C3Types.KW_UINT;
             }
           // fall through
           case 313: break;
-          case 121:
-            { return C3Types.KW_CT_CASE;
+          case 120:
+            { return C3Types.KW_UPTR;
             }
           // fall through
           case 314: break;
-          case 122:
-            { return C3Types.KW_CT_ECHO;
+          case 121:
+            { return C3Types.KW_VOID;
             }
           // fall through
           case 315: break;
-          case 123:
-            { return C3Types.KW_CT_ELSE;
+          case 122:
+            { return C3Types.KW_CT_CASE;
             }
           // fall through
           case 316: break;
-          case 124:
-            { return C3Types.KW_CT_EVAL;
+          case 123:
+            { return C3Types.KW_CT_ECHO;
             }
           // fall through
           case 317: break;
-          case 125:
-            { return C3Types.KW_BREAK;
+          case 124:
+            { return C3Types.KW_CT_ELSE;
             }
           // fall through
           case 318: break;
-          case 126:
-            { return C3Types.KW_CATCH;
+          case 125:
+            { return C3Types.KW_CT_EVAL;
             }
           // fall through
           case 319: break;
-          case 127:
-            { return C3Types.KW_CONST;
+          case 126:
+            { return C3Types.KW_BREAK;
             }
           // fall through
           case 320: break;
-          case 128:
-            { return C3Types.KW_DEFER;
+          case 127:
+            { return C3Types.KW_CATCH;
             }
           // fall through
           case 321: break;
-          case 129:
-            { return C3Types.KW_FALSE;
+          case 128:
+            { return C3Types.KW_CONST;
             }
           // fall through
           case 322: break;
-          case 130:
-            { return C3Types.KW_FAULT;
+          case 129:
+            { return C3Types.KW_DEFER;
             }
           // fall through
           case 323: break;
-          case 131:
-            { return C3Types.KW_FLOAT;
+          case 130:
+            { return C3Types.KW_FALSE;
             }
           // fall through
           case 324: break;
-          case 132:
-            { return C3Types.KW_ICHAR;
+          case 131:
+            { return C3Types.KW_FAULT;
             }
           // fall through
           case 325: break;
-          case 133:
-            { return C3Types.KW_MACRO;
+          case 132:
+            { return C3Types.KW_FLOAT;
             }
           // fall through
           case 326: break;
-          case 134:
-            { return C3Types.KW_SHORT;
+          case 133:
+            { return C3Types.KW_ICHAR;
             }
           // fall through
           case 327: break;
-          case 135:
-            { return C3Types.KW_ULONG;
+          case 134:
+            { return C3Types.KW_MACRO;
             }
           // fall through
           case 328: break;
-          case 136:
-            { return C3Types.KW_UNION;
+          case 135:
+            { return C3Types.KW_SHORT;
             }
           // fall through
           case 329: break;
-          case 137:
-            { return C3Types.KW_WHILE;
+          case 136:
+            { return C3Types.KW_ULONG;
             }
           // fall through
           case 330: break;
-          case 138:
-            { return C3Types.KW_CT_ENDIF;
+          case 137:
+            { return C3Types.KW_UNION;
             }
           // fall through
           case 331: break;
-          case 139:
-            { return C3Types.KW_CT_ERROR;
+          case 138:
+            { return C3Types.KW_WHILE;
             }
           // fall through
           case 332: break;
-          case 140:
-            { return C3Types.KW_CT_VAARG;
+          case 139:
+            { return C3Types.KW_CT_ENDIF;
             }
           // fall through
           case 333: break;
-          case 141:
-            { return C3Types.KW_CT_VAREF;
+          case 140:
+            { return C3Types.KW_CT_ERROR;
             }
           // fall through
           case 334: break;
-          case 142:
-            { return C3Types.KW_ASSERT;
+          case 141:
+            { return C3Types.KW_CT_VAARG;
             }
           // fall through
           case 335: break;
-          case 143:
-            { return C3Types.KW_DOUBLE;
+          case 142:
+            { return C3Types.KW_CT_VAREF;
             }
           // fall through
           case 336: break;
-          case 144:
-            { return C3Types.KW_EXTERN;
+          case 143:
+            { return C3Types.KW_ASSERT;
             }
           // fall through
           case 337: break;
-          case 145:
-            { return C3Types.KW_IMPORT;
+          case 144:
+            { return C3Types.KW_DOUBLE;
             }
           // fall through
           case 338: break;
-          case 146:
-            { return C3Types.KW_INLINE;
+          case 145:
+            { return C3Types.KW_EXTERN;
             }
           // fall through
           case 339: break;
-          case 147:
-            { return C3Types.KW_INT128;
+          case 146:
+            { return C3Types.KW_IMPORT;
             }
           // fall through
           case 340: break;
-          case 148:
-            { return C3Types.KW_MODULE;
+          case 147:
+            { return C3Types.KW_INLINE;
             }
           // fall through
           case 341: break;
-          case 149:
-            { return C3Types.KW_RETURN;
+          case 148:
+            { return C3Types.KW_INT128;
             }
           // fall through
           case 342: break;
-          case 150:
-            { return C3Types.KW_STATIC;
+          case 149:
+            { return C3Types.KW_MODULE;
             }
           // fall through
           case 343: break;
-          case 151:
-            { return C3Types.KW_STRUCT;
+          case 150:
+            { return C3Types.KW_RETURN;
             }
           // fall through
           case 344: break;
-          case 152:
-            { return C3Types.KW_SWITCH;
+          case 151:
+            { return C3Types.KW_STATIC;
             }
           // fall through
           case 345: break;
-          case 153:
-            { return C3Types.KW_TLOCAL;
+          case 152:
+            { return C3Types.KW_STRUCT;
             }
           // fall through
           case 346: break;
-          case 154:
-            { return C3Types.KW_TYPEID;
+          case 153:
+            { return C3Types.KW_SWITCH;
             }
           // fall through
           case 347: break;
-          case 155:
-            { return C3Types.KW_USHORT;
+          case 154:
+            { return C3Types.KW_TLOCAL;
             }
           // fall through
           case 348: break;
-          case 156:
-            { return C3Types.KW_CT_ASSERT;
+          case 155:
+            { return C3Types.KW_TYPEID;
             }
           // fall through
           case 349: break;
-          case 157:
-            { return C3Types.KW_CT_ENDFOR;
+          case 156:
+            { return C3Types.KW_USHORT;
             }
           // fall through
           case 350: break;
-          case 158:
-            { return C3Types.KW_CT_NAMEOF;
+          case 157:
+            { return C3Types.KW_CT_ASSERT;
             }
           // fall through
           case 351: break;
-          case 159:
-            { return C3Types.KW_CT_SIZEOF;
+          case 158:
+            { return C3Types.KW_CT_ENDFOR;
             }
           // fall through
           case 352: break;
-          case 160:
-            { return C3Types.KW_CT_SWITCH;
+          case 159:
+            { return C3Types.KW_CT_NAMEOF;
             }
           // fall through
           case 353: break;
-          case 161:
-            { return C3Types.KW_CT_TYPEOF;
+          case 160:
+            { return C3Types.KW_CT_SIZEOF;
             }
           // fall through
           case 354: break;
-          case 162:
-            { return C3Types.KW_CT_VAEXPR;
+          case 161:
+            { return C3Types.KW_CT_SWITCH;
             }
           // fall through
           case 355: break;
-          case 163:
-            { return C3Types.KW_CT_VATYPE;
+          case 162:
+            { return C3Types.KW_CT_TYPEOF;
             }
           // fall through
           case 356: break;
-          case 164:
-            { return C3Types.KW_DEFAULT;
+          case 163:
+            { return C3Types.KW_CT_VAEXPR;
             }
           // fall through
           case 357: break;
-          case 165:
-            { return C3Types.KW_FLOAT16;
+          case 164:
+            { return C3Types.KW_CT_VATYPE;
             }
           // fall through
           case 358: break;
-          case 166:
-            { return C3Types.KW_FOREACH;
+          case 165:
+            { return C3Types.KW_DEFAULT;
             }
           // fall through
           case 359: break;
-          case 167:
-            { return C3Types.KW_UINT128;
+          case 166:
+            { return C3Types.KW_FLOAT16;
             }
           // fall through
           case 360: break;
-          case 168:
-            { return C3Types.KW_CT_ALIGNOF;
+          case 167:
+            { return C3Types.KW_FOREACH;
             }
           // fall through
           case 361: break;
-          case 169:
-            { return C3Types.KW_CT_DEFAULT;
+          case 168:
+            { return C3Types.KW_UINT128;
             }
           // fall through
           case 362: break;
-          case 170:
-            { return C3Types.KW_CT_DEFINED;
+          case 169:
+            { return C3Types.KW_CT_ALIGNOF;
             }
           // fall through
           case 363: break;
-          case 171:
-            { return C3Types.KW_CT_FEATURE;
+          case 170:
+            { return C3Types.KW_CT_DEFAULT;
             }
           // fall through
           case 364: break;
-          case 172:
-            { return C3Types.KW_CT_FOREACH;
+          case 171:
+            { return C3Types.KW_CT_DEFINED;
             }
           // fall through
           case 365: break;
-          case 173:
-            { return C3Types.KW_CT_INCLUDE;
+          case 172:
+            { return C3Types.KW_CT_FEATURE;
             }
           // fall through
           case 366: break;
-          case 174:
-            { return C3Types.KW_CT_QNAMEOF;
+          case 173:
+            { return C3Types.KW_CT_FOREACH;
             }
           // fall through
           case 367: break;
-          case 175:
-            { return C3Types.KW_CT_VACONST;
+          case 174:
+            { return C3Types.KW_CT_INCLUDE;
             }
           // fall through
           case 368: break;
-          case 176:
-            { return C3Types.KW_CT_VACOUNT;
+          case 175:
+            { return C3Types.KW_CT_QNAMEOF;
             }
           // fall through
           case 369: break;
-          case 177:
-            { return C3Types.KW_CT_VASPLAT;
+          case 176:
+            { return C3Types.KW_CT_VACONST;
             }
           // fall through
           case 370: break;
-          case 178:
-            { return C3Types.KW_ANYFAULT;
+          case 177:
+            { return C3Types.KW_CT_VACOUNT;
             }
           // fall through
           case 371: break;
-          case 179:
-            { return C3Types.KW_BFLOAT16;
+          case 178:
+            { return C3Types.KW_CT_VASPLAT;
             }
           // fall through
           case 372: break;
-          case 180:
-            { return C3Types.KW_CONTINUE;
+          case 179:
+            { return C3Types.KW_ANYFAULT;
             }
           // fall through
           case 373: break;
-          case 181:
-            { return C3Types.KW_DISTINCT;
+          case 180:
+            { return C3Types.KW_BFLOAT16;
             }
           // fall through
           case 374: break;
-          case 182:
-            { return C3Types.KW_FLOAT128;
+          case 181:
+            { return C3Types.KW_CONTINUE;
             }
           // fall through
           case 375: break;
-          case 183:
-            { return C3Types.KW_NEXTCASE;
+          case 182:
+            { return C3Types.KW_DISTINCT;
             }
           // fall through
           case 376: break;
-          case 184:
-            { return C3Types.KW_CT_EVALTYPE;
+          case 183:
+            { return C3Types.KW_FLOAT128;
             }
           // fall through
           case 377: break;
-          case 185:
-            { return C3Types.KW_CT_IS_CONST;
+          case 184:
+            { return C3Types.KW_NEXTCASE;
             }
           // fall through
           case 378: break;
-          case 186:
-            { return C3Types.KW_CT_TYPEFROM;
+          case 185:
+            { return C3Types.KW_CT_EVALTYPE;
             }
           // fall through
           case 379: break;
-          case 187:
-            { return C3Types.KW_BITSTRUCT;
+          case 186:
+            { return C3Types.KW_CT_IS_CONST;
             }
           // fall through
           case 380: break;
-          case 188:
-            { return C3Types.KW_FOREACH_R;
+          case 187:
+            { return C3Types.KW_CT_TYPEFROM;
             }
           // fall through
           case 381: break;
-          case 189:
-            { return C3Types.KW_INTERFACE;
+          case 188:
+            { return C3Types.KW_BITSTRUCT;
             }
           // fall through
           case 382: break;
-          case 190:
-            { return C3Types.KW_CT_ENDSWITCH;
+          case 189:
+            { return C3Types.KW_FOREACH_R;
             }
           // fall through
           case 383: break;
-          case 191:
-            { return C3Types.KW_CT_EXTNAMEOF;
+          case 190:
+            { return C3Types.KW_INTERFACE;
             }
           // fall through
           case 384: break;
-          case 192:
-            { return C3Types.KW_CT_STRINGIFY;
+          case 191:
+            { return C3Types.KW_CT_ENDSWITCH;
             }
           // fall through
           case 385: break;
-          case 193:
-            { return C3Types.KW_CT_ENDFOREACH;
+          case 192:
+            { return C3Types.KW_CT_EXTNAMEOF;
             }
           // fall through
           case 386: break;
+          case 193:
+            { return C3Types.KW_CT_STRINGIFY;
+            }
+          // fall through
+          case 387: break;
+          case 194:
+            { return C3Types.KW_CT_ENDFOREACH;
+            }
+          // fall through
+          case 388: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }
