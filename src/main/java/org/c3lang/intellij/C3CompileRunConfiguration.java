@@ -30,18 +30,38 @@ public class C3CompileRunConfiguration extends RunConfigurationBase<C3CompileRun
         return (C3CompileRunConfigurationOptions)super.getOptions();
     }
 
+    public String getWorkingDirectory()
+    {
+        return getOptions().getWorkingDirectory();
+    }
+
+    public void setWorkingDirectory(String workingDirectory)
+    {
+        getOptions().setWorkingDirectory(workingDirectory);
+    }
+
+    public String getArgs()
+    {
+        return getOptions().getArgs();
+    }
+
+    public void setArgs(String args)
+    {
+        getOptions().setArgs(args);
+    }
+
+    public String getSourceFile()
+    {
+        return getOptions().getSourceFile();
+    }
+
+    public void setSourceFile(String file)
+    {
+        getOptions().setSourceFile(file);
+    }
+
     @Override public void checkConfiguration()
     {
-    }
-
-    public String getSourceName()
-    {
-        return getOptions().getSourceName();
-    }
-
-    public void setSourceName(String string)
-    {
-        getOptions().setSourceName(string);
     }
 
     @Override public @Nullable RunProfileState getState(@NotNull Executor executor,
@@ -52,7 +72,19 @@ public class C3CompileRunConfiguration extends RunConfigurationBase<C3CompileRun
             @Override protected @NotNull ProcessHandler startProcess() throws ExecutionException
             {
                 String sdk = C3SettingsState.getInstance().sdk;
-                GeneralCommandLine commandLine = new GeneralCommandLine(sdk, "compile-run", getSourceName());
+                GeneralCommandLine commandLine = new GeneralCommandLine(sdk, "compile-run", getSourceFile());
+
+                // I couldn't just add the whole args string here because the GeneralCommandLine class adds quotes
+                // around parameters with spaces (so it would look like this: c3c run "--param value" which isn't valid
+                // syntax).
+                // Instead, I'm splitting the args string by spaces and adding that array.
+                if (getArgs() != null) {
+                    commandLine.addParameters(getArgs().split(" "));
+                }
+
+                String workingDirectory = getWorkingDirectory();
+                commandLine.setWorkDirectory(workingDirectory);
+
                 OSProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine);
                 ProcessTerminatedListener.attach(processHandler);
                 return processHandler;

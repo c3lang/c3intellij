@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 @State(name = "org.intellij.sdk.settings.AppSettingsState", storages = @Storage("C3SettingsPlugin.xml"))
 public class C3SettingsState implements PersistentStateComponent<C3SettingsState>
 {
-    public String sdk = "";
+    public String sdk = "c3c";
 
     public static C3SettingsState getInstance()
     {
