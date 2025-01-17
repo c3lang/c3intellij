@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3LocalDeclAfterTypeImpl extends ASTWrapperPsiElement implements C3LocalDeclAfterType {
+public class C3LocalDeclAfterTypeImpl extends C3PsiElementImpl implements C3LocalDeclAfterType {
 
   public C3LocalDeclAfterTypeImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,14 +28,14 @@ public class C3LocalDeclAfterTypeImpl extends ASTWrapperPsiElement implements C3
 
   @Override
   @Nullable
-  public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+  public C3LocalDeclAfterType1 getLocalDeclAfterType1() {
+    return PsiTreeUtil.getChildOfType(this, C3LocalDeclAfterType1.class);
   }
 
   @Override
   @Nullable
-  public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+  public C3LocalDeclAfterType2 getLocalDeclAfterType2() {
+    return PsiTreeUtil.getChildOfType(this, C3LocalDeclAfterType2.class);
   }
 
 }

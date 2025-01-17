@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3TypeDeclImpl extends C3NamedElementImpl implements C3TypeDecl {
+public class C3TypeDeclImpl extends C3PsiElementImpl implements C3TypeDecl {
 
   public C3TypeDeclImpl(@NotNull ASTNode node) {
     super(node);
@@ -48,21 +48,6 @@ public class C3TypeDeclImpl extends C3NamedElementImpl implements C3TypeDecl {
   @Nullable
   public C3StructDeclaration getStructDeclaration() {
     return PsiTreeUtil.getChildOfType(this, C3StructDeclaration.class);
-  }
-
-  @Override
-  public String getName() {
-    return C3PsiImplUtils.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(String newName) {
-    return C3PsiImplUtils.setName(this, newName);
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return C3PsiImplUtils.getNameIdentifier(this);
   }
 
 }

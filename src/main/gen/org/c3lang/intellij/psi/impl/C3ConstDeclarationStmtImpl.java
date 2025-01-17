@@ -8,17 +8,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3DeclarationStmtImpl extends ASTWrapperPsiElement implements C3DeclarationStmt {
+public class C3ConstDeclarationStmtImpl extends C3PsiElementImpl implements C3ConstDeclarationStmt {
 
-  public C3DeclarationStmtImpl(@NotNull ASTNode node) {
+  public C3ConstDeclarationStmtImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitDeclarationStmt(this);
+    visitor.visitConstDeclarationStmt(this);
   }
 
   @Override
@@ -29,26 +28,26 @@ public class C3DeclarationStmtImpl extends ASTWrapperPsiElement implements C3Dec
 
   @Override
   @Nullable
-  public C3ConstDecl getConstDecl() {
-    return PsiTreeUtil.getChildOfType(this, C3ConstDecl.class);
+  public C3Attributes getAttributes() {
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
-  public C3DeclStmtAfterType getDeclStmtAfterType() {
-    return PsiTreeUtil.getChildOfType(this, C3DeclStmtAfterType.class);
+  public C3Expr getExpr() {
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
   @Override
   @Nullable
-  public C3LocalDeclStorage getLocalDeclStorage() {
-    return PsiTreeUtil.getChildOfType(this, C3LocalDeclStorage.class);
+  public C3Type getType() {
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
   @Override
-  @Nullable
-  public C3OptionalType getOptionalType() {
-    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
+  @NotNull
+  public PsiElement getConstIdent() {
+    return notNullChild(findChildByType(CONST_IDENT));
   }
 
 }

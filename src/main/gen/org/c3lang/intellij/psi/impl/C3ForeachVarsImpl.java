@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3ForeachVarsImpl extends ASTWrapperPsiElement implements C3ForeachVars {
+public class C3ForeachVarsImpl extends C3PsiElementImpl implements C3ForeachVars {
 
   public C3ForeachVarsImpl(@NotNull ASTNode node) {
     super(node);

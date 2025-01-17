@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3PathIdent extends PsiElement {
+public interface C3PathIdent extends C3PsiElement {
 
   @Nullable
   C3Path getPath();
+
+  @NotNull
+  PsiElement getIdent();
 
 }

@@ -3,7 +3,6 @@ package org.c3lang.intellij.psi;
 
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiElement;
 
 public class C3Visitor extends PsiElementVisitor {
 
@@ -32,6 +31,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitAsmBlockStmt(@NotNull C3AsmBlockStmt o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAsmDeclaration(@NotNull C3AsmDeclaration o) {
     visitPsiElement(o);
   }
 
@@ -171,7 +174,7 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitConstDecl(@NotNull C3ConstDecl o) {
+  public void visitConstDeclarationStmt(@NotNull C3ConstDeclarationStmt o) {
     visitPsiElement(o);
   }
 
@@ -231,6 +234,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCtErrorStmt(@NotNull C3CtErrorStmt o) {
+    visitPsiElement(o);
+  }
+
   public void visitCtFeatureExpr(@NotNull C3CtFeatureExpr o) {
     visitExpr(o);
   }
@@ -268,10 +275,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitDeclStmtAfterType(@NotNull C3DeclStmtAfterType o) {
-    visitPsiElement(o);
-  }
-
-  public void visitDeclarationStmt(@NotNull C3DeclarationStmt o) {
     visitPsiElement(o);
   }
 
@@ -343,6 +346,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
+  public void visitExprStmt(@NotNull C3ExprStmt o) {
+    visitPsiElement(o);
+  }
+
   public void visitExprTerminator(@NotNull C3ExprTerminator o) {
     visitPsiElement(o);
   }
@@ -400,7 +407,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitFuncName(@NotNull C3FuncName o) {
-    visitPsiElement(o);
+    visitFuncNamePsiElement(o);
   }
 
   public void visitFuncTypedef(@NotNull C3FuncTypedef o) {
@@ -448,6 +455,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitImportDecl(@NotNull C3ImportDecl o) {
+    visitPsiElement(o);
+  }
+
+  public void visitImportPath(@NotNull C3ImportPath o) {
     visitPsiElement(o);
   }
 
@@ -507,7 +518,19 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitLocalDeclAfterType1(@NotNull C3LocalDeclAfterType1 o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLocalDeclAfterType2(@NotNull C3LocalDeclAfterType2 o) {
+    visitPsiElement(o);
+  }
+
   public void visitLocalDeclStorage(@NotNull C3LocalDeclStorage o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLocalDeclarationStmt(@NotNull C3LocalDeclarationStmt o) {
     visitPsiElement(o);
   }
 
@@ -544,6 +567,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitModuleParams(@NotNull C3ModuleParams o) {
+    visitPsiElement(o);
+  }
+
+  public void visitModulePath(@NotNull C3ModulePath o) {
     visitPsiElement(o);
   }
 
@@ -696,7 +723,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitTypeDecl(@NotNull C3TypeDecl o) {
-    visitNamedElement(o);
+    visitPsiElement(o);
   }
 
   public void visitTypeName(@NotNull C3TypeName o) {
@@ -731,11 +758,11 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitNamedElement(@NotNull C3NamedElement o) {
+  public void visitFuncNamePsiElement(@NotNull C3FuncNamePsiElement o) {
     visitPsiElement(o);
   }
 
-  public void visitPsiElement(@NotNull PsiElement o) {
+  public void visitPsiElement(@NotNull C3PsiElement o) {
     visitElement(o);
   }
 

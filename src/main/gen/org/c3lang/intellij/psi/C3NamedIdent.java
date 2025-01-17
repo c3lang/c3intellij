@@ -5,6 +5,18 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3NamedIdent extends PsiElement {
+public interface C3NamedIdent extends C3PsiElement {
+
+  @Nullable
+  PsiElement getCtIdent();
+
+  @Nullable
+  PsiElement getCtTypeIdent();
+
+  @Nullable
+  PsiElement getHashIdent();
+
+  @Nullable
+  PsiElement getIdent();
 
 }

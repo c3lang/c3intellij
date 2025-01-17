@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3DefDecl extends PsiElement {
+public interface C3DefDecl extends C3PsiElement {
 
   @NotNull
   C3AnyIdent getAnyIdent();
@@ -13,7 +13,7 @@ public interface C3DefDecl extends PsiElement {
   @Nullable
   C3Attributes getAttributes();
 
-  @NotNull
+  @Nullable
   C3DefDeclarationSource getDefDeclarationSource();
 
   @Nullable

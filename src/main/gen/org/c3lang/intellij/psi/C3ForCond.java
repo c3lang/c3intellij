@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ForCond extends PsiElement {
+public interface C3ForCond extends C3PsiElement {
 
   @Nullable
   C3Cond getCond();

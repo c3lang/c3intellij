@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3GlobalDecl extends PsiElement {
+public interface C3GlobalDecl extends C3PsiElement {
 
   @Nullable
   C3GlobalMultiDeclaration getGlobalMultiDeclaration();
@@ -15,5 +15,8 @@ public interface C3GlobalDecl extends PsiElement {
 
   @NotNull
   C3OptionalType getOptionalType();
+
+  @Nullable
+  PsiElement getIdent();
 
 }

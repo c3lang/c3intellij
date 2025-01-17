@@ -5,6 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3AsmInstr extends PsiElement {
+public interface C3AsmInstr extends C3PsiElement {
 
 }

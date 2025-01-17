@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3CompoundStatementImpl extends ASTWrapperPsiElement implements C3CompoundStatement {
+public class C3CompoundStatementImpl extends C3PsiElementImpl implements C3CompoundStatement {
 
   public C3CompoundStatementImpl(@NotNull ASTNode node) {
     super(node);
@@ -28,9 +27,9 @@ public class C3CompoundStatementImpl extends ASTWrapperPsiElement implements C3C
   }
 
   @Override
-  @Nullable
-  public C3StatementList getStatementList() {
-    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
+  @NotNull
+  public List<C3StatementList> getStatementListList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3StatementList.class);
   }
 
 }

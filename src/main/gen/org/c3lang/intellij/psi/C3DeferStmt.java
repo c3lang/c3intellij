@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3DeferStmt extends PsiElement {
+public interface C3DeferStmt extends C3PsiElement {
 
   @NotNull
   C3Statement getStatement();
+
+  @Nullable
+  PsiElement getIdent();
 
 }

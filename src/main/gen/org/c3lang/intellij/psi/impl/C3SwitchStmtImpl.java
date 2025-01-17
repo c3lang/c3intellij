@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3SwitchStmtImpl extends ASTWrapperPsiElement implements C3SwitchStmt {
+public class C3SwitchStmtImpl extends C3PsiElementImpl implements C3SwitchStmt {
 
   public C3SwitchStmtImpl(@NotNull ASTNode node) {
     super(node);
@@ -43,6 +42,12 @@ public class C3SwitchStmtImpl extends ASTWrapperPsiElement implements C3SwitchSt
   @Nullable
   public C3SwitchBody getSwitchBody() {
     return PsiTreeUtil.getChildOfType(this, C3SwitchBody.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getAtIdent() {
+    return findChildByType(AT_IDENT);
   }
 
 }

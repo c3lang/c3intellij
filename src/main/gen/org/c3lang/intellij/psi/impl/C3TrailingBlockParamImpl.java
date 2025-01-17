@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3TrailingBlockParamImpl extends ASTWrapperPsiElement implements C3TrailingBlockParam {
+public class C3TrailingBlockParamImpl extends C3PsiElementImpl implements C3TrailingBlockParam {
 
   public C3TrailingBlockParamImpl(@NotNull ASTNode node) {
     super(node);
@@ -31,6 +30,12 @@ public class C3TrailingBlockParamImpl extends ASTWrapperPsiElement implements C3
   @Nullable
   public C3ParameterList getParameterList() {
     return PsiTreeUtil.getChildOfType(this, C3ParameterList.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getAtIdent() {
+    return notNullChild(findChildByType(AT_IDENT));
   }
 
 }

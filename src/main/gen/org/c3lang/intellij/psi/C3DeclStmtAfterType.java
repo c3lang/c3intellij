@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3DeclStmtAfterType extends PsiElement {
+public interface C3DeclStmtAfterType extends C3PsiElement {
 
   @NotNull
   List<C3LocalDeclAfterType> getLocalDeclAfterTypeList();

@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3AsmAddrTrailing extends PsiElement {
+public interface C3AsmAddrTrailing extends C3PsiElement {
 
   @Nullable
   C3BinaryOp getBinaryOp();

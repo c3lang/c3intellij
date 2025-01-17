@@ -33,4 +33,10 @@ public class C3AssignTypeExprImpl extends C3ExprImpl implements C3AssignTypeExpr
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
+  @Override
+  @NotNull
+  public PsiElement getCtTypeIdent() {
+    return notNullChild(findChildByType(CT_TYPE_IDENT));
+  }
+
 }

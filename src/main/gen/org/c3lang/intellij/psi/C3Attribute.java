@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3Attribute extends PsiElement {
+public interface C3Attribute extends C3PsiElement {
 
   @NotNull
   C3AttributeName getAttributeName();

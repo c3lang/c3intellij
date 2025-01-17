@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3BreakStmt extends PsiElement {
+public interface C3BreakStmt extends C3PsiElement {
+
+  @Nullable
+  PsiElement getConstIdent();
 
 }

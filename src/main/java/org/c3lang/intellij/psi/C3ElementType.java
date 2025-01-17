@@ -10,4 +10,9 @@ public class C3ElementType extends IElementType
     {
         super(debugName, C3Language.INSTANCE);
     }
+
+    @Override
+    public String toString() {
+        return C3TokenType.class.getSimpleName() + "." + super.toString();
+    }
 }

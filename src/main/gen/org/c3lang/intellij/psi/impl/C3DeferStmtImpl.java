@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3DeferStmtImpl extends ASTWrapperPsiElement implements C3DeferStmt {
+public class C3DeferStmtImpl extends C3PsiElementImpl implements C3DeferStmt {
 
   public C3DeferStmtImpl(@NotNull ASTNode node) {
     super(node);
@@ -31,6 +30,12 @@ public class C3DeferStmtImpl extends ASTWrapperPsiElement implements C3DeferStmt
   @NotNull
   public C3Statement getStatement() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdent() {
+    return findChildByType(IDENT);
   }
 
 }

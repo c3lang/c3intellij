@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3EnumConstantImpl extends ASTWrapperPsiElement implements C3EnumConstant {
+public class C3EnumConstantImpl extends C3PsiElementImpl implements C3EnumConstant {
 
   public C3EnumConstantImpl(@NotNull ASTNode node) {
     super(node);
@@ -37,6 +36,12 @@ public class C3EnumConstantImpl extends ASTWrapperPsiElement implements C3EnumCo
   @Nullable
   public C3Expr getExpr() {
     return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getConstIdent() {
+    return notNullChild(findChildByType(CONST_IDENT));
   }
 
 }

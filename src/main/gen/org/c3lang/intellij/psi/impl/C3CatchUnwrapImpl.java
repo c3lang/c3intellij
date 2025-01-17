@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3CatchUnwrapImpl extends ASTWrapperPsiElement implements C3CatchUnwrap {
+public class C3CatchUnwrapImpl extends C3PsiElementImpl implements C3CatchUnwrap {
 
   public C3CatchUnwrapImpl(@NotNull ASTNode node) {
     super(node);
@@ -37,6 +36,12 @@ public class C3CatchUnwrapImpl extends ASTWrapperPsiElement implements C3CatchUn
   @Nullable
   public C3Type getType() {
     return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdent() {
+    return findChildByType(IDENT);
   }
 
 }

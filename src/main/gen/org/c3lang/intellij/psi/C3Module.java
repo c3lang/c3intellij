@@ -4,8 +4,10 @@ package org.c3lang.intellij.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.StubBasedPsiElement;
+import org.c3lang.intellij.stubs.C3ModuleStub;
 
-public interface C3Module extends PsiElement {
+public interface C3Module extends C3PsiElement, StubBasedPsiElement<C3ModuleStub> {
 
   @Nullable
   C3Attributes getAttributes();
@@ -14,6 +16,6 @@ public interface C3Module extends PsiElement {
   C3ModuleParams getModuleParams();
 
   @NotNull
-  C3PathIdent getPathIdent();
+  C3ModulePath getModulePath();
 
 }

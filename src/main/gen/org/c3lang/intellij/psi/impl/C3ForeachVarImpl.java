@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3ForeachVarImpl extends ASTWrapperPsiElement implements C3ForeachVar {
+public class C3ForeachVarImpl extends C3PsiElementImpl implements C3ForeachVar {
 
   public C3ForeachVarImpl(@NotNull ASTNode node) {
     super(node);
@@ -31,6 +30,12 @@ public class C3ForeachVarImpl extends ASTWrapperPsiElement implements C3ForeachV
   @Nullable
   public C3OptionalType getOptionalType() {
     return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getIdent() {
+    return notNullChild(findChildByType(IDENT));
   }
 
 }

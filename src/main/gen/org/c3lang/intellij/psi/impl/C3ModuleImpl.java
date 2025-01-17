@@ -8,13 +8,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.c3lang.intellij.stubs.C3ModuleStub;
 import org.c3lang.intellij.psi.*;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class C3ModuleImpl extends ASTWrapperPsiElement implements C3Module {
+public class C3ModuleImpl extends C3StubBasedPsiElementBase<C3ModuleStub> implements C3Module {
+
+  public C3ModuleImpl(@NotNull C3ModuleStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
+  }
 
   public C3ModuleImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public C3ModuleImpl(@NotNull C3ModuleStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
@@ -41,8 +51,8 @@ public class C3ModuleImpl extends ASTWrapperPsiElement implements C3Module {
 
   @Override
   @NotNull
-  public C3PathIdent getPathIdent() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3PathIdent.class));
+  public C3ModulePath getModulePath() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ModulePath.class));
   }
 
 }

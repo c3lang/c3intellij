@@ -10,4 +10,7 @@ public interface C3AssignTypeExpr extends C3Expr {
   @NotNull
   C3Type getType();
 
+  @NotNull
+  PsiElement getCtTypeIdent();
+
 }

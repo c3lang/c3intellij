@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3StatementList extends PsiElement {
+public interface C3StatementList extends C3PsiElement {
 
   @NotNull
   List<C3Statement> getStatementList();

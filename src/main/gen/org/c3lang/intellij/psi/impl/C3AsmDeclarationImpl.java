@@ -8,17 +8,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3ConstDeclImpl extends ASTWrapperPsiElement implements C3ConstDecl {
+public class C3AsmDeclarationImpl extends C3PsiElementImpl implements C3AsmDeclaration {
 
-  public C3ConstDeclImpl(@NotNull ASTNode node) {
+  public C3AsmDeclarationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitConstDecl(this);
+    visitor.visitAsmDeclaration(this);
   }
 
   @Override
@@ -37,12 +36,6 @@ public class C3ConstDeclImpl extends ASTWrapperPsiElement implements C3ConstDecl
   @NotNull
   public C3Expr getExpr() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
-  }
-
-  @Override
-  @Nullable
-  public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

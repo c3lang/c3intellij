@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3LabelImpl extends ASTWrapperPsiElement implements C3Label {
+public class C3LabelImpl extends C3PsiElementImpl implements C3Label {
 
   public C3LabelImpl(@NotNull ASTNode node) {
     super(node);
@@ -25,6 +24,12 @@ public class C3LabelImpl extends ASTWrapperPsiElement implements C3Label {
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getConstIdent() {
+    return notNullChild(findChildByType(CONST_IDENT));
   }
 
 }
