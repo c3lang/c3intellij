@@ -5,12 +5,21 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3VarDecl extends PsiElement {
+public interface C3VarDecl extends C3PsiElement {
 
   @Nullable
   C3Expr getExpr();
 
   @Nullable
   C3Type getType();
+
+  @Nullable
+  PsiElement getCtIdent();
+
+  @Nullable
+  PsiElement getCtTypeIdent();
+
+  @Nullable
+  PsiElement getIdent();
 
 }

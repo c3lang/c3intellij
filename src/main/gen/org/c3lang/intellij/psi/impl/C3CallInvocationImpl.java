@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3CallInvocationImpl extends ASTWrapperPsiElement implements C3CallInvocation {
+public class C3CallInvocationImpl extends C3PsiElementImpl implements C3CallInvocation {
 
   public C3CallInvocationImpl(@NotNull ASTNode node) {
     super(node);

@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3LambdaDecl extends PsiElement {
+public interface C3LambdaDecl extends C3PsiElement {
 
   @Nullable
   C3Attributes getAttributes();
 
-  @NotNull
+  @Nullable
   C3FnParameterList getFnParameterList();
 
   @Nullable

@@ -5,6 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ModuleParam extends PsiElement {
+public interface C3ModuleParam extends C3PsiElement {
+
+  @Nullable
+  PsiElement getConstIdent();
+
+  @Nullable
+  PsiElement getTypeIdent();
 
 }

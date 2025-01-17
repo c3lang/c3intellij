@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ParenCond extends PsiElement {
+public interface C3ParenCond extends C3PsiElement {
 
-  @NotNull
+  @Nullable
   C3Cond getCond();
 
 }

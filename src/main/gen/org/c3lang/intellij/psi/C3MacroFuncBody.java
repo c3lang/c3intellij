@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3MacroFuncBody extends PsiElement {
+public interface C3MacroFuncBody extends C3PsiElement {
 
   @Nullable
   C3CompoundStatement getCompoundStatement();

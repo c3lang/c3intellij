@@ -225,7 +225,7 @@ LINE_COMMENT    = "//" .*
     "??" { return C3Types.OPTELSE; }
 
     "&" { return C3Types.AMP; }
-    "@" { return TokenType.BAD_CHARACTER; }
+    "@" { return TokenType.BAD_CHARACTER; } //
     "!" { return C3Types.BANG; }
     "~" { return C3Types.BIT_NOT; }
     "|" { return C3Types.BIT_OR; }

@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3Label extends PsiElement {
+public interface C3Label extends C3PsiElement {
+
+  @NotNull
+  PsiElement getConstIdent();
 
 }

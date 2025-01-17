@@ -8,13 +8,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.c3lang.intellij.stubs.C3FuncDefStub;
 import org.c3lang.intellij.psi.*;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class C3FuncDefImpl extends ASTWrapperPsiElement implements C3FuncDef {
+public class C3FuncDefImpl extends C3StubBasedPsiElementBase<C3FuncDefStub> implements C3FuncDef {
+
+  public C3FuncDefImpl(@NotNull C3FuncDefStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
+  }
 
   public C3FuncDefImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public C3FuncDefImpl(@NotNull C3FuncDefStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {

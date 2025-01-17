@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3CtFeatureExpr extends C3Expr {
 
+  @NotNull
+  PsiElement getConstIdent();
+
 }

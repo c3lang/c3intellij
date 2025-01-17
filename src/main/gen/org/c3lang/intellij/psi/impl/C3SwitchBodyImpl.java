@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3SwitchBodyImpl extends ASTWrapperPsiElement implements C3SwitchBody {
+public class C3SwitchBodyImpl extends C3PsiElementImpl implements C3SwitchBody {
 
   public C3SwitchBodyImpl(@NotNull ASTNode node) {
     super(node);

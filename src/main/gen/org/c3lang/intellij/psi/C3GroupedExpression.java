@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3GroupedExpression extends PsiElement {
+public interface C3GroupedExpression extends C3PsiElement {
 
   @NotNull
   C3Expr getExpr();

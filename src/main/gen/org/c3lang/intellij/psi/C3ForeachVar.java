@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ForeachVar extends PsiElement {
+public interface C3ForeachVar extends C3PsiElement {
 
   @Nullable
   C3OptionalType getOptionalType();
+
+  @NotNull
+  PsiElement getIdent();
 
 }

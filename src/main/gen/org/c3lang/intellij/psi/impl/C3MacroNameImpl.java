@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3MacroNameImpl extends ASTWrapperPsiElement implements C3MacroName {
+public class C3MacroNameImpl extends C3PsiElementImpl implements C3MacroName {
 
   public C3MacroNameImpl(@NotNull ASTNode node) {
     super(node);
@@ -31,6 +30,18 @@ public class C3MacroNameImpl extends ASTWrapperPsiElement implements C3MacroName
   @Nullable
   public C3Type getType() {
     return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getAtIdent() {
+    return findChildByType(AT_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdent() {
+    return findChildByType(IDENT);
   }
 
 }

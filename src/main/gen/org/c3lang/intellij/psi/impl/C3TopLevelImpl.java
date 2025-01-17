@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3TopLevelImpl extends ASTWrapperPsiElement implements C3TopLevel {
+public class C3TopLevelImpl extends C3PsiElementImpl implements C3TopLevel {
 
   public C3TopLevelImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,14 +28,14 @@ public class C3TopLevelImpl extends ASTWrapperPsiElement implements C3TopLevel {
 
   @Override
   @Nullable
-  public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+  public C3AsmDeclaration getAsmDeclaration() {
+    return PsiTreeUtil.getChildOfType(this, C3AsmDeclaration.class);
   }
 
   @Override
   @Nullable
-  public C3ConstDecl getConstDecl() {
-    return PsiTreeUtil.getChildOfType(this, C3ConstDecl.class);
+  public C3ConstDeclarationStmt getConstDeclarationStmt() {
+    return PsiTreeUtil.getChildOfType(this, C3ConstDeclarationStmt.class);
   }
 
   @Override
@@ -49,6 +48,12 @@ public class C3TopLevelImpl extends ASTWrapperPsiElement implements C3TopLevel {
   @Nullable
   public C3CtEchoStmt getCtEchoStmt() {
     return PsiTreeUtil.getChildOfType(this, C3CtEchoStmt.class);
+  }
+
+  @Override
+  @Nullable
+  public C3CtErrorStmt getCtErrorStmt() {
+    return PsiTreeUtil.getChildOfType(this, C3CtErrorStmt.class);
   }
 
   @Override
@@ -67,12 +72,6 @@ public class C3TopLevelImpl extends ASTWrapperPsiElement implements C3TopLevel {
   @Nullable
   public C3DistinctDeclaration getDistinctDeclaration() {
     return PsiTreeUtil.getChildOfType(this, C3DistinctDeclaration.class);
-  }
-
-  @Override
-  @Nullable
-  public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
   @Override

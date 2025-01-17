@@ -3,6 +3,7 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- function and import completion
 
 ## [0.0.22] - 2025-01-20
 

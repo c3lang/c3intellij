@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3ContinueStmtImpl extends ASTWrapperPsiElement implements C3ContinueStmt {
+public class C3ContinueStmtImpl extends C3PsiElementImpl implements C3ContinueStmt {
 
   public C3ContinueStmtImpl(@NotNull ASTNode node) {
     super(node);
@@ -25,6 +24,12 @@ public class C3ContinueStmtImpl extends ASTWrapperPsiElement implements C3Contin
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getConstIdent() {
+    return findChildByType(CONST_IDENT);
   }
 
 }

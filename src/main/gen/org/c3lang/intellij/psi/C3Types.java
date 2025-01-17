@@ -15,6 +15,7 @@ public interface C3Types {
   IElementType ASM_ADDR = new C3ElementType("ASM_ADDR");
   IElementType ASM_ADDR_TRAILING = new C3ElementType("ASM_ADDR_TRAILING");
   IElementType ASM_BLOCK_STMT = new C3ElementType("ASM_BLOCK_STMT");
+  IElementType ASM_DECLARATION = new C3ElementType("ASM_DECLARATION");
   IElementType ASM_EXPR = new C3ElementType("ASM_EXPR");
   IElementType ASM_EXPRS = new C3ElementType("ASM_EXPRS");
   IElementType ASM_INSTR = new C3ElementType("ASM_INSTR");
@@ -50,7 +51,7 @@ public interface C3Types {
   IElementType COND = new C3ElementType("COND");
   IElementType COND_REPEAT = new C3ElementType("COND_REPEAT");
   IElementType CONSTANT_EXPR = new C3ElementType("CONSTANT_EXPR");
-  IElementType CONST_DECL = new C3ElementType("CONST_DECL");
+  IElementType CONST_DECLARATION_STMT = new C3ElementType("CONST_DECLARATION_STMT");
   IElementType CONTINUE_STMT = new C3ElementType("CONTINUE_STMT");
   IElementType CT_ANALYZE = new C3ElementType("CT_ANALYZE");
   IElementType CT_ANALYZE_EXPR = new C3ElementType("CT_ANALYZE_EXPR");
@@ -64,6 +65,7 @@ public interface C3Types {
   IElementType CT_DEFINED_CHECK_EXPR_LIST = new C3ElementType("CT_DEFINED_CHECK_EXPR_LIST");
   IElementType CT_DEFINED_EXPR = new C3ElementType("CT_DEFINED_EXPR");
   IElementType CT_ECHO_STMT = new C3ElementType("CT_ECHO_STMT");
+  IElementType CT_ERROR_STMT = new C3ElementType("CT_ERROR_STMT");
   IElementType CT_FEATURE_EXPR = new C3ElementType("CT_FEATURE_EXPR");
   IElementType CT_FOREACH_STMT = new C3ElementType("CT_FOREACH_STMT");
   IElementType CT_FOR_STMT = new C3ElementType("CT_FOR_STMT");
@@ -72,7 +74,6 @@ public interface C3Types {
   IElementType CT_SWITCH = new C3ElementType("CT_SWITCH");
   IElementType CT_SWITCH_BODY = new C3ElementType("CT_SWITCH_BODY");
   IElementType CT_SWITCH_STMT = new C3ElementType("CT_SWITCH_STMT");
-  IElementType DECLARATION_STMT = new C3ElementType("DECLARATION_STMT");
   IElementType DECL_OR_EXPR = new C3ElementType("DECL_OR_EXPR");
   IElementType DECL_STMT_AFTER_TYPE = new C3ElementType("DECL_STMT_AFTER_TYPE");
   IElementType DEFAULT_MODULE_SECTION = new C3ElementType("DEFAULT_MODULE_SECTION");
@@ -93,6 +94,7 @@ public interface C3Types {
   IElementType EXPR = new C3ElementType("EXPR");
   IElementType EXPRESSION_LIST = new C3ElementType("EXPRESSION_LIST");
   IElementType EXPR_BLOCK_EXPR = new C3ElementType("EXPR_BLOCK_EXPR");
+  IElementType EXPR_STMT = new C3ElementType("EXPR_STMT");
   IElementType EXPR_TERMINATOR = new C3ElementType("EXPR_TERMINATOR");
   IElementType FAULT_DECLARATION = new C3ElementType("FAULT_DECLARATION");
   IElementType FLAT_PATH = new C3ElementType("FLAT_PATH");
@@ -103,7 +105,7 @@ public interface C3Types {
   IElementType FOREACH_VARS = new C3ElementType("FOREACH_VARS");
   IElementType FOR_COND = new C3ElementType("FOR_COND");
   IElementType FOR_STMT = new C3ElementType("FOR_STMT");
-  IElementType FUNC_DEF = new C3ElementType("FUNC_DEF");
+  IElementType FUNC_DEF = C3StubElementTypeFactory.stubFactory("FUNC_DEF");
   IElementType FUNC_DEFINITION = new C3ElementType("FUNC_DEFINITION");
   IElementType FUNC_HEADER = new C3ElementType("FUNC_HEADER");
   IElementType FUNC_NAME = new C3ElementType("FUNC_NAME");
@@ -119,6 +121,7 @@ public interface C3Types {
   IElementType IF_STMT = new C3ElementType("IF_STMT");
   IElementType IMPLIES_BODY = new C3ElementType("IMPLIES_BODY");
   IElementType IMPORT_DECL = new C3ElementType("IMPORT_DECL");
+  IElementType IMPORT_PATH = new C3ElementType("IMPORT_PATH");
   IElementType IMPORT_PATHS = new C3ElementType("IMPORT_PATHS");
   IElementType INITIALIZER_LIST = new C3ElementType("INITIALIZER_LIST");
   IElementType INIT_LIST_EXPR = new C3ElementType("INIT_LIST_EXPR");
@@ -132,7 +135,10 @@ public interface C3Types {
   IElementType LAMBDA_DECL_EXPR = new C3ElementType("LAMBDA_DECL_EXPR");
   IElementType LAMBDA_DECL_SHORT_EXPR = new C3ElementType("LAMBDA_DECL_SHORT_EXPR");
   IElementType LITERAL_EXPR = new C3ElementType("LITERAL_EXPR");
+  IElementType LOCAL_DECLARATION_STMT = new C3ElementType("LOCAL_DECLARATION_STMT");
   IElementType LOCAL_DECL_AFTER_TYPE = new C3ElementType("LOCAL_DECL_AFTER_TYPE");
+  IElementType LOCAL_DECL_AFTER_TYPE_1 = new C3ElementType("LOCAL_DECL_AFTER_TYPE_1");
+  IElementType LOCAL_DECL_AFTER_TYPE_2 = new C3ElementType("LOCAL_DECL_AFTER_TYPE_2");
   IElementType LOCAL_DECL_STORAGE = new C3ElementType("LOCAL_DECL_STORAGE");
   IElementType LOCAL_IDENT_EXPR = new C3ElementType("LOCAL_IDENT_EXPR");
   IElementType MACRO_DEFINITION = new C3ElementType("MACRO_DEFINITION");
@@ -140,10 +146,11 @@ public interface C3Types {
   IElementType MACRO_HEADER = new C3ElementType("MACRO_HEADER");
   IElementType MACRO_NAME = new C3ElementType("MACRO_NAME");
   IElementType MACRO_PARAMS = new C3ElementType("MACRO_PARAMS");
-  IElementType MODULE = new C3ElementType("MODULE");
+  IElementType MODULE = C3StubElementTypeFactory.stubFactory("MODULE");
   IElementType MODULE_PARAM = new C3ElementType("MODULE_PARAM");
   IElementType MODULE_PARAMS = new C3ElementType("MODULE_PARAMS");
-  IElementType MODULE_SECTION = C3ElementFactory.stubFactory("MODULE_SECTION");
+  IElementType MODULE_PATH = new C3ElementType("MODULE_PATH");
+  IElementType MODULE_SECTION = new C3ElementType("MODULE_SECTION");
   IElementType MULTI_DECLARATION = new C3ElementType("MULTI_DECLARATION");
   IElementType NAMED_IDENT = new C3ElementType("NAMED_IDENT");
   IElementType NEXTCASE_STMT = new C3ElementType("NEXTCASE_STMT");
@@ -169,7 +176,7 @@ public interface C3Types {
   IElementType STATEMENT_LIST = new C3ElementType("STATEMENT_LIST");
   IElementType STRING_EXPR = new C3ElementType("STRING_EXPR");
   IElementType STRUCT_BODY = new C3ElementType("STRUCT_BODY");
-  IElementType STRUCT_DECLARATION = new C3ElementType("STRUCT_DECLARATION");
+  IElementType STRUCT_DECLARATION = C3StubElementTypeFactory.stubFactory("STRUCT_DECLARATION");
   IElementType STRUCT_MEMBER_DECLARATION = new C3ElementType("STRUCT_MEMBER_DECLARATION");
   IElementType SWITCH_BODY = new C3ElementType("SWITCH_BODY");
   IElementType SWITCH_STMT = new C3ElementType("SWITCH_STMT");
@@ -190,183 +197,200 @@ public interface C3Types {
   IElementType VAR_STMT = new C3ElementType("VAR_STMT");
   IElementType WHILE_STMT = new C3ElementType("WHILE_STMT");
 
-  IElementType AMP = new C3TokenType("AMP");
-  IElementType AND = new C3TokenType("AND");
+  IElementType AMP = new C3TokenType("&");
+  IElementType AND = new C3TokenType("&&");
+  IElementType AT_CONST_IDENT = new C3TokenType("AT_CONST_IDENT");
   IElementType AT_IDENT = new C3TokenType("AT_IDENT");
   IElementType AT_TYPE_IDENT = new C3TokenType("AT_TYPE_IDENT");
-  IElementType BANG = new C3TokenType("BANG");
-  IElementType BANGBANG = new C3TokenType("BANGBANG");
-  IElementType BIT_AND_ASSIGN = new C3TokenType("BIT_AND_ASSIGN");
-  IElementType BIT_NOT = new C3TokenType("BIT_NOT");
-  IElementType BIT_OR = new C3TokenType("BIT_OR");
-  IElementType BIT_OR_ASSIGN = new C3TokenType("BIT_OR_ASSIGN");
-  IElementType BIT_XOR = new C3TokenType("BIT_XOR");
-  IElementType BIT_XOR_ASSIGN = new C3TokenType("BIT_XOR_ASSIGN");
+  IElementType BAD_CHARACTER = new C3TokenType("#");
+  IElementType BANG = new C3TokenType("!");
+  IElementType BANGBANG = new C3TokenType("!!");
+  IElementType BINARY_LIT = new C3TokenType("BINARY_LIT");
+  IElementType BINT = new C3TokenType("BINT");
+  IElementType BIT_AND_ASSIGN = new C3TokenType("&=");
+  IElementType BIT_NOT = new C3TokenType("~");
+  IElementType BIT_OR = new C3TokenType("|");
+  IElementType BIT_OR_ASSIGN = new C3TokenType("|=");
+  IElementType BIT_XOR = new C3TokenType("^");
+  IElementType BIT_XOR_ASSIGN = new C3TokenType("^=");
   IElementType BUILTIN = new C3TokenType("BUILTIN");
   IElementType BUILTIN_CONST = new C3TokenType("BUILTIN_CONST");
   IElementType BYTES = new C3TokenType("BYTES");
   IElementType CHAR_LIT = new C3TokenType("CHAR_LIT");
-  IElementType COLON = new C3TokenType("COLON");
-  IElementType COMMA = new C3TokenType("COMMA");
+  IElementType COLON = new C3TokenType(":");
+  IElementType COMMA = new C3TokenType(",");
   IElementType CONST_IDENT = new C3TokenType("CONST_IDENT");
-  IElementType CT_AND = new C3TokenType("CT_AND");
+  IElementType CT_AND = new C3TokenType("&&&");
   IElementType CT_CONST_IDENT = new C3TokenType("CT_CONST_IDENT");
   IElementType CT_IDENT = new C3TokenType("CT_IDENT");
-  IElementType CT_OR = new C3TokenType("CT_OR");
-  IElementType CT_PLUS = new C3TokenType("CT_PLUS");
+  IElementType CT_OR = new C3TokenType("|||");
+  IElementType CT_PLUS = new C3TokenType("+++");
   IElementType CT_TYPE_IDENT = new C3TokenType("CT_TYPE_IDENT");
-  IElementType DIV = new C3TokenType("DIV");
-  IElementType DIV_ASSIGN = new C3TokenType("DIV_ASSIGN");
-  IElementType DOT = new C3TokenType("DOT");
-  IElementType DOTDOT = new C3TokenType("DOTDOT");
-  IElementType ELLIPSIS = new C3TokenType("ELLIPSIS");
-  IElementType ELVIS = new C3TokenType("ELVIS");
-  IElementType EOS = new C3TokenType("EOS");
-  IElementType EQ = new C3TokenType("EQ");
-  IElementType EQ_OP = new C3TokenType("EQ_OP");
+  IElementType DECIMAL_LIT = new C3TokenType("DECIMAL_LIT");
+  IElementType DIV = new C3TokenType("/");
+  IElementType DIV_ASSIGN = new C3TokenType("/=");
+  IElementType DOT = new C3TokenType(".");
+  IElementType DOTDOT = new C3TokenType("..");
+  IElementType E = new C3TokenType("E");
+  IElementType ELLIPSIS = new C3TokenType("...");
+  IElementType ELVIS = new C3TokenType("?:");
+  IElementType EOL = new C3TokenType("\\n");
+  IElementType EOS = new C3TokenType(";");
+  IElementType EQ = new C3TokenType("=");
+  IElementType EQ_OP = new C3TokenType("==");
   IElementType FLOAT_LITERAL = new C3TokenType("FLOAT_LITERAL");
-  IElementType GE_OP = new C3TokenType("GE_OP");
-  IElementType GT_OP = new C3TokenType("GT_OP");
+  IElementType GE_OP = new C3TokenType(">=");
+  IElementType GT_OP = new C3TokenType(">");
+  IElementType HASH_CONST_IDENT = new C3TokenType("HASH_CONST_IDENT");
   IElementType HASH_IDENT = new C3TokenType("HASH_IDENT");
+  IElementType HASH_TYPE_IDENT = new C3TokenType("HASH_TYPE_IDENT");
+  IElementType HEX_LIT = new C3TokenType("HEX_LIT");
+  IElementType HINT = new C3TokenType("HINT");
   IElementType IDENT = new C3TokenType("IDENT");
-  IElementType IMPLIES = new C3TokenType("IMPLIES");
+  IElementType IMPLIES = new C3TokenType("=>");
+  IElementType INTTYPE = new C3TokenType("INTTYPE");
   IElementType INT_LITERAL = new C3TokenType("INT_LITERAL");
-  IElementType KW_ANY = new C3TokenType("KW_ANY");
-  IElementType KW_ANYFAULT = new C3TokenType("KW_ANYFAULT");
-  IElementType KW_ASM = new C3TokenType("KW_ASM");
-  IElementType KW_ASSERT = new C3TokenType("KW_ASSERT");
-  IElementType KW_BFLOAT16 = new C3TokenType("KW_BFLOAT16");
-  IElementType KW_BITSTRUCT = new C3TokenType("KW_BITSTRUCT");
-  IElementType KW_BOOL = new C3TokenType("KW_BOOL");
-  IElementType KW_BREAK = new C3TokenType("KW_BREAK");
-  IElementType KW_CASE = new C3TokenType("KW_CASE");
-  IElementType KW_CATCH = new C3TokenType("KW_CATCH");
-  IElementType KW_CHAR = new C3TokenType("KW_CHAR");
-  IElementType KW_CONST = new C3TokenType("KW_CONST");
-  IElementType KW_CONTINUE = new C3TokenType("KW_CONTINUE");
-  IElementType KW_CT_ALIGNOF = new C3TokenType("KW_CT_ALIGNOF");
-  IElementType KW_CT_ASSERT = new C3TokenType("KW_CT_ASSERT");
-  IElementType KW_CT_CASE = new C3TokenType("KW_CT_CASE");
-  IElementType KW_CT_DEFAULT = new C3TokenType("KW_CT_DEFAULT");
-  IElementType KW_CT_DEFINED = new C3TokenType("KW_CT_DEFINED");
-  IElementType KW_CT_ECHO = new C3TokenType("KW_CT_ECHO");
-  IElementType KW_CT_ELSE = new C3TokenType("KW_CT_ELSE");
-  IElementType KW_CT_ENDFOR = new C3TokenType("KW_CT_ENDFOR");
-  IElementType KW_CT_ENDFOREACH = new C3TokenType("KW_CT_ENDFOREACH");
-  IElementType KW_CT_ENDIF = new C3TokenType("KW_CT_ENDIF");
-  IElementType KW_CT_ENDSWITCH = new C3TokenType("KW_CT_ENDSWITCH");
-  IElementType KW_CT_ERROR = new C3TokenType("KW_CT_ERROR");
-  IElementType KW_CT_EVAL = new C3TokenType("KW_CT_EVAL");
-  IElementType KW_CT_EVALTYPE = new C3TokenType("KW_CT_EVALTYPE");
-  IElementType KW_CT_EXTNAMEOF = new C3TokenType("KW_CT_EXTNAMEOF");
-  IElementType KW_CT_FEATURE = new C3TokenType("KW_CT_FEATURE");
-  IElementType KW_CT_FOR = new C3TokenType("KW_CT_FOR");
-  IElementType KW_CT_FOREACH = new C3TokenType("KW_CT_FOREACH");
-  IElementType KW_CT_IF = new C3TokenType("KW_CT_IF");
-  IElementType KW_CT_INCLUDE = new C3TokenType("KW_CT_INCLUDE");
-  IElementType KW_CT_IS_CONST = new C3TokenType("KW_CT_IS_CONST");
-  IElementType KW_CT_NAMEOF = new C3TokenType("KW_CT_NAMEOF");
+  IElementType KW_ANY = new C3TokenType("any");
+  IElementType KW_ANYFAULT = new C3TokenType("anyfault");
+  IElementType KW_ASM = new C3TokenType("asm");
+  IElementType KW_ASSERT = new C3TokenType("assert");
+  IElementType KW_BFLOAT16 = new C3TokenType("bfloat16");
+  IElementType KW_BITSTRUCT = new C3TokenType("bitstruct");
+  IElementType KW_BOOL = new C3TokenType("bool");
+  IElementType KW_BREAK = new C3TokenType("break");
+  IElementType KW_CASE = new C3TokenType("case");
+  IElementType KW_CATCH = new C3TokenType("catch");
+  IElementType KW_CHAR = new C3TokenType("char");
+  IElementType KW_CONST = new C3TokenType("const");
+  IElementType KW_CONTINUE = new C3TokenType("continue");
+  IElementType KW_CT_ALIGNOF = new C3TokenType("$alignof");
+  IElementType KW_CT_ASSERT = new C3TokenType("$assert");
+  IElementType KW_CT_CASE = new C3TokenType("$case");
+  IElementType KW_CT_DEFAULT = new C3TokenType("$default");
+  IElementType KW_CT_DEFINED = new C3TokenType("$defined");
+  IElementType KW_CT_ECHO = new C3TokenType("$echo");
+  IElementType KW_CT_ELSE = new C3TokenType("$else");
+  IElementType KW_CT_ENDFOR = new C3TokenType("$endfor");
+  IElementType KW_CT_ENDFOREACH = new C3TokenType("$endforeach");
+  IElementType KW_CT_ENDIF = new C3TokenType("$endif");
+  IElementType KW_CT_ENDSWITCH = new C3TokenType("$endswitch");
+  IElementType KW_CT_ERROR = new C3TokenType("$error");
+  IElementType KW_CT_EVAL = new C3TokenType("$eval");
+  IElementType KW_CT_EVALTYPE = new C3TokenType("$evaltype");
+  IElementType KW_CT_EXTNAMEOF = new C3TokenType("$extnameof");
+  IElementType KW_CT_FEATURE = new C3TokenType("$feature");
+  IElementType KW_CT_FOR = new C3TokenType("$for");
+  IElementType KW_CT_FOREACH = new C3TokenType("$foreach");
+  IElementType KW_CT_IF = new C3TokenType("$if");
+  IElementType KW_CT_INCLUDE = new C3TokenType("$include");
+  IElementType KW_CT_IS_CONST = new C3TokenType("$is_const");
+  IElementType KW_CT_NAMEOF = new C3TokenType("$nameof");
   IElementType KW_CT_OFFSETOF = new C3TokenType("KW_CT_OFFSETOF");
-  IElementType KW_CT_QNAMEOF = new C3TokenType("KW_CT_QNAMEOF");
-  IElementType KW_CT_SIZEOF = new C3TokenType("KW_CT_SIZEOF");
-  IElementType KW_CT_STRINGIFY = new C3TokenType("KW_CT_STRINGIFY");
-  IElementType KW_CT_SWITCH = new C3TokenType("KW_CT_SWITCH");
-  IElementType KW_CT_TYPEFROM = new C3TokenType("KW_CT_TYPEFROM");
-  IElementType KW_CT_TYPEOF = new C3TokenType("KW_CT_TYPEOF");
-  IElementType KW_CT_VAARG = new C3TokenType("KW_CT_VAARG");
-  IElementType KW_CT_VACONST = new C3TokenType("KW_CT_VACONST");
-  IElementType KW_CT_VACOUNT = new C3TokenType("KW_CT_VACOUNT");
-  IElementType KW_CT_VAEXPR = new C3TokenType("KW_CT_VAEXPR");
-  IElementType KW_CT_VAREF = new C3TokenType("KW_CT_VAREF");
-  IElementType KW_CT_VASPLAT = new C3TokenType("KW_CT_VASPLAT");
-  IElementType KW_CT_VATYPE = new C3TokenType("KW_CT_VATYPE");
-  IElementType KW_DEF = new C3TokenType("KW_DEF");
-  IElementType KW_DEFAULT = new C3TokenType("KW_DEFAULT");
-  IElementType KW_DEFER = new C3TokenType("KW_DEFER");
-  IElementType KW_DISTINCT = new C3TokenType("KW_DISTINCT");
-  IElementType KW_DO = new C3TokenType("KW_DO");
-  IElementType KW_DOUBLE = new C3TokenType("KW_DOUBLE");
-  IElementType KW_ELSE = new C3TokenType("KW_ELSE");
-  IElementType KW_ENUM = new C3TokenType("KW_ENUM");
-  IElementType KW_EXTERN = new C3TokenType("KW_EXTERN");
-  IElementType KW_FALSE = new C3TokenType("KW_FALSE");
-  IElementType KW_FAULT = new C3TokenType("KW_FAULT");
-  IElementType KW_FLOAT = new C3TokenType("KW_FLOAT");
-  IElementType KW_FLOAT128 = new C3TokenType("KW_FLOAT128");
-  IElementType KW_FLOAT16 = new C3TokenType("KW_FLOAT16");
-  IElementType KW_FN = new C3TokenType("KW_FN");
-  IElementType KW_FOR = new C3TokenType("KW_FOR");
-  IElementType KW_FOREACH = new C3TokenType("KW_FOREACH");
-  IElementType KW_FOREACH_R = new C3TokenType("KW_FOREACH_R");
-  IElementType KW_ICHAR = new C3TokenType("KW_ICHAR");
-  IElementType KW_IF = new C3TokenType("KW_IF");
-  IElementType KW_IMPORT = new C3TokenType("KW_IMPORT");
-  IElementType KW_INLINE = new C3TokenType("KW_INLINE");
-  IElementType KW_INT = new C3TokenType("KW_INT");
-  IElementType KW_INT128 = new C3TokenType("KW_INT128");
-  IElementType KW_INTERFACE = new C3TokenType("KW_INTERFACE");
-  IElementType KW_IPTR = new C3TokenType("KW_IPTR");
-  IElementType KW_ISZ = new C3TokenType("KW_ISZ");
-  IElementType KW_LONG = new C3TokenType("KW_LONG");
-  IElementType KW_MACRO = new C3TokenType("KW_MACRO");
-  IElementType KW_MODULE = new C3TokenType("KW_MODULE");
-  IElementType KW_NEXTCASE = new C3TokenType("KW_NEXTCASE");
-  IElementType KW_NULL = new C3TokenType("KW_NULL");
-  IElementType KW_RETURN = new C3TokenType("KW_RETURN");
-  IElementType KW_SHORT = new C3TokenType("KW_SHORT");
-  IElementType KW_STATIC = new C3TokenType("KW_STATIC");
-  IElementType KW_STRUCT = new C3TokenType("KW_STRUCT");
-  IElementType KW_SWITCH = new C3TokenType("KW_SWITCH");
-  IElementType KW_TLOCAL = new C3TokenType("KW_TLOCAL");
-  IElementType KW_TRUE = new C3TokenType("KW_TRUE");
-  IElementType KW_TRY = new C3TokenType("KW_TRY");
-  IElementType KW_TYPEID = new C3TokenType("KW_TYPEID");
-  IElementType KW_UINT = new C3TokenType("KW_UINT");
-  IElementType KW_UINT128 = new C3TokenType("KW_UINT128");
-  IElementType KW_ULONG = new C3TokenType("KW_ULONG");
-  IElementType KW_UNION = new C3TokenType("KW_UNION");
-  IElementType KW_UPTR = new C3TokenType("KW_UPTR");
-  IElementType KW_USHORT = new C3TokenType("KW_USHORT");
-  IElementType KW_USZ = new C3TokenType("KW_USZ");
-  IElementType KW_VAR = new C3TokenType("KW_VAR");
-  IElementType KW_VOID = new C3TokenType("KW_VOID");
-  IElementType KW_WHILE = new C3TokenType("KW_WHILE");
-  IElementType LB = new C3TokenType("LB");
-  IElementType LBRAPIPE = new C3TokenType("LBRAPIPE");
-  IElementType LBT = new C3TokenType("LBT");
-  IElementType LE_OP = new C3TokenType("LE_OP");
-  IElementType LGENPAR = new C3TokenType("LGENPAR");
-  IElementType LP = new C3TokenType("LP");
-  IElementType LT_OP = new C3TokenType("LT_OP");
-  IElementType LVEC = new C3TokenType("LVEC");
-  IElementType MINUS = new C3TokenType("MINUS");
-  IElementType MINUSMINUS = new C3TokenType("MINUSMINUS");
-  IElementType MINUS_ASSIGN = new C3TokenType("MINUS_ASSIGN");
-  IElementType MOD = new C3TokenType("MOD");
-  IElementType MOD_ASSIGN = new C3TokenType("MOD_ASSIGN");
-  IElementType MULT_ASSIGN = new C3TokenType("MULT_ASSIGN");
-  IElementType NE_OP = new C3TokenType("NE_OP");
-  IElementType OPTELSE = new C3TokenType("OPTELSE");
-  IElementType OR = new C3TokenType("OR");
-  IElementType PLUS = new C3TokenType("PLUS");
-  IElementType PLUSPLUS = new C3TokenType("PLUSPLUS");
-  IElementType PLUS_ASSIGN = new C3TokenType("PLUS_ASSIGN");
-  IElementType QUESTION = new C3TokenType("QUESTION");
-  IElementType RB = new C3TokenType("RB");
-  IElementType RBRAPIPE = new C3TokenType("RBRAPIPE");
-  IElementType RBT = new C3TokenType("RBT");
-  IElementType RGENPAR = new C3TokenType("RGENPAR");
-  IElementType RP = new C3TokenType("RP");
-  IElementType RVEC = new C3TokenType("RVEC");
-  IElementType SCOPE = new C3TokenType("SCOPE");
-  IElementType SHL = new C3TokenType("SHL");
-  IElementType SHL_ASSIGN = new C3TokenType("SHL_ASSIGN");
-  IElementType SHR = new C3TokenType("SHR");
-  IElementType SHR_ASSIGN = new C3TokenType("SHR_ASSIGN");
-  IElementType STAR = new C3TokenType("STAR");
+  IElementType KW_CT_QNAMEOF = new C3TokenType("$qnameof");
+  IElementType KW_CT_SIZEOF = new C3TokenType("$sizeof");
+  IElementType KW_CT_STRINGIFY = new C3TokenType("$stringify");
+  IElementType KW_CT_SWITCH = new C3TokenType("$switch");
+  IElementType KW_CT_TYPEFROM = new C3TokenType("$typefrom");
+  IElementType KW_CT_TYPEOF = new C3TokenType("$typeof");
+  IElementType KW_CT_VAARG = new C3TokenType("$vaarg");
+  IElementType KW_CT_VACONST = new C3TokenType("$vaconst");
+  IElementType KW_CT_VACOUNT = new C3TokenType("$vacount");
+  IElementType KW_CT_VAEXPR = new C3TokenType("$vaexpr");
+  IElementType KW_CT_VAREF = new C3TokenType("$varef");
+  IElementType KW_CT_VASPLAT = new C3TokenType("$vasplat");
+  IElementType KW_CT_VATYPE = new C3TokenType("$vatype");
+  IElementType KW_DEF = new C3TokenType("def");
+  IElementType KW_DEFAULT = new C3TokenType("default");
+  IElementType KW_DEFER = new C3TokenType("defer");
+  IElementType KW_DISTINCT = new C3TokenType("distinct");
+  IElementType KW_DO = new C3TokenType("do");
+  IElementType KW_DOUBLE = new C3TokenType("double");
+  IElementType KW_ELSE = new C3TokenType("else");
+  IElementType KW_ENUM = new C3TokenType("enum");
+  IElementType KW_EXTERN = new C3TokenType("extern");
+  IElementType KW_FALSE = new C3TokenType("false");
+  IElementType KW_FAULT = new C3TokenType("fault");
+  IElementType KW_FLOAT = new C3TokenType("float");
+  IElementType KW_FLOAT128 = new C3TokenType("float128");
+  IElementType KW_FLOAT16 = new C3TokenType("float16");
+  IElementType KW_FN = new C3TokenType("fn");
+  IElementType KW_FOR = new C3TokenType("for");
+  IElementType KW_FOREACH = new C3TokenType("foreach");
+  IElementType KW_FOREACH_R = new C3TokenType("foreach_r");
+  IElementType KW_ICHAR = new C3TokenType("ichar");
+  IElementType KW_IF = new C3TokenType("if");
+  IElementType KW_IMPORT = new C3TokenType("import");
+  IElementType KW_INLINE = new C3TokenType("inline");
+  IElementType KW_INT = new C3TokenType("int");
+  IElementType KW_INT128 = new C3TokenType("int128");
+  IElementType KW_INTERFACE = new C3TokenType("interface");
+  IElementType KW_IPTR = new C3TokenType("iptr");
+  IElementType KW_ISZ = new C3TokenType("isz");
+  IElementType KW_LONG = new C3TokenType("long");
+  IElementType KW_MACRO = new C3TokenType("macro");
+  IElementType KW_MODULE = new C3TokenType("module");
+  IElementType KW_NEXTCASE = new C3TokenType("nextcase");
+  IElementType KW_NULL = new C3TokenType("null");
+  IElementType KW_RETURN = new C3TokenType("return");
+  IElementType KW_SHORT = new C3TokenType("short");
+  IElementType KW_STATIC = new C3TokenType("static");
+  IElementType KW_STRUCT = new C3TokenType("struct");
+  IElementType KW_SWITCH = new C3TokenType("switch");
+  IElementType KW_TLOCAL = new C3TokenType("tlocal");
+  IElementType KW_TRUE = new C3TokenType("true");
+  IElementType KW_TRY = new C3TokenType("try");
+  IElementType KW_TYPEID = new C3TokenType("typeid");
+  IElementType KW_UINT = new C3TokenType("uint");
+  IElementType KW_UINT128 = new C3TokenType("uint128");
+  IElementType KW_ULONG = new C3TokenType("ulong");
+  IElementType KW_UNION = new C3TokenType("union");
+  IElementType KW_UPTR = new C3TokenType("uptr");
+  IElementType KW_USHORT = new C3TokenType("ushort");
+  IElementType KW_USZ = new C3TokenType("usz");
+  IElementType KW_VAR = new C3TokenType("var");
+  IElementType KW_VOID = new C3TokenType("void");
+  IElementType KW_WHILE = new C3TokenType("while");
+  IElementType LB = new C3TokenType("{");
+  IElementType LBRAPIPE = new C3TokenType("{|");
+  IElementType LBT = new C3TokenType("[");
+  IElementType LE_OP = new C3TokenType("<=");
+  IElementType LGENPAR = new C3TokenType("(<");
+  IElementType LP = new C3TokenType("(");
+  IElementType LT_OP = new C3TokenType("<");
+  IElementType LVEC = new C3TokenType("[<");
+  IElementType MINUS = new C3TokenType("-");
+  IElementType MINUSMINUS = new C3TokenType("--");
+  IElementType MINUS_ASSIGN = new C3TokenType("-=");
+  IElementType MOD = new C3TokenType("%");
+  IElementType MOD_ASSIGN = new C3TokenType("%=");
+  IElementType MULT_ASSIGN = new C3TokenType("*=");
+  IElementType NE_OP = new C3TokenType("!=");
+  IElementType OCTAL_LIT = new C3TokenType("OCTAL_LIT");
+  IElementType OINT = new C3TokenType("OINT");
+  IElementType OPTELSE = new C3TokenType("??");
+  IElementType OR = new C3TokenType("||");
+  IElementType P = new C3TokenType("P");
+  IElementType PLUS = new C3TokenType("+");
+  IElementType PLUSPLUS = new C3TokenType("++");
+  IElementType PLUS_ASSIGN = new C3TokenType("+=");
+  IElementType QUESTION = new C3TokenType("?");
+  IElementType RB = new C3TokenType("}");
+  IElementType RBRAPIPE = new C3TokenType("|}");
+  IElementType RBT = new C3TokenType("]");
+  IElementType REALTYPE = new C3TokenType("REALTYPE");
+  IElementType RGENPAR = new C3TokenType(">)");
+  IElementType RP = new C3TokenType(")");
+  IElementType RVEC = new C3TokenType(">]");
+  IElementType SCOPE = new C3TokenType("::");
+  IElementType SHL = new C3TokenType("<<");
+  IElementType SHL_ASSIGN = new C3TokenType("<<=");
+  IElementType SHR = new C3TokenType(">>");
+  IElementType SHR_ASSIGN = new C3TokenType(">>=");
+  IElementType SIZES = new C3TokenType("SIZES");
+  IElementType STAR = new C3TokenType("*");
   IElementType STRING_LIT = new C3TokenType("STRING_LIT");
   IElementType TYPE_IDENT = new C3TokenType("TYPE_IDENT");
-  IElementType UNDERSCORE = new C3TokenType("UNDERSCORE");
+  IElementType UNDERSCORE = new C3TokenType("_");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
@@ -391,6 +415,9 @@ public interface C3Types {
       }
       else if (type == ASM_BLOCK_STMT) {
         return new C3AsmBlockStmtImpl(node);
+      }
+      else if (type == ASM_DECLARATION) {
+        return new C3AsmDeclarationImpl(node);
       }
       else if (type == ASM_EXPR) {
         return new C3AsmExprImpl(node);
@@ -494,8 +521,8 @@ public interface C3Types {
       else if (type == COND_REPEAT) {
         return new C3CondRepeatImpl(node);
       }
-      else if (type == CONST_DECL) {
-        return new C3ConstDeclImpl(node);
+      else if (type == CONST_DECLARATION_STMT) {
+        return new C3ConstDeclarationStmtImpl(node);
       }
       else if (type == CONTINUE_STMT) {
         return new C3ContinueStmtImpl(node);
@@ -536,6 +563,9 @@ public interface C3Types {
       else if (type == CT_ECHO_STMT) {
         return new C3CtEchoStmtImpl(node);
       }
+      else if (type == CT_ERROR_STMT) {
+        return new C3CtErrorStmtImpl(node);
+      }
       else if (type == CT_FEATURE_EXPR) {
         return new C3CtFeatureExprImpl(node);
       }
@@ -559,9 +589,6 @@ public interface C3Types {
       }
       else if (type == CT_SWITCH_STMT) {
         return new C3CtSwitchStmtImpl(node);
-      }
-      else if (type == DECLARATION_STMT) {
-        return new C3DeclarationStmtImpl(node);
       }
       else if (type == DECL_OR_EXPR) {
         return new C3DeclOrExprImpl(node);
@@ -619,6 +646,9 @@ public interface C3Types {
       }
       else if (type == EXPR_BLOCK_EXPR) {
         return new C3ExprBlockExprImpl(node);
+      }
+      else if (type == EXPR_STMT) {
+        return new C3ExprStmtImpl(node);
       }
       else if (type == EXPR_TERMINATOR) {
         return new C3ExprTerminatorImpl(node);
@@ -698,6 +728,9 @@ public interface C3Types {
       else if (type == IMPORT_DECL) {
         return new C3ImportDeclImpl(node);
       }
+      else if (type == IMPORT_PATH) {
+        return new C3ImportPathImpl(node);
+      }
       else if (type == IMPORT_PATHS) {
         return new C3ImportPathsImpl(node);
       }
@@ -737,8 +770,17 @@ public interface C3Types {
       else if (type == LITERAL_EXPR) {
         return new C3LiteralExprImpl(node);
       }
+      else if (type == LOCAL_DECLARATION_STMT) {
+        return new C3LocalDeclarationStmtImpl(node);
+      }
       else if (type == LOCAL_DECL_AFTER_TYPE) {
         return new C3LocalDeclAfterTypeImpl(node);
+      }
+      else if (type == LOCAL_DECL_AFTER_TYPE_1) {
+        return new C3LocalDeclAfterType1Impl(node);
+      }
+      else if (type == LOCAL_DECL_AFTER_TYPE_2) {
+        return new C3LocalDeclAfterType2Impl(node);
       }
       else if (type == LOCAL_DECL_STORAGE) {
         return new C3LocalDeclStorageImpl(node);
@@ -769,6 +811,9 @@ public interface C3Types {
       }
       else if (type == MODULE_PARAMS) {
         return new C3ModuleParamsImpl(node);
+      }
+      else if (type == MODULE_PATH) {
+        return new C3ModulePathImpl(node);
       }
       else if (type == MODULE_SECTION) {
         return new C3ModuleSectionImpl(node);

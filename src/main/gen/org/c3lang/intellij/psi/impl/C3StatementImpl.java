@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3StatementImpl extends ASTWrapperPsiElement implements C3Statement {
+public class C3StatementImpl extends C3PsiElementImpl implements C3Statement {
 
   public C3StatementImpl(@NotNull ASTNode node) {
     super(node);
@@ -53,6 +52,12 @@ public class C3StatementImpl extends ASTWrapperPsiElement implements C3Statement
 
   @Override
   @Nullable
+  public C3ConstDeclarationStmt getConstDeclarationStmt() {
+    return PsiTreeUtil.getChildOfType(this, C3ConstDeclarationStmt.class);
+  }
+
+  @Override
+  @Nullable
   public C3ContinueStmt getContinueStmt() {
     return PsiTreeUtil.getChildOfType(this, C3ContinueStmt.class);
   }
@@ -67,6 +72,12 @@ public class C3StatementImpl extends ASTWrapperPsiElement implements C3Statement
   @Nullable
   public C3CtEchoStmt getCtEchoStmt() {
     return PsiTreeUtil.getChildOfType(this, C3CtEchoStmt.class);
+  }
+
+  @Override
+  @Nullable
+  public C3CtErrorStmt getCtErrorStmt() {
+    return PsiTreeUtil.getChildOfType(this, C3CtErrorStmt.class);
   }
 
   @Override
@@ -95,12 +106,6 @@ public class C3StatementImpl extends ASTWrapperPsiElement implements C3Statement
 
   @Override
   @Nullable
-  public C3DeclarationStmt getDeclarationStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3DeclarationStmt.class);
-  }
-
-  @Override
-  @Nullable
   public C3DeferStmt getDeferStmt() {
     return PsiTreeUtil.getChildOfType(this, C3DeferStmt.class);
   }
@@ -113,8 +118,8 @@ public class C3StatementImpl extends ASTWrapperPsiElement implements C3Statement
 
   @Override
   @Nullable
-  public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+  public C3ExprStmt getExprStmt() {
+    return PsiTreeUtil.getChildOfType(this, C3ExprStmt.class);
   }
 
   @Override
@@ -133,6 +138,12 @@ public class C3StatementImpl extends ASTWrapperPsiElement implements C3Statement
   @Nullable
   public C3IfStmt getIfStmt() {
     return PsiTreeUtil.getChildOfType(this, C3IfStmt.class);
+  }
+
+  @Override
+  @Nullable
+  public C3LocalDeclarationStmt getLocalDeclarationStmt() {
+    return PsiTreeUtil.getChildOfType(this, C3LocalDeclarationStmt.class);
   }
 
   @Override

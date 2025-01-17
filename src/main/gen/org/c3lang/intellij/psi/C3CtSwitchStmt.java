@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3CtSwitchStmt extends PsiElement {
+public interface C3CtSwitchStmt extends C3PsiElement {
 
   @NotNull
   C3CtSwitch getCtSwitch();

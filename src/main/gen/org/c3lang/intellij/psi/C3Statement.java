@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3Statement extends PsiElement {
+public interface C3Statement extends C3PsiElement {
 
   @Nullable
   C3AsmBlockStmt getAsmBlockStmt();
@@ -20,6 +20,9 @@ public interface C3Statement extends PsiElement {
   C3CompoundStatement getCompoundStatement();
 
   @Nullable
+  C3ConstDeclarationStmt getConstDeclarationStmt();
+
+  @Nullable
   C3ContinueStmt getContinueStmt();
 
   @Nullable
@@ -27,6 +30,9 @@ public interface C3Statement extends PsiElement {
 
   @Nullable
   C3CtEchoStmt getCtEchoStmt();
+
+  @Nullable
+  C3CtErrorStmt getCtErrorStmt();
 
   @Nullable
   C3CtForStmt getCtForStmt();
@@ -41,16 +47,13 @@ public interface C3Statement extends PsiElement {
   C3CtSwitchStmt getCtSwitchStmt();
 
   @Nullable
-  C3DeclarationStmt getDeclarationStmt();
-
-  @Nullable
   C3DeferStmt getDeferStmt();
 
   @Nullable
   C3DoStmt getDoStmt();
 
   @Nullable
-  C3Expr getExpr();
+  C3ExprStmt getExprStmt();
 
   @Nullable
   C3ForStmt getForStmt();
@@ -60,6 +63,9 @@ public interface C3Statement extends PsiElement {
 
   @Nullable
   C3IfStmt getIfStmt();
+
+  @Nullable
+  C3LocalDeclarationStmt getLocalDeclarationStmt();
 
   @Nullable
   C3NextcaseStmt getNextcaseStmt();

@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3PathImpl extends ASTWrapperPsiElement implements C3Path {
+public class C3PathImpl extends C3PsiElementImpl implements C3Path {
 
   public C3PathImpl(@NotNull ASTNode node) {
     super(node);

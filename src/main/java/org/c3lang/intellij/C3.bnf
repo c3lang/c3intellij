@@ -1,6 +1,7 @@
 {
     parserClass = "org.c3lang.intellij.parser.C3Parser"
-    extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
+    extends = "org.c3lang.intellij.psi.impl.C3PsiElementImpl"
+    implements = "org.c3lang.intellij.psi.C3PsiElement"
 
     psiClassPrefix = "C3"
     psiImplClassSuffix = "Impl"
@@ -12,24 +13,239 @@
     elementTypeClass = "org.c3lang.intellij.psi.C3ElementType"
     tokenTypeClass = "org.c3lang.intellij.psi.C3TokenType"
 
-    //extends(".*_expr") = expr
     extends(".*_expr") = expr
     elementType(".*_bin_expr") = binary_expr
     elementType(".*_bin_op") = binary_op
-    mixin("type_decl") = "org.c3lang.intellij.psi.impl.C3NamedElementImpl"
-    implements("type_decl") = "org.c3lang.intellij.psi.C3NamedElement"
-    methods("type_decl") = [getName setName getNameIdentifier]
-    stubClass("module_section") = "org.c3lang.intellij.psi.C3ModuleSectionStub"
-    elementTypeFactory("module_section") = "org.c3lang.intellij.psi.C3ElementFactory.stubFactory"
-}
 
+    mixin("func_def") = "org.c3lang.intellij.psi.impl.C3StubBasedPsiElementBase<org.c3lang.intellij.stubs.C3FuncDefStub>"
+    stubClass("func_def") = "org.c3lang.intellij.stubs.C3FuncDefStub"
+
+    extends("func_name") = "org.c3lang.intellij.psi.impl.C3FuncNamePsiElementBase"
+    implements("func_name") = "org.c3lang.intellij.psi.C3FuncNamePsiElement"
+
+    mixin("module") = "org.c3lang.intellij.psi.impl.C3StubBasedPsiElementBase<org.c3lang.intellij.stubs.C3ModuleStub>"
+    stubClass("module") = "org.c3lang.intellij.stubs.C3ModuleStub"
+
+    mixin("struct_declaration") = "org.c3lang.intellij.psi.impl.C3StubBasedPsiElementBase<org.c3lang.intellij.stubs.C3StructDeclarationStub>"
+    stubClass("struct_declaration") = "org.c3lang.intellij.stubs.C3StructDeclarationStub"
+
+    // add all C3StubBasedPsiElementBase mixins
+    elementTypeFactory("func_def|module|struct_declaration") = "org.c3lang.intellij.psi.C3StubElementTypeFactory.stubFactory"
+
+    pin(".*_decl") = 2
+
+    tokens = [
+            KW_ANY = "any"
+            KW_ANYFAULT = "anyfault"
+            KW_ASM = "asm"
+            KW_ASSERT = "assert"
+            KW_BITSTRUCT = "bitstruct"
+            KW_BREAK = "break"
+            KW_CASE = "case"
+            KW_CATCH = "catch"
+            KW_CONST = "const"
+            KW_CONTINUE = "continue"
+            KW_DEF = "def"
+            KW_DEFAULT = "default"
+            KW_DEFER = "defer"
+            KW_DISTINCT = "distinct"
+            KW_DO = "do"
+            KW_ELSE = "else"
+            KW_ENUM = "enum"
+            KW_EXTERN = "extern"
+            KW_FOREACH = "foreach"
+            KW_FOREACH_R = "foreach_r"
+            KW_FALSE = "false"
+            KW_FAULT = "fault"
+            KW_FOR = "for"
+            KW_FN = "fn"
+            KW_IF = "if"
+            KW_INLINE = "inline"
+            KW_INTERFACE = "interface"
+            KW_IMPORT = "import"
+            KW_MACRO = "macro"
+            KW_MODULE = "module"
+            KW_NEXTCASE = "nextcase"
+            KW_NULL = "null"
+            KW_RETURN = "return"
+            KW_STATIC = "static"
+            KW_STRUCT = "struct"
+            KW_SWITCH = "switch"
+            KW_TLOCAL = "tlocal"
+            KW_TRUE = "true"
+            KW_TRY = "try"
+            KW_TYPEID = "typeid"
+            KW_UNION = "union"
+            KW_VAR = "var"
+            KW_WHILE = "while"
+            KW_CT_ALIGNOF = "$alignof"
+            KW_CT_ASSERT = "$assert"
+            KW_CT_CASE = "$case"
+            KW_CT_DEFAULT = "$default"
+            KW_CT_DEFINED = "$defined"
+            KW_CT_ECHO = "$echo"
+            KW_CT_ELSE = "$else"
+            KW_CT_ENDFOR = "$endfor"
+            KW_CT_ENDFOREACH = "$endforeach"
+            KW_CT_ENDIF = "$endif"
+            KW_CT_ENDSWITCH = "$endswitch"
+            KW_CT_ERROR = "$error"
+            KW_CT_EVAL = "$eval"
+            KW_CT_EVALTYPE = "$evaltype"
+            KW_CT_EXTNAMEOF = "$extnameof"
+            KW_CT_FEATURE = "$feature"
+            KW_CT_FOR = "$for"
+            KW_CT_FOREACH = "$foreach"
+            KW_CT_IF = "$if"
+            KW_CT_IS_CONST = "$is_const"
+            KW_CT_INCLUDE = "$include"
+            KW_CT_NAMEOF = "$nameof"
+            KW_CT_SIZEOF = "$sizeof"
+            KW_CT_STRINGIFY = "$stringify"
+            KW_CT_SWITCH = "$switch"
+            KW_CT_TYPEOF = "$typeof"
+            KW_CT_TYPEFROM = "$typefrom"
+            KW_CT_QNAMEOF = "$qnameof"
+            KW_CT_VACOUNT = "$vacount"
+            KW_CT_VACONST = "$vaconst"
+            KW_CT_VATYPE = "$vatype"
+            KW_CT_VAARG = "$vaarg"
+            KW_CT_VAREF = "$varef"
+            KW_CT_VAEXPR = "$vaexpr"
+            KW_CT_VASPLAT = "$vasplat"
+            KW_VOID = "void"
+            KW_BOOL = "bool"
+            KW_CHAR = "char"
+            KW_ICHAR = "ichar"
+            KW_SHORT = "short"
+            KW_USHORT = "ushort"
+            KW_INT = "int"
+            KW_UINT = "uint"
+            KW_LONG = "long"
+            KW_ULONG = "ulong"
+            KW_UINT128 = "uint128"
+            KW_INT128 = "int128"
+            KW_BFLOAT16 = "bfloat16"
+            KW_DOUBLE = "double"
+            KW_FLOAT = "float"
+            KW_FLOAT16 = "float16"
+            KW_FLOAT128 = "float128"
+            KW_UPTR = "uptr"
+            KW_IPTR = "iptr"
+            KW_USZ = "usz"
+            KW_ISZ = "isz"
+            CT_AND="&&&"
+            CT_OR="|||"
+            CT_PLUS="+++"
+            ELLIPSIS="..."
+            SHL_ASSIGN="<<="
+            SHR_ASSIGN=">>="
+            AND="&&"
+            BAD_CHARACTER="->"
+            BIT_AND_ASSIGN="&="
+            BIT_OR_ASSIGN="|="
+            BIT_XOR_ASSIGN="^="
+            DIV_ASSIGN="/="
+            DOTDOT=".."
+            ELVIS="?:"
+            EQ_OP="=="
+            GE_OP=">="
+            IMPLIES="=>"
+            LE_OP="<="
+            LBRAPIPE="{|"
+            LVEC="[<"
+            LGENPAR="(<"
+            MINUS_ASSIGN="-="
+            MINUSMINUS="--"
+            MOD_ASSIGN="%="
+            MULT_ASSIGN="*="
+            NE_OP="!="
+            OR="||"
+            PLUS_ASSIGN="+="
+            PLUSPLUS="++"
+            RBRAPIPE="|}"
+            RVEC=">]"
+            RGENPAR=">)"
+            SCOPE="::"
+            SHR=">>"
+            SHL="<<"
+            BANGBANG="!!"
+            OPTELSE="??"
+            AMP="&"
+            BAD_CHARACTER="@"
+            BANG="!"
+            BIT_NOT="~"
+            BIT_OR="|"
+            BIT_XOR="^"
+            COLON=":"
+            COMMA=","
+            EOS=";"
+            EQ="="
+            GT_OP=">"
+            DIV="/"
+            UNDERSCORE="_"
+            BAD_CHARACTER="$"
+            DOT="."
+            BAD_CHARACTER="#"
+            LT_OP="<"
+            LB="{"
+            LBT="["
+            LP="("
+            MINUS="-"
+            MOD="%"
+            PLUS="+"
+            QUESTION="?"
+            RBT="]"
+            RB="}"
+            RP=")"
+            STAR="*"
+
+            CONST_IDENT = "regexp:_*[A-Z][A-Z_0-9]"
+            AT_CONST_IDENT = "regexp:@_*[A-Z][A-Z_0-9]"
+            HASH_CONST_IDENT = "regexp:#_*[A-Z][A-Z_0-9]"
+            CT_CONST_IDENT = "regexp:\$_*[A-Z][A-Z_0-9]"
+            AT_TYPE_IDENT = "regexp:@_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
+            HASH_TYPE_IDENT = "regexp:#_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
+            CT_TYPE_IDENT = "regexp:\$_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
+            TYPE_IDENT = "regexp:_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
+            BUILTIN_CONST = "regexp:\$\$_*[A-Z][A-Z_0-9]"
+            BUILTIN = "regexp:\$\$_*[a-z][a-zA-Z_0-9]*"
+            AT_IDENT = "regexp:@_*[a-z][a-zA-Z_0-9]*"
+            HASH_IDENT = "regexp:#_*[a-z][a-zA-Z_0-9]*"
+
+            IDENT = "regexp:_*[a-z][a-zA-Z_0-9]*"
+            CT_IDENT = "regexp:\$_*[a-z][a-zA-Z_0-9]*"
+            E = "regexp:[Ee][+-]?[0-9]+}"
+            P = "regexp:[Pp][+-]?[0-9]+"
+            SIZES = "regexp:(8|16|32|64|128)"
+            INTTYPE = "regexp:([lL]|[uU][lL]|[uU](8|16|32|64|128)?|[iI](8|16|32|64|128))"
+            REALTYPE = "regexp:[fF](8|16|32|64|128)?"
+
+            INT_LITERAL = "regexp:[0-9]*"
+            FLOAT_LITERAL = "regexp:(_*[0-9])*"
+
+            INT = "regexp:[0-9](_*[0-9])*"
+            HINT = "regexp:[a-fA-F0-9](_*[a-fA-F0-9])*"
+            OINT = "regexp:[0-7](_*[0-7])*"
+            BINT = "regexp:[0-1](_*[0-1])*"
+
+            EOL = "\n"
+
+            HEX_LIT = "regexp:0[xX][a-fA-F0-9](_*[a-fA-F0-9])*" //"0" [xX] {HINT}
+            OCTAL_LIT = "regexp:0[oO][0-7](_*[0-7])*" //"0" [oO] {OINT}
+            BINARY_LIT = "regexp:0[bB][0-1](_*[0-1])*" //"0" [bB] {BINT}
+            DECIMAL_LIT = "regexp:[0-9](_*[0-9])*" //{INT}
+
+            WHITESPACE ="regexp:\s+|\n+"
+        ]
+}
 
 translation_unit ::= default_module_section? module_section*
 default_module_section ::= top_level+
 module_section ::= module top_level*
 
-module ::= KW_MODULE path_ident (LGENPAR module_params RGENPAR)? attributes? EOS {
-}
+module_path::= [(IDENT SCOPE)+] IDENT
+module ::= KW_MODULE module_path (LGENPAR module_params RGENPAR)? attributes? EOS { pin=2 }
 
 type_decl ::= struct_declaration
     | fault_declaration
@@ -42,37 +258,44 @@ fake binary_expr ::= expr+ {
 
 fake binary_op ::= add_bin_op | mult_bin_op | bit_bin_op | shift_bin_op | rel_bin_op | assign_bin_op
 
-path ::= (IDENT SCOPE)+
+path ::= (IDENT SCOPE)+ { pin(".*")=2 }
 path_const ::= path? CONST_IDENT
-path_ident ::= path? IDENT
+path_ident ::= path? IDENT { pin=2 }
+
 path_at_ident ::= path? AT_IDENT
 
 module_param ::= TYPE_IDENT | CONST_IDENT
 
 module_params ::= module_param (COMMA module_param)*
 
-
 import_decl ::= KW_IMPORT import_paths attributes? EOS
-import_paths ::= path_ident (COMMA path_ident)*
+private import_path_1 ::= [path] IDENT { pin(".*") = 2 }
+//private import_path_1 ::= [(IDENT SCOPE)+] IDENT { pin(".*") = 2 }
+private import_path_2 ::= IDENT { pin=1 }
+import_path ::= import_path_1 | import_path_2
+//import_path ::= import_path_1 | import_path_2 { recoverWhile=recover_import_path }
+//private recover_import_path ::= !(COMMA | EOS | attribute)
+import_paths ::= import_path (COMMA import_path)*
 
-ct_include_stmt ::= KW_CT_INCLUDE expr attributes? EOS
+ct_include_stmt ::= KW_CT_INCLUDE string_expr attributes? EOS
 
+asm_declaration ::= KW_ASM expr attributes? EOS
 
 top_level ::= import_decl
-    | KW_EXTERN? (func_definition | const_decl | global_decl)
+    | KW_EXTERN? (func_definition | const_declaration_stmt | global_decl)
     | ct_assert_stmt
+    | ct_error_stmt
     | ct_echo_stmt
     | ct_include_stmt
     | type_decl
     | def_decl
     | fault_declaration
     | macro_definition
-    | KW_ASM expr attributes? EOS
+    | asm_declaration
     | interface_definition
     | distinct_declaration
 
 private const_paren_expr ::= LP constant_expr RP
-
 
 attributes ::= attribute+
 attribute ::= attribute_name (LP attribute_param_list RP)?
@@ -164,10 +387,9 @@ parameter ::= KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT 
     | ELLIPSIS | AMP IDENT attributes? | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
     | CT_IDENT | CT_IDENT ELLIPSIS
 
-const_decl ::= KW_CONST type? CONST_IDENT attributes? EQ expr EOS
-
-ct_assert_stmt ::= KW_CT_ERROR constant_expr EOS | KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
-ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS
+ct_error_stmt ::= KW_CT_ERROR constant_expr EOS
+ct_assert_stmt ::= KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
+ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS EOS
 assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS
 ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
 
@@ -208,13 +430,16 @@ ct_switch_body ::= ct_case_stmt+
 ct_foreach_stmt ::= KW_CT_FOREACH LP CT_IDENT (COMMA CT_IDENT)? COLON expr RP statement_list? KW_CT_ENDFOREACH
 ct_for_stmt ::= KW_CT_FOR LP for_cond RP statement_list? KW_CT_ENDFOR
 
-var_decl ::= KW_VAR (IDENT EQ expr | CT_TYPE_IDENT (EQ type)? | CT_IDENT (EQ expr)?)
+private eq_expr_pin ::= EQ expr { pin=1 }
+private eq_type_pin ::= EQ type { pin=1 }
+var_decl ::= KW_VAR (IDENT eq_expr_pin | CT_TYPE_IDENT eq_type_pin? | CT_IDENT eq_expr_pin?)
 var_stmt ::= var_decl EOS
-
+expr_stmt ::= expr EOS {pin=1}
 
 statement ::= compound_statement
     | var_stmt
-    | declaration_stmt
+    | const_declaration_stmt
+    | local_declaration_stmt
     | return_stmt
     | if_stmt
     | while_stmt
@@ -229,25 +454,33 @@ statement ::= compound_statement
     | asm_block_stmt
     | ct_echo_stmt
     | ct_assert_stmt
+    | ct_error_stmt
     | ct_if_stmt
     | ct_switch_stmt
     | ct_foreach_stmt
     | ct_for_stmt
-    | expr EOS
+    | expr_stmt
     | assert_stmt
     | EOS
 
 
 local_decl_storage ::= KW_STATIC | KW_TLOCAL
 
-local_decl_after_type ::= CT_IDENT (EQ constant_expr)? | IDENT attributes? (EQ expr)?
+local_decl_after_type_1 ::= CT_IDENT (EQ constant_expr)?
+local_decl_after_type_2 ::= IDENT attributes? (eq_expr_pin)?
+local_decl_after_type ::= local_decl_after_type_1 | local_decl_after_type_2
+
 decl_stmt_after_type ::= local_decl_after_type (COMMA local_decl_after_type)*
 
-declaration_stmt ::= const_decl | local_decl_storage? optional_type decl_stmt_after_type EOS
+const_declaration_stmt ::= KW_CONST type? CONST_IDENT attributes? eq_expr_pin EOS
+local_declaration_stmt ::= local_decl_storage? optional_type decl_stmt_after_type EOS { pin = 2 }
+
 return_stmt ::= KW_RETURN expr? EOS
 label ::= CONST_IDENT COLON
-paren_cond ::= LP cond RP
+paren_cond ::= LP cond RP { pin=1 }
 if_stmt ::= KW_IF label? paren_cond (LB switch_body RB else_part? | compound_statement else_part | statement)
+
+
 while_stmt ::= KW_WHILE label? paren_cond statement
 do_stmt ::= KW_DO label? compound_statement (KW_WHILE grouped_expression)? EOS
 else_part ::= KW_ELSE (if_stmt | compound_statement)
@@ -280,7 +513,7 @@ asm_addr_trailing ::= STAR INT_LITERAL (add_bin_op INT_LITERAL)? | (shift_bin_op
 
 defer_stmt ::= KW_DEFER (KW_TRY | KW_CATCH | (LP KW_CATCH IDENT RP))? statement
 
-compound_statement ::= LB statement_list? RB
+compound_statement ::= LB statement_list* RB { pin=1 }
 
 statement_list ::= statement+
 
@@ -391,7 +624,6 @@ expr ::= ternary_group
     | call_expr
     | primary_group
 
-
 identifier_list ::= IDENT (COMMA IDENT)*
 
 interface_definition ::= KW_INTERFACE type_name (COLON type (COMMA type)*)? interface_body
@@ -420,3 +652,10 @@ macro_header ::= (optional_type !DOT)? macro_name
 macro_params ::= parameter_list? (EOS trailing_block_param)?
 trailing_block_param ::= AT_IDENT (LP parameter_list? RP)?
 
+// recovery
+// recover to ; or } or type in declaration or function/macro keyword
+private recover_top_level ::= !(module | top_level | keyword_list | EOS)
+private recover_declaration ::= !(module | top_level | keyword_list | EOS)
+
+// helper lists
+private keyword_list ::= KW_ANY | KW_ANYFAULT | KW_ASM | KW_ASSERT | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE | KW_DEF | KW_DEFAULT | KW_DEFER | KW_DISTINCT | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FOR | KW_FN | KW_IF | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE | KW_TRY | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT

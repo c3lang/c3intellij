@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3TypeNameImpl extends ASTWrapperPsiElement implements C3TypeName {
+public class C3TypeNameImpl extends C3PsiElementImpl implements C3TypeName {
 
   public C3TypeNameImpl(@NotNull ASTNode node) {
     super(node);
@@ -25,6 +24,12 @@ public class C3TypeNameImpl extends ASTWrapperPsiElement implements C3TypeName {
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getTypeIdent() {
+    return notNullChild(findChildByType(TYPE_IDENT));
   }
 
 }

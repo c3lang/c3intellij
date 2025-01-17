@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3BaseType extends PsiElement {
+public interface C3BaseType extends C3PsiElement {
 
   @Nullable
   C3Expr getExpr();
@@ -24,5 +24,11 @@ public interface C3BaseType extends PsiElement {
 
   @Nullable
   C3Path getPath();
+
+  @Nullable
+  PsiElement getCtTypeIdent();
+
+  @Nullable
+  PsiElement getTypeIdent();
 
 }

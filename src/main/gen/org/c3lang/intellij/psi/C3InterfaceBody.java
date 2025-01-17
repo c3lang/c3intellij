@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3InterfaceBody extends PsiElement {
+public interface C3InterfaceBody extends C3PsiElement {
 
   @NotNull
   List<C3FuncDef> getFuncDefList();

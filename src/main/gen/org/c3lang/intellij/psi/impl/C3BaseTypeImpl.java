@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3BaseTypeImpl extends ASTWrapperPsiElement implements C3BaseType {
+public class C3BaseTypeImpl extends C3PsiElementImpl implements C3BaseType {
 
   public C3BaseTypeImpl(@NotNull ASTNode node) {
     super(node);
@@ -61,6 +60,18 @@ public class C3BaseTypeImpl extends ASTWrapperPsiElement implements C3BaseType {
   @Nullable
   public C3Path getPath() {
     return PsiTreeUtil.getChildOfType(this, C3Path.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCtTypeIdent() {
+    return findChildByType(CT_TYPE_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getTypeIdent() {
+    return findChildByType(TYPE_IDENT);
   }
 
 }
