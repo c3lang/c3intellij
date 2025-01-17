@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3AsmStmtImpl extends ASTWrapperPsiElement implements C3AsmStmt {
+public class C3AsmStmtImpl extends C3PsiElementImpl implements C3AsmStmt {
 
   public C3AsmStmtImpl(@NotNull ASTNode node) {
     super(node);

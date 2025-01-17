@@ -13,4 +13,7 @@ public interface C3TypeAccessExpr extends C3Expr {
   @NotNull
   C3Type getType();
 
+  @Nullable
+  PsiElement getConstIdent();
+
 }

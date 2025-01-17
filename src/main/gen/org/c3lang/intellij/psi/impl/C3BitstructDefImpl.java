@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3BitstructDefImpl extends ASTWrapperPsiElement implements C3BitstructDef {
+public class C3BitstructDefImpl extends C3PsiElementImpl implements C3BitstructDef {
 
   public C3BitstructDefImpl(@NotNull ASTNode node) {
     super(node);
@@ -37,6 +36,12 @@ public class C3BitstructDefImpl extends ASTWrapperPsiElement implements C3Bitstr
   @NotNull
   public List<C3Expr> getExprList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Expr.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getIdent() {
+    return notNullChild(findChildByType(IDENT));
   }
 
 }

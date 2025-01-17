@@ -86,7 +86,7 @@ bitstruct UInt128LE : uint128 @littleendian
 {
 	uint128 val : 0..127;
 }
-module std::collections::enummap<Enum, ValueType>;
+module std::collections::enummap(<Enum, ValueType>);
 
 struct EnumMap
 {
@@ -111,7 +111,7 @@ fn void EnumMap.set(EnumMap* this, Enum key, ValueType value) @operator([]=) => 
 /**
  * @require Enum.kindof == TypeKind.ENUM : "Only enums maybe be used with an enumset"
  **/
-module std::collections::enumset<Enum>;
+module std::collections::enumset(<Enum>);
 
 
 $switch

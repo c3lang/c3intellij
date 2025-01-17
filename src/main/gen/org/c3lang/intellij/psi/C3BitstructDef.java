@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3BitstructDef extends PsiElement {
+public interface C3BitstructDef extends C3PsiElement {
 
   @NotNull
   C3BaseType getBaseType();
 
   @NotNull
   List<C3Expr> getExprList();
+
+  @NotNull
+  PsiElement getIdent();
 
 }

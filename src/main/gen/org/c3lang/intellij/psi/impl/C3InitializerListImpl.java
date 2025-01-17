@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3InitializerListImpl extends ASTWrapperPsiElement implements C3InitializerList {
+public class C3InitializerListImpl extends C3PsiElementImpl implements C3InitializerList {
 
   public C3InitializerListImpl(@NotNull ASTNode node) {
     super(node);

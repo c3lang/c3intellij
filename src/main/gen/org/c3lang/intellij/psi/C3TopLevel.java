@@ -5,19 +5,22 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3TopLevel extends PsiElement {
+public interface C3TopLevel extends C3PsiElement {
 
   @Nullable
-  C3Attributes getAttributes();
+  C3AsmDeclaration getAsmDeclaration();
 
   @Nullable
-  C3ConstDecl getConstDecl();
+  C3ConstDeclarationStmt getConstDeclarationStmt();
 
   @Nullable
   C3CtAssertStmt getCtAssertStmt();
 
   @Nullable
   C3CtEchoStmt getCtEchoStmt();
+
+  @Nullable
+  C3CtErrorStmt getCtErrorStmt();
 
   @Nullable
   C3CtIncludeStmt getCtIncludeStmt();
@@ -27,9 +30,6 @@ public interface C3TopLevel extends PsiElement {
 
   @Nullable
   C3DistinctDeclaration getDistinctDeclaration();
-
-  @Nullable
-  C3Expr getExpr();
 
   @Nullable
   C3FaultDeclaration getFaultDeclaration();

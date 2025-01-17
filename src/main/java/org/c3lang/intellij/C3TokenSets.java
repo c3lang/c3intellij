@@ -2,7 +2,6 @@ package org.c3lang.intellij;
 
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.TokenSet;
-import groovyjarjarantlr.Token;
 import org.c3lang.intellij.psi.C3Types;
 
 

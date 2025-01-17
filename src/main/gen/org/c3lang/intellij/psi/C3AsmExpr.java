@@ -13,4 +13,22 @@ public interface C3AsmExpr extends C3Expr {
   @Nullable
   C3GroupedExpression getGroupedExpression();
 
+  @Nullable
+  PsiElement getConstIdent();
+
+  @Nullable
+  PsiElement getCtConstIdent();
+
+  @Nullable
+  PsiElement getCtIdent();
+
+  @Nullable
+  PsiElement getFloatLiteral();
+
+  @Nullable
+  PsiElement getIdent();
+
+  @Nullable
+  PsiElement getIntLiteral();
+
 }

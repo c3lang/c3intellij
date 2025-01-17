@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3NextcaseStmtImpl extends ASTWrapperPsiElement implements C3NextcaseStmt {
+public class C3NextcaseStmtImpl extends C3PsiElementImpl implements C3NextcaseStmt {
 
   public C3NextcaseStmtImpl(@NotNull ASTNode node) {
     super(node);
@@ -37,6 +36,12 @@ public class C3NextcaseStmtImpl extends ASTWrapperPsiElement implements C3Nextca
   @Nullable
   public C3Type getType() {
     return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getConstIdent() {
+    return findChildByType(CONST_IDENT);
   }
 
 }

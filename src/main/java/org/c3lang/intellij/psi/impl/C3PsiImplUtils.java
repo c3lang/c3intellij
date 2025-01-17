@@ -1,33 +1,20 @@
 package org.c3lang.intellij.psi.impl;
 
-
-import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.c3lang.intellij.psi.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-public class C3PsiImplUtils
-{
-    public static String getName(C3TypeDecl element)
-    {
-        ASTNode node = element.getNode().findChildByType(C3Types.TYPE_IDENT);
-        if (node == null) return null;
-        return node.getText();
+import java.util.Collection;
+import java.util.Objects;
+
+public class C3PsiImplUtils {
+
+    public static String getType(C3PsiElement source) {
+        final C3Type element = PsiTreeUtil.findChildOfAnyType(source, C3Type.class);
+        return element == null ? null : element.getText();
     }
 
-
-    public static PsiElement setName(C3TypeDecl decl, String newName)
-    {
-        ASTNode nameNode = decl.getNode().findChildByType(C3Types.TYPE_IDENT);;
-        if (nameNode == null) return decl;
-        C3TypeName name = C3ElementFactory.createTypeName(decl.getProject(), newName);
-        decl.getNode().replaceChild(nameNode, name.getNode());
-        return decl;
-    }
-
-
-    public static PsiElement getNameIdentifier(C3TypeDecl decl)
-    {
-        ASTNode node = decl.getNode().findChildByType(C3Types.TYPE_IDENT);
-        return node == null ? null : node.getPsi();
-    }
 }

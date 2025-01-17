@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3ImportPathsImpl extends ASTWrapperPsiElement implements C3ImportPaths {
+public class C3ImportPathsImpl extends C3PsiElementImpl implements C3ImportPaths {
 
   public C3ImportPathsImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,8 +28,8 @@ public class C3ImportPathsImpl extends ASTWrapperPsiElement implements C3ImportP
 
   @Override
   @NotNull
-  public List<C3PathIdent> getPathIdentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3PathIdent.class);
+  public List<C3ImportPath> getImportPathList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3ImportPath.class);
   }
 
 }

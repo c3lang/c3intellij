@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3TypeDecl extends C3NamedElement {
+public interface C3TypeDecl extends C3PsiElement {
 
   @Nullable
   C3BitstructDeclaration getBitstructDeclaration();
@@ -18,11 +18,5 @@ public interface C3TypeDecl extends C3NamedElement {
 
   @Nullable
   C3StructDeclaration getStructDeclaration();
-
-  String getName();
-
-  PsiElement setName(String newName);
-
-  PsiElement getNameIdentifier();
 
 }

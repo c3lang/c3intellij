@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.c3lang.intellij.psi.*;
 
-public class C3CtIncludeStmtImpl extends ASTWrapperPsiElement implements C3CtIncludeStmt {
+public class C3CtIncludeStmtImpl extends C3PsiElementImpl implements C3CtIncludeStmt {
 
   public C3CtIncludeStmtImpl(@NotNull ASTNode node) {
     super(node);
@@ -35,8 +34,8 @@ public class C3CtIncludeStmtImpl extends ASTWrapperPsiElement implements C3CtInc
 
   @Override
   @NotNull
-  public C3Expr getExpr() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
+  public C3StringExpr getStringExpr() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3StringExpr.class));
   }
 
 }

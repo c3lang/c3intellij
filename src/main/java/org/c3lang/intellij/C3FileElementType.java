@@ -1,11 +1,11 @@
 package org.c3lang.intellij;
 
-import com.intellij.psi.tree.ILightStubFileElementType;
+import com.intellij.psi.tree.IStubFileElementType;
 import org.c3lang.intellij.stubs.PsiC3FileStub;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-public class C3FileElementType extends ILightStubFileElementType<PsiC3FileStub>
+public class C3FileElementType extends IStubFileElementType<PsiC3FileStub>
 {
     public static final int STUB_VERSION = 1;
 

@@ -27,4 +27,10 @@ public class C3CtFeatureExprImpl extends C3ExprImpl implements C3CtFeatureExpr {
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public PsiElement getConstIdent() {
+    return notNullChild(findChildByType(CONST_IDENT));
+  }
+
 }

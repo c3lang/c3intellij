@@ -27,4 +27,10 @@ public class C3BuiltinExprImpl extends C3ExprImpl implements C3BuiltinExpr {
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public PsiElement getBuiltin() {
+    return notNullChild(findChildByType(BUILTIN));
+  }
+
 }

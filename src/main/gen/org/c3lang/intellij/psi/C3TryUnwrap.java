@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3TryUnwrap extends PsiElement {
+public interface C3TryUnwrap extends C3PsiElement {
 
   @NotNull
   C3Expr getExpr();
 
   @Nullable
   C3Type getType();
+
+  @Nullable
+  PsiElement getIdent();
 
 }

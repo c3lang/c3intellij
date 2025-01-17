@@ -5,6 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3CtAnalyze extends PsiElement {
+public interface C3CtAnalyze extends C3PsiElement {
 
 }
