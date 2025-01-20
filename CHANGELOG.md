@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+## [0.0.22] - 2025-01-20
+
+- More IntelliJ compatibility updates.
+
+## [0.0.21] - 2025-01-16
+
+- IntelliJ compatibility
+
 ## [0.0.20] - 2025-01-03
 
 - Working "run" profiles.

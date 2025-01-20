@@ -44,17 +44,12 @@ public class C3CompilerConfigurable implements SearchableConfigurable, Configura
         contentPanel.add(new JLabel("C3 Compiler"), BorderLayout.WEST);
         pathField = new TextFieldWithBrowseButton();
         contentPanel.add(pathField);
-        pathField.addBrowseFolderListener(new TextBrowseFolderListener(new FileChooserDescriptor(true, false, false, false, false, false)
-        {
-            @Override public boolean isFileSelectable(@Nullable VirtualFile file)
-            {
-                if (file == null) return false;
-                if (!file.exists()) return false;
-                if (file.isDirectory()) return false;
-                if (!Files.isExecutable(file.toNioPath())) return false;
-                return C3SdkType.isSdkHome(file.getParent().getPath());
-            }
-        }.withTitle("Select C3 Compiler")));
+        pathField.addBrowseFolderListener(new TextBrowseFolderListener(
+                new FileChooserDescriptor(true, false, false, false, false, false)
+                        .withFileFilter((VirtualFile file) -> {
+                            if (!Files.isExecutable(file.toNioPath())) return false;
+                            return C3SdkType.isSdkHome(file.getParent().getPath());
+                        }).withTitle("Select C3 Compiler")));
         return panel;
     }
 

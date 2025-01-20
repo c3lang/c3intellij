@@ -17,7 +17,7 @@ public class C3SdkType extends SdkType
         super("C3");
     }
 
-    @Override public @Nullable String suggestHomePath()
+    public @Nullable String suggestHomePath()
     {
         return null;
     }
