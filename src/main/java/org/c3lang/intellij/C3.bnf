@@ -316,7 +316,7 @@ func_typedef ::= KW_FN optional_type fn_parameter_list
 
 typedef_type ::= func_typedef | type generic_parameters?
 generic_parameter ::= expr | type
-generic_parameters ::= LGENPAR generic_parameter (COMMA generic_parameter)* RGENPAR
+generic_parameters ::= (LGENPAR | (LT_OP LBT)) generic_parameter (COMMA generic_parameter)* (RGENPAR | (RBT GT_OP))
 any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
 def_attr_values ::= LB attributes? RB
@@ -522,7 +522,7 @@ mult_bin_op ::= STAR | DIV | MOD { name = "operator" }
 shift_bin_op ::= SHL | SHR { name = "operator "}
 bit_bin_op ::= AMP | BIT_XOR | BIT_OR { name = "operator" }
 add_bin_op ::= PLUS | MINUS | CT_PLUS { name = "operator" }
-rel_bin_op ::= LT_OP | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP { name = "operator" }
+rel_bin_op ::= LT_OP !LBT | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP { name = "operator" }
 
 catch_unwrap_list ::= expr (COMMA expr)*
 catch_unwrap ::= KW_CATCH (type? IDENT EQ)? catch_unwrap_list
