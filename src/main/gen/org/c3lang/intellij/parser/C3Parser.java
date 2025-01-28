@@ -3072,17 +3072,38 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LGENPAR generic_parameter (COMMA generic_parameter)* RGENPAR
+  // (LGENPAR | (LT_OP LBT)) generic_parameter (COMMA generic_parameter)* (RGENPAR | (RBT GT_OP))
   public static boolean generic_parameters(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "generic_parameters")) return false;
-    if (!nextTokenIs(b, LGENPAR)) return false;
+    if (!nextTokenIs(b, "<generic parameters>", LGENPAR, LT_OP)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GENERIC_PARAMETERS, "<generic parameters>");
+    r = generic_parameters_0(b, l + 1);
+    r = r && generic_parameter(b, l + 1);
+    r = r && generic_parameters_2(b, l + 1);
+    r = r && generic_parameters_3(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // LGENPAR | (LT_OP LBT)
+  private static boolean generic_parameters_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "generic_parameters_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, LGENPAR);
-    r = r && generic_parameter(b, l + 1);
-    r = r && generic_parameters_2(b, l + 1);
-    r = r && consumeToken(b, RGENPAR);
-    exit_section_(b, m, GENERIC_PARAMETERS, r);
+    if (!r) r = generic_parameters_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // LT_OP LBT
+  private static boolean generic_parameters_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "generic_parameters_0_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, LT_OP, LBT);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -3104,6 +3125,27 @@ public class C3Parser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMA);
     r = r && generic_parameter(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // RGENPAR | (RBT GT_OP)
+  private static boolean generic_parameters_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "generic_parameters_3")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, RGENPAR);
+    if (!r) r = generic_parameters_3_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // RBT GT_OP
+  private static boolean generic_parameters_3_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "generic_parameters_3_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, RBT, GT_OP);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -4842,17 +4884,38 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LT_OP | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP
+  // LT_OP !LBT | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP
   public static boolean rel_bin_op(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "rel_bin_op")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BINARY_OP, "<operator>");
-    r = consumeToken(b, LT_OP);
+    r = rel_bin_op_0(b, l + 1);
     if (!r) r = consumeToken(b, GT_OP);
     if (!r) r = consumeToken(b, LE_OP);
     if (!r) r = consumeToken(b, GE_OP);
     if (!r) r = consumeToken(b, EQ_OP);
     if (!r) r = consumeToken(b, NE_OP);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // LT_OP !LBT
+  private static boolean rel_bin_op_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rel_bin_op_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LT_OP);
+    r = r && rel_bin_op_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // !LBT
+  private static boolean rel_bin_op_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rel_bin_op_0_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_);
+    r = !consumeToken(b, LBT);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
