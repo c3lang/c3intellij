@@ -55,4 +55,40 @@ public class C3FuncDefImpl extends C3StubBasedPsiElementBase<C3FuncDefStub> impl
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3FuncHeader.class));
   }
 
+  @Override
+  @NotNull
+  public String getSourceFileName() {
+    return C3ParserUtils.getSourceFileName(this);
+  }
+
+  @Override
+  @Nullable
+  public ModuleName getModuleName() {
+    return C3ParserUtils.getModuleName(this);
+  }
+
+  @Override
+  @Nullable
+  public TypeName getTypeName() {
+    return C3ParserUtils.getTypeName(this);
+  }
+
+  @Override
+  @NotNull
+  public FullyQualifiedName getFunctionOrMacroName() {
+    return C3ParserUtils.getFunctionOrMacroName(this);
+  }
+
+  @Override
+  @NotNull
+  public ReturnTypeName getReturnTypeName() {
+    return C3ParserUtils.getReturnTypeName(this);
+  }
+
+  @Override
+  @NotNull
+  public String getParameterTypeNames() {
+    return C3ParserUtils.getParameterTypeNames(this);
+  }
+
 }

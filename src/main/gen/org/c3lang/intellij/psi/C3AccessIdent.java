@@ -10,13 +10,4 @@ public interface C3AccessIdent extends C3PsiElement {
   @Nullable
   C3Expr getExpr();
 
-  @Nullable
-  PsiElement getAtIdent();
-
-  @Nullable
-  PsiElement getHashIdent();
-
-  @Nullable
-  PsiElement getIdent();
-
 }

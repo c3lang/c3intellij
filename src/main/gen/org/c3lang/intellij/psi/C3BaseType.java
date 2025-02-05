@@ -25,10 +25,4 @@ public interface C3BaseType extends C3PsiElement {
   @Nullable
   C3Path getPath();
 
-  @Nullable
-  PsiElement getCtTypeIdent();
-
-  @Nullable
-  PsiElement getTypeIdent();
-
 }

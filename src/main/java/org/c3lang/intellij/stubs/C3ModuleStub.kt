@@ -1,23 +1,37 @@
-package org.c3lang.intellij.stubs;
+package org.c3lang.intellij.stubs
 
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.stubs.StubBase;
-import com.intellij.psi.stubs.StubElement;
-import com.intellij.util.io.StringRef;
-import org.c3lang.intellij.psi.C3Module;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.psi.PsiElement
+import com.intellij.psi.stubs.*
+import org.c3lang.intellij.psi.C3Module
+import org.c3lang.intellij.psi.ModuleName
 
-public class C3ModuleStub extends StubBase<C3Module> {
+class C3ModuleStub(
+    parent: StubElement<*>?,
+    elementType: IStubElementType<*, *>?,
+    val module: ModuleName?,
+) : StubBase<C3Module?>(parent, elementType) {
 
-    private final StringRef name;
+    constructor(
+        parent: StubElement<out PsiElement?>,
+        elementType: C3ModuleElementType,
+        psi: C3Module
+    ) : this(
+        parent = parent,
+        elementType = elementType,
+        module = ModuleName.from(psi)
+    )
 
-    public C3ModuleStub(@Nullable StubElement parent, IStubElementType elementType, StringRef name) {
-        super(parent, elementType);
-        this.name = name;
-    }
+    constructor(
+        parent: StubElement<*>,
+        elementType: C3ModuleElementType,
+        dataStream: StubInputStream
+    ) : this(
+        parent = parent,
+        elementType = elementType,
+        module = dataStream.readNullableUTFFast()?.let(::ModuleName)
+    )
 
-    @Nullable
-    public String getName() {
-        return StringRef.toString(name);
+    fun serialize(dataStream: StubOutputStream) {
+        dataStream.writeNullableUTFFast(module?.value)
     }
 }

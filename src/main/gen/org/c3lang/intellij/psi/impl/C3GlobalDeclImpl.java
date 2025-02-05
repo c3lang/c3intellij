@@ -44,10 +44,4 @@ public class C3GlobalDeclImpl extends C3PsiElementImpl implements C3GlobalDecl {
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3OptionalType.class));
   }
 
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
-  }
-
 }

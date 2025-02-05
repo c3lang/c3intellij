@@ -13,7 +13,4 @@ public interface C3EnumConstant extends C3PsiElement {
   @Nullable
   C3Expr getExpr();
 
-  @NotNull
-  PsiElement getConstIdent();
-
 }

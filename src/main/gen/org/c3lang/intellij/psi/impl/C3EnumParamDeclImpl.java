@@ -32,10 +32,4 @@ public class C3EnumParamDeclImpl extends C3PsiElementImpl implements C3EnumParam
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
-  @Override
-  @NotNull
-  public PsiElement getIdent() {
-    return notNullChild(findChildByType(IDENT));
-  }
-
 }

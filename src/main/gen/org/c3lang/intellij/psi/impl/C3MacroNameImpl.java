@@ -32,16 +32,4 @@ public class C3MacroNameImpl extends C3PsiElementImpl implements C3MacroName {
     return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getAtIdent() {
-    return findChildByType(AT_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
-  }
-
 }

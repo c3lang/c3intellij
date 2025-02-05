@@ -32,10 +32,4 @@ public class C3DeferStmtImpl extends C3PsiElementImpl implements C3DeferStmt {
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
   }
 
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
-  }
-
 }

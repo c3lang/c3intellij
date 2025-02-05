@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.stubs.C3ModuleStub;
 import org.c3lang.intellij.psi.*;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 
@@ -53,6 +54,18 @@ public class C3ModuleImpl extends C3StubBasedPsiElementBase<C3ModuleStub> implem
   @NotNull
   public C3ModulePath getModulePath() {
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3ModulePath.class));
+  }
+
+  @Override
+  @Nullable
+  public ModuleName getModuleName() {
+    return C3ParserUtils.getModuleName(this);
+  }
+
+  @Override
+  @NotNull
+  public ItemPresentation getPresentation() {
+    return C3ParserUtils.getPresentation(this);
   }
 
 }

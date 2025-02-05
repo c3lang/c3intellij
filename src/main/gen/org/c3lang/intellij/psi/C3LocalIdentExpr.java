@@ -7,10 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface C3LocalIdentExpr extends C3Expr {
 
-  @Nullable
-  PsiElement getCtIdent();
-
-  @Nullable
-  PsiElement getHashIdent();
-
 }

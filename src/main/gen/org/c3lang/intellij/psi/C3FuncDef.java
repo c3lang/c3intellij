@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.StubBasedPsiElement;
 import org.c3lang.intellij.stubs.C3FuncDefStub;
 
-public interface C3FuncDef extends C3PsiElement, StubBasedPsiElement<C3FuncDefStub> {
+public interface C3FuncDef extends C3CallablePsiElement, StubBasedPsiElement<C3FuncDefStub> {
 
   @Nullable
   C3Attributes getAttributes();
@@ -17,5 +17,23 @@ public interface C3FuncDef extends C3PsiElement, StubBasedPsiElement<C3FuncDefSt
 
   @NotNull
   C3FuncHeader getFuncHeader();
+
+  @NotNull
+  String getSourceFileName();
+
+  @Nullable
+  ModuleName getModuleName();
+
+  @Nullable
+  TypeName getTypeName();
+
+  @NotNull
+  FullyQualifiedName getFunctionOrMacroName();
+
+  @NotNull
+  ReturnTypeName getReturnTypeName();
+
+  @NotNull
+  String getParameterTypeNames();
 
 }

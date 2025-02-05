@@ -39,10 +39,4 @@ public class C3TypeAccessExprImpl extends C3ExprImpl implements C3TypeAccessExpr
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
-  @Override
-  @Nullable
-  public PsiElement getConstIdent() {
-    return findChildByType(CONST_IDENT);
-  }
-
 }

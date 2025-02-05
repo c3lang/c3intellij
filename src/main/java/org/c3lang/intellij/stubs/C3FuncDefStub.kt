@@ -1,42 +1,59 @@
-package org.c3lang.intellij.stubs;
+package org.c3lang.intellij.stubs
 
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.stubs.StubBase;
-import com.intellij.psi.stubs.StubElement;
-import com.intellij.util.io.StringRef;
-import org.c3lang.intellij.psi.C3FuncDef;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.psi.stubs.*
+import com.intellij.util.io.DataInputOutputUtil
+import org.c3lang.intellij.psi.*
 
-public class C3FuncDefStub extends StubBase<C3FuncDef> {
+class C3FuncDefStub(
+    parent: StubElement<*>?,
+    elementType: IStubElementType<*, *>?,
+    val sourceFileName: String,
+    val module: ModuleName?,
+    val type: TypeName?,
+    val callName: FullyQualifiedName,
+    val returnType: ReturnTypeName,
+    val parameterTypes: String,
+) : StubBase<C3FuncDef?>(parent, elementType) {
 
-    private final StringRef functionName;
-    private final @Nullable String module;
-    private final @NotNull String returnType;
+    constructor(
+        parent: StubElement<*>?,
+        elementType: IStubElementType<*, *>?,
+        psi: C3FuncDef,
+        module: ModuleName? = ModuleName.from(psi),
+        imports: Map<String, ModuleName> = ModuleName.getImports(psi),
+    ) : this(
+        parent = parent,
+        elementType = elementType,
+        sourceFileName = psi.containingFile.name,
+        module = module,
+        type = TypeName.from(psi),
+        callName = FullyQualifiedName.from(psi, module),
+        returnType = ReturnTypeName.from(psi, imports),
+        parameterTypes = psi.fnParameterList.text/*ParameterTypeName.listOf(psi, imports)*/
+    )
 
-    public C3FuncDefStub(
-            @Nullable StubElement parent,
-            IStubElementType elementType,
-            StringRef functionName,
-            @Nullable String module,
-            @NotNull String returnType
-    ) {
-        super(parent, elementType);
-        this.functionName = functionName;
-        this.module = module;
-        this.returnType = returnType;
+    constructor(
+        parent: StubElement<*>?,
+        elementType: IStubElementType<*, *>?,
+        dataStream: StubInputStream
+    ) : this(
+        parent = parent,
+        elementType = elementType,
+        sourceFileName = dataStream.readUTFFast(),
+        module = DataInputOutputUtil.readNullable(dataStream, dataStream::readUTFFast)?.let(ModuleName::deserialize),
+        type = DataInputOutputUtil.readNullable(dataStream, dataStream::readUTFFast)?.let(TypeName::deserialize),
+        callName = FullyQualifiedName.deserialize(dataStream.readUTFFast()),
+        returnType = ReturnTypeName.deserialize(dataStream.readUTFFast()),
+        parameterTypes = dataStream.readUTFFast(),
+    )
+
+    fun serialize(dataStream: StubOutputStream) {
+        dataStream.writeUTFFast(sourceFileName)
+        dataStream.writeNullableUTFFast(module?.value)
+        dataStream.writeNullableUTFFast(type?.fullName)
+        dataStream.writeUTFFast(callName.fullName)
+        dataStream.writeUTFFast(returnType.type.fullName)
+        dataStream.writeUTFFast(parameterTypes)
     }
 
-    public @Nullable String getModule() {
-        return module;
-    }
-
-    public @NotNull String getReturnType() {
-        return returnType;
-    }
-
-    @NotNull
-    public String getFunctionName() {
-        return StringRef.toString(functionName);
-    }
 }

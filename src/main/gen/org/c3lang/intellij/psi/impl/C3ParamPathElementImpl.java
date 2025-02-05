@@ -32,10 +32,4 @@ public class C3ParamPathElementImpl extends C3PsiElementImpl implements C3ParamP
     return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Expr.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getCtTypeIdent() {
-    return findChildByType(CT_TYPE_IDENT);
-  }
-
 }

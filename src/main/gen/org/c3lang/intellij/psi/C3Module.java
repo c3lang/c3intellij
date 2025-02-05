@@ -6,6 +6,7 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.StubBasedPsiElement;
 import org.c3lang.intellij.stubs.C3ModuleStub;
+import com.intellij.navigation.ItemPresentation;
 
 public interface C3Module extends C3PsiElement, StubBasedPsiElement<C3ModuleStub> {
 
@@ -17,5 +18,11 @@ public interface C3Module extends C3PsiElement, StubBasedPsiElement<C3ModuleStub
 
   @NotNull
   C3ModulePath getModulePath();
+
+  @Nullable
+  ModuleName getModuleName();
+
+  @NotNull
+  ItemPresentation getPresentation();
 
 }

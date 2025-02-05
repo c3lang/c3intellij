@@ -38,10 +38,4 @@ public class C3EnumConstantImpl extends C3PsiElementImpl implements C3EnumConsta
     return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
-  @Override
-  @NotNull
-  public PsiElement getConstIdent() {
-    return notNullChild(findChildByType(CONST_IDENT));
-  }
-
 }

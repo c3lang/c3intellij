@@ -13,13 +13,4 @@ public interface C3VarDecl extends C3PsiElement {
   @Nullable
   C3Type getType();
 
-  @Nullable
-  PsiElement getCtIdent();
-
-  @Nullable
-  PsiElement getCtTypeIdent();
-
-  @Nullable
-  PsiElement getIdent();
-
 }

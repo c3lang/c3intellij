@@ -14,12 +14,6 @@ public interface C3Parameter extends C3PsiElement {
   C3Type getType();
 
   @Nullable
-  PsiElement getCtIdent();
-
-  @Nullable
-  PsiElement getHashIdent();
-
-  @Nullable
-  PsiElement getIdent();
+  String getNameIdent();
 
 }

@@ -38,10 +38,4 @@ public class C3CatchUnwrapImpl extends C3PsiElementImpl implements C3CatchUnwrap
     return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
-  }
-
 }

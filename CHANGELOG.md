@@ -4,8 +4,9 @@
 
 ## [Unreleased]
 
-- Function and import completion
-- Support experimental <[]> syntax.
+- code completion for structs, union, enum, const, import, functions, macros
+- go to declaration from import to module(s)
+- add import QuickFix
 
 ## [0.0.22] - 2025-01-20
 

@@ -32,10 +32,4 @@ public class C3PathConstImpl extends C3PsiElementImpl implements C3PathConst {
     return PsiTreeUtil.getChildOfType(this, C3Path.class);
   }
 
-  @Override
-  @NotNull
-  public PsiElement getConstIdent() {
-    return notNullChild(findChildByType(CONST_IDENT));
-  }
-
 }

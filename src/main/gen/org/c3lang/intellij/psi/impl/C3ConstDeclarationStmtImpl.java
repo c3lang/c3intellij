@@ -8,12 +8,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
+import org.c3lang.intellij.stubs.C3ConstDeclarationStmtStub;
 import org.c3lang.intellij.psi.*;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class C3ConstDeclarationStmtImpl extends C3PsiElementImpl implements C3ConstDeclarationStmt {
+public class C3ConstDeclarationStmtImpl extends C3StubBasedPsiElementBase<C3ConstDeclarationStmtStub> implements C3ConstDeclarationStmt {
+
+  public C3ConstDeclarationStmtImpl(@NotNull C3ConstDeclarationStmtStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
+  }
 
   public C3ConstDeclarationStmtImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public C3ConstDeclarationStmtImpl(@NotNull C3ConstDeclarationStmtStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
@@ -42,12 +53,6 @@ public class C3ConstDeclarationStmtImpl extends C3PsiElementImpl implements C3Co
   @Nullable
   public C3Type getType() {
     return PsiTreeUtil.getChildOfType(this, C3Type.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getConstIdent() {
-    return notNullChild(findChildByType(CONST_IDENT));
   }
 
 }

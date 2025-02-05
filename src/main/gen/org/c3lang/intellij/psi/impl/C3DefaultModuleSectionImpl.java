@@ -32,4 +32,22 @@ public class C3DefaultModuleSectionImpl extends C3PsiElementImpl implements C3De
     return PsiTreeUtil.getChildrenOfTypeAsList(this, C3TopLevel.class);
   }
 
+  @Override
+  @Nullable
+  public ModuleName getModuleName() {
+    return C3ParserUtils.getModuleName(this);
+  }
+
+  @Override
+  @NotNull
+  public List<ModuleName> getImports() {
+    return C3ParserUtils.getImports(this);
+  }
+
+  @Override
+  @NotNull
+  public List<C3ImportDecl> getImportDeclarations() {
+    return C3ParserUtils.getImportDeclarations(this);
+  }
+
 }

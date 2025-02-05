@@ -10,13 +10,12 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3CallExprImpl extends C3ExprImpl implements C3CallExpr {
+public class C3CallExprImpl extends C3CallExprMixinImpl implements C3CallExpr {
 
   public C3CallExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull C3Visitor visitor) {
     visitor.visitCallExpr(this);
   }

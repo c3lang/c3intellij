@@ -10,7 +10,4 @@ public interface C3PathIdent extends C3PsiElement {
   @Nullable
   C3Path getPath();
 
-  @NotNull
-  PsiElement getIdent();
-
 }

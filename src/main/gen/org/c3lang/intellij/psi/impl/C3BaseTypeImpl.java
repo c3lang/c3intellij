@@ -62,16 +62,4 @@ public class C3BaseTypeImpl extends C3PsiElementImpl implements C3BaseType {
     return PsiTreeUtil.getChildOfType(this, C3Path.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getCtTypeIdent() {
-    return findChildByType(CT_TYPE_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getTypeIdent() {
-    return findChildByType(TYPE_IDENT);
-  }
-
 }

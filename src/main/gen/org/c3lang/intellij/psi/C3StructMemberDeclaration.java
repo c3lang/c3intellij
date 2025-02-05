@@ -22,7 +22,4 @@ public interface C3StructMemberDeclaration extends C3PsiElement {
   @Nullable
   C3Type getType();
 
-  @Nullable
-  PsiElement getIdent();
-
 }

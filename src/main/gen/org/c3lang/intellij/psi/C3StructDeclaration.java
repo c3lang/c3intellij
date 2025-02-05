@@ -4,10 +4,8 @@ package org.c3lang.intellij.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.StubBasedPsiElement;
-import org.c3lang.intellij.stubs.C3StructDeclarationStub;
 
-public interface C3StructDeclaration extends C3PsiElement, StubBasedPsiElement<C3StructDeclarationStub> {
+public interface C3StructDeclaration extends C3PsiElement {
 
   @Nullable
   C3Attributes getAttributes();

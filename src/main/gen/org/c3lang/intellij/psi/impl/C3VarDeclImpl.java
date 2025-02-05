@@ -38,22 +38,4 @@ public class C3VarDeclImpl extends C3PsiElementImpl implements C3VarDecl {
     return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getCtIdent() {
-    return findChildByType(CT_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getCtTypeIdent() {
-    return findChildByType(CT_TYPE_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
-  }
-
 }

@@ -13,7 +13,4 @@ public interface C3CatchUnwrap extends C3PsiElement {
   @Nullable
   C3Type getType();
 
-  @Nullable
-  PsiElement getIdent();
-
 }

@@ -1,85 +1,130 @@
-package org.c3lang.intellij.completion;
+package org.c3lang.intellij.completion
 
-import com.intellij.codeInsight.completion.*;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.ProcessingContext;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.util.TextRange
+import com.intellij.patterns.PlatformPatterns.or
+import com.intellij.patterns.PlatformPatterns.psiElement
+import com.intellij.psi.PsiErrorElement
+import com.intellij.psi.codeStyle.NameUtil
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.stubs.StubIndex
+import org.c3lang.intellij.C3Icons
+import org.c3lang.intellij.completion.PsiDocumentUtils.commitChanges
+import org.c3lang.intellij.index.NameIndex
+import org.c3lang.intellij.intention.AddImportQuickFix
+import org.c3lang.intellij.psi.*
+import org.c3lang.intellij.stubs.C3TypeEnum
+import javax.swing.Icon
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
+@Suppress("DuplicatedCode")
+class TypeCompletionContributor : CompletionContributor() {
+    private val pattern = or(
+        psiElement(C3Types.CONST_IDENT),/*for searching with first upper case letter*/
+        psiElement().inside(C3Type::class.java),
+    )
 
-public class TypeCompletionContributor extends CompletionContributor {
-    private final static Logger log = Logger.getInstance(TypeCompletionContributor.class.getName());
+    override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
+        val originalPosition = parameters.originalPosition
 
-    public TypeCompletionContributor() {
-        final var psiElementCapture = psiElement().andOr(
-//                psiElement().inside(C3ImportDecl.class)
-        );
+        if (!pattern.accepts(originalPosition)) {
+            return;
+        }
 
-        extend(CompletionType.BASIC, psiElementCapture, new CompletionProvider<>() {
-            @Override
-            protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
-//                final Project project = parameters.getOriginalFile().getProject();
-//                final PsiElement originalElement = CompletionUtil.getOriginalOrSelf(parameters.getPosition());
-//                final C3ImportDecl importDeclaration = PsiTreeUtil.getParentOfType(originalElement, C3ImportDecl.class);
-//
-//                if (importDeclaration == null) {
-//                    return;
-//                }
-//
-//                final TextRange range = TextRange.create(
-//                        importDeclaration.getFirstChild().getTextRange().getEndOffset(),
-//                        parameters.getEditor().getCaretModel().getOffset()
-//                );
-//                final String query = parameters.getEditor().getDocument().getText(range).trim();
-//
-//                final MinusculeMatcher nameMatcher = NameUtil.buildMatcher(query, NameUtil.MatchingCaseSensitivity.NONE);
-//
-//                StubIndex.getInstance()
-//                        .getAllKeys(C3ModuleIndex.KEY, project).stream()
-//                        .filter(module -> query.isBlank() || nameMatcher.matches(module))
-//                        .flatMap(key -> StubIndex.getElements(C3ModuleIndex.KEY, key, project, GlobalSearchScope.allScope(project), C3Module.class).stream())
-//                        .map(module -> {
-//                            final C3ModuleParams params = module.getModuleParams();
-//
-//                            final StringBuilder tail = new StringBuilder();
-//                            if (params != null) {
-//                                tail.append("(<").append(params.getText()).append(">)");
-//                            }
-//                            final var attributes = module.getAttributes();
-//                            if (attributes != null) {
-//                                tail.append(" ").append(attributes.getText());
-//                            }
-//
-//                            return LookupElementBuilder.create(module.getName())
-//                                    .withTailText(tail.toString(), true)
-//                                    .withInsertHandler(new FunctionInsertHandler(importDeclaration));
-//                        }).distinct().forEach(result::addElement);
+        val parent = originalPosition?.parent
+        if (parent is PsiErrorElement) {
+            return
+        }
+
+        val completion = CompletionContext(parameters)
+
+        val nameMatcher = NameUtil.buildMatcher(
+            "*${completion.lookupString}*",
+            NameUtil.MatchingCaseSensitivity.NONE
+        )
+        val insertHandler = StructInsertHandler(
+            moduleSection = completion.importProvider,
+            range = completion.range
+        )
+
+        StubIndex.getInstance().getAllKeys(
+            NameIndex.KEY,
+            completion.project
+        ).filter { nameMatcher.matches(it) || it.isBlank() }.flatMap { key ->
+            StubIndex.getElements(
+                NameIndex.KEY,
+                key,
+                completion.project,
+                GlobalSearchScope.allScope(completion.project),
+                C3PsiElement::class.java,
+            )
+        }.filterIsInstance<C3TypeName>().forEach { typeName ->
+            val icon: Icon? = when (typeName.typeEnum) {
+                C3TypeEnum.FALLBACK -> null
+                C3TypeEnum.STRUCT -> C3Icons.Nodes.STRUCT
+                C3TypeEnum.INTERFACE -> C3Icons.Nodes.INTERFACE
+                C3TypeEnum.ENUM -> C3Icons.Nodes.ENUM
+                C3TypeEnum.UNION -> C3Icons.Nodes.UNION
+                C3TypeEnum.BITSTRUCT -> C3Icons.Nodes.BITSTRUCT
+                C3TypeEnum.FAULT -> C3Icons.Nodes.FAULT
             }
-        });
+
+            val lookupElementBuilder = LookupElementBuilder
+                .create(typeName, typeName.getFullName())
+                .withLookupStrings(listOf(typeName.getFullName(), typeName.text))
+                .withPsiElement(typeName)
+                .withIcon(icon)
+                .withPresentableText(typeName.getFullName())
+                .withInsertHandler(insertHandler)
+
+            result.addElement(lookupElementBuilder)
+        }
     }
 
-//    private static class FunctionInsertHandler implements InsertHandler<LookupElement> {
-//
-//        private final C3ImportDecl importDeclaration;
-//
-//        public FunctionInsertHandler(C3ImportDecl importDeclaration) {
-//            this.importDeclaration = importDeclaration;
-//        }
-//
-//        @Override
-//        public void handleInsert(@NotNull InsertionContext context, @NotNull LookupElement item) {
-//            final Editor editor = context.getEditor();
-//            final Document document = editor.getDocument();
-//
-//            final String endOfStatement = (importDeclaration.getLastChild() instanceof LeafPsiElement) ? "" : ";";
-//            final String textToInsert = item.getLookupString() + endOfStatement;
-//
-//            final int startOffset = importDeclaration.getFirstChild().getTextRange().getEndOffset() + 1/*space*/;
-//            final int endOffset = editor.getCaretModel().getOffset();
-//
-//            document.replaceString(startOffset, endOffset, textToInsert);
-//
-//            editor.getCaretModel().moveToOffset(startOffset + textToInsert.length());
-//        }
-//    }
+    @Suppress("DuplicatedCode")
+    private class StructInsertHandler(
+        private val moduleSection: C3ImportProvider,
+        private val range: TextRange,
+    ) : InsertHandler<LookupElement> {
+
+        override fun handleInsert(context: InsertionContext, item: LookupElement) {
+            val editor = context.editor
+            val document = editor.document
+            val element = item.psiElement as C3TypeName
+
+            val moduleName = element.moduleName
+            val moduleImported = moduleSection.imports.contains(moduleName)
+
+            val textToInsert = if (moduleImported) {
+                element.typeName.suffixName
+            } else {
+                element.typeName.fullName
+            }
+
+            val endOffset = editor.caretModel.offset
+
+            document.replaceString(
+                range.startOffset,
+                endOffset,
+                textToInsert
+            )
+            document.commitChanges(context)
+            editor.caretModel.moveToOffset(range.startOffset + textToInsert.length)
+
+            AddImportQuickFix.addImport(
+                importIntention = moduleName,
+                moduleSection = moduleSection,
+                project = context.project
+            )
+        }
+
+    }
+
+    companion object {
+        private val log = Logger.getInstance(
+            TypeCompletionContributor::class.java.name
+        )
+    }
 }

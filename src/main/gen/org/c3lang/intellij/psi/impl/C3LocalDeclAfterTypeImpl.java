@@ -28,14 +28,14 @@ public class C3LocalDeclAfterTypeImpl extends C3PsiElementImpl implements C3Loca
 
   @Override
   @Nullable
-  public C3LocalDeclAfterType1 getLocalDeclAfterType1() {
-    return PsiTreeUtil.getChildOfType(this, C3LocalDeclAfterType1.class);
+  public C3Attributes getAttributes() {
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
-  public C3LocalDeclAfterType2 getLocalDeclAfterType2() {
-    return PsiTreeUtil.getChildOfType(this, C3LocalDeclAfterType2.class);
+  public C3Expr getExpr() {
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

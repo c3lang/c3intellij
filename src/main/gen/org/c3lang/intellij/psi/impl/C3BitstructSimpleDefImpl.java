@@ -32,10 +32,4 @@ public class C3BitstructSimpleDefImpl extends C3PsiElementImpl implements C3Bits
     return notNullChild(PsiTreeUtil.getChildOfType(this, C3BaseType.class));
   }
 
-  @Override
-  @NotNull
-  public PsiElement getIdent() {
-    return notNullChild(findChildByType(IDENT));
-  }
-
 }

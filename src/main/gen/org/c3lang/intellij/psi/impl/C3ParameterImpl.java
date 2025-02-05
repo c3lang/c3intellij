@@ -40,20 +40,8 @@ public class C3ParameterImpl extends C3PsiElementImpl implements C3Parameter {
 
   @Override
   @Nullable
-  public PsiElement getCtIdent() {
-    return findChildByType(CT_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getHashIdent() {
-    return findChildByType(HASH_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
+  public String getNameIdent() {
+    return C3ParserUtils.getNameIdent(this);
   }
 
 }
