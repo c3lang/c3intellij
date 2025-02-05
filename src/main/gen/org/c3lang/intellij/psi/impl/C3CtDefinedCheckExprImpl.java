@@ -30,7 +30,7 @@ public class C3CtDefinedCheckExprImpl extends C3ExprImpl implements C3CtDefinedC
   @Override
   @Nullable
   public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+    return findChildByClass(C3Type.class);
   }
 
 }

@@ -27,15 +27,15 @@ public class C3CtForStmtImpl extends C3PsiElementImpl implements C3CtForStmt {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public C3ForCond getForCond() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ForCond.class));
+    return findChildByClass(C3ForCond.class);
   }
 
   @Override
   @Nullable
   public C3StatementList getStatementList() {
-    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
+    return findChildByClass(C3StatementList.class);
   }
 
 }

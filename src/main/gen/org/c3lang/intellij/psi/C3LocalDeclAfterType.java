@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3LocalDeclAfterType extends C3PsiElement {
+public interface C3LocalDeclAfterType extends C3LocalDeclAfterTypeMixin {
 
   @Nullable
-  C3LocalDeclAfterType1 getLocalDeclAfterType1();
+  C3Attributes getAttributes();
 
   @Nullable
-  C3LocalDeclAfterType2 getLocalDeclAfterType2();
+  C3Expr getExpr();
 
 }

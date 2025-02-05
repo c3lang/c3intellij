@@ -29,7 +29,7 @@ public class C3ForCondImpl extends C3PsiElementImpl implements C3ForCond {
   @Override
   @Nullable
   public C3Cond getCond() {
-    return PsiTreeUtil.getChildOfType(this, C3Cond.class);
+    return findChildByClass(C3Cond.class);
   }
 
   @Override

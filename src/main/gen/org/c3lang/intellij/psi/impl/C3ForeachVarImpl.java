@@ -29,13 +29,7 @@ public class C3ForeachVarImpl extends C3PsiElementImpl implements C3ForeachVar {
   @Override
   @Nullable
   public C3OptionalType getOptionalType() {
-    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getIdent() {
-    return notNullChild(findChildByType(IDENT));
+    return findChildByClass(C3OptionalType.class);
   }
 
 }

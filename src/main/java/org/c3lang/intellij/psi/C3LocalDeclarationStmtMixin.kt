@@ -1,0 +1,3 @@
+package org.c3lang.intellij.psi
+
+interface C3LocalDeclarationStmtMixin : C3PsiElement, C3FullyQualifiedTypeNameProvider

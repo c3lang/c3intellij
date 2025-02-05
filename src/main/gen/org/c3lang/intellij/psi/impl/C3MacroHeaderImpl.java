@@ -29,13 +29,13 @@ public class C3MacroHeaderImpl extends C3PsiElementImpl implements C3MacroHeader
   @Override
   @NotNull
   public C3MacroName getMacroName() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3MacroName.class));
+    return findNotNullChildByClass(C3MacroName.class);
   }
 
   @Override
   @Nullable
   public C3OptionalType getOptionalType() {
-    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
+    return findChildByClass(C3OptionalType.class);
   }
 
 }

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElementVisitor;
 public class C3Visitor extends PsiElementVisitor {
 
   public void visitAccessIdent(@NotNull C3AccessIdent o) {
-    visitPsiElement(o);
+    visitAccessIdentMixin(o);
   }
 
   public void visitAnyIdent(@NotNull C3AnyIdent o) {
@@ -15,7 +15,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitArg(@NotNull C3Arg o) {
-    visitPsiElement(o);
+    visitArgMixin(o);
   }
 
   public void visitArgList(@NotNull C3ArgList o) {
@@ -87,7 +87,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitBaseType(@NotNull C3BaseType o) {
-    visitPsiElement(o);
+    visitBaseTypeMixin(o);
   }
 
   public void visitBinaryExpr(@NotNull C3BinaryExpr o) {
@@ -136,6 +136,7 @@ public class C3Visitor extends PsiElementVisitor {
 
   public void visitCallExpr(@NotNull C3CallExpr o) {
     visitExpr(o);
+    // visitCallExprMixin(o);
   }
 
   public void visitCallExprTail(@NotNull C3CallExprTail o) {
@@ -175,7 +176,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitConstDeclarationStmt(@NotNull C3ConstDeclarationStmt o) {
-    visitPsiElement(o);
+    visitConstDeclarationStmtMixin(o);
   }
 
   public void visitConstantExpr(@NotNull C3ConstantExpr o) {
@@ -291,7 +292,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitDefaultModuleSection(@NotNull C3DefaultModuleSection o) {
-    visitPsiElement(o);
+    visitModuleDefinition(o);
   }
 
   public void visitDefaultStmt(@NotNull C3DefaultStmt o) {
@@ -315,7 +316,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitEnumConstant(@NotNull C3EnumConstant o) {
-    visitPsiElement(o);
+    visitEnumConstantMixin(o);
   }
 
   public void visitEnumDeclaration(@NotNull C3EnumDeclaration o) {
@@ -395,7 +396,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitFuncDef(@NotNull C3FuncDef o) {
-    visitPsiElement(o);
+    visitFuncDefMixin(o);
   }
 
   public void visitFuncDefinition(@NotNull C3FuncDefinition o) {
@@ -407,7 +408,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitFuncName(@NotNull C3FuncName o) {
-    visitFuncNamePsiElement(o);
+    visitFuncNameMixin(o);
   }
 
   public void visitFuncTypedef(@NotNull C3FuncTypedef o) {
@@ -459,7 +460,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitImportPath(@NotNull C3ImportPath o) {
-    visitPsiElement(o);
+    visitImportPathMixin(o);
   }
 
   public void visitImportPaths(@NotNull C3ImportPaths o) {
@@ -515,15 +516,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitLocalDeclAfterType(@NotNull C3LocalDeclAfterType o) {
-    visitPsiElement(o);
-  }
-
-  public void visitLocalDeclAfterType1(@NotNull C3LocalDeclAfterType1 o) {
-    visitPsiElement(o);
-  }
-
-  public void visitLocalDeclAfterType2(@NotNull C3LocalDeclAfterType2 o) {
-    visitPsiElement(o);
+    visitLocalDeclAfterTypeMixin(o);
   }
 
   public void visitLocalDeclStorage(@NotNull C3LocalDeclStorage o) {
@@ -531,7 +524,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitLocalDeclarationStmt(@NotNull C3LocalDeclarationStmt o) {
-    visitPsiElement(o);
+    visitLocalDeclarationStmtMixin(o);
   }
 
   public void visitLocalIdentExpr(@NotNull C3LocalIdentExpr o) {
@@ -539,7 +532,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitMacroDefinition(@NotNull C3MacroDefinition o) {
-    visitPsiElement(o);
+    visitMacroDefinitionMixin(o);
   }
 
   public void visitMacroFuncBody(@NotNull C3MacroFuncBody o) {
@@ -559,7 +552,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitModule(@NotNull C3Module o) {
-    visitPsiElement(o);
+    visitModuleMixin(o);
   }
 
   public void visitModuleParam(@NotNull C3ModuleParam o) {
@@ -575,7 +568,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitModuleSection(@NotNull C3ModuleSection o) {
-    visitPsiElement(o);
+    visitModuleDefinition(o);
   }
 
   public void visitMultiDeclaration(@NotNull C3MultiDeclaration o) {
@@ -607,15 +600,15 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitParamPathElement(@NotNull C3ParamPathElement o) {
-    visitPsiElement(o);
+    visitParamPathElementMixin(o);
   }
 
   public void visitParameter(@NotNull C3Parameter o) {
-    visitPsiElement(o);
+    visitParameterMixin(o);
   }
 
   public void visitParameterList(@NotNull C3ParameterList o) {
-    visitPsiElement(o);
+    visitParameterListMixin(o);
   }
 
   public void visitParenCond(@NotNull C3ParenCond o) {
@@ -623,7 +616,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitPath(@NotNull C3Path o) {
-    visitPsiElement(o);
+    visitPathMixin(o);
   }
 
   public void visitPathAtIdent(@NotNull C3PathAtIdent o) {
@@ -635,7 +628,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitPathConst(@NotNull C3PathConst o) {
-    visitPsiElement(o);
+    visitPathConstMixin(o);
   }
 
   public void visitPathConstExpr(@NotNull C3PathConstExpr o) {
@@ -643,11 +636,12 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitPathIdent(@NotNull C3PathIdent o) {
-    visitPsiElement(o);
+    visitPathIdentMixin(o);
   }
 
   public void visitPathIdentExpr(@NotNull C3PathIdentExpr o) {
     visitExpr(o);
+    // visitPathIdentExprMixin(o);
   }
 
   public void visitRangeExp(@NotNull C3RangeExp o) {
@@ -679,11 +673,11 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitStructDeclaration(@NotNull C3StructDeclaration o) {
-    visitPsiElement(o);
+    visitStructDeclarationMixin(o);
   }
 
   public void visitStructMemberDeclaration(@NotNull C3StructMemberDeclaration o) {
-    visitPsiElement(o);
+    visitStructMemberDeclarationMixin(o);
   }
 
   public void visitSwitchBody(@NotNull C3SwitchBody o) {
@@ -727,7 +721,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitTypeName(@NotNull C3TypeName o) {
-    visitPsiElement(o);
+    visitTypeNameMixin(o);
   }
 
   public void visitTypeSuffix(@NotNull C3TypeSuffix o) {
@@ -758,7 +752,91 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitFuncNamePsiElement(@NotNull C3FuncNamePsiElement o) {
+  public void visitAccessIdentMixin(@NotNull C3AccessIdentMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitArgMixin(@NotNull C3ArgMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBaseTypeMixin(@NotNull C3BaseTypeMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitConstDeclarationStmtMixin(@NotNull C3ConstDeclarationStmtMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEnumConstantMixin(@NotNull C3EnumConstantMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFuncDefMixin(@NotNull C3FuncDefMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFuncNameMixin(@NotNull C3FuncNameMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitImportPathMixin(@NotNull C3ImportPathMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLocalDeclAfterTypeMixin(@NotNull C3LocalDeclAfterTypeMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLocalDeclarationStmtMixin(@NotNull C3LocalDeclarationStmtMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMacroDefinitionMixin(@NotNull C3MacroDefinitionMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitModuleDefinition(@NotNull C3ModuleDefinition o) {
+    visitPsiElement(o);
+  }
+
+  public void visitModuleMixin(@NotNull C3ModuleMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitParamPathElementMixin(@NotNull C3ParamPathElementMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitParameterListMixin(@NotNull C3ParameterListMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitParameterMixin(@NotNull C3ParameterMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPathConstMixin(@NotNull C3PathConstMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPathIdentMixin(@NotNull C3PathIdentMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPathMixin(@NotNull C3PathMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStructDeclarationMixin(@NotNull C3StructDeclarationMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStructMemberDeclarationMixin(@NotNull C3StructMemberDeclarationMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypeNameMixin(@NotNull C3TypeNameMixin o) {
     visitPsiElement(o);
   }
 

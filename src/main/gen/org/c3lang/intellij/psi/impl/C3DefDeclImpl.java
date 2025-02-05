@@ -29,25 +29,25 @@ public class C3DefDeclImpl extends C3PsiElementImpl implements C3DefDecl {
   @Override
   @NotNull
   public C3AnyIdent getAnyIdent() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3AnyIdent.class));
+    return findNotNullChildByClass(C3AnyIdent.class);
   }
 
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3DefDeclarationSource getDefDeclarationSource() {
-    return PsiTreeUtil.getChildOfType(this, C3DefDeclarationSource.class);
+    return findChildByClass(C3DefDeclarationSource.class);
   }
 
   @Override
   @Nullable
   public C3ParameterList getParameterList() {
-    return PsiTreeUtil.getChildOfType(this, C3ParameterList.class);
+    return findChildByClass(C3ParameterList.class);
   }
 
 }

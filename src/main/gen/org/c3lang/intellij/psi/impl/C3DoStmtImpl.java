@@ -27,21 +27,21 @@ public class C3DoStmtImpl extends C3PsiElementImpl implements C3DoStmt {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public C3CompoundStatement getCompoundStatement() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class));
+    return findChildByClass(C3CompoundStatement.class);
   }
 
   @Override
   @Nullable
   public C3GroupedExpression getGroupedExpression() {
-    return PsiTreeUtil.getChildOfType(this, C3GroupedExpression.class);
+    return findChildByClass(C3GroupedExpression.class);
   }
 
   @Override
   @Nullable
   public C3Label getLabel() {
-    return PsiTreeUtil.getChildOfType(this, C3Label.class);
+    return findChildByClass(C3Label.class);
   }
 
 }

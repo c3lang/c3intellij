@@ -9,11 +9,22 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
+import org.c3lang.intellij.stubs.C3TypeNameStub;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class C3TypeNameImpl extends C3PsiElementImpl implements C3TypeName {
+public class C3TypeNameImpl extends C3TypeNameMixinImpl implements C3TypeName {
 
   public C3TypeNameImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public C3TypeNameImpl(@NotNull C3TypeNameStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
+  }
+
+  public C3TypeNameImpl(@NotNull C3TypeNameStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
@@ -24,12 +35,6 @@ public class C3TypeNameImpl extends C3PsiElementImpl implements C3TypeName {
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getTypeIdent() {
-    return notNullChild(findChildByType(TYPE_IDENT));
   }
 
 }

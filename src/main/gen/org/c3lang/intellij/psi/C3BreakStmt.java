@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface C3BreakStmt extends C3PsiElement {
 
-  @Nullable
-  PsiElement getConstIdent();
-
 }

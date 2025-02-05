@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3TypeName extends C3PsiElement {
-
-  @NotNull
-  PsiElement getTypeIdent();
+public interface C3TypeName extends C3TypeNameMixin {
 
 }

@@ -27,16 +27,4 @@ public class C3LiteralExprImpl extends C3ExprImpl implements C3LiteralExpr {
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getFloatLiteral() {
-    return findChildByType(FLOAT_LITERAL);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIntLiteral() {
-    return findChildByType(INT_LITERAL);
-  }
-
 }
