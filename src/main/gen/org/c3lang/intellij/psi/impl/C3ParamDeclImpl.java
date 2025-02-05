@@ -29,13 +29,13 @@ public class C3ParamDeclImpl extends C3PsiElementImpl implements C3ParamDecl {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
   @Override
   @NotNull
   public C3Parameter getParameter() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Parameter.class));
+    return findNotNullChildByClass(C3Parameter.class);
   }
 
 }

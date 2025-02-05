@@ -29,13 +29,7 @@ public class C3TrailingBlockParamImpl extends C3PsiElementImpl implements C3Trai
   @Override
   @Nullable
   public C3ParameterList getParameterList() {
-    return PsiTreeUtil.getChildOfType(this, C3ParameterList.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getAtIdent() {
-    return notNullChild(findChildByType(AT_IDENT));
+    return findChildByClass(C3ParameterList.class);
   }
 
 }

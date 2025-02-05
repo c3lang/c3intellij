@@ -29,7 +29,7 @@ public class C3ReturnStmtImpl extends C3PsiElementImpl implements C3ReturnStmt {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
 }

@@ -10,10 +10,4 @@ public interface C3AttributeName extends C3PsiElement {
   @Nullable
   C3Path getPath();
 
-  @Nullable
-  PsiElement getAtIdent();
-
-  @Nullable
-  PsiElement getAtTypeIdent();
-
 }

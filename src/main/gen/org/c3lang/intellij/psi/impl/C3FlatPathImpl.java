@@ -29,19 +29,19 @@ public class C3FlatPathImpl extends C3PsiElementImpl implements C3FlatPath {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3ParamPath getParamPath() {
-    return PsiTreeUtil.getChildOfType(this, C3ParamPath.class);
+    return findChildByClass(C3ParamPath.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+    return findChildByClass(C3Type.class);
   }
 
 }

@@ -29,25 +29,19 @@ public class C3GlobalDeclImpl extends C3PsiElementImpl implements C3GlobalDecl {
   @Override
   @Nullable
   public C3GlobalMultiDeclaration getGlobalMultiDeclaration() {
-    return PsiTreeUtil.getChildOfType(this, C3GlobalMultiDeclaration.class);
+    return findChildByClass(C3GlobalMultiDeclaration.class);
   }
 
   @Override
   @Nullable
   public C3GlobalSingleDeclaration getGlobalSingleDeclaration() {
-    return PsiTreeUtil.getChildOfType(this, C3GlobalSingleDeclaration.class);
+    return findChildByClass(C3GlobalSingleDeclaration.class);
   }
 
   @Override
   @NotNull
   public C3OptionalType getOptionalType() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3OptionalType.class));
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
+    return findNotNullChildByClass(C3OptionalType.class);
   }
 
 }

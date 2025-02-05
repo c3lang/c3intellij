@@ -27,16 +27,4 @@ public class C3LocalIdentExprImpl extends C3ExprImpl implements C3LocalIdentExpr
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getCtIdent() {
-    return findChildByType(CT_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getHashIdent() {
-    return findChildByType(HASH_IDENT);
-  }
-
 }

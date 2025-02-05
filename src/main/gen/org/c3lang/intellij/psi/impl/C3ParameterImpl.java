@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3ParameterImpl extends C3PsiElementImpl implements C3Parameter {
+public class C3ParameterImpl extends C3ParameterMixinImpl implements C3Parameter {
 
   public C3ParameterImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,31 +29,13 @@ public class C3ParameterImpl extends C3PsiElementImpl implements C3Parameter {
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getCtIdent() {
-    return findChildByType(CT_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getHashIdent() {
-    return findChildByType(HASH_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
+    return findChildByClass(C3Type.class);
   }
 
 }

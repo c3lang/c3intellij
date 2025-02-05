@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ConstDeclarationStmt extends C3PsiElement {
+public interface C3ConstDeclarationStmt extends C3ConstDeclarationStmtMixin {
 
   @Nullable
   C3Attributes getAttributes();
@@ -15,8 +15,5 @@ public interface C3ConstDeclarationStmt extends C3PsiElement {
 
   @Nullable
   C3Type getType();
-
-  @NotNull
-  PsiElement getConstIdent();
 
 }

@@ -29,37 +29,37 @@ public class C3IfStmtImpl extends C3PsiElementImpl implements C3IfStmt {
   @Override
   @Nullable
   public C3CompoundStatement getCompoundStatement() {
-    return PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class);
+    return findChildByClass(C3CompoundStatement.class);
   }
 
   @Override
   @Nullable
   public C3ElsePart getElsePart() {
-    return PsiTreeUtil.getChildOfType(this, C3ElsePart.class);
+    return findChildByClass(C3ElsePart.class);
   }
 
   @Override
   @Nullable
   public C3Label getLabel() {
-    return PsiTreeUtil.getChildOfType(this, C3Label.class);
+    return findChildByClass(C3Label.class);
   }
 
   @Override
-  @NotNull
+  @Nullable
   public C3ParenCond getParenCond() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ParenCond.class));
+    return findChildByClass(C3ParenCond.class);
   }
 
   @Override
   @Nullable
   public C3Statement getStatement() {
-    return PsiTreeUtil.getChildOfType(this, C3Statement.class);
+    return findChildByClass(C3Statement.class);
   }
 
   @Override
   @Nullable
   public C3SwitchBody getSwitchBody() {
-    return PsiTreeUtil.getChildOfType(this, C3SwitchBody.class);
+    return findChildByClass(C3SwitchBody.class);
   }
 
 }

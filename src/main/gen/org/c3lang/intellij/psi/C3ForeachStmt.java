@@ -7,16 +7,16 @@ import com.intellij.psi.PsiElement;
 
 public interface C3ForeachStmt extends C3PsiElement {
 
-  @NotNull
+  @Nullable
   C3Expr getExpr();
 
-  @NotNull
+  @Nullable
   C3ForeachVars getForeachVars();
 
   @Nullable
   C3Label getLabel();
 
-  @NotNull
+  @Nullable
   C3Statement getStatement();
 
 }

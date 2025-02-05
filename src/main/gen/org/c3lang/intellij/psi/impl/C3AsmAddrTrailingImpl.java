@@ -29,7 +29,7 @@ public class C3AsmAddrTrailingImpl extends C3PsiElementImpl implements C3AsmAddr
   @Override
   @Nullable
   public C3BinaryOp getBinaryOp() {
-    return PsiTreeUtil.getChildOfType(this, C3BinaryOp.class);
+    return findChildByClass(C3BinaryOp.class);
   }
 
 }

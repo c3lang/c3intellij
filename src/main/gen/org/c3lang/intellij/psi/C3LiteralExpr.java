@@ -7,10 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface C3LiteralExpr extends C3Expr {
 
-  @Nullable
-  PsiElement getFloatLiteral();
-
-  @Nullable
-  PsiElement getIntLiteral();
-
 }

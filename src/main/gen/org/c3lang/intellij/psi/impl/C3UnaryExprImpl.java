@@ -30,13 +30,13 @@ public class C3UnaryExprImpl extends C3ExprImpl implements C3UnaryExpr {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
   @Override
   @NotNull
   public C3UnaryOp getUnaryOp() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3UnaryOp.class));
+    return findNotNullChildByClass(C3UnaryOp.class);
   }
 
 }

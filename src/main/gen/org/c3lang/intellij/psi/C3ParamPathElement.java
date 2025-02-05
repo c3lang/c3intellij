@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ParamPathElement extends C3PsiElement {
+public interface C3ParamPathElement extends C3ParamPathElementMixin {
 
   @NotNull
   List<C3Expr> getExprList();
-
-  @Nullable
-  PsiElement getCtTypeIdent();
 
 }

@@ -29,31 +29,31 @@ public class C3BitstructDeclarationImpl extends C3PsiElementImpl implements C3Bi
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
-  @NotNull
+  @Nullable
   public C3BitstructBody getBitstructBody() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3BitstructBody.class));
+    return findChildByClass(C3BitstructBody.class);
   }
 
   @Override
   @Nullable
   public C3InterfaceImpl getInterfaceImpl() {
-    return PsiTreeUtil.getChildOfType(this, C3InterfaceImpl.class);
+    return findChildByClass(C3InterfaceImpl.class);
   }
 
   @Override
-  @NotNull
+  @Nullable
   public C3Type getType() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
+    return findChildByClass(C3Type.class);
   }
 
   @Override
   @NotNull
   public C3TypeName getTypeName() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));
+    return findNotNullChildByClass(C3TypeName.class);
   }
 
 }
