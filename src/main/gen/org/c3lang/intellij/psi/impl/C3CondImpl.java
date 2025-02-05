@@ -29,19 +29,19 @@ public class C3CondImpl extends C3PsiElementImpl implements C3Cond {
   @Override
   @Nullable
   public C3CatchUnwrap getCatchUnwrap() {
-    return PsiTreeUtil.getChildOfType(this, C3CatchUnwrap.class);
+    return findChildByClass(C3CatchUnwrap.class);
   }
 
   @Override
   @Nullable
   public C3CondRepeat getCondRepeat() {
-    return PsiTreeUtil.getChildOfType(this, C3CondRepeat.class);
+    return findChildByClass(C3CondRepeat.class);
   }
 
   @Override
   @Nullable
   public C3TryUnwrapChain getTryUnwrapChain() {
-    return PsiTreeUtil.getChildOfType(this, C3TryUnwrapChain.class);
+    return findChildByClass(C3TryUnwrapChain.class);
   }
 
 }

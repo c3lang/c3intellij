@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3ModuleSectionImpl extends C3PsiElementImpl implements C3ModuleSection {
+public class C3ModuleSectionImpl extends C3ModuleDefinitionMixinImpl implements C3ModuleSection {
 
   public C3ModuleSectionImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,7 +29,7 @@ public class C3ModuleSectionImpl extends C3PsiElementImpl implements C3ModuleSec
   @Override
   @NotNull
   public C3Module getModule() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Module.class));
+    return findNotNullChildByClass(C3Module.class);
   }
 
   @Override

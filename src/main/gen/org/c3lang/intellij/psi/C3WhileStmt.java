@@ -10,10 +10,10 @@ public interface C3WhileStmt extends C3PsiElement {
   @Nullable
   C3Label getLabel();
 
-  @NotNull
+  @Nullable
   C3ParenCond getParenCond();
 
-  @NotNull
+  @Nullable
   C3Statement getStatement();
 
 }

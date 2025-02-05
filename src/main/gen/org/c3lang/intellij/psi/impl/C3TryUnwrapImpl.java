@@ -29,19 +29,13 @@ public class C3TryUnwrapImpl extends C3PsiElementImpl implements C3TryUnwrap {
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
+    return findNotNullChildByClass(C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getIdent() {
-    return findChildByType(IDENT);
+    return findChildByClass(C3Type.class);
   }
 
 }

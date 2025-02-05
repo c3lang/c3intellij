@@ -26,10 +26,4 @@ public class C3LabelImpl extends C3PsiElementImpl implements C3Label {
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public PsiElement getConstIdent() {
-    return notNullChild(findChildByType(CONST_IDENT));
-  }
-
 }

@@ -30,13 +30,13 @@ public class C3LambdaDeclShortExprImpl extends C3ExprImpl implements C3LambdaDec
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
   @Override
   @NotNull
   public C3LambdaDecl getLambdaDecl() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3LambdaDecl.class));
+    return findNotNullChildByClass(C3LambdaDecl.class);
   }
 
 }

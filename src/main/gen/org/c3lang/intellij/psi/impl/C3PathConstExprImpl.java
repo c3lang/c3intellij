@@ -30,7 +30,7 @@ public class C3PathConstExprImpl extends C3ExprImpl implements C3PathConstExpr {
   @Override
   @NotNull
   public C3PathConst getPathConst() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3PathConst.class));
+    return findNotNullChildByClass(C3PathConst.class);
   }
 
 }

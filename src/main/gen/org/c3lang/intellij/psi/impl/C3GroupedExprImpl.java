@@ -30,7 +30,7 @@ public class C3GroupedExprImpl extends C3ExprImpl implements C3GroupedExpr {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
 }

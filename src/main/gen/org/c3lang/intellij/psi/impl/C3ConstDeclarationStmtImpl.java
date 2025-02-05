@@ -9,11 +9,22 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
+import org.c3lang.intellij.stubs.C3ConstDeclarationStmtStub;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class C3ConstDeclarationStmtImpl extends C3PsiElementImpl implements C3ConstDeclarationStmt {
+public class C3ConstDeclarationStmtImpl extends C3ConstDeclarationStmtMixinImpl implements C3ConstDeclarationStmt {
 
   public C3ConstDeclarationStmtImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public C3ConstDeclarationStmtImpl(@NotNull C3ConstDeclarationStmtStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
+  }
+
+  public C3ConstDeclarationStmtImpl(@NotNull C3ConstDeclarationStmtStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
@@ -29,25 +40,19 @@ public class C3ConstDeclarationStmtImpl extends C3PsiElementImpl implements C3Co
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getConstIdent() {
-    return notNullChild(findChildByType(CONST_IDENT));
+    return findChildByClass(C3Type.class);
   }
 
 }

@@ -17,11 +17,12 @@
 
   <extensions defaultExtensionNs="com.intellij">
 
-    <stubIndex implementation="org.c3lang.intellij.index.C3FunctionLongNameIndex"/>
-    <stubIndex implementation="org.c3lang.intellij.index.C3FunctionShortNameIndex"/>
-    <stubIndex implementation="org.c3lang.intellij.index.C3FunctionSuffixNameIndex"/>
-    <stubIndex implementation="org.c3lang.intellij.index.C3ModuleIndex"/>
-    <stubIndex implementation="org.c3lang.intellij.index.C3StructDeclarationIndex"/>
+    <stubIndex implementation="org.c3lang.intellij.index.ModuleIndex"/>
+    <stubIndex implementation="org.c3lang.intellij.index.NameIndex"/>
+    <stubIndex implementation="org.c3lang.intellij.index.TypeIndex"/>
+    <stubIndex implementation="org.c3lang.intellij.index.ReturnTypeIndex"/>
+    <stubIndex implementation="org.c3lang.intellij.index.StructDeclarationIndex"/>
+    <stubIndex implementation="org.c3lang.intellij.index.StructMemberDeclarationIndex"/>
 
     <fileType name="C3 File" implementationClass="org.c3lang.intellij.C3SourceFileType" fieldName="INSTANCE" language="C3" extensions="c3;c3t"/>
     <fileType name="C3 Interface File" implementationClass="org.c3lang.intellij.C3InterfaceFileType" fieldName="INSTANCE" language="C3" extensions="c3i"/>
@@ -34,18 +35,17 @@
     <lang.braceMatcher language="C3" implementationClass="org.c3lang.intellij.C3BraceMatcher"/>
     <lang.commenter language="C3" implementationClass="org.c3lang.intellij.C3Commenter"/>
     <lang.quoteHandler language="C3" implementationClass="org.c3lang.intellij.C3QuoteHandler"/>
-    <lang.elementManipulator implementationClass="org.c3lang.intellij.psi.C3FuncNameElementManipulator"
-                             language="C3" forClass="org.c3lang.intellij.psi.C3FuncName" />
+
     <sdkType implementation="org.c3lang.intellij.C3SdkType"/>
 <!--    <projectSdkSetupValidator implementation="" />-->
 
-    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.C3CompletionContributor" />
-    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.completion.FunctionCompletionContributor" />
-    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.completion.ImportCompletionContributor" />
-<!--    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.completion.StructCompletionContributor" />-->
+    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.C3CompletionContributor"/>
+    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.completion.C3CompletionContributor" />
+
+<!--    <psi.referenceProvider providerClass="org.c3lang.intellij.C3PsiReferenceProvider" />-->
 
     <colorSettingsPage implementation="org.c3lang.intellij.C3ColorSettingsPage"/>
-    <annotator language="C3" implementationClass="org.c3lang.intellij.C3Annotator"/>
+    <annotator language="C3" implementationClass="org.c3lang.intellij.annotation.C3Annotator"/>
     <breadcrumbsInfoProvider implementation="org.c3lang.intellij.C3BreadcrumbsProvider"/>
     <applicationConfigurable id="org.c3lang.compiler" displayName="C3 Compiler" parentId="build" instance="org.c3lang.intellij.C3CompilerConfigurable" />
     <applicationService serviceImplementation="org.c3lang.intellij.C3SettingsState"/>
@@ -53,10 +53,28 @@
     <configurationType implementation="org.c3lang.intellij.C3CompileRunConfigurationType"/>
     <configurationType implementation="org.c3lang.intellij.C3BuildRunConfigurationType"/>
 
-<!--    <lang.refactoringSupport language="C3"
-                             implementationClass="org.c3lang.intellij.C3RefactoringSupportProvider"/>
-    <lang.findUsagesProvider language="C3"
-                             implementationClass="org.c3lang.intellij.C3FindUsagesProvider"/> -->
+    <lang.elementManipulator implementationClass="org.c3lang.intellij.psi.NamedElementManipulator"
+                             forClass="org.c3lang.intellij.psi.C3PsiNamedElement" />
+
+    <localInspection language="C3"
+                     displayName="Import module"
+                     groupName="Import group"
+                     enabledByDefault="true"
+                     level="WARNING"
+                     implementationClass="org.c3lang.intellij.intention.ImportModuleInspection"
+    />
+    <localInspection language="C3"
+                     enabledByDefault="true"
+                     displayName="Log references"
+                     groupName="Debug"
+                     implementationClass="org.c3lang.intellij.intention.LogReferencesInspection" />
+
+    <!--<gotoDeclarationHandler implementation="org.c3lang.intellij.actions.C3GotoDeclarationHandler"/>-->
+
+    <!--    <lang.refactoringSupport language="C3"
+                                 implementationClass="org.c3lang.intellij.C3RefactoringSupportProvider"/>
+        <lang.findUsagesProvider language="C3"
+                                 implementationClass="org.c3lang.intellij.C3FindUsagesProvider"/> -->
       <!--
     <codeInsight.lineMarkerProvider language="JAVA"
                                     implementationClass="org.intellij.sdk.language.SimpleLineMarkerProvider"/>

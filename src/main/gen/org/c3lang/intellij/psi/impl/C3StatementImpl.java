@@ -29,151 +29,151 @@ public class C3StatementImpl extends C3PsiElementImpl implements C3Statement {
   @Override
   @Nullable
   public C3AsmBlockStmt getAsmBlockStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3AsmBlockStmt.class);
+    return findChildByClass(C3AsmBlockStmt.class);
   }
 
   @Override
   @Nullable
   public C3AssertStmt getAssertStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3AssertStmt.class);
+    return findChildByClass(C3AssertStmt.class);
   }
 
   @Override
   @Nullable
   public C3BreakStmt getBreakStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3BreakStmt.class);
+    return findChildByClass(C3BreakStmt.class);
   }
 
   @Override
   @Nullable
   public C3CompoundStatement getCompoundStatement() {
-    return PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class);
+    return findChildByClass(C3CompoundStatement.class);
   }
 
   @Override
   @Nullable
   public C3ConstDeclarationStmt getConstDeclarationStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3ConstDeclarationStmt.class);
+    return findChildByClass(C3ConstDeclarationStmt.class);
   }
 
   @Override
   @Nullable
   public C3ContinueStmt getContinueStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3ContinueStmt.class);
+    return findChildByClass(C3ContinueStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtAssertStmt getCtAssertStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3CtAssertStmt.class);
+    return findChildByClass(C3CtAssertStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtEchoStmt getCtEchoStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3CtEchoStmt.class);
+    return findChildByClass(C3CtEchoStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtErrorStmt getCtErrorStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3CtErrorStmt.class);
+    return findChildByClass(C3CtErrorStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtForStmt getCtForStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3CtForStmt.class);
+    return findChildByClass(C3CtForStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtForeachStmt getCtForeachStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3CtForeachStmt.class);
+    return findChildByClass(C3CtForeachStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtIfStmt getCtIfStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3CtIfStmt.class);
+    return findChildByClass(C3CtIfStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtSwitchStmt getCtSwitchStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3CtSwitchStmt.class);
+    return findChildByClass(C3CtSwitchStmt.class);
   }
 
   @Override
   @Nullable
   public C3DeferStmt getDeferStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3DeferStmt.class);
+    return findChildByClass(C3DeferStmt.class);
   }
 
   @Override
   @Nullable
   public C3DoStmt getDoStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3DoStmt.class);
+    return findChildByClass(C3DoStmt.class);
   }
 
   @Override
   @Nullable
   public C3ExprStmt getExprStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3ExprStmt.class);
+    return findChildByClass(C3ExprStmt.class);
   }
 
   @Override
   @Nullable
   public C3ForStmt getForStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3ForStmt.class);
+    return findChildByClass(C3ForStmt.class);
   }
 
   @Override
   @Nullable
   public C3ForeachStmt getForeachStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3ForeachStmt.class);
+    return findChildByClass(C3ForeachStmt.class);
   }
 
   @Override
   @Nullable
   public C3IfStmt getIfStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3IfStmt.class);
+    return findChildByClass(C3IfStmt.class);
   }
 
   @Override
   @Nullable
   public C3LocalDeclarationStmt getLocalDeclarationStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3LocalDeclarationStmt.class);
+    return findChildByClass(C3LocalDeclarationStmt.class);
   }
 
   @Override
   @Nullable
   public C3NextcaseStmt getNextcaseStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3NextcaseStmt.class);
+    return findChildByClass(C3NextcaseStmt.class);
   }
 
   @Override
   @Nullable
   public C3ReturnStmt getReturnStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3ReturnStmt.class);
+    return findChildByClass(C3ReturnStmt.class);
   }
 
   @Override
   @Nullable
   public C3SwitchStmt getSwitchStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3SwitchStmt.class);
+    return findChildByClass(C3SwitchStmt.class);
   }
 
   @Override
   @Nullable
   public C3VarStmt getVarStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3VarStmt.class);
+    return findChildByClass(C3VarStmt.class);
   }
 
   @Override
   @Nullable
   public C3WhileStmt getWhileStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3WhileStmt.class);
+    return findChildByClass(C3WhileStmt.class);
   }
 
 }

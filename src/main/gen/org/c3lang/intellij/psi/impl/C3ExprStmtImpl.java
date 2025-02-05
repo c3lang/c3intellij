@@ -29,7 +29,7 @@ public class C3ExprStmtImpl extends C3PsiElementImpl implements C3ExprStmt {
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
+    return findNotNullChildByClass(C3Expr.class);
   }
 
 }

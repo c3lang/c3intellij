@@ -26,10 +26,4 @@ public class C3BreakStmtImpl extends C3PsiElementImpl implements C3BreakStmt {
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getConstIdent() {
-    return findChildByType(CONST_IDENT);
-  }
-
 }

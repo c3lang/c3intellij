@@ -29,13 +29,13 @@ public class C3ElsePartImpl extends C3PsiElementImpl implements C3ElsePart {
   @Override
   @Nullable
   public C3CompoundStatement getCompoundStatement() {
-    return PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class);
+    return findChildByClass(C3CompoundStatement.class);
   }
 
   @Override
   @Nullable
   public C3IfStmt getIfStmt() {
-    return PsiTreeUtil.getChildOfType(this, C3IfStmt.class);
+    return findChildByClass(C3IfStmt.class);
   }
 
 }
