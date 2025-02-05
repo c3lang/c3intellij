@@ -29,7 +29,7 @@ public class C3InitializerListImpl extends C3PsiElementImpl implements C3Initial
   @Override
   @Nullable
   public C3ArgList getArgList() {
-    return PsiTreeUtil.getChildOfType(this, C3ArgList.class);
+    return findChildByClass(C3ArgList.class);
   }
 
 }

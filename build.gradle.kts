@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
     alias(libs.plugins.grammarkit)
-    kotlin("jvm")
+    alias(libs.plugins.kotlin)
 }
 
 group = properties("pluginGroup").get()
@@ -21,6 +21,9 @@ version = properties("pluginVersion").get()
 
 kotlin {
     jvmToolchain(17)
+    compilerOptions {
+        freeCompilerArgs.add("-Xjvm-default=all-compatibility")
+    }
 }
 
 // Configure project's dependencies
@@ -152,6 +155,12 @@ tasks {
         systemProperty("jb.privacy.policy.text", "<!--999.999-->")
         systemProperty("jb.consents.confirmation.enabled", "false")
         systemProperty("grammar.kit.gpub.max.level", 10000)
+    }
+
+    runIde {
+        jvmArgs(
+            "-Didea.log.debug.categories=org.c3lang.intellij",
+        )
     }
 
     signPlugin {

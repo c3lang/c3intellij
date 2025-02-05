@@ -29,19 +29,19 @@ public class C3CtCaseStmtImpl extends C3PsiElementImpl implements C3CtCaseStmt {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+    return findChildByClass(C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3StatementList getStatementList() {
-    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
+    return findChildByClass(C3StatementList.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+    return findChildByClass(C3Type.class);
   }
 
 }

@@ -27,9 +27,9 @@ public class C3ParenCondImpl extends C3PsiElementImpl implements C3ParenCond {
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3Cond getCond() {
-    return PsiTreeUtil.getChildOfType(this, C3Cond.class);
+    return findNotNullChildByClass(C3Cond.class);
   }
 
 }

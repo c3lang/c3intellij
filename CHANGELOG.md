@@ -4,8 +4,10 @@
 
 ## [Unreleased]
 
-- Function and import completion
-- Support experimental <[]> syntax.
+- code completion for struct, struct fields, union, enum, const, import, functions, macros
+- goto declaration for struct, struct fields, union, enum, const, functions, macros
+- rename identifiers
+- add import QuickFix
 
 ## [0.0.22] - 2025-01-20
 

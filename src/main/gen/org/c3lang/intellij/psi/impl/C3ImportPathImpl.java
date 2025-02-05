@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3ImportPathImpl extends C3PsiElementImpl implements C3ImportPath {
+public class C3ImportPathImpl extends C3ImportPathMixinImpl implements C3ImportPath {
 
   public C3ImportPathImpl(@NotNull ASTNode node) {
     super(node);
@@ -24,18 +24,6 @@ public class C3ImportPathImpl extends C3PsiElementImpl implements C3ImportPath {
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public C3Path getPath() {
-    return PsiTreeUtil.getChildOfType(this, C3Path.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getIdent() {
-    return notNullChild(findChildByType(IDENT));
   }
 
 }

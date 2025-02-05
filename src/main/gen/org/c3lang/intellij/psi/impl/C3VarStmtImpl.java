@@ -29,7 +29,7 @@ public class C3VarStmtImpl extends C3PsiElementImpl implements C3VarStmt {
   @Override
   @NotNull
   public C3VarDecl getVarDecl() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3VarDecl.class));
+    return findNotNullChildByClass(C3VarDecl.class);
   }
 
 }

@@ -26,16 +26,4 @@ public class C3ModuleParamImpl extends C3PsiElementImpl implements C3ModuleParam
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getConstIdent() {
-    return findChildByType(CONST_IDENT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getTypeIdent() {
-    return findChildByType(TYPE_IDENT);
-  }
-
 }

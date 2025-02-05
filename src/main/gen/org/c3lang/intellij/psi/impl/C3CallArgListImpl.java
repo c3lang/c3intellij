@@ -29,13 +29,13 @@ public class C3CallArgListImpl extends C3PsiElementImpl implements C3CallArgList
   @Override
   @Nullable
   public C3ArgList getArgList() {
-    return PsiTreeUtil.getChildOfType(this, C3ArgList.class);
+    return findChildByClass(C3ArgList.class);
   }
 
   @Override
   @Nullable
   public C3ParameterList getParameterList() {
-    return PsiTreeUtil.getChildOfType(this, C3ParameterList.class);
+    return findChildByClass(C3ParameterList.class);
   }
 
 }

@@ -27,10 +27,4 @@ public class C3BuiltinConstExprImpl extends C3ExprImpl implements C3BuiltinConst
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public PsiElement getBuiltinConst() {
-    return notNullChild(findChildByType(BUILTIN_CONST));
-  }
-
 }

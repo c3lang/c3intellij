@@ -29,19 +29,19 @@ public class C3LambdaDeclImpl extends C3PsiElementImpl implements C3LambdaDecl {
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3FnParameterList getFnParameterList() {
-    return PsiTreeUtil.getChildOfType(this, C3FnParameterList.class);
+    return findChildByClass(C3FnParameterList.class);
   }
 
   @Override
   @Nullable
   public C3OptionalType getOptionalType() {
-    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
+    return findChildByClass(C3OptionalType.class);
   }
 
 }

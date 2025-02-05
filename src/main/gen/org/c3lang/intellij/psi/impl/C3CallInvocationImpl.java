@@ -29,7 +29,7 @@ public class C3CallInvocationImpl extends C3PsiElementImpl implements C3CallInvo
   @Override
   @NotNull
   public C3CallArgList getCallArgList() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CallArgList.class));
+    return findNotNullChildByClass(C3CallArgList.class);
   }
 
 }

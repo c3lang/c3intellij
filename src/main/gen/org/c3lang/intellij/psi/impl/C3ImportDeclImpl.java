@@ -29,13 +29,13 @@ public class C3ImportDeclImpl extends C3PsiElementImpl implements C3ImportDecl {
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3ImportPaths getImportPaths() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ImportPaths.class));
+    return findNotNullChildByClass(C3ImportPaths.class);
   }
 
 }

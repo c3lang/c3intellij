@@ -27,15 +27,15 @@ public class C3CtForeachStmtImpl extends C3PsiElementImpl implements C3CtForeach
   }
 
   @Override
-  @NotNull
+  @Nullable
   public C3Expr getExpr() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
+    return findChildByClass(C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3StatementList getStatementList() {
-    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
+    return findChildByClass(C3StatementList.class);
   }
 
 }

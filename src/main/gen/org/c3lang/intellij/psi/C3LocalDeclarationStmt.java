@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3LocalDeclarationStmt extends C3PsiElement {
+public interface C3LocalDeclarationStmt extends C3LocalDeclarationStmtMixin {
 
   @Nullable
   C3DeclStmtAfterType getDeclStmtAfterType();
