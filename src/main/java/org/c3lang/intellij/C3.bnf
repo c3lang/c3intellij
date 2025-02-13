@@ -316,7 +316,7 @@ func_typedef ::= KW_FN optional_type fn_parameter_list
 
 typedef_type ::= func_typedef | type generic_parameters?
 generic_parameter ::= expr | type
-generic_parameters ::= (LGENPAR | (LT_OP LBT)) generic_parameter (COMMA generic_parameter)* (RGENPAR | (RBT GT_OP))
+generic_parameters ::= LGENPAR generic_parameter (COMMA generic_parameter)* RGENPAR
 any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
 def_attr_values ::= LB attributes? RB
