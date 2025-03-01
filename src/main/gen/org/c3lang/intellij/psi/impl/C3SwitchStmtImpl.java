@@ -29,19 +29,25 @@ public class C3SwitchStmtImpl extends C3PsiElementImpl implements C3SwitchStmt {
   @Override
   @Nullable
   public C3Label getLabel() {
-    return findChildByClass(C3Label.class);
+    return PsiTreeUtil.getChildOfType(this, C3Label.class);
   }
 
   @Override
   @Nullable
   public C3ParenCond getParenCond() {
-    return findChildByClass(C3ParenCond.class);
+    return PsiTreeUtil.getChildOfType(this, C3ParenCond.class);
   }
 
   @Override
   @Nullable
   public C3SwitchBody getSwitchBody() {
-    return findChildByClass(C3SwitchBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3SwitchBody.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getAtIdent() {
+    return findChildByType(AT_IDENT);
   }
 
 }

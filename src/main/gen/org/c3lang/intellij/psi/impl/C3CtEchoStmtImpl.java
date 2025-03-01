@@ -27,9 +27,9 @@ public class C3CtEchoStmtImpl extends C3PsiElementImpl implements C3CtEchoStmt {
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
 }

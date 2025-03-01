@@ -29,13 +29,13 @@ public class C3CtIncludeStmtImpl extends C3PsiElementImpl implements C3CtInclude
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3StringExpr getStringExpr() {
-    return findChildByClass(C3StringExpr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3StringExpr.class));
   }
 
 }

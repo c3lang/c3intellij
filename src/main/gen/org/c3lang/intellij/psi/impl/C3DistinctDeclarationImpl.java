@@ -29,31 +29,31 @@ public class C3DistinctDeclarationImpl extends C3PsiElementImpl implements C3Dis
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3GenericParameters getGenericParameters() {
-    return findChildByClass(C3GenericParameters.class);
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
   }
 
   @Override
   @Nullable
   public C3InterfaceImpl getInterfaceImpl() {
-    return findChildByClass(C3InterfaceImpl.class);
+    return PsiTreeUtil.getChildOfType(this, C3InterfaceImpl.class);
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
   @Override
   @NotNull
   public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));
   }
 
 }

@@ -29,7 +29,7 @@ public class C3UnaryOpImpl extends C3PsiElementImpl implements C3UnaryOp {
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

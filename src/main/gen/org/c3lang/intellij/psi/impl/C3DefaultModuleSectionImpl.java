@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3DefaultModuleSectionImpl extends C3ModuleDefinitionMixinImpl implements C3DefaultModuleSection {
+public class C3DefaultModuleSectionImpl extends C3PsiElementImpl implements C3DefaultModuleSection {
 
   public C3DefaultModuleSectionImpl(@NotNull ASTNode node) {
     super(node);

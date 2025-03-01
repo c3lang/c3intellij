@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3BaseTypeImpl extends C3BaseTypeMixinImpl implements C3BaseType {
+public class C3BaseTypeImpl extends C3PsiElementImpl implements C3BaseType {
 
   public C3BaseTypeImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,37 +29,49 @@ public class C3BaseTypeImpl extends C3BaseTypeMixinImpl implements C3BaseType {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3FloatType getFloatType() {
-    return findChildByClass(C3FloatType.class);
+    return PsiTreeUtil.getChildOfType(this, C3FloatType.class);
   }
 
   @Override
   @Nullable
   public C3GenericParameters getGenericParameters() {
-    return findChildByClass(C3GenericParameters.class);
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
   }
 
   @Override
   @Nullable
   public C3GroupedExpression getGroupedExpression() {
-    return findChildByClass(C3GroupedExpression.class);
+    return PsiTreeUtil.getChildOfType(this, C3GroupedExpression.class);
   }
 
   @Override
   @Nullable
   public C3IntegerType getIntegerType() {
-    return findChildByClass(C3IntegerType.class);
+    return PsiTreeUtil.getChildOfType(this, C3IntegerType.class);
   }
 
   @Override
   @Nullable
   public C3Path getPath() {
-    return findChildByClass(C3Path.class);
+    return PsiTreeUtil.getChildOfType(this, C3Path.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCtTypeIdent() {
+    return findChildByType(CT_TYPE_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getTypeIdent() {
+    return findChildByType(TYPE_IDENT);
   }
 
 }

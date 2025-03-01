@@ -16,7 +16,7 @@ public interface C3IfStmt extends C3PsiElement {
   @Nullable
   C3Label getLabel();
 
-  @Nullable
+  @NotNull
   C3ParenCond getParenCond();
 
   @Nullable

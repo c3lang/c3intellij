@@ -29,37 +29,37 @@ public class C3CallExprTailImpl extends C3PsiElementImpl implements C3CallExprTa
   @Override
   @Nullable
   public C3AccessIdent getAccessIdent() {
-    return findChildByClass(C3AccessIdent.class);
+    return PsiTreeUtil.getChildOfType(this, C3AccessIdent.class);
   }
 
   @Override
   @Nullable
   public C3CallInvocation getCallInvocation() {
-    return findChildByClass(C3CallInvocation.class);
+    return PsiTreeUtil.getChildOfType(this, C3CallInvocation.class);
   }
 
   @Override
   @Nullable
   public C3CompoundStatement getCompoundStatement() {
-    return findChildByClass(C3CompoundStatement.class);
+    return PsiTreeUtil.getChildOfType(this, C3CompoundStatement.class);
   }
 
   @Override
   @Nullable
   public C3GenericParameters getGenericParameters() {
-    return findChildByClass(C3GenericParameters.class);
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
   }
 
   @Override
   @Nullable
   public C3RangeExp getRangeExp() {
-    return findChildByClass(C3RangeExp.class);
+    return PsiTreeUtil.getChildOfType(this, C3RangeExp.class);
   }
 
   @Override
   @Nullable
   public C3RangeLoc getRangeLoc() {
-    return findChildByClass(C3RangeLoc.class);
+    return PsiTreeUtil.getChildOfType(this, C3RangeLoc.class);
   }
 
 }

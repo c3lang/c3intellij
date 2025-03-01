@@ -30,7 +30,7 @@ public class C3InitListExprImpl extends C3ExprImpl implements C3InitListExpr {
   @Override
   @NotNull
   public C3InitializerList getInitializerList() {
-    return findNotNullChildByClass(C3InitializerList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3InitializerList.class));
   }
 
 }

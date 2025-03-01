@@ -29,13 +29,19 @@ public class C3NextcaseStmtImpl extends C3PsiElementImpl implements C3NextcaseSt
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getConstIdent() {
+    return findChildByType(CONST_IDENT);
   }
 
 }

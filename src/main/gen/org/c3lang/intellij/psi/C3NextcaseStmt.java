@@ -13,4 +13,7 @@ public interface C3NextcaseStmt extends C3PsiElement {
   @Nullable
   C3Type getType();
 
+  @Nullable
+  PsiElement getConstIdent();
+
 }

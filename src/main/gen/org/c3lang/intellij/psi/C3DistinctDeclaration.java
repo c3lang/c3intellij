@@ -16,7 +16,7 @@ public interface C3DistinctDeclaration extends C3PsiElement {
   @Nullable
   C3InterfaceImpl getInterfaceImpl();
 
-  @Nullable
+  @NotNull
   C3Type getType();
 
   @NotNull

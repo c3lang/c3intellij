@@ -7,13 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface C3ForStmt extends C3PsiElement {
 
-  @Nullable
+  @NotNull
   C3ForCond getForCond();
 
   @Nullable
   C3Label getLabel();
 
-  @Nullable
+  @NotNull
   C3Statement getStatement();
 
 }

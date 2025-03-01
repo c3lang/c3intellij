@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3ContinueStmt extends C3PsiElement {
 
+  @Nullable
+  PsiElement getConstIdent();
+
 }

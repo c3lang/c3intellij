@@ -29,91 +29,91 @@ public class C3TopLevelImpl extends C3PsiElementImpl implements C3TopLevel {
   @Override
   @Nullable
   public C3AsmDeclaration getAsmDeclaration() {
-    return findChildByClass(C3AsmDeclaration.class);
+    return PsiTreeUtil.getChildOfType(this, C3AsmDeclaration.class);
   }
 
   @Override
   @Nullable
   public C3ConstDeclarationStmt getConstDeclarationStmt() {
-    return findChildByClass(C3ConstDeclarationStmt.class);
+    return PsiTreeUtil.getChildOfType(this, C3ConstDeclarationStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtAssertStmt getCtAssertStmt() {
-    return findChildByClass(C3CtAssertStmt.class);
+    return PsiTreeUtil.getChildOfType(this, C3CtAssertStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtEchoStmt getCtEchoStmt() {
-    return findChildByClass(C3CtEchoStmt.class);
+    return PsiTreeUtil.getChildOfType(this, C3CtEchoStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtErrorStmt getCtErrorStmt() {
-    return findChildByClass(C3CtErrorStmt.class);
+    return PsiTreeUtil.getChildOfType(this, C3CtErrorStmt.class);
   }
 
   @Override
   @Nullable
   public C3CtIncludeStmt getCtIncludeStmt() {
-    return findChildByClass(C3CtIncludeStmt.class);
+    return PsiTreeUtil.getChildOfType(this, C3CtIncludeStmt.class);
   }
 
   @Override
   @Nullable
   public C3DefDecl getDefDecl() {
-    return findChildByClass(C3DefDecl.class);
+    return PsiTreeUtil.getChildOfType(this, C3DefDecl.class);
   }
 
   @Override
   @Nullable
   public C3DistinctDeclaration getDistinctDeclaration() {
-    return findChildByClass(C3DistinctDeclaration.class);
+    return PsiTreeUtil.getChildOfType(this, C3DistinctDeclaration.class);
   }
 
   @Override
   @Nullable
   public C3FaultDeclaration getFaultDeclaration() {
-    return findChildByClass(C3FaultDeclaration.class);
+    return PsiTreeUtil.getChildOfType(this, C3FaultDeclaration.class);
   }
 
   @Override
   @Nullable
   public C3FuncDefinition getFuncDefinition() {
-    return findChildByClass(C3FuncDefinition.class);
+    return PsiTreeUtil.getChildOfType(this, C3FuncDefinition.class);
   }
 
   @Override
   @Nullable
   public C3GlobalDecl getGlobalDecl() {
-    return findChildByClass(C3GlobalDecl.class);
+    return PsiTreeUtil.getChildOfType(this, C3GlobalDecl.class);
   }
 
   @Override
   @Nullable
   public C3ImportDecl getImportDecl() {
-    return findChildByClass(C3ImportDecl.class);
+    return PsiTreeUtil.getChildOfType(this, C3ImportDecl.class);
   }
 
   @Override
   @Nullable
   public C3InterfaceDefinition getInterfaceDefinition() {
-    return findChildByClass(C3InterfaceDefinition.class);
+    return PsiTreeUtil.getChildOfType(this, C3InterfaceDefinition.class);
   }
 
   @Override
   @Nullable
   public C3MacroDefinition getMacroDefinition() {
-    return findChildByClass(C3MacroDefinition.class);
+    return PsiTreeUtil.getChildOfType(this, C3MacroDefinition.class);
   }
 
   @Override
   @Nullable
   public C3TypeDecl getTypeDecl() {
-    return findChildByClass(C3TypeDecl.class);
+    return PsiTreeUtil.getChildOfType(this, C3TypeDecl.class);
   }
 
 }

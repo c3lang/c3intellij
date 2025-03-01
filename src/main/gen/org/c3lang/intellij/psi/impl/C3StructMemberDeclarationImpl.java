@@ -9,22 +9,11 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
-import org.c3lang.intellij.stubs.C3StructMemberDeclarationStub;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
 
-public class C3StructMemberDeclarationImpl extends C3StructMemberDeclarationMixinImpl implements C3StructMemberDeclaration {
+public class C3StructMemberDeclarationImpl extends C3PsiElementImpl implements C3StructMemberDeclaration {
 
   public C3StructMemberDeclarationImpl(@NotNull ASTNode node) {
     super(node);
-  }
-
-  public C3StructMemberDeclarationImpl(@NotNull C3StructMemberDeclarationStub stub, @NotNull IStubElementType<?, ?> type) {
-    super(stub, type);
-  }
-
-  public C3StructMemberDeclarationImpl(@NotNull C3StructMemberDeclarationStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
-    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
@@ -40,31 +29,37 @@ public class C3StructMemberDeclarationImpl extends C3StructMemberDeclarationMixi
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3BitstructBody getBitstructBody() {
-    return findChildByClass(C3BitstructBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3BitstructBody.class);
   }
 
   @Override
   @Nullable
   public C3IdentifierList getIdentifierList() {
-    return findChildByClass(C3IdentifierList.class);
+    return PsiTreeUtil.getChildOfType(this, C3IdentifierList.class);
   }
 
   @Override
   @Nullable
   public C3StructBody getStructBody() {
-    return findChildByClass(C3StructBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3StructBody.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdent() {
+    return findChildByType(IDENT);
   }
 
 }

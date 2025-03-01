@@ -16,4 +16,7 @@ public interface C3GlobalDecl extends C3PsiElement {
   @NotNull
   C3OptionalType getOptionalType();
 
+  @Nullable
+  PsiElement getIdent();
+
 }

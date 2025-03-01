@@ -29,19 +29,19 @@ public class C3TypedefTypeImpl extends C3PsiElementImpl implements C3TypedefType
   @Override
   @Nullable
   public C3FuncTypedef getFuncTypedef() {
-    return findChildByClass(C3FuncTypedef.class);
+    return PsiTreeUtil.getChildOfType(this, C3FuncTypedef.class);
   }
 
   @Override
   @Nullable
   public C3GenericParameters getGenericParameters() {
-    return findChildByClass(C3GenericParameters.class);
+    return PsiTreeUtil.getChildOfType(this, C3GenericParameters.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

@@ -29,13 +29,13 @@ public class C3MacroParamsImpl extends C3PsiElementImpl implements C3MacroParams
   @Override
   @Nullable
   public C3ParameterList getParameterList() {
-    return findChildByClass(C3ParameterList.class);
+    return PsiTreeUtil.getChildOfType(this, C3ParameterList.class);
   }
 
   @Override
   @Nullable
   public C3TrailingBlockParam getTrailingBlockParam() {
-    return findChildByClass(C3TrailingBlockParam.class);
+    return PsiTreeUtil.getChildOfType(this, C3TrailingBlockParam.class);
   }
 
 }

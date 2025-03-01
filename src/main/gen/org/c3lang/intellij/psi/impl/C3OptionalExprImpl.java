@@ -30,7 +30,7 @@ public class C3OptionalExprImpl extends C3ExprImpl implements C3OptionalExpr {
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
 }

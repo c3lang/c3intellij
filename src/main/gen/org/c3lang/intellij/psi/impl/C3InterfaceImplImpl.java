@@ -35,7 +35,7 @@ public class C3InterfaceImplImpl extends C3PsiElementImpl implements C3Interface
   @Override
   @NotNull
   public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));
   }
 
 }

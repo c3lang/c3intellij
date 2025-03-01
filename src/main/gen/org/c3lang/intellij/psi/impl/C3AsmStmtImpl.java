@@ -29,13 +29,13 @@ public class C3AsmStmtImpl extends C3PsiElementImpl implements C3AsmStmt {
   @Override
   @Nullable
   public C3AsmExprs getAsmExprs() {
-    return findChildByClass(C3AsmExprs.class);
+    return PsiTreeUtil.getChildOfType(this, C3AsmExprs.class);
   }
 
   @Override
   @NotNull
   public C3AsmInstr getAsmInstr() {
-    return findNotNullChildByClass(C3AsmInstr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3AsmInstr.class));
   }
 
 }

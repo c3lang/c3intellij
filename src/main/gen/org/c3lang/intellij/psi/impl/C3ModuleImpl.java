@@ -8,19 +8,19 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
-import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.stubs.C3ModuleStub;
+import org.c3lang.intellij.psi.*;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 
-public class C3ModuleImpl extends C3ModuleMixinImpl implements C3Module {
-
-  public C3ModuleImpl(@NotNull ASTNode node) {
-    super(node);
-  }
+public class C3ModuleImpl extends C3StubBasedPsiElementBase<C3ModuleStub> implements C3Module {
 
   public C3ModuleImpl(@NotNull C3ModuleStub stub, @NotNull IStubElementType<?, ?> type) {
     super(stub, type);
+  }
+
+  public C3ModuleImpl(@NotNull ASTNode node) {
+    super(node);
   }
 
   public C3ModuleImpl(@NotNull C3ModuleStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
@@ -40,19 +40,19 @@ public class C3ModuleImpl extends C3ModuleMixinImpl implements C3Module {
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3ModuleParams getModuleParams() {
-    return findChildByClass(C3ModuleParams.class);
+    return PsiTreeUtil.getChildOfType(this, C3ModuleParams.class);
   }
 
   @Override
   @NotNull
   public C3ModulePath getModulePath() {
-    return findNotNullChildByClass(C3ModulePath.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ModulePath.class));
   }
 
 }

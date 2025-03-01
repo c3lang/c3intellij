@@ -10,12 +10,13 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3PathIdentExprImpl extends C3PathIdentExprMixinImpl implements C3PathIdentExpr {
+public class C3PathIdentExprImpl extends C3ExprImpl implements C3PathIdentExpr {
 
   public C3PathIdentExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
+  @Override
   public void accept(@NotNull C3Visitor visitor) {
     visitor.visitPathIdentExpr(this);
   }
@@ -29,7 +30,7 @@ public class C3PathIdentExprImpl extends C3PathIdentExprMixinImpl implements C3P
   @Override
   @NotNull
   public C3PathIdent getPathIdent() {
-    return findNotNullChildByClass(C3PathIdent.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3PathIdent.class));
   }
 
 }

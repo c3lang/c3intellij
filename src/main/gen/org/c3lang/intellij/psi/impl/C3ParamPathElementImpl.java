@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3ParamPathElementImpl extends C3ParamPathElementMixinImpl implements C3ParamPathElement {
+public class C3ParamPathElementImpl extends C3PsiElementImpl implements C3ParamPathElement {
 
   public C3ParamPathElementImpl(@NotNull ASTNode node) {
     super(node);
@@ -30,6 +30,12 @@ public class C3ParamPathElementImpl extends C3ParamPathElementMixinImpl implemen
   @NotNull
   public List<C3Expr> getExprList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Expr.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCtTypeIdent() {
+    return findChildByType(CT_TYPE_IDENT);
   }
 
 }

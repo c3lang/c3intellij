@@ -26,4 +26,10 @@ public class C3ContinueStmtImpl extends C3PsiElementImpl implements C3ContinueSt
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getConstIdent() {
+    return findChildByType(CONST_IDENT);
+  }
+
 }

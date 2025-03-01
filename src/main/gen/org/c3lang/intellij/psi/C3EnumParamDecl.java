@@ -10,4 +10,7 @@ public interface C3EnumParamDecl extends C3PsiElement {
   @NotNull
   C3Type getType();
 
+  @NotNull
+  PsiElement getIdent();
+
 }

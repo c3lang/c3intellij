@@ -29,13 +29,13 @@ public class C3FuncHeaderImpl extends C3PsiElementImpl implements C3FuncHeader {
   @Override
   @NotNull
   public C3FuncName getFuncName() {
-    return findNotNullChildByClass(C3FuncName.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3FuncName.class));
   }
 
   @Override
   @NotNull
   public C3OptionalType getOptionalType() {
-    return findNotNullChildByClass(C3OptionalType.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3OptionalType.class));
   }
 
 }

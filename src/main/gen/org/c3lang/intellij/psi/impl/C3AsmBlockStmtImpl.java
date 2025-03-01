@@ -35,13 +35,13 @@ public class C3AsmBlockStmtImpl extends C3PsiElementImpl implements C3AsmBlockSt
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

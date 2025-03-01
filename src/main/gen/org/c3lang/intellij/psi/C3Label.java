@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3Label extends C3PsiElement {
 
+  @NotNull
+  PsiElement getConstIdent();
+
 }

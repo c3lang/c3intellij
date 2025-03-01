@@ -10,4 +10,7 @@ public interface C3TrailingBlockParam extends C3PsiElement {
   @Nullable
   C3ParameterList getParameterList();
 
+  @NotNull
+  PsiElement getAtIdent();
+
 }

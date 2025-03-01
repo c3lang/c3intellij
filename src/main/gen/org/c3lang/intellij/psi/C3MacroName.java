@@ -10,4 +10,10 @@ public interface C3MacroName extends C3PsiElement {
   @Nullable
   C3Type getType();
 
+  @Nullable
+  PsiElement getAtIdent();
+
+  @Nullable
+  PsiElement getIdent();
+
 }

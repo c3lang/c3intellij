@@ -29,13 +29,13 @@ public class C3GlobalMultiDeclarationImpl extends C3PsiElementImpl implements C3
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3MultiDeclaration getMultiDeclaration() {
-    return findNotNullChildByClass(C3MultiDeclaration.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3MultiDeclaration.class));
   }
 
 }

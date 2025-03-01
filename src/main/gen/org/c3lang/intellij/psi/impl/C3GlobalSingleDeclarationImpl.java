@@ -29,13 +29,13 @@ public class C3GlobalSingleDeclarationImpl extends C3PsiElementImpl implements C
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

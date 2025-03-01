@@ -16,8 +16,6 @@ open class C3StubBasedPsiElementBase<StubT : StubElement<*>> : StubBasedPsiEleme
 
     constructor(stub: StubT, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
-    override fun getStub(): StubT? = greenStub
-
     override fun toString(): String {
         return javaClass.simpleName + "(" + node.elementType + ")"
     }

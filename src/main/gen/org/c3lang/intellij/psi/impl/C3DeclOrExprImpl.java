@@ -30,19 +30,19 @@ public class C3DeclOrExprImpl extends C3ExprImpl implements C3DeclOrExpr {
   @Override
   @Nullable
   public C3LocalDeclAfterType getLocalDeclAfterType() {
-    return findChildByClass(C3LocalDeclAfterType.class);
+    return PsiTreeUtil.getChildOfType(this, C3LocalDeclAfterType.class);
   }
 
   @Override
   @Nullable
   public C3OptionalType getOptionalType() {
-    return findChildByClass(C3OptionalType.class);
+    return PsiTreeUtil.getChildOfType(this, C3OptionalType.class);
   }
 
   @Override
   @Nullable
   public C3VarDecl getVarDecl() {
-    return findChildByClass(C3VarDecl.class);
+    return PsiTreeUtil.getChildOfType(this, C3VarDecl.class);
   }
 
 }

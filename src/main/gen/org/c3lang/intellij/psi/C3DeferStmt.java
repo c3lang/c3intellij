@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface C3DeferStmt extends C3PsiElement {
 
-  @Nullable
+  @NotNull
   C3Statement getStatement();
+
+  @Nullable
+  PsiElement getIdent();
 
 }

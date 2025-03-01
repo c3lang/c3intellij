@@ -30,7 +30,7 @@ public class C3CtDefinedExprImpl extends C3ExprImpl implements C3CtDefinedExpr {
   @Override
   @NotNull
   public C3CtDefinedCheckExprList getCtDefinedCheckExprList() {
-    return findNotNullChildByClass(C3CtDefinedCheckExprList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtDefinedCheckExprList.class));
   }
 
 }

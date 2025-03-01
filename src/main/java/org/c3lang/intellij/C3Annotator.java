@@ -11,13 +11,8 @@ import com.intellij.psi.tree.TokenSet;
 import org.c3lang.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 
-// TODO move to kotlin after first NPE
 public class C3Annotator implements Annotator
 {
-    private C3Annotator() {}
-
-    public static final C3Annotator INSTANCE = new C3Annotator();
-
     private static TextAttributesKey colorForTypeDefiniton(PsiElement definition)
     {
         if (definition instanceof C3StructDeclaration)

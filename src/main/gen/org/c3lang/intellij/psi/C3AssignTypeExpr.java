@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface C3AssignTypeExpr extends C3Expr {
 
-  @Nullable
+  @NotNull
   C3Type getType();
+
+  @NotNull
+  PsiElement getCtTypeIdent();
 
 }

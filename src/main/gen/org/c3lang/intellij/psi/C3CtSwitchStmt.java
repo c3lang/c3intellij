@@ -10,7 +10,7 @@ public interface C3CtSwitchStmt extends C3PsiElement {
   @NotNull
   C3CtSwitch getCtSwitch();
 
-  @Nullable
+  @NotNull
   C3CtSwitchBody getCtSwitchBody();
 
 }

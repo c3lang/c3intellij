@@ -29,13 +29,13 @@ public class C3AttributeImpl extends C3PsiElementImpl implements C3Attribute {
   @Override
   @NotNull
   public C3AttributeName getAttributeName() {
-    return findNotNullChildByClass(C3AttributeName.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3AttributeName.class));
   }
 
   @Override
   @Nullable
   public C3AttributeParamList getAttributeParamList() {
-    return findChildByClass(C3AttributeParamList.class);
+    return PsiTreeUtil.getChildOfType(this, C3AttributeParamList.class);
   }
 
 }

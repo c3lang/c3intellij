@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3CallExpr extends C3Expr, C3CallExprMixin {
+public interface C3CallExpr extends C3Expr {
 
   @NotNull
   C3CallExprTail getCallExprTail();

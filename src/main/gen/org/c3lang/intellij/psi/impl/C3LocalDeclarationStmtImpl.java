@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3LocalDeclarationStmtImpl extends C3LocalDeclarationStmtMixinImpl implements C3LocalDeclarationStmt {
+public class C3LocalDeclarationStmtImpl extends C3PsiElementImpl implements C3LocalDeclarationStmt {
 
   public C3LocalDeclarationStmtImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,19 +29,19 @@ public class C3LocalDeclarationStmtImpl extends C3LocalDeclarationStmtMixinImpl 
   @Override
   @Nullable
   public C3DeclStmtAfterType getDeclStmtAfterType() {
-    return findChildByClass(C3DeclStmtAfterType.class);
+    return PsiTreeUtil.getChildOfType(this, C3DeclStmtAfterType.class);
   }
 
   @Override
   @Nullable
   public C3LocalDeclStorage getLocalDeclStorage() {
-    return findChildByClass(C3LocalDeclStorage.class);
+    return PsiTreeUtil.getChildOfType(this, C3LocalDeclStorage.class);
   }
 
   @Override
   @NotNull
   public C3OptionalType getOptionalType() {
-    return findNotNullChildByClass(C3OptionalType.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3OptionalType.class));
   }
 
 }

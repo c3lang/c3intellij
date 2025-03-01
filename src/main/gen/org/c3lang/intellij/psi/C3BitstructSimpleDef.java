@@ -10,4 +10,7 @@ public interface C3BitstructSimpleDef extends C3PsiElement {
   @NotNull
   C3BaseType getBaseType();
 
+  @NotNull
+  PsiElement getIdent();
+
 }

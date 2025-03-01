@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3CtEchoStmt extends C3PsiElement {
 
-  @Nullable
+  @NotNull
   C3Expr getExpr();
 
 }

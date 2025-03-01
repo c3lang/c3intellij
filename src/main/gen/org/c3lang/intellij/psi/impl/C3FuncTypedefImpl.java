@@ -29,13 +29,13 @@ public class C3FuncTypedefImpl extends C3PsiElementImpl implements C3FuncTypedef
   @Override
   @NotNull
   public C3FnParameterList getFnParameterList() {
-    return findNotNullChildByClass(C3FnParameterList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3FnParameterList.class));
   }
 
   @Override
   @NotNull
   public C3OptionalType getOptionalType() {
-    return findNotNullChildByClass(C3OptionalType.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3OptionalType.class));
   }
 
 }

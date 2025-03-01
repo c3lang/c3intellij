@@ -29,13 +29,13 @@ public class C3EnumSpecImpl extends C3PsiElementImpl implements C3EnumSpec {
   @Override
   @Nullable
   public C3EnumParamList getEnumParamList() {
-    return findChildByClass(C3EnumParamList.class);
+    return PsiTreeUtil.getChildOfType(this, C3EnumParamList.class);
   }
 
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
   }
 
 }

@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3PathConstImpl extends C3PathConstMixinImpl implements C3PathConst {
+public class C3PathConstImpl extends C3PsiElementImpl implements C3PathConst {
 
   public C3PathConstImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,7 +29,13 @@ public class C3PathConstImpl extends C3PathConstMixinImpl implements C3PathConst
   @Override
   @Nullable
   public C3Path getPath() {
-    return findChildByClass(C3Path.class);
+    return PsiTreeUtil.getChildOfType(this, C3Path.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getConstIdent() {
+    return notNullChild(findChildByType(CONST_IDENT));
   }
 
 }

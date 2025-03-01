@@ -7,8 +7,7 @@
     psiImplClassSuffix = "Impl"
     psiPackage = "org.c3lang.intellij.psi"
     psiImplPackage = "org.c3lang.intellij.psi.impl"
-    psiImplUtilClass = "org.c3lang.intellij.psi.impl.C3ParserUtils"
-    parserUtilClass = "org.c3lang.intellij.psi.impl.C3ParserUtil"
+    psiImplUtilClass = "org.c3lang.intellij.psi.impl.C3PsiImplUtils"
 
     elementTypeHolderClass = "org.c3lang.intellij.psi.C3Types"
     elementTypeClass = "org.c3lang.intellij.psi.C3ElementType"
@@ -18,90 +17,24 @@
     elementType(".*_bin_expr") = binary_expr
     elementType(".*_bin_op") = binary_op
 
-    mixin("func_def") = "org.c3lang.intellij.psi.impl.C3FuncDefMixinImpl"
-    implements("func_def") = "org.c3lang.intellij.psi.C3FuncDefMixin"
+    mixin("func_def") = "org.c3lang.intellij.psi.impl.C3StubBasedPsiElementBase<org.c3lang.intellij.stubs.C3FuncDefStub>"
+    stubClass("func_def") = "org.c3lang.intellij.stubs.C3FuncDefStub"
 
-    mixin("macro_definition") = "org.c3lang.intellij.psi.impl.C3MacroDefinitionMixinImpl"
-    implements("macro_definition") = "org.c3lang.intellij.psi.C3MacroDefinitionMixin"
+    extends("func_name") = "org.c3lang.intellij.psi.impl.C3FuncNamePsiElementBase"
+    implements("func_name") = "org.c3lang.intellij.psi.C3FuncNamePsiElement"
 
-    mixin("module") = "org.c3lang.intellij.psi.impl.C3ModuleMixinImpl"
-    implements("module") = "org.c3lang.intellij.psi.C3ModuleMixin"
+    mixin("module") = "org.c3lang.intellij.psi.impl.C3StubBasedPsiElementBase<org.c3lang.intellij.stubs.C3ModuleStub>"
+    stubClass("module") = "org.c3lang.intellij.stubs.C3ModuleStub"
 
-    mixin("type_name") = "org.c3lang.intellij.psi.impl.C3TypeNameMixinImpl"
-    implements("type_name") = "org.c3lang.intellij.psi.C3TypeNameMixin"
+    mixin("struct_declaration") = "org.c3lang.intellij.psi.impl.C3StubBasedPsiElementBase<org.c3lang.intellij.stubs.C3StructDeclarationStub>"
+    stubClass("struct_declaration") = "org.c3lang.intellij.stubs.C3StructDeclarationStub"
 
-    mixin("const_declaration_stmt") = "org.c3lang.intellij.psi.impl.C3ConstDeclarationStmtMixinImpl"
-    implements("const_declaration_stmt") = "org.c3lang.intellij.psi.C3ConstDeclarationStmtMixin"
-
-    mixin("call_expr") = "org.c3lang.intellij.psi.impl.C3CallExprMixinImpl"
-    implements("call_expr") = "org.c3lang.intellij.psi.C3CallExprMixin"
-
-    mixin("path") = "org.c3lang.intellij.psi.impl.C3PathMixinImpl"
-    implements("path") = "org.c3lang.intellij.psi.C3PathMixin"
-
-    mixin("path_ident") = "org.c3lang.intellij.psi.impl.C3PathIdentMixinImpl"
-    implements("path_ident") = "org.c3lang.intellij.psi.C3PathIdentMixin"
-    methods("path_ident") = [ getPath ]
-
-    mixin("path_ident_expr") = "org.c3lang.intellij.psi.impl.C3PathIdentExprMixinImpl"
-    implements("path_ident_expr") = "org.c3lang.intellij.psi.C3PathIdentExprMixin"
-
-    mixin("path_const") = "org.c3lang.intellij.psi.impl.C3PathConstMixinImpl"
-    implements("path_const") = "org.c3lang.intellij.psi.C3PathConstMixin"
-
-    mixin("import_path") = "org.c3lang.intellij.psi.impl.C3ImportPathMixinImpl"
-    implements("import_path") = "org.c3lang.intellij.psi.C3ImportPathMixin"
-
-    mixin("arg") = "org.c3lang.intellij.psi.impl.C3ArgMixinImpl"
-    implements("arg") = "org.c3lang.intellij.psi.C3ArgMixin"
-
-    mixin("parameter") = "org.c3lang.intellij.psi.impl.C3ParameterMixinImpl"
-    implements("parameter") = "org.c3lang.intellij.psi.C3ParameterMixin"
-
-    mixin("func_name") = "org.c3lang.intellij.psi.impl.C3FuncNameMixinImpl"
-    implements("func_name") = "org.c3lang.intellij.psi.C3FuncNameMixin"
-
-    mixin("default_module_section|module_section") = "org.c3lang.intellij.psi.impl.C3ModuleDefinitionMixinImpl"
-    implements("default_module_section|module_section") = "org.c3lang.intellij.psi.C3ModuleDefinition"
-
-    mixin("parameter_list") = "org.c3lang.intellij.psi.impl.C3ParameterListMixinImpl"
-    implements("parameter_list") = "org.c3lang.intellij.psi.C3ParameterListMixin"
-
-    mixin("local_decl_after_type") = "org.c3lang.intellij.psi.impl.C3LocalDeclAfterTypeMixinImpl"
-    implements("local_decl_after_type") = "org.c3lang.intellij.psi.C3LocalDeclAfterTypeMixin"
-
-    mixin("local_declaration_stmt") = "org.c3lang.intellij.psi.impl.C3LocalDeclarationStmtMixinImpl"
-    implements("local_declaration_stmt") = "org.c3lang.intellij.psi.C3LocalDeclarationStmtMixin"
-
-    mixin("base_type") = "org.c3lang.intellij.psi.impl.C3BaseTypeMixinImpl"
-    implements("base_type") = "org.c3lang.intellij.psi.C3BaseTypeMixin"
-
-    mixin("access_ident") = "org.c3lang.intellij.psi.impl.C3AccessIdentMixinImpl"
-    implements("access_ident") = "org.c3lang.intellij.psi.C3AccessIdentMixin"
-
-    mixin("struct_declaration") = "org.c3lang.intellij.psi.impl.C3StructDeclarationMixinImpl"
-    implements("struct_declaration") = "org.c3lang.intellij.psi.C3StructDeclarationMixin"
-
-    mixin("struct_member_declaration") = "org.c3lang.intellij.psi.impl.C3StructMemberDeclarationMixinImpl"
-    implements("struct_member_declaration") = "org.c3lang.intellij.psi.C3StructMemberDeclarationMixin"
-
-    mixin("enum_constant") = "org.c3lang.intellij.psi.impl.C3EnumConstantMixinImpl"
-    implements("enum_constant") = "org.c3lang.intellij.psi.C3EnumConstantMixin"
-
-    mixin("param_path_element") = "org.c3lang.intellij.psi.impl.C3ParamPathElementMixinImpl"
-    implements("param_path_element") = "org.c3lang.intellij.psi.C3ParamPathElementMixin"
-
-    methods("path") = [ getImportIntention ]
-
-    // for exception: java.lang.ClassCastException: Not a stub type: C3TokenType.CONST_DECLARATION_STMT in class org.c3lang.intellij.psi.impl.C3ConstDeclarationStmtImpl
     // add all C3StubBasedPsiElementBase mixins
-    elementTypeFactory("func_def|macro_definition|module|type_name|const_declaration_stmt|struct_member_declaration|struct_declaration|enum_constant") = "org.c3lang.intellij.psi.C3StubElementTypeFactory.stubFactory"
+    elementTypeFactory("func_def|module|struct_declaration") = "org.c3lang.intellij.psi.C3StubElementTypeFactory.stubFactory"
 
     pin(".*_decl") = 2
-    pin(".*_declaration") = 2
-    pin(".*_stmt") = 1
 
-    /*tokens = [
+    tokens = [
             KW_ANY = "any"
             KW_ANYFAULT = "anyfault"
             KW_ASM = "asm"
@@ -290,13 +223,11 @@
 
             INT_LITERAL = "regexp:[0-9]*"
             FLOAT_LITERAL = "regexp:(_*[0-9])*"
-            STRING_LIT = "regexp:[\"']\w*([\"'])"
 
             INT = "regexp:[0-9](_*[0-9])*"
             HINT = "regexp:[a-fA-F0-9](_*[a-fA-F0-9])*"
             OINT = "regexp:[0-7](_*[0-7])*"
             BINT = "regexp:[0-1](_*[0-1])*"
-
 
             EOL = "\n"
 
@@ -306,7 +237,7 @@
             DECIMAL_LIT = "regexp:[0-9](_*[0-9])*" //{INT}
 
             WHITESPACE ="regexp:\s+|\n+"
-        ]*/
+        ]
 }
 
 translation_unit ::= default_module_section? module_section*
@@ -314,7 +245,6 @@ default_module_section ::= top_level+
 module_section ::= module top_level*
 
 module_path::= [(IDENT SCOPE)+] IDENT
-//module_path::= [(IDENT SCOPE)+] IDENT
 module ::= KW_MODULE module_path (LGENPAR module_params RGENPAR)? attributes? EOS { pin=2 }
 
 type_decl ::= struct_declaration
@@ -328,20 +258,23 @@ fake binary_expr ::= expr+ {
 
 fake binary_op ::= add_bin_op | mult_bin_op | bit_bin_op | shift_bin_op | rel_bin_op | assign_bin_op
 
-//path ::=  <<parsePath>>
 path ::= (IDENT SCOPE)+ { pin(".*")=2 }
-path_const ::= path? CONST_IDENT { pin=2 }
-path_ident ::= <<parsePathIdent>>
-//path_ident ::= path? IDENT { pin=2 }
+path_const ::= path? CONST_IDENT
+path_ident ::= path? IDENT { pin=2 }
 
-path_at_ident ::= path? AT_IDENT  { pin = 2}
+path_at_ident ::= path? AT_IDENT
 
 module_param ::= TYPE_IDENT | CONST_IDENT
 
 module_params ::= module_param (COMMA module_param)*
 
 import_decl ::= KW_IMPORT import_paths attributes? EOS
-import_path ::= IDENT (SCOPE IDENT)*  { pin(".*") = 1 }
+private import_path_1 ::= [path] IDENT { pin(".*") = 2 }
+//private import_path_1 ::= [(IDENT SCOPE)+] IDENT { pin(".*") = 2 }
+private import_path_2 ::= IDENT { pin=1 }
+import_path ::= import_path_1 | import_path_2
+//import_path ::= import_path_1 | import_path_2 { recoverWhile=recover_import_path }
+//private recover_import_path ::= !(COMMA | EOS | attribute)
 import_paths ::= import_path (COMMA import_path)*
 
 ct_include_stmt ::= KW_CT_INCLUDE string_expr attributes? EOS
@@ -390,17 +323,13 @@ def_attr_values ::= LB attributes? RB
 def_declaration_source ::= (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameters?
 def_decl ::= KW_DEF any_ident (LP parameter_list RP)? EQ def_declaration_source attributes? EOS
 
-struct_body ::= LB struct_member_declaration* RB { pin(".*")=2 }
+struct_body ::= LB struct_member_declaration* RB
 
-private struct_member_declaration_1 ::= type identifier_list attributes? EOS { pin(".*")=1 }
-private struct_member_declaration_2 ::= KW_INLINE type IDENT? attributes? EOS { pin(".*")=2 }
-private struct_member_declaration_3 ::= struct_or_union IDENT? attributes? struct_body { pin(".*")=1}
-private struct_member_declaration_4 ::= KW_BITSTRUCT IDENT? ':' type attributes? bitstruct_body {pin(".*")=4}
-
-struct_member_declaration ::= struct_member_declaration_1
-                              | struct_member_declaration_2
-                              | struct_member_declaration_3
-                              | struct_member_declaration_4
+struct_member_declaration ::=
+    type identifier_list attributes? EOS
+    | KW_INLINE type IDENT? attributes? EOS
+    | struct_or_union IDENT? attributes? struct_body
+    | KW_BITSTRUCT IDENT? ':' type attributes? bitstruct_body
 
 bitstruct_body ::= LB (bitstruct_def+ | bitstruct_simple_def+)? RB
 bitstruct_def ::= base_type IDENT COLON constant_expr (DOTDOT constant_expr)? EOS
@@ -411,7 +340,7 @@ enum_spec ::= enum_param_list | type enum_param_list?
 enum_param_list ::=  LP enum_param_decl (COMMA enum_param_decl)* RP
 enum_param_decl ::= type IDENT
 enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
-enum_constant ::= CONST_IDENT attributes? [eq_expr_pin]
+enum_constant ::= CONST_IDENT attributes? (EQ expr)?
 arg_list ::= arg (COMMA arg)* COMMA?
 named_ident ::= CT_IDENT | HASH_IDENT | IDENT | CT_TYPE_IDENT
 arg ::= (named_ident COLON (expr | type)) | param_path (EQ (expr | type))? | expr | type | KW_CT_VASPLAT (LBT range_exp RBT)? | ELLIPSIS expr
@@ -419,7 +348,7 @@ arg ::= (named_ident COLON (expr | type)) | param_path (EQ (expr | type))? | exp
 
 global_decl ::= KW_TLOCAL? optional_type IDENT (global_multi_declaration | global_single_declaration) EOS
 global_multi_declaration ::= multi_declaration attributes?
-global_single_declaration ::= attributes? [eq_expr_pin]
+global_single_declaration ::= attributes? (EQ expr)?
 multi_declaration ::= (COMMA IDENT)+
 
 grouped_expression ::= LP expr RP
@@ -428,11 +357,11 @@ access_ident ::= IDENT | AT_IDENT | HASH_IDENT | KW_CT_EVAL '(' expr ')' | KW_TY
 
 call_arg_list ::= arg_list? (EOS parameter_list?)?
 call_invocation ::= LP call_arg_list RP AT_IDENT*
-private dot_access_ident ::= DOT access_ident { pin=1 }
+
 call_expr_tail ::= call_invocation compound_statement?
     | LBT (range_exp | range_loc) RBT
     | generic_parameters
-    | dot_access_ident
+    | DOT access_ident
     | PLUSPLUS
     | MINUSMINUS
     | BANG
@@ -445,15 +374,15 @@ ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_IS_CONST
 
 flat_path ::= primary_group param_path? | type
 param_path ::= param_path_element+
-param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT primary_group | DOT CT_TYPE_IDENT { pin(".*")=1 }
+param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT primary_group | DOT CT_TYPE_IDENT
 
 range_exp ::= range_loc? (DOTDOT | COLON) range_loc?
 range_loc ::= BIT_XOR? expr
 lambda_decl ::= KW_FN optional_type? fn_parameter_list attributes?
 optional_type ::= type BANG?
 fn_parameter_list ::= LP parameter_list? RP
-param_decl ::= parameter [eq_expr_pin]
-parameter_list ::= param_decl (COMMA param_decl)*  { pin(".*")=1 }
+param_decl ::= parameter (EQ expr)?
+parameter_list ::= param_decl (COMMA param_decl)*
 parameter ::= KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDENT | AMP IDENT) attributes? | attributes?)
     | ELLIPSIS | AMP IDENT attributes? | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
     | CT_IDENT | CT_IDENT ELLIPSIS
@@ -465,13 +394,11 @@ assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS
 ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
 
 ct_switch_stmt ::= ct_switch ct_switch_body KW_CT_ENDSWITCH
-initializer_list ::= LB (arg_list COMMA?)? RB { pin=2 }
+initializer_list ::= LB (arg_list COMMA?)? RB
 
 integer_type ::= KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_INT128 | KW_UINT128
 
 float_type ::= KW_FLOAT16 | KW_FLOAT | KW_DOUBLE | KW_FLOAT128 | KW_BFLOAT16
-
-private struct_type ::= path? TYPE_IDENT generic_parameters? { pin=2 }
 
 base_type ::= KW_VOID
     | KW_BOOL
@@ -484,7 +411,7 @@ base_type ::= KW_VOID
     | KW_ANYFAULT
     | KW_ANY
     | KW_TYPEID
-    | struct_type
+    | path? TYPE_IDENT generic_parameters?
     | CT_TYPE_IDENT
     | KW_CT_TYPEOF grouped_expression
     | KW_CT_TYPEFROM const_paren_expr
@@ -534,23 +461,23 @@ statement ::= compound_statement
     | ct_for_stmt
     | expr_stmt
     | assert_stmt
-    | EOS { recoverWhile=recover_statement }
-private recover_statement ::= !(statement|keyword_list|ident_list|RB|EOS)
+    | EOS
+
 
 local_decl_storage ::= KW_STATIC | KW_TLOCAL
 
-private local_decl_after_type_1 ::= CT_IDENT (EQ constant_expr)?
-private local_decl_after_type_2 ::= IDENT attributes? (eq_expr_pin)?
+local_decl_after_type_1 ::= CT_IDENT (EQ constant_expr)?
+local_decl_after_type_2 ::= IDENT attributes? (eq_expr_pin)?
 local_decl_after_type ::= local_decl_after_type_1 | local_decl_after_type_2
 
-decl_stmt_after_type ::= local_decl_after_type (COMMA local_decl_after_type)* {pin=1}
+decl_stmt_after_type ::= local_decl_after_type (COMMA local_decl_after_type)*
 
-const_declaration_stmt ::= KW_CONST type? CONST_IDENT attributes? eq_expr_pin EOS { pin=3 }
-local_declaration_stmt ::= local_decl_storage? optional_type decl_stmt_after_type EOS { pin=2 }
+const_declaration_stmt ::= KW_CONST type? CONST_IDENT attributes? eq_expr_pin EOS
+local_declaration_stmt ::= local_decl_storage? optional_type decl_stmt_after_type EOS { pin = 2 }
 
 return_stmt ::= KW_RETURN expr? EOS
 label ::= CONST_IDENT COLON
-paren_cond ::= LP cond RP { pin(".*")=2 }
+paren_cond ::= LP cond RP { pin=1 }
 if_stmt ::= KW_IF label? paren_cond (LB switch_body RB else_part? | compound_statement else_part | statement)
 
 
@@ -586,7 +513,7 @@ asm_addr_trailing ::= STAR INT_LITERAL (add_bin_op INT_LITERAL)? | (shift_bin_op
 
 defer_stmt ::= KW_DEFER (KW_TRY | KW_CATCH | (LP KW_CATCH IDENT RP))? statement
 
-compound_statement ::= LB statement_list* RB { pin(".*")=2 }
+compound_statement ::= LB statement_list* RB { pin=1 }
 
 statement_list ::= statement+
 
@@ -617,7 +544,7 @@ assign_bin_op ::= EQ
     | BIT_XOR_ASSIGN
     | BIT_OR_ASSIGN { name = "operator" }
 
-assign_type_expr ::= CT_TYPE_IDENT /*EQ type*/eq_type_pin
+assign_type_expr ::= CT_TYPE_IDENT EQ type
 assign_bin_expr ::= expr assign_bin_op expr { rightAssociative=true }
 rel_bin_expr ::= expr rel_bin_op expr
 add_bin_expr ::= expr add_bin_op expr
@@ -704,7 +631,7 @@ interface_definition ::= KW_INTERFACE type_name (COLON type (COMMA type)*)? inte
 interface_body ::= LB (func_def EOS)* RB
 
 func_def ::= KW_FN func_header fn_parameter_list attributes?
-func_definition ::= func_def (macro_func_body | EOS) { pin=1 }
+func_definition ::= func_def (macro_func_body | EOS)
 
 macro_func_body ::= implies_body EOS | compound_statement
 
@@ -714,16 +641,21 @@ distinct_declaration ::= KW_DISTINCT type_name interface_impl? attributes? '=' K
 
 func_name ::= (type DOT)? IDENT
 
-func_header ::= optional_type func_name  { pin=2 }
+func_header ::= optional_type func_name
 
 fault_declaration ::= KW_FAULT type_name interface_impl? attributes? LB CONST_IDENT (COMMA CONST_IDENT)* COMMA? RB
 
 macro_name ::= (type DOT)? (AT_IDENT | IDENT)
 macro_definition ::= KW_MACRO macro_header LP macro_params RP attributes? macro_func_body
-macro_header ::= (optional_type !DOT)? macro_name { pin=2 }
+macro_header ::= (optional_type !DOT)? macro_name
 
 macro_params ::= parameter_list? (EOS trailing_block_param)?
 trailing_block_param ::= AT_IDENT (LP parameter_list? RP)?
 
-private keyword_list ::= KW_ANY | KW_ANYFAULT | KW_ASM | KW_ASSERT | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE | KW_DEF | KW_DEFAULT | KW_DEFER | KW_DISTINCT | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FOR | KW_FN | KW_IF | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE | KW_TRY | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16 | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
-private ident_list ::= IDENT | TYPE_IDENT | CT_TYPE_IDENT | CT_IDENT | CONST_IDENT | AT_IDENT
+// recovery
+// recover to ; or } or type in declaration or function/macro keyword
+private recover_top_level ::= !(module | top_level | keyword_list | EOS)
+private recover_declaration ::= !(module | top_level | keyword_list | EOS)
+
+// helper lists
+private keyword_list ::= KW_ANY | KW_ANYFAULT | KW_ASM | KW_ASSERT | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE | KW_DEF | KW_DEFAULT | KW_DEFER | KW_DISTINCT | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FOR | KW_FN | KW_IF | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE | KW_TRY | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT

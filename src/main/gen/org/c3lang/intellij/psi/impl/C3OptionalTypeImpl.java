@@ -29,7 +29,7 @@ public class C3OptionalTypeImpl extends C3PsiElementImpl implements C3OptionalTy
   @Override
   @NotNull
   public C3Type getType() {
-    return findNotNullChildByClass(C3Type.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Type.class));
   }
 
 }

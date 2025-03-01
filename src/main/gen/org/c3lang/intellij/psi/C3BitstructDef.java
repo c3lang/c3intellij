@@ -13,4 +13,7 @@ public interface C3BitstructDef extends C3PsiElement {
   @NotNull
   List<C3Expr> getExprList();
 
+  @NotNull
+  PsiElement getIdent();
+
 }

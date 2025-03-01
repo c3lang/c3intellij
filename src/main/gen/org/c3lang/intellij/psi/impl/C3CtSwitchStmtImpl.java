@@ -29,13 +29,13 @@ public class C3CtSwitchStmtImpl extends C3PsiElementImpl implements C3CtSwitchSt
   @Override
   @NotNull
   public C3CtSwitch getCtSwitch() {
-    return findNotNullChildByClass(C3CtSwitch.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtSwitch.class));
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3CtSwitchBody getCtSwitchBody() {
-    return findChildByClass(C3CtSwitchBody.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtSwitchBody.class));
   }
 
 }

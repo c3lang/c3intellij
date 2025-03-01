@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class C3SdkType extends SdkType {
-    private final static Logger log = Logger.getInstance(C3SdkType.class);
+    private final static Logger log = Logger.getInstance(C3SdkType.class.getName());
     public C3SdkType() {
         super("C3");
     }

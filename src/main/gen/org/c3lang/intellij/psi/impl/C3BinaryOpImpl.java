@@ -29,7 +29,7 @@ public class C3BinaryOpImpl extends C3PsiElementImpl implements C3BinaryOp {
   @Override
   @NotNull
   public C3BinaryOp getBinaryOp() {
-    return findNotNullChildByClass(C3BinaryOp.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3BinaryOp.class));
   }
 
 }

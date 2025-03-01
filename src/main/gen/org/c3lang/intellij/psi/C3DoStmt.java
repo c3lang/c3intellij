@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3DoStmt extends C3PsiElement {
 
-  @Nullable
+  @NotNull
   C3CompoundStatement getCompoundStatement();
 
   @Nullable

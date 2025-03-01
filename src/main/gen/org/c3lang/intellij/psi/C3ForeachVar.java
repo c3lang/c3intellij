@@ -10,4 +10,7 @@ public interface C3ForeachVar extends C3PsiElement {
   @Nullable
   C3OptionalType getOptionalType();
 
+  @NotNull
+  PsiElement getIdent();
+
 }

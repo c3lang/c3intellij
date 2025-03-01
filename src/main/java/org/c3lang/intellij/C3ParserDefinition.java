@@ -25,6 +25,8 @@ public class C3ParserDefinition implements ParserDefinition {
     public static IElementType BLOCK_COMMENT = new C3ElementType("BLOCK_COMMENT_LEAD");
     public static IElementType DOC_COMMENT = new C3ElementType("DOC_COMMENT");
 
+    public static C3FileElementType FILE = new C3FileElementType();
+
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
@@ -58,7 +60,7 @@ public class C3ParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public IFileElementType getFileNodeType() {
-        return C3FileElementType.INSTANCE;
+        return FILE;
     }
 
     @NotNull

@@ -29,13 +29,13 @@ public class C3FuncDefinitionImpl extends C3PsiElementImpl implements C3FuncDefi
   @Override
   @NotNull
   public C3FuncDef getFuncDef() {
-    return findNotNullChildByClass(C3FuncDef.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3FuncDef.class));
   }
 
   @Override
   @Nullable
   public C3MacroFuncBody getMacroFuncBody() {
-    return findChildByClass(C3MacroFuncBody.class);
+    return PsiTreeUtil.getChildOfType(this, C3MacroFuncBody.class);
   }
 
 }

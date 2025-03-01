@@ -29,31 +29,31 @@ public class C3EnumDeclarationImpl extends C3PsiElementImpl implements C3EnumDec
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3EnumList getEnumList() {
-    return findChildByClass(C3EnumList.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3EnumList.class));
   }
 
   @Override
   @Nullable
   public C3EnumSpec getEnumSpec() {
-    return findChildByClass(C3EnumSpec.class);
+    return PsiTreeUtil.getChildOfType(this, C3EnumSpec.class);
   }
 
   @Override
   @Nullable
   public C3InterfaceImpl getInterfaceImpl() {
-    return findChildByClass(C3InterfaceImpl.class);
+    return PsiTreeUtil.getChildOfType(this, C3InterfaceImpl.class);
   }
 
   @Override
   @NotNull
   public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3TypeName.class));
   }
 
 }

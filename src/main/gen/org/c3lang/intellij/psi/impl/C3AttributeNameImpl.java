@@ -29,7 +29,19 @@ public class C3AttributeNameImpl extends C3PsiElementImpl implements C3Attribute
   @Override
   @Nullable
   public C3Path getPath() {
-    return findChildByClass(C3Path.class);
+    return PsiTreeUtil.getChildOfType(this, C3Path.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getAtIdent() {
+    return findChildByType(AT_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getAtTypeIdent() {
+    return findChildByType(AT_TYPE_IDENT);
   }
 
 }

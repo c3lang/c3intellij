@@ -29,7 +29,7 @@ public class C3TypeSuffixImpl extends C3PsiElementImpl implements C3TypeSuffix {
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

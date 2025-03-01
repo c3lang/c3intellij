@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3ParenCond extends C3PsiElement {
 
-  @NotNull
+  @Nullable
   C3Cond getCond();
 
 }

@@ -16,4 +16,7 @@ public interface C3SwitchStmt extends C3PsiElement {
   @Nullable
   C3SwitchBody getSwitchBody();
 
+  @Nullable
+  PsiElement getAtIdent();
+
 }

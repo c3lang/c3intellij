@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3EnumConstant extends C3EnumConstantMixin {
+public interface C3EnumConstant extends C3PsiElement {
 
   @Nullable
   C3Attributes getAttributes();
 
   @Nullable
   C3Expr getExpr();
+
+  @NotNull
+  PsiElement getConstIdent();
 
 }

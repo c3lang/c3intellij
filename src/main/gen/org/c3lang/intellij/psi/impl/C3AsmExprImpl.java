@@ -30,13 +30,49 @@ public class C3AsmExprImpl extends C3ExprImpl implements C3AsmExpr {
   @Override
   @Nullable
   public C3AsmAddr getAsmAddr() {
-    return findChildByClass(C3AsmAddr.class);
+    return PsiTreeUtil.getChildOfType(this, C3AsmAddr.class);
   }
 
   @Override
   @Nullable
   public C3GroupedExpression getGroupedExpression() {
-    return findChildByClass(C3GroupedExpression.class);
+    return PsiTreeUtil.getChildOfType(this, C3GroupedExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getConstIdent() {
+    return findChildByType(CONST_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCtConstIdent() {
+    return findChildByType(CT_CONST_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCtIdent() {
+    return findChildByType(CT_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getFloatLiteral() {
+    return findChildByType(FLOAT_LITERAL);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdent() {
+    return findChildByType(IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIntLiteral() {
+    return findChildByType(INT_LITERAL);
   }
 
 }

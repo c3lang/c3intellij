@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3CtIfStmt extends C3PsiElement {
 
-  @Nullable
+  @NotNull
   C3Expr getExpr();
 
   @NotNull

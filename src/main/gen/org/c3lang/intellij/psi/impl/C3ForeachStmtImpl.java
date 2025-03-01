@@ -27,27 +27,27 @@ public class C3ForeachStmtImpl extends C3PsiElementImpl implements C3ForeachStmt
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3ForeachVars getForeachVars() {
-    return findChildByClass(C3ForeachVars.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ForeachVars.class));
   }
 
   @Override
   @Nullable
   public C3Label getLabel() {
-    return findChildByClass(C3Label.class);
+    return PsiTreeUtil.getChildOfType(this, C3Label.class);
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3Statement getStatement() {
-    return findChildByClass(C3Statement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
   }
 
 }

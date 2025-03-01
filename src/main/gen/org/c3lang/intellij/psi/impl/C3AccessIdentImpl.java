@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3AccessIdentImpl extends C3AccessIdentMixinImpl implements C3AccessIdent {
+public class C3AccessIdentImpl extends C3PsiElementImpl implements C3AccessIdent {
 
   public C3AccessIdentImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,7 +29,25 @@ public class C3AccessIdentImpl extends C3AccessIdentMixinImpl implements C3Acces
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getAtIdent() {
+    return findChildByType(AT_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getHashIdent() {
+    return findChildByType(HASH_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdent() {
+    return findChildByType(IDENT);
   }
 
 }

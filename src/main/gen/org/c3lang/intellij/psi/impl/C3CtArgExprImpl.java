@@ -30,13 +30,13 @@ public class C3CtArgExprImpl extends C3ExprImpl implements C3CtArgExpr {
   @Override
   @NotNull
   public C3CtArg getCtArg() {
-    return findNotNullChildByClass(C3CtArg.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3CtArg.class));
   }
 
   @Override
   @Nullable
   public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+    return PsiTreeUtil.getChildOfType(this, C3Expr.class);
   }
 
 }

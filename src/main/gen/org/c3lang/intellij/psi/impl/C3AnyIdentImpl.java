@@ -26,4 +26,46 @@ public class C3AnyIdentImpl extends C3PsiElementImpl implements C3AnyIdent {
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getAtIdent() {
+    return findChildByType(AT_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getAtTypeIdent() {
+    return findChildByType(AT_TYPE_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getConstIdent() {
+    return findChildByType(CONST_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCtConstIdent() {
+    return findChildByType(CT_CONST_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCtTypeIdent() {
+    return findChildByType(CT_TYPE_IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIdent() {
+    return findChildByType(IDENT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getTypeIdent() {
+    return findChildByType(TYPE_IDENT);
+  }
+
 }

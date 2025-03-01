@@ -5,9 +5,18 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3AccessIdent extends C3AccessIdentMixin {
+public interface C3AccessIdent extends C3PsiElement {
 
   @Nullable
   C3Expr getExpr();
+
+  @Nullable
+  PsiElement getAtIdent();
+
+  @Nullable
+  PsiElement getHashIdent();
+
+  @Nullable
+  PsiElement getIdent();
 
 }

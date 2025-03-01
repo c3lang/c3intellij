@@ -29,19 +29,19 @@ public class C3WhileStmtImpl extends C3PsiElementImpl implements C3WhileStmt {
   @Override
   @Nullable
   public C3Label getLabel() {
-    return findChildByClass(C3Label.class);
+    return PsiTreeUtil.getChildOfType(this, C3Label.class);
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3ParenCond getParenCond() {
-    return findChildByClass(C3ParenCond.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3ParenCond.class));
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3Statement getStatement() {
-    return findChildByClass(C3Statement.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Statement.class));
   }
 
 }

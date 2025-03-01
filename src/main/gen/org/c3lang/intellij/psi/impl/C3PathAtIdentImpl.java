@@ -29,7 +29,13 @@ public class C3PathAtIdentImpl extends C3PsiElementImpl implements C3PathAtIdent
   @Override
   @Nullable
   public C3Path getPath() {
-    return findChildByClass(C3Path.class);
+    return PsiTreeUtil.getChildOfType(this, C3Path.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getAtIdent() {
+    return notNullChild(findChildByType(AT_IDENT));
   }
 
 }

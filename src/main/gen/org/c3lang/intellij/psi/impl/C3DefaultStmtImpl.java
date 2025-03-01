@@ -29,7 +29,7 @@ public class C3DefaultStmtImpl extends C3PsiElementImpl implements C3DefaultStmt
   @Override
   @Nullable
   public C3StatementList getStatementList() {
-    return findChildByClass(C3StatementList.class);
+    return PsiTreeUtil.getChildOfType(this, C3StatementList.class);
   }
 
 }

@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3FuncNameImpl extends C3FuncNameMixinImpl implements C3FuncName {
+public class C3FuncNameImpl extends C3FuncNamePsiElementBase implements C3FuncName {
 
   public C3FuncNameImpl(@NotNull ASTNode node) {
     super(node);
@@ -29,7 +29,13 @@ public class C3FuncNameImpl extends C3FuncNameMixinImpl implements C3FuncName {
   @Override
   @Nullable
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return PsiTreeUtil.getChildOfType(this, C3Type.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getIdent() {
+    return notNullChild(findChildByType(IDENT));
   }
 
 }

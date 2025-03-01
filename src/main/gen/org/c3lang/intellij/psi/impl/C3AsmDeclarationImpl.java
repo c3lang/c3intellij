@@ -29,13 +29,13 @@ public class C3AsmDeclarationImpl extends C3PsiElementImpl implements C3AsmDecla
   @Override
   @Nullable
   public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+    return PsiTreeUtil.getChildOfType(this, C3Attributes.class);
   }
 
   @Override
   @NotNull
   public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, C3Expr.class));
   }
 
 }

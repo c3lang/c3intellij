@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ModuleSection extends C3ModuleDefinition {
+public interface C3ModuleSection extends C3PsiElement {
 
   @NotNull
   C3Module getModule();
