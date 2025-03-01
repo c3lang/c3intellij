@@ -4,9 +4,16 @@
 
 ## [Unreleased]
 
+## [0.0.24] - 2025-03-01
+
 - code completion for struct, struct fields, union, enum, const, import, functions, macros
 - goto declaration for struct, struct fields, union, enum, const, functions, macros
 - add import QuickFix
+
+## [0.0.23] - 2025-01-28
+
+Function and import completion
+Support experimental <[]> syntax.
 
 ## [0.0.22] - 2025-01-20
 
