@@ -177,7 +177,6 @@
             KW_CT_VACONST = "$vaconst"
             KW_CT_VATYPE = "$vatype"
             KW_CT_VAARG = "$vaarg"
-            KW_CT_VAREF = "$varef"
             KW_CT_VAEXPR = "$vaexpr"
             KW_CT_VASPLAT = "$vasplat"
             KW_VOID = "void"
@@ -219,9 +218,7 @@
             GE_OP=">="
             IMPLIES="=>"
             LE_OP="<="
-            LBRAPIPE="{|"
             LVEC="[<"
-            LGENPAR="(<"
             MINUS_ASSIGN="-="
             MINUSMINUS="--"
             MOD_ASSIGN="%="
@@ -230,9 +227,7 @@
             OR="||"
             PLUS_ASSIGN="+="
             PLUSPLUS="++"
-            RBRAPIPE="|}"
             RVEC=">]"
-            RGENPAR=">)"
             SCOPE="::"
             SHR=">>"
             SHL="<<"
@@ -315,7 +310,7 @@ module_section ::= module top_level*
 
 module_path::= [(IDENT SCOPE)+] IDENT
 //module_path::= [(IDENT SCOPE)+] IDENT
-module ::= KW_MODULE module_path (LGENPAR module_params RGENPAR)? attributes? EOS { pin=2 }
+module ::= KW_MODULE module_path (LB module_params RB)? attributes? EOS { pin=2 }
 
 type_decl ::= struct_declaration
     | fault_declaration
@@ -383,7 +378,7 @@ func_typedef ::= KW_FN optional_type fn_parameter_list
 
 typedef_type ::= func_typedef | type generic_parameters?
 generic_parameter ::= expr | type
-generic_parameters ::= LGENPAR generic_parameter (COMMA generic_parameter)* RGENPAR
+generic_parameters ::= LB generic_parameter (COMMA generic_parameter)* RB
 any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
 def_attr_values ::= LB attributes? RB
@@ -440,7 +435,7 @@ call_expr_tail ::= call_invocation compound_statement?
 
 
 ct_call ::= KW_CT_ALIGNOF | KW_CT_EXTNAMEOF | KW_CT_NAMEOF | KW_CT_OFFSETOF | KW_CT_QNAMEOF
-ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR
+ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAEXPR
 ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_IS_CONST
 
 flat_path ::= primary_group param_path? | type
@@ -455,7 +450,7 @@ fn_parameter_list ::= LP parameter_list? RP
 param_decl ::= parameter [eq_expr_pin]
 parameter_list ::= param_decl (COMMA param_decl)*  { pin(".*")=1 }
 parameter ::= KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDENT | AMP IDENT) attributes? | attributes?)
-    | ELLIPSIS | AMP IDENT attributes? | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
+    | ELLIPSIS | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
     | CT_IDENT | CT_IDENT ELLIPSIS
 
 ct_error_stmt ::= KW_CT_ERROR constant_expr EOS
@@ -640,7 +635,6 @@ compound_init_expr ::= type initializer_list
 grouped_expr ::= LP expr RP
 local_ident_expr ::= CT_IDENT | HASH_IDENT
 type_access_expr ::= type DOT (access_ident | CONST_IDENT)
-expr_block_expr ::= LBRAPIPE statement_list? RBRAPIPE
 ct_call_expr ::= ct_call LP flat_path RP
 ct_feature_expr ::= KW_CT_FEATURE LP CONST_IDENT RP
 ct_arg_expr ::= ct_arg LBT expr RBT
@@ -673,7 +667,6 @@ private primary_group ::= literal_expr
     | grouped_expr
     | local_ident_expr
     | type_access_expr
-    | expr_block_expr
     | ct_call_expr
     | ct_feature_expr
     | ct_arg_expr

@@ -4,10 +4,17 @@
 
 ## [Unreleased]
 
-- code completion for struct, struct fields, union, enum, const, import, functions, macros
-- goto declaration for struct, struct fields, union, enum, const, functions, macros
-- rename identifiers
-- add import QuickFix
+- Code completion for struct, struct fields, union, enum, const, import, functions, macros
+- Goto declaration for struct, struct fields, union, enum, const, functions, macros
+- Rename identifiers
+- Add import QuickFix
+- Updated with Foo{int} generic syntax. Removed {| |} and (< >).
+- Removed $varef and & arguments for macros. 
+
+## [0.0.23] - 2025-01-28
+
+- Function and import completion
+- Support experimental <[]> syntax.
 
 ## [0.0.22] - 2025-01-20
 
