@@ -24,10 +24,6 @@ public class C3Annotator implements Annotator
         {
             return C3SyntaxHighlighter.STRUCT_NAME_KEY;
         }
-        else if (definition instanceof C3FaultDeclaration)
-        {
-            return C3SyntaxHighlighter.FAULT_NAME_KEY;
-        }
         else if (definition instanceof C3EnumDeclaration)
         {
             return C3SyntaxHighlighter.ENUM_NAME_KEY;

@@ -7,13 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3FaultDeclaration extends C3PsiElement {
 
-  @Nullable
-  C3Attributes getAttributes();
-
-  @Nullable
-  C3InterfaceImpl getInterfaceImpl();
-
   @NotNull
-  C3TypeName getTypeName();
+  List<C3Attributes> getAttributesList();
 
 }

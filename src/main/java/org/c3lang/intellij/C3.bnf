@@ -313,7 +313,6 @@ module_path::= [(IDENT SCOPE)+] IDENT
 module ::= KW_MODULE module_path (LB module_params RB)? attributes? EOS { pin=2 }
 
 type_decl ::= struct_declaration
-    | fault_declaration
     | enum_declaration
     | bitstruct_declaration
 
@@ -445,7 +444,7 @@ param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT primary_group | DOT CT_
 range_exp ::= range_loc? (DOTDOT | COLON) range_loc?
 range_loc ::= BIT_XOR? expr
 lambda_decl ::= KW_FN optional_type? fn_parameter_list attributes?
-optional_type ::= type BANG?
+optional_type ::= type QUESTION?
 fn_parameter_list ::= LP parameter_list? RP
 param_decl ::= parameter [eq_expr_pin]
 parameter_list ::= param_decl (COMMA param_decl)*  { pin(".*")=1 }
@@ -491,12 +490,12 @@ type_suffix ::= STAR | LBT PLUS RBT | LBT (STAR | QUESTION | DIV | UNDERSCORE | 
 
 type ::= base_type type_suffix*
 
-ct_switch ::= KW_CT_SWITCH (LP (constant_expr | type) RP)?
+ct_switch ::= KW_CT_SWITCH (constant_expr | type)? COLON
 
 ct_case_stmt ::= (KW_CT_CASE (constant_expr | type) | KW_CT_DEFAULT) COLON statement_list?
 ct_switch_body ::= ct_case_stmt+
-ct_foreach_stmt ::= KW_CT_FOREACH LP CT_IDENT (COMMA CT_IDENT)? COLON expr RP statement_list? KW_CT_ENDFOREACH
-ct_for_stmt ::= KW_CT_FOR LP for_cond RP statement_list? KW_CT_ENDFOR
+ct_foreach_stmt ::= KW_CT_FOREACH CT_IDENT (COMMA CT_IDENT)? COLON expr COLON statement_list? KW_CT_ENDFOREACH
+ct_for_stmt ::= KW_CT_FOR for_cond COLON statement_list? KW_CT_ENDFOR
 
 private eq_expr_pin ::= EQ expr { pin=1 }
 private eq_type_pin ::= EQ type { pin=1 }
@@ -546,7 +545,7 @@ local_declaration_stmt ::= local_decl_storage? optional_type decl_stmt_after_typ
 return_stmt ::= KW_RETURN expr? EOS
 label ::= CONST_IDENT COLON
 paren_cond ::= LP cond RP { pin(".*")=2 }
-if_stmt ::= KW_IF label? paren_cond (LB switch_body RB else_part? | compound_statement else_part | statement)
+if_stmt ::= KW_IF label? paren_cond (compound_statement else_part | statement)
 
 
 while_stmt ::= KW_WHILE label? paren_cond statement
@@ -709,7 +708,9 @@ func_name ::= (type DOT)? IDENT
 
 func_header ::= optional_type func_name  { pin=2 }
 
-fault_declaration ::= KW_FAULT type_name interface_impl? attributes? LB CONST_IDENT (COMMA CONST_IDENT)* COMMA? RB
+
+fault_definition ::= CONST_IDENT attributes?
+fault_declaration ::= KW_FAULT fault_definition (COMMA fault_definition)? EOS
 
 macro_name ::= (type DOT)? (AT_IDENT | IDENT)
 macro_definition ::= KW_MACRO macro_header LP macro_params RP attributes? macro_func_body

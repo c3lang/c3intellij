@@ -25,7 +25,6 @@ enum class C3TypeEnum {
                 PsiTreeUtil.getParentOfType(psi, C3InterfaceDefinition::class.java) != null -> INTERFACE
                 PsiTreeUtil.getParentOfType(psi, C3EnumDeclaration::class.java) != null -> ENUM
                 PsiTreeUtil.getParentOfType(psi, C3BitstructDeclaration::class.java) != null -> BITSTRUCT
-                PsiTreeUtil.getParentOfType(psi, C3FaultDeclaration::class.java) != null -> FAULT
 
                 else -> FALLBACK
             }

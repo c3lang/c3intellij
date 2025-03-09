@@ -13,7 +13,6 @@ class C3BreadcrumbsProvider : BreadcrumbsProvider {
         return element is C3StructDeclaration
                 || element is C3BitstructDeclaration
                 || element is C3EnumDeclaration
-                || element is C3FaultDeclaration
                 || element is C3MacroDefinition
                 || element is C3FuncDefinition
                 || element is C3StructMemberDeclaration
@@ -26,7 +25,6 @@ class C3BreadcrumbsProvider : BreadcrumbsProvider {
         val text = when (element) {
             is C3StructDeclaration -> element.getTypeName()?.text
             is C3EnumDeclaration -> element.getTypeName()?.text
-            is C3FaultDeclaration -> element.getTypeName()?.text
             is C3MacroDefinition -> element.getMacroHeader()?.getMacroName()?.text
             is C3DistinctDeclaration -> element.getTypeName()?.text
             is C3InterfaceDefinition -> element.getTypeName().text

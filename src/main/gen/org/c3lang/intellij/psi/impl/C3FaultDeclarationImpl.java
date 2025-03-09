@@ -27,21 +27,9 @@ public class C3FaultDeclarationImpl extends C3PsiElementImpl implements C3FaultD
   }
 
   @Override
-  @Nullable
-  public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
-  }
-
-  @Override
-  @Nullable
-  public C3InterfaceImpl getInterfaceImpl() {
-    return findChildByClass(C3InterfaceImpl.class);
-  }
-
-  @Override
   @NotNull
-  public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+  public List<C3Attributes> getAttributesList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Attributes.class);
   }
 
 }

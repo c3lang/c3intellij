@@ -22,7 +22,4 @@ public interface C3IfStmt extends C3PsiElement {
   @Nullable
   C3Statement getStatement();
 
-  @Nullable
-  C3SwitchBody getSwitchBody();
-
 }

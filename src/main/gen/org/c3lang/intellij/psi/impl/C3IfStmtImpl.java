@@ -56,10 +56,4 @@ public class C3IfStmtImpl extends C3PsiElementImpl implements C3IfStmt {
     return findChildByClass(C3Statement.class);
   }
 
-  @Override
-  @Nullable
-  public C3SwitchBody getSwitchBody() {
-    return findChildByClass(C3SwitchBody.class);
-  }
-
 }
