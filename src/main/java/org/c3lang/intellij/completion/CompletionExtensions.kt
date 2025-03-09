@@ -94,7 +94,7 @@ inline fun <reified T : PsiElement> CompletionParameters.siblingOf(): T? {
 fun CompletionParameters.getLookupString(lookupTarget: PsiElement): String {
     return editor.document.getText(
         TextRange.create(
-            lookupTarget.startOffset,
+            lookupTarget.textRange.startOffset,
             editor.caretModel.offset
         )
     )

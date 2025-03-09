@@ -50,11 +50,6 @@ class LogReferencesInspection : LocalInspectionTool() {
             val lineNo = document?.getLineNumber(descriptor.psiElement.textOffset)
 
 
-            DumbService.getInstance(project).runReadActionInSmartMode {
-                val refs = ReferencesSearch.search(descriptor.psiElement).findAll()
-                log.debug("#1 ${refs.size}")
-            }
-
             ReadAction.run<Nothing> {
                 val refs = ReferencesSearch.search(descriptor.psiElement).findAll()
                 log.debug("#2 ${refs.size}")

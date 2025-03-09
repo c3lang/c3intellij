@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.0.24] - 2025-03-09
+
 - Code completion for struct, struct fields, union, enum, const, import, functions, macros
 - Goto declaration for struct, struct fields, union, enum, const, functions, macros
 - Rename identifiers

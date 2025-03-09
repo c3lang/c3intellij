@@ -125,7 +125,7 @@ object TypeCompletionContributor : CompletionProvider<CompletionParameters>() {
                 val endOffset = editor.caretModel.offset
 
                 document.replaceString(
-                    lookupTarget.startOffset,
+                    lookupTarget.textRange.startOffset,
                     endOffset,
                     textToInsert
                 )

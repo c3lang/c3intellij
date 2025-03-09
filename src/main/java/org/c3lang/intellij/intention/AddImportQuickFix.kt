@@ -130,13 +130,12 @@ class AddImportQuickFix(
             val startOffset = if (imports.isNotEmpty()) {
                 // add import after last import in module section
                 val parent = imports.last().parent
-
-                parent.endOffset
+                parent.textRange.endOffset
             } else if (moduleSection is C3ModuleSection) {
-                moduleSection.module.endOffset
+                moduleSection.module.textRange.endOffset
             } else /*if (moduleSection is C3DefaultModuleSection)*/ {
                 // add import to default module in first position
-                moduleSection.firstChild.startOffset
+                moduleSection.firstChild.textRange.startOffset
             }
 
             return ImportAction.ShouldImport(startOffset, moduleName)
