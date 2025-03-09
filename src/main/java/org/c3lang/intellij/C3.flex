@@ -156,7 +156,6 @@ LINE_COMMENT    = "//" .*
     "$vaconst" { return C3Types.KW_CT_VACONST; }
     "$vatype" { return C3Types.KW_CT_VATYPE; }
     "$vaarg" { return C3Types.KW_CT_VAARG; }
-    "$varef" { return C3Types.KW_CT_VAREF; }
     "$vaexpr" { return C3Types.KW_CT_VAEXPR; }
     "$vasplat" { return C3Types.KW_CT_VASPLAT; }
 
@@ -204,9 +203,7 @@ LINE_COMMENT    = "//" .*
     ">=" { return C3Types.GE_OP; }
     "=>" { return C3Types.IMPLIES; }
     "<=" { return C3Types.LE_OP; }
-    "{|" { return C3Types.LBRAPIPE; }
     "[<" { return C3Types.LVEC; }
-    "(<" { return C3Types.LGENPAR; }
     "-=" { return C3Types.MINUS_ASSIGN; }
     "--" { return C3Types.MINUSMINUS; }
     "%=" { return C3Types.MOD_ASSIGN; }
@@ -215,9 +212,7 @@ LINE_COMMENT    = "//" .*
     "||" { return C3Types.OR; }
     "+=" { return C3Types.PLUS_ASSIGN; }
     "++" { return C3Types.PLUSPLUS; }
-    "|}" { return C3Types.RBRAPIPE; }
     ">]" { return C3Types.RVEC; }
-    ">)" { return C3Types.RGENPAR; }
     "::" { return C3Types.SCOPE; }
     ">>" { return C3Types.SHR; }
     "<<" { return C3Types.SHL; }

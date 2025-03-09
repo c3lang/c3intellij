@@ -37,7 +37,7 @@ public interface C3TokenSets
     );
     TokenSet BRACES = TokenSet.create(C3Types.LB, C3Types.RB);
     TokenSet BRACKETS = TokenSet.create(C3Types.LBT, C3Types.RBT, C3Types.LVEC, C3Types.RVEC);
-    TokenSet PARENTHESES = TokenSet.create(C3Types.LP, C3Types.RP, C3Types.LGENPAR, C3Types.RGENPAR);
+    TokenSet PARENTHESES = TokenSet.create(C3Types.LP, C3Types.RP);
     TokenSet OTHER_OPERATORS = TokenSet.create(C3Types.BIT_NOT);
     TokenSet IDENTIFIER = TokenSet.create(C3Types.IDENT);
     TokenSet OPERATOR_ASSIGN_OPS = TokenSet.create(

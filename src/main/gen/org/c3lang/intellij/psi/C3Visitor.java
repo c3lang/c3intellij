@@ -343,10 +343,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitExprBlockExpr(@NotNull C3ExprBlockExpr o) {
-    visitExpr(o);
-  }
-
   public void visitExprStmt(@NotNull C3ExprStmt o) {
     visitPsiElement(o);
   }

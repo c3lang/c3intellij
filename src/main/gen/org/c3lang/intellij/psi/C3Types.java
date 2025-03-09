@@ -93,7 +93,6 @@ public interface C3Types {
   IElementType ENUM_SPEC = new C3ElementType("ENUM_SPEC");
   IElementType EXPR = new C3ElementType("EXPR");
   IElementType EXPRESSION_LIST = new C3ElementType("EXPRESSION_LIST");
-  IElementType EXPR_BLOCK_EXPR = new C3ElementType("EXPR_BLOCK_EXPR");
   IElementType EXPR_STMT = new C3ElementType("EXPR_STMT");
   IElementType EXPR_TERMINATOR = new C3ElementType("EXPR_TERMINATOR");
   IElementType FAULT_DECLARATION = new C3ElementType("FAULT_DECLARATION");
@@ -337,10 +336,8 @@ public interface C3Types {
   IElementType KW_VOID = new C3TokenType("KW_VOID");
   IElementType KW_WHILE = new C3TokenType("KW_WHILE");
   IElementType LB = new C3TokenType("LB");
-  IElementType LBRAPIPE = new C3TokenType("LBRAPIPE");
   IElementType LBT = new C3TokenType("LBT");
   IElementType LE_OP = new C3TokenType("LE_OP");
-  IElementType LGENPAR = new C3TokenType("LGENPAR");
   IElementType LP = new C3TokenType("LP");
   IElementType LT_OP = new C3TokenType("LT_OP");
   IElementType LVEC = new C3TokenType("LVEC");
@@ -358,9 +355,7 @@ public interface C3Types {
   IElementType PLUS_ASSIGN = new C3TokenType("PLUS_ASSIGN");
   IElementType QUESTION = new C3TokenType("QUESTION");
   IElementType RB = new C3TokenType("RB");
-  IElementType RBRAPIPE = new C3TokenType("RBRAPIPE");
   IElementType RBT = new C3TokenType("RBT");
-  IElementType RGENPAR = new C3TokenType("RGENPAR");
   IElementType RP = new C3TokenType("RP");
   IElementType RVEC = new C3TokenType("RVEC");
   IElementType SCOPE = new C3TokenType("SCOPE");
@@ -624,9 +619,6 @@ public interface C3Types {
       }
       else if (type == EXPRESSION_LIST) {
         return new C3ExpressionListImpl(node);
-      }
-      else if (type == EXPR_BLOCK_EXPR) {
-        return new C3ExprBlockExprImpl(node);
       }
       else if (type == EXPR_STMT) {
         return new C3ExprStmtImpl(node);
