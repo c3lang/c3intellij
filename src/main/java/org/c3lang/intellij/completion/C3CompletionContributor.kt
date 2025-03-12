@@ -14,6 +14,7 @@ class C3CompletionContributor : CompletionContributor() {
         extend(CompletionType.BASIC, pattern, TypeCompletionContributor)
         extend(CompletionType.BASIC, pattern, ImportCompletionContributor)
         extend(CompletionType.BASIC, pattern, ConstCompletionContributor)
+        extend(CompletionType.BASIC, pattern, FaultCompletionContributor)
         extend(CompletionType.BASIC, pattern, TailExprCompletionContributor)
         extend(CompletionType.BASIC, pattern, InitializerListCompletionContributor)
     }

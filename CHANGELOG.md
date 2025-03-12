@@ -3,6 +3,9 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Support for `Find usages`
+- Rename support for function name, variable, argument, parameter, struct name, etc.
+- Color configuration for `return FAULT?;` 
 
 ## [0.0.26] - 2025-03-15
 

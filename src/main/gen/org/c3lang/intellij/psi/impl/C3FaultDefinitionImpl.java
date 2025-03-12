@@ -9,11 +9,22 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
+import org.c3lang.intellij.stubs.C3FaultDefinitionStub;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class C3FaultDefinitionImpl extends C3PsiElementImpl implements C3FaultDefinition {
+public class C3FaultDefinitionImpl extends C3FaultDefinitionMixinImpl implements C3FaultDefinition {
 
   public C3FaultDefinitionImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public C3FaultDefinitionImpl(@NotNull C3FaultDefinitionStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
+  }
+
+  public C3FaultDefinitionImpl(@NotNull C3FaultDefinitionStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {

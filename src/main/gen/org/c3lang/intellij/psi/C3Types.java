@@ -98,7 +98,7 @@ public interface C3Types {
   IElementType EXPR_STMT = new C3ElementType("EXPR_STMT");
   IElementType EXPR_TERMINATOR = new C3ElementType("EXPR_TERMINATOR");
   IElementType FAULTDEF_DECL = new C3ElementType("FAULTDEF_DECL");
-  IElementType FAULT_DEFINITION = new C3ElementType("FAULT_DEFINITION");
+  IElementType FAULT_DEFINITION = C3StubElementTypeFactory.stubFactory("FAULT_DEFINITION");
   IElementType FLAT_PATH = new C3ElementType("FLAT_PATH");
   IElementType FLOAT_TYPE = new C3ElementType("FLOAT_TYPE");
   IElementType FN_PARAMETER_LIST = new C3ElementType("FN_PARAMETER_LIST");

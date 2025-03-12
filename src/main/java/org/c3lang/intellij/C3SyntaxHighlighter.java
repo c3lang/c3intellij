@@ -65,6 +65,9 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
     public final static TextAttributesKey ATTRDEF_ATTRIBUTE_KEY = createTextAttributesKey("C3_ATTRDEF_ATTRIBUTE", ATTRIBUTE_KEY);
     public final static TextAttributesKey ALIAS_NAME_KEY = createTextAttributesKey("C3_ALIAS_IDENTIFIER", TYPE_KEY);
 
+    public final static TextAttributesKey CONST_IDENT_FAULT_KEY = createTextAttributesKey("C3_CONST_IDENT_FAULT", DefaultLanguageHighlighterColors.CONSTANT);
+    public final static TextAttributesKey CONST_IDENT_FAULT_QUESTION_KEY = createTextAttributesKey("C3_CONST_IDENT_FAULT_QUESTION", DefaultLanguageHighlighterColors.KEYWORD);
+
     public final static TextAttributesKey LABEL_KEY = createTextAttributesKey("C3_LABEL", DefaultLanguageHighlighterColors.LABEL);
     public final static TextAttributesKey EOS_KEY = createTextAttributesKey("C3_EOS", DefaultLanguageHighlighterColors.SEMICOLON);
     public final static TextAttributesKey LINE_COMMENT_KEY = createTextAttributesKey("C3_LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
@@ -128,16 +131,16 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
         addMapping(LINE_COMMENT_KEY, C3ParserDefinition.LINE_COMMENT);
         addMapping(BLOCK_COMMENT_KEY, C3ParserDefinition.BLOCK_COMMENT);
         addMapping(DOC_COMMENT_KEY, C3ParserDefinition.DOC_COMMENT);
+        addMapping(CONST_IDENT_FAULT_KEY, C3SyntaxHighlighterLexer.CONST_IDENT_FAULT);
+        addMapping(CONST_IDENT_FAULT_QUESTION_KEY, C3SyntaxHighlighterLexer.CONST_IDENT_FAULT_QUESTION);
     }
 
     @NotNull
     @Override
     public Lexer getHighlightingLexer()
     {
-        return new C3LexerAdapter();
+        return new C3SyntaxHighlighterLexer();
     }
-
-
 
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType)
