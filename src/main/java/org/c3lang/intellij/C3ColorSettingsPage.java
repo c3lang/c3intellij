@@ -30,6 +30,7 @@ public class C3ColorSettingsPage implements ColorSettingsPage
         new AttributesDescriptor("Strings", C3SyntaxHighlighter.STRING_KEY),
         new AttributesDescriptor("Types", C3SyntaxHighlighter.TYPE_KEY),
         new AttributesDescriptor("Constants", C3SyntaxHighlighter.CONSTANT_KEY),
+        new AttributesDescriptor("Faults", C3SyntaxHighlighter.CONST_IDENT_FAULT_KEY),
         new AttributesDescriptor("Attributes", C3SyntaxHighlighter.ATTRIBUTE_KEY),
         new AttributesDescriptor("Function & macro declarations//Function", C3SyntaxHighlighter.FUNCTION_KEY),
         new AttributesDescriptor("Function & macro declarations//Macro", C3SyntaxHighlighter.MACRO_KEY),
@@ -67,37 +68,7 @@ public class C3ColorSettingsPage implements ColorSettingsPage
 
     @Override
     public @NonNls @NotNull String getDemoText() {
-        return "module stack <Type>;\n" +
-                "// Above: the parameterized type is applied to the entire module.\n" +
-                "\n" +
-                "struct Stack\n" +
-                "{\n" +
-                "    usz capacity;\n" +
-                "    usz size;\n" +
-                "    Type* elems;\n" +
-                "}\n" +
-                "\n" +
-                "fn void Stack.push(Stack* this, Type element)\n" +
-                "{\n" +
-                "    if (this.capacity == this.size)\n" +
-                "    {\n" +
-                "        this.capacity *= 2;\n" +
-                "\t\tif (this.capacity < 16) this.capacity = 16;\n" +
-                "        this.elems = mem::realloc(this.elems, Type.sizeof * this.capacity);\n" +
-                "    }\n" +
-                "    this.elems[this.size++] = element;\n" +
-                "}\n" +
-                "\n" +
-                "fn Type Stack.pop(Stack* this)\n" +
-                "{\n" +
-                "    assert(this.size > 0);\n" +
-                "    return this.elems[--this.size];\n" +
-                "}\n" +
-                "\n" +
-                "macro bool Stack.empty(Stack* this)\n" +
-                "{\n" +
-                "    return !this.size;\n" +
-                "}";
+        return C3ColorSettingsPageDemoText.DEMO_TEXT;
     }
 
     @Override

@@ -364,7 +364,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitFaultDefinition(@NotNull C3FaultDefinition o) {
-    visitPsiElement(o);
+    visitFaultDefinitionMixin(o);
   }
 
   public void visitFaultdefDecl(@NotNull C3FaultdefDecl o) {
@@ -785,6 +785,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitEnumConstantMixin(@NotNull C3EnumConstantMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFaultDefinitionMixin(@NotNull C3FaultDefinitionMixin o) {
     visitPsiElement(o);
   }
 

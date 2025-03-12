@@ -94,6 +94,12 @@ data class FullyQualifiedName(
         fun from(psi: C3Type): FullyQualifiedName? {
             return psi.moduleDefinition.resolve(psi).singleOrNull()
         }
+
+        fun from(psi: C3FaultDefinition, module: ModuleName? = ModuleName.from(psi)): FullyQualifiedName {
+            val name = psi.node.findChildByType(C3Types.CONST_IDENT)?.psi?.text ?: error("CONST_IDENT missing")
+
+            return FullyQualifiedName(module, name)
+        }
     }
 }
 
