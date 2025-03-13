@@ -147,7 +147,8 @@ public interface C3TokenSets
                                            C3Types.KW_CT_VAREF,
                                            C3Types.KW_CT_VASPLAT);
     TokenSet CONSTANTS = TokenSet.create(C3Types.CONST_IDENT, C3Types.BUILTIN_CONST);
-    TokenSet KEYWORDS = TokenSet.create(C3Types.KW_ASM,
+    TokenSet KEYWORDS = TokenSet.create(C3Types.KW_ALIAS,
+                                        C3Types.KW_ASM,
                                         C3Types.KW_ASSERT,
                                         C3Types.KW_BITSTRUCT,
                                         C3Types.KW_BREAK,
@@ -155,7 +156,6 @@ public interface C3TokenSets
                                         C3Types.KW_CATCH,
                                         C3Types.KW_CONST,
                                         C3Types.KW_CONTINUE,
-                                        C3Types.KW_DEF,
                                         C3Types.KW_DEFAULT,
                                         C3Types.KW_DEFER,
                                         C3Types.KW_DISTINCT,

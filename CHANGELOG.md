@@ -4,11 +4,14 @@
 
 ## [Unreleased]
 
+## [0.0.25] - 2025-03-13
+
 Please Use 0.0.24 and 0.0.23 for 0.6.8 and earlier.
 
 - Update `$foreach` and `if` syntax with the changes from 0.7.0.
 - Update to new `int?` syntax.
 - Update to new fault definitions.
+- `alias` replaces `def`.
 
 ## [0.0.24] - 2025-03-09
 

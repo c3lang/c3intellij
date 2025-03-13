@@ -2076,13 +2076,13 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_DEF any_ident (LP parameter_list RP)? EQ def_declaration_source attributes? EOS
+  // KW_ALIAS any_ident (LP parameter_list RP)? EQ def_declaration_source attributes? EOS
   public static boolean def_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "def_decl")) return false;
-    if (!nextTokenIs(b, KW_DEF)) return false;
+    if (!nextTokenIs(b, KW_ALIAS)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, DEF_DECL, null);
-    r = consumeToken(b, KW_DEF);
+    r = consumeToken(b, KW_ALIAS);
     r = r && any_ident(b, l + 1);
     p = r; // pin = 2
     r = r && report_error_(b, def_decl_2(b, l + 1));
@@ -2660,49 +2660,55 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_FAULT CONST_IDENT attributes? (COMMA CONST_IDENT attributes?)? EOS
+  // KW_FAULT fault_definition (COMMA fault_definition)? EOS
   public static boolean fault_declaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fault_declaration")) return false;
     if (!nextTokenIs(b, KW_FAULT)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, FAULT_DECLARATION, null);
-    r = consumeTokens(b, 2, KW_FAULT, CONST_IDENT);
+    r = consumeToken(b, KW_FAULT);
+    r = r && fault_definition(b, l + 1);
     p = r; // pin = 2
     r = r && report_error_(b, fault_declaration_2(b, l + 1));
-    r = p && report_error_(b, fault_declaration_3(b, l + 1)) && r;
     r = p && consumeToken(b, EOS) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // attributes?
+  // (COMMA fault_definition)?
   private static boolean fault_declaration_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fault_declaration_2")) return false;
-    attributes(b, l + 1);
+    fault_declaration_2_0(b, l + 1);
     return true;
   }
 
-  // (COMMA CONST_IDENT attributes?)?
-  private static boolean fault_declaration_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fault_declaration_3")) return false;
-    fault_declaration_3_0(b, l + 1);
-    return true;
-  }
-
-  // COMMA CONST_IDENT attributes?
-  private static boolean fault_declaration_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fault_declaration_3_0")) return false;
+  // COMMA fault_definition
+  private static boolean fault_declaration_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fault_declaration_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, COMMA, CONST_IDENT);
-    r = r && fault_declaration_3_0_2(b, l + 1);
+    r = consumeToken(b, COMMA);
+    r = r && fault_definition(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  /* ********************************************************** */
+  // CONST_IDENT attributes?
+  public static boolean fault_definition(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fault_definition")) return false;
+    if (!nextTokenIs(b, CONST_IDENT)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, CONST_IDENT);
+    r = r && fault_definition_1(b, l + 1);
+    exit_section_(b, m, FAULT_DEFINITION, r);
+    return r;
+  }
+
   // attributes?
-  private static boolean fault_declaration_3_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fault_declaration_3_0_2")) return false;
+  private static boolean fault_definition_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fault_definition_1")) return false;
     attributes(b, l + 1);
     return true;
   }
@@ -3559,11 +3565,12 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_ANY | KW_ANYFAULT | KW_ASM | KW_ASSERT | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE | KW_DEF | KW_DEFAULT | KW_DEFER | KW_DISTINCT | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FOR | KW_FN | KW_IF | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE | KW_TRY | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16 | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
+  // KW_ALIAS | KW_ANY | KW_ANYFAULT | KW_ASM | KW_ASSERT | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE | KW_DEFAULT | KW_DEFER | KW_DISTINCT | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FOR | KW_FN | KW_IF | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE | KW_TRY | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16 | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
   static boolean keyword_list(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyword_list")) return false;
     boolean r;
-    r = consumeToken(b, KW_ANY);
+    r = consumeToken(b, KW_ALIAS);
+    if (!r) r = consumeToken(b, KW_ANY);
     if (!r) r = consumeToken(b, KW_ANYFAULT);
     if (!r) r = consumeToken(b, KW_ASM);
     if (!r) r = consumeToken(b, KW_ASSERT);
@@ -3573,7 +3580,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, KW_CATCH);
     if (!r) r = consumeToken(b, KW_CONST);
     if (!r) r = consumeToken(b, KW_CONTINUE);
-    if (!r) r = consumeToken(b, KW_DEF);
     if (!r) r = consumeToken(b, KW_DEFAULT);
     if (!r) r = consumeToken(b, KW_DEFER);
     if (!r) r = consumeToken(b, KW_DISTINCT);
@@ -5451,7 +5457,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // struct_declaration
-  //     | fault_declaration
   //     | enum_declaration
   //     | bitstruct_declaration
   public static boolean type_decl(PsiBuilder b, int l) {
@@ -5459,7 +5464,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, TYPE_DECL, "<type decl>");
     r = struct_declaration(b, l + 1);
-    if (!r) r = fault_declaration(b, l + 1);
     if (!r) r = enum_declaration(b, l + 1);
     if (!r) r = bitstruct_declaration(b, l + 1);
     exit_section_(b, l, m, r, false, null);

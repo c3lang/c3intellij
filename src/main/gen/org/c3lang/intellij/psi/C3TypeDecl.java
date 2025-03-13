@@ -14,9 +14,6 @@ public interface C3TypeDecl extends C3PsiElement {
   C3EnumDeclaration getEnumDeclaration();
 
   @Nullable
-  C3FaultDeclaration getFaultDeclaration();
-
-  @Nullable
   C3StructDeclaration getStructDeclaration();
 
 }

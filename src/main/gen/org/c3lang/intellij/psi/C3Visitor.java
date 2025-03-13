@@ -359,6 +359,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitFaultDefinition(@NotNull C3FaultDefinition o) {
+    visitPsiElement(o);
+  }
+
   public void visitFlatPath(@NotNull C3FlatPath o) {
     visitPsiElement(o);
   }

@@ -96,6 +96,7 @@ public interface C3Types {
   IElementType EXPR_STMT = new C3ElementType("EXPR_STMT");
   IElementType EXPR_TERMINATOR = new C3ElementType("EXPR_TERMINATOR");
   IElementType FAULT_DECLARATION = new C3ElementType("FAULT_DECLARATION");
+  IElementType FAULT_DEFINITION = new C3ElementType("FAULT_DEFINITION");
   IElementType FLAT_PATH = new C3ElementType("FLAT_PATH");
   IElementType FLOAT_TYPE = new C3ElementType("FLOAT_TYPE");
   IElementType FN_PARAMETER_LIST = new C3ElementType("FN_PARAMETER_LIST");
@@ -235,6 +236,7 @@ public interface C3Types {
   IElementType IDENT = new C3TokenType("IDENT");
   IElementType IMPLIES = new C3TokenType("IMPLIES");
   IElementType INT_LITERAL = new C3TokenType("INT_LITERAL");
+  IElementType KW_ALIAS = new C3TokenType("KW_ALIAS");
   IElementType KW_ANY = new C3TokenType("KW_ANY");
   IElementType KW_ANYFAULT = new C3TokenType("KW_ANYFAULT");
   IElementType KW_ASM = new C3TokenType("KW_ASM");
@@ -284,7 +286,6 @@ public interface C3Types {
   IElementType KW_CT_VAREF = new C3TokenType("KW_CT_VAREF");
   IElementType KW_CT_VASPLAT = new C3TokenType("KW_CT_VASPLAT");
   IElementType KW_CT_VATYPE = new C3TokenType("KW_CT_VATYPE");
-  IElementType KW_DEF = new C3TokenType("KW_DEF");
   IElementType KW_DEFAULT = new C3TokenType("KW_DEFAULT");
   IElementType KW_DEFER = new C3TokenType("KW_DEFER");
   IElementType KW_DISTINCT = new C3TokenType("KW_DISTINCT");
@@ -628,6 +629,9 @@ public interface C3Types {
       }
       else if (type == FAULT_DECLARATION) {
         return new C3FaultDeclarationImpl(node);
+      }
+      else if (type == FAULT_DEFINITION) {
+        return new C3FaultDefinitionImpl(node);
       }
       else if (type == FLAT_PATH) {
         return new C3FlatPathImpl(node);

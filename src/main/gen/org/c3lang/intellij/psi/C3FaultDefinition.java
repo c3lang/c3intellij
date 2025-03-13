@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3FaultDeclaration extends C3PsiElement {
+public interface C3FaultDefinition extends C3PsiElement {
 
-  @NotNull
-  List<C3FaultDefinition> getFaultDefinitionList();
+  @Nullable
+  C3Attributes getAttributes();
 
 }

@@ -40,12 +40,6 @@ public class C3TypeDeclImpl extends C3PsiElementImpl implements C3TypeDecl {
 
   @Override
   @Nullable
-  public C3FaultDeclaration getFaultDeclaration() {
-    return findChildByClass(C3FaultDeclaration.class);
-  }
-
-  @Override
-  @Nullable
   public C3StructDeclaration getStructDeclaration() {
     return findChildByClass(C3StructDeclaration.class);
   }

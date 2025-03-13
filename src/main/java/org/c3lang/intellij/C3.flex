@@ -80,7 +80,7 @@ LINE_COMMENT    = "//" .*
 
 
 <YYINITIAL> {
-
+    "alias" { return C3Types.KW_ALIAS; }
     "any" { return C3Types.KW_ANY; }
     "anyfault" { return C3Types.KW_ANYFAULT; }
     "asm" { return C3Types.KW_ASM; }
@@ -91,7 +91,6 @@ LINE_COMMENT    = "//" .*
     "catch" { return C3Types.KW_CATCH; }
     "const" { return C3Types.KW_CONST; }
     "continue" { return C3Types.KW_CONTINUE; }
-    "def" { return C3Types.KW_DEF; }
     "default" { return C3Types.KW_DEFAULT; }
     "defer" { return C3Types.KW_DEFER; }
     "distinct" { return C3Types.KW_DISTINCT; }
