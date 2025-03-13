@@ -449,7 +449,7 @@ fn_parameter_list ::= LP parameter_list? RP
 param_decl ::= parameter [eq_expr_pin]
 parameter_list ::= param_decl (COMMA param_decl)*  { pin(".*")=1 }
 parameter ::= KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDENT | AMP IDENT) attributes? | attributes?)
-    | ELLIPSIS | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
+    | ELLIPSIS | HASH_IDENT attributes?| AMP IDENT attributes?  | IDENT ELLIPSIS? attributes?
     | CT_IDENT | CT_IDENT ELLIPSIS
 
 ct_error_stmt ::= KW_CT_ERROR constant_expr EOS

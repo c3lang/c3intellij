@@ -4385,7 +4385,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT | (HASH_IDENT | AMP IDENT) attributes? | attributes?)
-  //     | ELLIPSIS | HASH_IDENT attributes? | IDENT ELLIPSIS? attributes?
+  //     | ELLIPSIS | HASH_IDENT attributes?| AMP IDENT attributes?  | IDENT ELLIPSIS? attributes?
   //     | CT_IDENT | CT_IDENT ELLIPSIS
   public static boolean parameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter")) return false;
@@ -4395,6 +4395,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, ELLIPSIS);
     if (!r) r = parameter_2(b, l + 1);
     if (!r) r = parameter_3(b, l + 1);
+    if (!r) r = parameter_4(b, l + 1);
     if (!r) r = consumeToken(b, CT_IDENT);
     if (!r) r = parseTokens(b, 0, CT_IDENT, ELLIPSIS);
     exit_section_(b, l, m, r, false, null);
@@ -4531,28 +4532,46 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // IDENT ELLIPSIS? attributes?
+  // AMP IDENT attributes?
   private static boolean parameter_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_3")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, IDENT);
-    r = r && parameter_3_1(b, l + 1);
+    r = consumeTokens(b, 0, AMP, IDENT);
     r = r && parameter_3_2(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // attributes?
+  private static boolean parameter_3_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "parameter_3_2")) return false;
+    attributes(b, l + 1);
+    return true;
+  }
+
+  // IDENT ELLIPSIS? attributes?
+  private static boolean parameter_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "parameter_4")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, IDENT);
+    r = r && parameter_4_1(b, l + 1);
+    r = r && parameter_4_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
   // ELLIPSIS?
-  private static boolean parameter_3_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "parameter_3_1")) return false;
+  private static boolean parameter_4_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "parameter_4_1")) return false;
     consumeToken(b, ELLIPSIS);
     return true;
   }
 
   // attributes?
-  private static boolean parameter_3_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "parameter_3_2")) return false;
+  private static boolean parameter_4_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "parameter_4_2")) return false;
     attributes(b, l + 1);
     return true;
   }

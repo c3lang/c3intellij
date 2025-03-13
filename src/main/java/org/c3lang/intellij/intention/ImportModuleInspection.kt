@@ -14,9 +14,7 @@ import org.c3lang.intellij.psi.*
 
 
 class ImportModuleInspection : LocalInspectionTool() {
-    private val log = Logger.getInstance(
-        ImportCompletionContributor::class.java
-    )
+    private val log = Logger.getInstance(ImportCompletionContributor::class.java)
 
     override fun getDisplayName(): String = "Import module"
 
@@ -57,24 +55,23 @@ class ImportModuleInspection : LocalInspectionTool() {
                 }
                 val importProvider = checkNotNull(psi.parentOfType<C3ModuleDefinition>())
 
-                val importIntention = element.fqName.module ?: return
+                val importIntention : ModuleName = element.fqName.module ?: return
 
-                if (importProvider.imports.contains(importIntention)) {
-                    return
-                }
+                if (importIntention.value == "std::core" || importIntention.value.startsWith("std::core::")) return;
+
+                if (importProvider.imports.contains(importIntention)) return
 
                 val applied = psi.removeUserData(AddImportQuickFix.KEY)
-                if (applied == null) {
-                    holder.registerProblem(
-                        psi,
-                        "Import ${importIntention.value}",
-                        ProblemHighlightType.WEAK_WARNING,
-                        AddImportQuickFix(
-                            target = psi,
-                            importIntention = importIntention,
-                        )
+                if (applied != null) return
+                holder.registerProblem(
+                    psi,
+                    "Import ${importIntention.value}",
+                    ProblemHighlightType.WEAK_WARNING,
+                    AddImportQuickFix(
+                        target = psi,
+                        importIntention = importIntention,
                     )
-                }
+                )
             }
         }
     }
