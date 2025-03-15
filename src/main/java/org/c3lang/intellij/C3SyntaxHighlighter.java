@@ -53,7 +53,6 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
     public final static TextAttributesKey ENUM_NAME_KEY = createTextAttributesKey("C3_ENUM", TYPE_DEFINITION_KEY);
     public final static TextAttributesKey FAULT_NAME_KEY = createTextAttributesKey("C3_FAULT", ENUM_NAME_KEY);
     public final static TextAttributesKey UNION_NAME_KEY = createTextAttributesKey("C3_UNION", STRUCT_NAME_KEY);
-    public final static TextAttributesKey TYPEDEF_NAME_KEY = createTextAttributesKey("C3_TYPEDEF", TYPE_DEFINITION_KEY);
     public final static TextAttributesKey BITSTRUCT_NAME_KEY = createTextAttributesKey("C3_BITSTRUCT", STRUCT_NAME_KEY);
     public final static TextAttributesKey ATTRIBUTE_KEY = createTextAttributesKey("C3_ATTRIBUTE", DefaultLanguageHighlighterColors.METADATA);
     public final static TextAttributesKey BRACES_KEY = createTextAttributesKey("C3_BRACES", DefaultLanguageHighlighterColors.BRACES);
@@ -61,6 +60,10 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
     public final static TextAttributesKey PARENTHESES_KEY = createTextAttributesKey("C3_PARENTHESES", DefaultLanguageHighlighterColors.PARENTHESES);
     public final static TextAttributesKey IDENTIFIER_KEY = createTextAttributesKey("C3_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER);
     public final static TextAttributesKey COMMA_KEY = createTextAttributesKey("C3_COMMA", DefaultLanguageHighlighterColors.COMMA);
+    public final static TextAttributesKey TYPEDEF_NAME_KEY = createTextAttributesKey("C3_TYPEDEF", TYPE_DEFINITION_KEY);
+    public final static TextAttributesKey ALIAS_TYPE_NAME_KEY = createTextAttributesKey("C3_ALIAS_TYPE", TYPEDEF_NAME_KEY);
+    public final static TextAttributesKey ATTRDEF_ATTRIBUTE_KEY = createTextAttributesKey("C3_ATTRDEF_ATTRIBUTE", ATTRIBUTE_KEY);
+    public final static TextAttributesKey ALIAS_NAME_KEY = createTextAttributesKey("C3_ALIAS_IDENTIFIER", TYPE_KEY);
 
     public final static TextAttributesKey LABEL_KEY = createTextAttributesKey("C3_LABEL", DefaultLanguageHighlighterColors.LABEL);
     public final static TextAttributesKey EOS_KEY = createTextAttributesKey("C3_EOS", DefaultLanguageHighlighterColors.SEMICOLON);

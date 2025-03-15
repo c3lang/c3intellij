@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3BitstructSimpleDefField extends C3PsiElement {
+public interface C3FaultdefDecl extends C3PsiElement {
 
   @NotNull
-  C3BaseType getBaseType();
+  List<C3FaultDefinition> getFaultDefinitionList();
 
 }

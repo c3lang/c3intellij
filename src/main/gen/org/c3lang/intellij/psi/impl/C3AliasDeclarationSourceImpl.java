@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3DefDeclarationSourceImpl extends C3PsiElementImpl implements C3DefDeclarationSource {
+public class C3AliasDeclarationSourceImpl extends C3PsiElementImpl implements C3AliasDeclarationSource {
 
-  public C3DefDeclarationSourceImpl(@NotNull ASTNode node) {
+  public C3AliasDeclarationSourceImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitDefDeclarationSource(this);
+    visitor.visitAliasDeclarationSource(this);
   }
 
   @Override
@@ -28,20 +28,14 @@ public class C3DefDeclarationSourceImpl extends C3PsiElementImpl implements C3De
 
   @Override
   @Nullable
-  public C3AnyIdent getAnyIdent() {
-    return findChildByClass(C3AnyIdent.class);
-  }
-
-  @Override
-  @Nullable
-  public C3DefAttrValues getDefAttrValues() {
-    return findChildByClass(C3DefAttrValues.class);
-  }
-
-  @Override
-  @Nullable
   public C3GenericParameters getGenericParameters() {
     return findChildByClass(C3GenericParameters.class);
+  }
+
+  @Override
+  @Nullable
+  public C3PathAtIdent getPathAtIdent() {
+    return findChildByClass(C3PathAtIdent.class);
   }
 
   @Override
@@ -54,12 +48,6 @@ public class C3DefDeclarationSourceImpl extends C3PsiElementImpl implements C3De
   @Nullable
   public C3PathIdent getPathIdent() {
     return findChildByClass(C3PathIdent.class);
-  }
-
-  @Override
-  @Nullable
-  public C3TypedefType getTypedefType() {
-    return findChildByClass(C3TypedefType.class);
   }
 
 }

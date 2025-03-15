@@ -8,7 +8,16 @@ import com.intellij.psi.PsiElement;
 public interface C3TopLevel extends C3PsiElement {
 
   @Nullable
+  C3AliasDecl getAliasDecl();
+
+  @Nullable
+  C3AliasTypeDecl getAliasTypeDecl();
+
+  @Nullable
   C3AsmDeclaration getAsmDeclaration();
+
+  @Nullable
+  C3AttrdefDecl getAttrdefDecl();
 
   @Nullable
   C3ConstDeclarationStmt getConstDeclarationStmt();
@@ -26,13 +35,7 @@ public interface C3TopLevel extends C3PsiElement {
   C3CtIncludeStmt getCtIncludeStmt();
 
   @Nullable
-  C3DefDecl getDefDecl();
-
-  @Nullable
-  C3DistinctDeclaration getDistinctDeclaration();
-
-  @Nullable
-  C3FaultDeclaration getFaultDeclaration();
+  C3FaultdefDecl getFaultdefDecl();
 
   @Nullable
   C3FuncDefinition getFuncDefinition();
@@ -51,5 +54,8 @@ public interface C3TopLevel extends C3PsiElement {
 
   @Nullable
   C3TypeDecl getTypeDecl();
+
+  @Nullable
+  C3TypedefDecl getTypedefDecl();
 
 }

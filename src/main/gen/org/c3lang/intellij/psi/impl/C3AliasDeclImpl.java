@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3FaultDeclarationImpl extends C3PsiElementImpl implements C3FaultDeclaration {
+public class C3AliasDeclImpl extends C3PsiElementImpl implements C3AliasDecl {
 
-  public C3FaultDeclarationImpl(@NotNull ASTNode node) {
+  public C3AliasDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitFaultDeclaration(this);
+    visitor.visitAliasDecl(this);
   }
 
   @Override
@@ -27,9 +27,21 @@ public class C3FaultDeclarationImpl extends C3PsiElementImpl implements C3FaultD
   }
 
   @Override
+  @Nullable
+  public C3AliasDeclarationSource getAliasDeclarationSource() {
+    return findChildByClass(C3AliasDeclarationSource.class);
+  }
+
+  @Override
   @NotNull
-  public List<C3FaultDefinition> getFaultDefinitionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3FaultDefinition.class);
+  public C3AliasName getAliasName() {
+    return findNotNullChildByClass(C3AliasName.class);
+  }
+
+  @Override
+  @Nullable
+  public C3Attributes getAttributes() {
+    return findChildByClass(C3Attributes.class);
   }
 
 }

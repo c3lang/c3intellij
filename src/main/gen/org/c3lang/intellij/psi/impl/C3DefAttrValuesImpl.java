@@ -27,9 +27,9 @@ public class C3DefAttrValuesImpl extends C3PsiElementImpl implements C3DefAttrVa
   }
 
   @Override
-  @Nullable
-  public C3Attributes getAttributes() {
-    return findChildByClass(C3Attributes.class);
+  @NotNull
+  public List<C3Attribute> getAttributeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Attribute.class);
   }
 
 }

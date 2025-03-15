@@ -82,9 +82,9 @@ LINE_COMMENT    = "//" .*
 <YYINITIAL> {
     "alias" { return C3Types.KW_ALIAS; }
     "any" { return C3Types.KW_ANY; }
-    "anyfault" { return C3Types.KW_ANYFAULT; }
     "asm" { return C3Types.KW_ASM; }
     "assert" { return C3Types.KW_ASSERT; }
+    "attrdef" { return C3Types.KW_ATTRDEF; }
     "bitstruct" { return C3Types.KW_BITSTRUCT; }
     "break" { return C3Types.KW_BREAK; }
     "case" { return C3Types.KW_CASE; }
@@ -93,7 +93,7 @@ LINE_COMMENT    = "//" .*
     "continue" { return C3Types.KW_CONTINUE; }
     "default" { return C3Types.KW_DEFAULT; }
     "defer" { return C3Types.KW_DEFER; }
-    "distinct" { return C3Types.KW_DISTINCT; }
+    "typedef" { return C3Types.KW_TYPEDEF; }
     "do" { return C3Types.KW_DO; }
     "else" { return C3Types.KW_ELSE; }
     "enum" { return C3Types.KW_ENUM; }
@@ -102,6 +102,7 @@ LINE_COMMENT    = "//" .*
     "foreach_r" { return C3Types.KW_FOREACH_R; }
     "false" { return C3Types.KW_FALSE; }
     "fault" { return C3Types.KW_FAULT; }
+    "faultdef" { return C3Types.KW_FAULTDEF; }
     "for" { return C3Types.KW_FOR; }
     "fn" { return C3Types.KW_FN; }
     "if" { return C3Types.KW_IF; }
@@ -119,6 +120,7 @@ LINE_COMMENT    = "//" .*
     "tlocal" { return C3Types.KW_TLOCAL; }
     "true" { return C3Types.KW_TRUE; }
     "try" { return C3Types.KW_TRY; }
+    "typedef" { return C3Type.KW_TYPEDEF; }
     "typeid" { return C3Types.KW_TYPEID; }
     "union" { return C3Types.KW_UNION; }
     "var" { return C3Types.KW_VAR; }

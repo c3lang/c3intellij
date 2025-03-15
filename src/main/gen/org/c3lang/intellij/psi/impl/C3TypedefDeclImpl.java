@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3MacroFuncBodyImpl extends C3PsiElementImpl implements C3MacroFuncBody {
+public class C3TypedefDeclImpl extends C3PsiElementImpl implements C3TypedefDecl {
 
-  public C3MacroFuncBodyImpl(@NotNull ASTNode node) {
+  public C3TypedefDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitMacroFuncBody(this);
+    visitor.visitTypedefDecl(this);
   }
 
   @Override
@@ -28,20 +28,26 @@ public class C3MacroFuncBodyImpl extends C3PsiElementImpl implements C3MacroFunc
 
   @Override
   @Nullable
-  public C3CompoundStatement getCompoundStatement() {
-    return findChildByClass(C3CompoundStatement.class);
+  public C3Attributes getAttributes() {
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @Nullable
-  public C3ImpliesBody getImpliesBody() {
-    return findChildByClass(C3ImpliesBody.class);
+  public C3InterfaceImpl getInterfaceImpl() {
+    return findChildByClass(C3InterfaceImpl.class);
+  }
+
+  @Override
+  @NotNull
+  public C3TypeName getTypeName() {
+    return findNotNullChildByClass(C3TypeName.class);
   }
 
   @Override
   @Nullable
-  public C3MacroImpliesBody getMacroImpliesBody() {
-    return findChildByClass(C3MacroImpliesBody.class);
+  public C3TypedefType getTypedefType() {
+    return findChildByClass(C3TypedefType.class);
   }
 
 }

@@ -10,20 +10,38 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3AnyIdentImpl extends C3PsiElementImpl implements C3AnyIdent {
+public class C3AliasTypeDeclImpl extends C3PsiElementImpl implements C3AliasTypeDecl {
 
-  public C3AnyIdentImpl(@NotNull ASTNode node) {
+  public C3AliasTypeDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitAnyIdent(this);
+    visitor.visitAliasTypeDecl(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @Nullable
+  public C3Attributes getAttributes() {
+    return findChildByClass(C3Attributes.class);
+  }
+
+  @Override
+  @NotNull
+  public C3TypeName getTypeName() {
+    return findNotNullChildByClass(C3TypeName.class);
+  }
+
+  @Override
+  @Nullable
+  public C3TypedefType getTypedefType() {
+    return findChildByClass(C3TypedefType.class);
   }
 
 }

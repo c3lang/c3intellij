@@ -5,9 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ExprErr extends C3PsiElement {
+public interface C3AliasDecl extends C3PsiElement {
+
+  @Nullable
+  C3AliasDeclarationSource getAliasDeclarationSource();
 
   @NotNull
-  C3Expr getExpr();
+  C3AliasName getAliasName();
+
+  @Nullable
+  C3Attributes getAttributes();
 
 }

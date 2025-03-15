@@ -10,20 +10,26 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3DistinctDeclarationImpl extends C3PsiElementImpl implements C3DistinctDeclaration {
+public class C3AttrdefDeclImpl extends C3PsiElementImpl implements C3AttrdefDecl {
 
-  public C3DistinctDeclarationImpl(@NotNull ASTNode node) {
+  public C3AttrdefDeclImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitDistinctDeclaration(this);
+    visitor.visitAttrdefDecl(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public C3AttributeUserName getAttributeUserName() {
+    return findNotNullChildByClass(C3AttributeUserName.class);
   }
 
   @Override
@@ -34,26 +40,14 @@ public class C3DistinctDeclarationImpl extends C3PsiElementImpl implements C3Dis
 
   @Override
   @Nullable
-  public C3GenericParameters getGenericParameters() {
-    return findChildByClass(C3GenericParameters.class);
+  public C3DefAttrValues getDefAttrValues() {
+    return findChildByClass(C3DefAttrValues.class);
   }
 
   @Override
   @Nullable
-  public C3InterfaceImpl getInterfaceImpl() {
-    return findChildByClass(C3InterfaceImpl.class);
-  }
-
-  @Override
-  @Nullable
-  public C3Type getType() {
-    return findChildByClass(C3Type.class);
-  }
-
-  @Override
-  @NotNull
-  public C3TypeName getTypeName() {
-    return findNotNullChildByClass(C3TypeName.class);
+  public C3ParameterList getParameterList() {
+    return findChildByClass(C3ParameterList.class);
   }
 
 }

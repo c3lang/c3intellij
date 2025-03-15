@@ -9,7 +9,10 @@ import org.c3lang.intellij.psi.impl.*;
 public interface C3Types {
 
   IElementType ACCESS_IDENT = new C3ElementType("ACCESS_IDENT");
-  IElementType ANY_IDENT = new C3ElementType("ANY_IDENT");
+  IElementType ALIAS_DECL = new C3ElementType("ALIAS_DECL");
+  IElementType ALIAS_DECLARATION_SOURCE = new C3ElementType("ALIAS_DECLARATION_SOURCE");
+  IElementType ALIAS_NAME = new C3ElementType("ALIAS_NAME");
+  IElementType ALIAS_TYPE_DECL = new C3ElementType("ALIAS_TYPE_DECL");
   IElementType ARG = new C3ElementType("ARG");
   IElementType ARG_LIST = new C3ElementType("ARG_LIST");
   IElementType ASM_ADDR = new C3ElementType("ASM_ADDR");
@@ -22,11 +25,13 @@ public interface C3Types {
   IElementType ASM_STMT = new C3ElementType("ASM_STMT");
   IElementType ASSERT_STMT = new C3ElementType("ASSERT_STMT");
   IElementType ASSIGN_TYPE_EXPR = new C3ElementType("ASSIGN_TYPE_EXPR");
+  IElementType ATTRDEF_DECL = new C3ElementType("ATTRDEF_DECL");
   IElementType ATTRIBUTE = new C3ElementType("ATTRIBUTE");
   IElementType ATTRIBUTES = new C3ElementType("ATTRIBUTES");
   IElementType ATTRIBUTE_NAME = new C3ElementType("ATTRIBUTE_NAME");
   IElementType ATTRIBUTE_OPERATOR_EXPR = new C3ElementType("ATTRIBUTE_OPERATOR_EXPR");
   IElementType ATTRIBUTE_PARAM_LIST = new C3ElementType("ATTRIBUTE_PARAM_LIST");
+  IElementType ATTRIBUTE_USER_NAME = new C3ElementType("ATTRIBUTE_USER_NAME");
   IElementType ATTR_PARAM = new C3ElementType("ATTR_PARAM");
   IElementType BASE_TYPE = new C3ElementType("BASE_TYPE");
   IElementType BINARY_EXPR = new C3ElementType("BINARY_EXPR");
@@ -80,9 +85,6 @@ public interface C3Types {
   IElementType DEFAULT_STMT = new C3ElementType("DEFAULT_STMT");
   IElementType DEFER_STMT = new C3ElementType("DEFER_STMT");
   IElementType DEF_ATTR_VALUES = new C3ElementType("DEF_ATTR_VALUES");
-  IElementType DEF_DECL = new C3ElementType("DEF_DECL");
-  IElementType DEF_DECLARATION_SOURCE = new C3ElementType("DEF_DECLARATION_SOURCE");
-  IElementType DISTINCT_DECLARATION = new C3ElementType("DISTINCT_DECLARATION");
   IElementType DO_STMT = new C3ElementType("DO_STMT");
   IElementType ELSE_PART = new C3ElementType("ELSE_PART");
   IElementType ENUM_CONSTANT = C3StubElementTypeFactory.stubFactory("ENUM_CONSTANT");
@@ -95,7 +97,7 @@ public interface C3Types {
   IElementType EXPRESSION_LIST = new C3ElementType("EXPRESSION_LIST");
   IElementType EXPR_STMT = new C3ElementType("EXPR_STMT");
   IElementType EXPR_TERMINATOR = new C3ElementType("EXPR_TERMINATOR");
-  IElementType FAULT_DECLARATION = new C3ElementType("FAULT_DECLARATION");
+  IElementType FAULTDEF_DECL = new C3ElementType("FAULTDEF_DECL");
   IElementType FAULT_DEFINITION = new C3ElementType("FAULT_DEFINITION");
   IElementType FLAT_PATH = new C3ElementType("FLAT_PATH");
   IElementType FLOAT_TYPE = new C3ElementType("FLOAT_TYPE");
@@ -142,6 +144,7 @@ public interface C3Types {
   IElementType MACRO_DEFINITION = C3StubElementTypeFactory.stubFactory("MACRO_DEFINITION");
   IElementType MACRO_FUNC_BODY = new C3ElementType("MACRO_FUNC_BODY");
   IElementType MACRO_HEADER = new C3ElementType("MACRO_HEADER");
+  IElementType MACRO_IMPLIES_BODY = new C3ElementType("MACRO_IMPLIES_BODY");
   IElementType MACRO_NAME = new C3ElementType("MACRO_NAME");
   IElementType MACRO_PARAMS = new C3ElementType("MACRO_PARAMS");
   IElementType MODULE = C3StubElementTypeFactory.stubFactory("MODULE");
@@ -184,6 +187,7 @@ public interface C3Types {
   IElementType TRY_UNWRAP = new C3ElementType("TRY_UNWRAP");
   IElementType TRY_UNWRAP_CHAIN = new C3ElementType("TRY_UNWRAP_CHAIN");
   IElementType TYPE = new C3ElementType("TYPE");
+  IElementType TYPEDEF_DECL = new C3ElementType("TYPEDEF_DECL");
   IElementType TYPEDEF_TYPE = new C3ElementType("TYPEDEF_TYPE");
   IElementType TYPE_ACCESS_EXPR = new C3ElementType("TYPE_ACCESS_EXPR");
   IElementType TYPE_DECL = new C3ElementType("TYPE_DECL");
@@ -238,9 +242,9 @@ public interface C3Types {
   IElementType INT_LITERAL = new C3TokenType("INT_LITERAL");
   IElementType KW_ALIAS = new C3TokenType("KW_ALIAS");
   IElementType KW_ANY = new C3TokenType("KW_ANY");
-  IElementType KW_ANYFAULT = new C3TokenType("KW_ANYFAULT");
   IElementType KW_ASM = new C3TokenType("KW_ASM");
   IElementType KW_ASSERT = new C3TokenType("KW_ASSERT");
+  IElementType KW_ATTRDEF = new C3TokenType("KW_ATTRDEF");
   IElementType KW_BFLOAT16 = new C3TokenType("KW_BFLOAT16");
   IElementType KW_BITSTRUCT = new C3TokenType("KW_BITSTRUCT");
   IElementType KW_BOOL = new C3TokenType("KW_BOOL");
@@ -288,7 +292,6 @@ public interface C3Types {
   IElementType KW_CT_VATYPE = new C3TokenType("KW_CT_VATYPE");
   IElementType KW_DEFAULT = new C3TokenType("KW_DEFAULT");
   IElementType KW_DEFER = new C3TokenType("KW_DEFER");
-  IElementType KW_DISTINCT = new C3TokenType("KW_DISTINCT");
   IElementType KW_DO = new C3TokenType("KW_DO");
   IElementType KW_DOUBLE = new C3TokenType("KW_DOUBLE");
   IElementType KW_ELSE = new C3TokenType("KW_ELSE");
@@ -296,6 +299,7 @@ public interface C3Types {
   IElementType KW_EXTERN = new C3TokenType("KW_EXTERN");
   IElementType KW_FALSE = new C3TokenType("KW_FALSE");
   IElementType KW_FAULT = new C3TokenType("KW_FAULT");
+  IElementType KW_FAULTDEF = new C3TokenType("KW_FAULTDEF");
   IElementType KW_FLOAT = new C3TokenType("KW_FLOAT");
   IElementType KW_FLOAT128 = new C3TokenType("KW_FLOAT128");
   IElementType KW_FLOAT16 = new C3TokenType("KW_FLOAT16");
@@ -325,6 +329,7 @@ public interface C3Types {
   IElementType KW_TLOCAL = new C3TokenType("KW_TLOCAL");
   IElementType KW_TRUE = new C3TokenType("KW_TRUE");
   IElementType KW_TRY = new C3TokenType("KW_TRY");
+  IElementType KW_TYPEDEF = new C3TokenType("KW_TYPEDEF");
   IElementType KW_TYPEID = new C3TokenType("KW_TYPEID");
   IElementType KW_UINT = new C3TokenType("KW_UINT");
   IElementType KW_UINT128 = new C3TokenType("KW_UINT128");
@@ -375,8 +380,17 @@ public interface C3Types {
       if (type == ACCESS_IDENT) {
         return new C3AccessIdentImpl(node);
       }
-      else if (type == ANY_IDENT) {
-        return new C3AnyIdentImpl(node);
+      else if (type == ALIAS_DECL) {
+        return new C3AliasDeclImpl(node);
+      }
+      else if (type == ALIAS_DECLARATION_SOURCE) {
+        return new C3AliasDeclarationSourceImpl(node);
+      }
+      else if (type == ALIAS_NAME) {
+        return new C3AliasNameImpl(node);
+      }
+      else if (type == ALIAS_TYPE_DECL) {
+        return new C3AliasTypeDeclImpl(node);
       }
       else if (type == ARG) {
         return new C3ArgImpl(node);
@@ -414,6 +428,9 @@ public interface C3Types {
       else if (type == ASSIGN_TYPE_EXPR) {
         return new C3AssignTypeExprImpl(node);
       }
+      else if (type == ATTRDEF_DECL) {
+        return new C3AttrdefDeclImpl(node);
+      }
       else if (type == ATTRIBUTE) {
         return new C3AttributeImpl(node);
       }
@@ -428,6 +445,9 @@ public interface C3Types {
       }
       else if (type == ATTRIBUTE_PARAM_LIST) {
         return new C3AttributeParamListImpl(node);
+      }
+      else if (type == ATTRIBUTE_USER_NAME) {
+        return new C3AttributeUserNameImpl(node);
       }
       else if (type == ATTR_PARAM) {
         return new C3AttrParamImpl(node);
@@ -585,15 +605,6 @@ public interface C3Types {
       else if (type == DEF_ATTR_VALUES) {
         return new C3DefAttrValuesImpl(node);
       }
-      else if (type == DEF_DECL) {
-        return new C3DefDeclImpl(node);
-      }
-      else if (type == DEF_DECLARATION_SOURCE) {
-        return new C3DefDeclarationSourceImpl(node);
-      }
-      else if (type == DISTINCT_DECLARATION) {
-        return new C3DistinctDeclarationImpl(node);
-      }
       else if (type == DO_STMT) {
         return new C3DoStmtImpl(node);
       }
@@ -627,8 +638,8 @@ public interface C3Types {
       else if (type == EXPR_TERMINATOR) {
         return new C3ExprTerminatorImpl(node);
       }
-      else if (type == FAULT_DECLARATION) {
-        return new C3FaultDeclarationImpl(node);
+      else if (type == FAULTDEF_DECL) {
+        return new C3FaultdefDeclImpl(node);
       }
       else if (type == FAULT_DEFINITION) {
         return new C3FaultDefinitionImpl(node);
@@ -768,6 +779,9 @@ public interface C3Types {
       else if (type == MACRO_HEADER) {
         return new C3MacroHeaderImpl(node);
       }
+      else if (type == MACRO_IMPLIES_BODY) {
+        return new C3MacroImpliesBodyImpl(node);
+      }
       else if (type == MACRO_NAME) {
         return new C3MacroNameImpl(node);
       }
@@ -893,6 +907,9 @@ public interface C3Types {
       }
       else if (type == TYPE) {
         return new C3TypeImpl(node);
+      }
+      else if (type == TYPEDEF_DECL) {
+        return new C3TypedefDeclImpl(node);
       }
       else if (type == TYPEDEF_TYPE) {
         return new C3TypedefTypeImpl(node);

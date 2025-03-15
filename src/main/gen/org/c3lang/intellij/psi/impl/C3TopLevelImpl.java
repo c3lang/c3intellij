@@ -28,8 +28,26 @@ public class C3TopLevelImpl extends C3PsiElementImpl implements C3TopLevel {
 
   @Override
   @Nullable
+  public C3AliasDecl getAliasDecl() {
+    return findChildByClass(C3AliasDecl.class);
+  }
+
+  @Override
+  @Nullable
+  public C3AliasTypeDecl getAliasTypeDecl() {
+    return findChildByClass(C3AliasTypeDecl.class);
+  }
+
+  @Override
+  @Nullable
   public C3AsmDeclaration getAsmDeclaration() {
     return findChildByClass(C3AsmDeclaration.class);
+  }
+
+  @Override
+  @Nullable
+  public C3AttrdefDecl getAttrdefDecl() {
+    return findChildByClass(C3AttrdefDecl.class);
   }
 
   @Override
@@ -64,20 +82,8 @@ public class C3TopLevelImpl extends C3PsiElementImpl implements C3TopLevel {
 
   @Override
   @Nullable
-  public C3DefDecl getDefDecl() {
-    return findChildByClass(C3DefDecl.class);
-  }
-
-  @Override
-  @Nullable
-  public C3DistinctDeclaration getDistinctDeclaration() {
-    return findChildByClass(C3DistinctDeclaration.class);
-  }
-
-  @Override
-  @Nullable
-  public C3FaultDeclaration getFaultDeclaration() {
-    return findChildByClass(C3FaultDeclaration.class);
+  public C3FaultdefDecl getFaultdefDecl() {
+    return findChildByClass(C3FaultdefDecl.class);
   }
 
   @Override
@@ -114,6 +120,12 @@ public class C3TopLevelImpl extends C3PsiElementImpl implements C3TopLevel {
   @Nullable
   public C3TypeDecl getTypeDecl() {
     return findChildByClass(C3TypeDecl.class);
+  }
+
+  @Override
+  @Nullable
+  public C3TypedefDecl getTypedefDecl() {
+    return findChildByClass(C3TypedefDecl.class);
   }
 
 }

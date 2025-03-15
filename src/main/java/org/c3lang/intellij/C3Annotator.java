@@ -28,7 +28,11 @@ public class C3Annotator implements Annotator
         {
             return C3SyntaxHighlighter.ENUM_NAME_KEY;
         }
-        else if (definition instanceof C3DefDecl)
+        else if (definition instanceof C3AliasTypeDecl)
+        {
+            return C3SyntaxHighlighter.ALIAS_TYPE_NAME_KEY;
+        }
+        else if (definition instanceof C3TypedefDecl)
         {
             return C3SyntaxHighlighter.TYPEDEF_NAME_KEY;
         }
@@ -39,94 +43,51 @@ public class C3Annotator implements Annotator
         return C3SyntaxHighlighter.TYPE_DEFINITION_KEY;
     }
 
-    private void annotate(@NotNull C3DefDecl element, @NotNull AnnotationHolder annotationHolder)
+    private void annotate(@NotNull C3AliasDecl element, @NotNull AnnotationHolder annotationHolder)
     {
-        C3AnyIdent ident = element.getAnyIdent();
-        ASTNode ident_node = ident.getNode();
-        boolean is_attribute = ident_node.findChildByType(C3Types.AT_TYPE_IDENT) != null;
-        boolean is_type = !is_attribute && ident_node.findChildByType(C3Types.TYPE_IDENT) != null;
-        boolean is_ident = !is_type && ident_node.findChildByType(C3Types.IDENT) != null;
-        boolean is_const = !is_ident && ident_node.findChildByType(C3Types.CONST_IDENT) != null;
+        annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                                    .textAttributes(C3SyntaxHighlighter.ALIAS_NAME_KEY).range(element.getAliasName()).create();
+        C3AliasDeclarationSource source = element.getAliasDeclarationSource();
+        assert source != null;
+        boolean is_ident = element.getAliasName().getNode().findChildByType(C3Types.IDENT) != null;
+        boolean is_at_ident = !is_ident && element.getAliasName().getNode().findChildByType(C3Types.AT_IDENT) != null;
+        boolean is_const = !is_at_ident && !is_ident;
 
-        if (!is_attribute && !is_ident && !is_const && !is_type)
-        {
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Invalid alias name.")
-                            .range(ident)
-                            .create();
-            return;
-        }
-        C3DefDeclarationSource source = element.getDefDeclarationSource();
-        if (source.getDefAttrValues() != null && !is_attribute)
-        {
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Expected an attribute name here.")
-                            .range(ident)
-                            .create();
-        }
-        if (is_attribute)
-        {
-            if (source.getDefAttrValues() != null)
-            {
-                if (source.getGenericParameters() != null)
-                {
-                    annotationHolder.newAnnotation(HighlightSeverity.ERROR,
-                                                   "Attributes may not have generic parameterization.")
-                                    .range(source.getGenericParameters())
-                                    .create();
-                }
-                return;
-            }
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "An attribute should be followed by a '{ ... }' containing attributes.")
-                            .range(ident)
-                            .create();
-            return;
-        }
-        if (is_ident || is_const)
-        {
-            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
-                            .textAttributes(C3SyntaxHighlighter.FUNCTION_KEY)
-                            .range(ident)
-                            .create();
-        }
-        else if (is_type)
-        {
-            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
-                            .textAttributes(C3SyntaxHighlighter.TYPE_KEY).range(ident).create();
-        }
-        if (source.getAnyIdent() != null)
-        {
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR,
-                                           is_type ? "A type was expected." : "An identifier was expected.")
-                            .range(source.getAnyIdent())
-                            .create();
-            return;
-        }
-        if (is_type)
-        {
-            if (source.getTypedefType() == null)
-            {
-                annotationHolder.newAnnotation(HighlightSeverity.ERROR, "A type name cannot alias a non-type.")
-                                .range(ident)
-                                .create();
-            }
-            return;
-        }
-        if (source.getTypedefType() != null)
-        {
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "A capitalized type name was expected as the alias.")
-                            .range(ident)
-                            .create();
-        }
         if (source.getPathConst() != null && !is_const)
         {
             annotationHolder.newAnnotation(HighlightSeverity.ERROR, "An alias of a constant must also be all caps.")
-                            .range(ident)
+                            .range(element.getAliasName())
                             .create();
         }
-        if (source.getPathIdent() != null && is_const)
+        if (source.getPathIdent() != null)
         {
-            annotationHolder.newAnnotation(HighlightSeverity.ERROR, "A const alias may not alias non-const identifiers.")
-                            .range(source.getPathIdent())
-                            .create();
+            if (is_const)
+            {
+                annotationHolder.newAnnotation(HighlightSeverity.ERROR, "A const alias may not alias non-const identifiers.")
+                                .range(source.getPathIdent())
+                                .create();
+            }
+            else if (is_at_ident)
+            {
+                annotationHolder.newAnnotation(HighlightSeverity.ERROR, "An @-alias alias may not alias non-@ identifiers.")
+                                .range(source.getPathIdent())
+                                .create();
+            }
+        }
+        if (source.getPathAtIdent() != null)
+        {
+            if (is_const)
+            {
+                annotationHolder.newAnnotation(HighlightSeverity.ERROR, "A const alias may not alias an @-identifiers.")
+                                .range(source.getPathAtIdent())
+                                .create();
+            }
+            else if (is_ident)
+            {
+                annotationHolder.newAnnotation(HighlightSeverity.ERROR, "An @-alias may not alias non-@ identifiers.")
+                                .range(source.getPathIdent())
+                                .create();
+            }
         }
     }
 
@@ -319,9 +280,24 @@ public class C3Annotator implements Annotator
         {
             annotateString(expr, annotationHolder);
         }
-        else if (psiElement instanceof C3DefDecl element)
+        else if (psiElement instanceof C3AliasDecl element)
         {
             annotate(element, annotationHolder);
+        }
+        else if (psiElement instanceof C3AttrdefDecl element)
+        {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                                        .textAttributes(C3SyntaxHighlighter.ATTRDEF_ATTRIBUTE_KEY).range(element.getAttributeUserName()).create();
+        }
+        else if (psiElement instanceof C3AliasTypeDecl element)
+        {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                                        .textAttributes(C3SyntaxHighlighter.ALIAS_TYPE_NAME_KEY).range(element.getTypeName()).create();
+        }
+        else if (psiElement instanceof C3TypedefDecl element)
+        {
+            annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                                        .textAttributes(C3SyntaxHighlighter.TYPEDEF_NAME_KEY).range(element.getTypeName()).create();
         }
         else if (psiElement instanceof C3Type || psiElement instanceof C3OptionalType)
         {

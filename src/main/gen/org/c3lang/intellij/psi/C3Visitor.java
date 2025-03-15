@@ -10,7 +10,19 @@ public class C3Visitor extends PsiElementVisitor {
     visitAccessIdentMixin(o);
   }
 
-  public void visitAnyIdent(@NotNull C3AnyIdent o) {
+  public void visitAliasDecl(@NotNull C3AliasDecl o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAliasDeclarationSource(@NotNull C3AliasDeclarationSource o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAliasName(@NotNull C3AliasName o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAliasTypeDecl(@NotNull C3AliasTypeDecl o) {
     visitPsiElement(o);
   }
 
@@ -66,6 +78,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAttrdefDecl(@NotNull C3AttrdefDecl o) {
+    visitPsiElement(o);
+  }
+
   public void visitAttribute(@NotNull C3Attribute o) {
     visitPsiElement(o);
   }
@@ -79,6 +95,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitAttributeParamList(@NotNull C3AttributeParamList o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAttributeUserName(@NotNull C3AttributeUserName o) {
     visitPsiElement(o);
   }
 
@@ -283,14 +303,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitDefDecl(@NotNull C3DefDecl o) {
-    visitPsiElement(o);
-  }
-
-  public void visitDefDeclarationSource(@NotNull C3DefDeclarationSource o) {
-    visitPsiElement(o);
-  }
-
   public void visitDefaultModuleSection(@NotNull C3DefaultModuleSection o) {
     visitModuleDefinition(o);
   }
@@ -300,10 +312,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitDeferStmt(@NotNull C3DeferStmt o) {
-    visitPsiElement(o);
-  }
-
-  public void visitDistinctDeclaration(@NotNull C3DistinctDeclaration o) {
     visitPsiElement(o);
   }
 
@@ -355,11 +363,11 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitFaultDeclaration(@NotNull C3FaultDeclaration o) {
+  public void visitFaultDefinition(@NotNull C3FaultDefinition o) {
     visitPsiElement(o);
   }
 
-  public void visitFaultDefinition(@NotNull C3FaultDefinition o) {
+  public void visitFaultdefDecl(@NotNull C3FaultdefDecl o) {
     visitPsiElement(o);
   }
 
@@ -540,6 +548,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitMacroHeader(@NotNull C3MacroHeader o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMacroImpliesBody(@NotNull C3MacroImpliesBody o) {
     visitPsiElement(o);
   }
 
@@ -725,6 +737,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitTypeSuffix(@NotNull C3TypeSuffix o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypedefDecl(@NotNull C3TypedefDecl o) {
     visitPsiElement(o);
   }
 

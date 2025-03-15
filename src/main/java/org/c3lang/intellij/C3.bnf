@@ -100,208 +100,6 @@
     pin(".*_decl") = 2
     pin(".*_declaration") = 2
     pin(".*_stmt") = 1
-
-    /*tokens = [
-            KW_ANY = "any"
-            KW_ANYFAULT = "anyfault"
-            KW_ASM = "asm"
-            KW_ASSERT = "assert"
-            KW_BITSTRUCT = "bitstruct"
-            KW_BREAK = "break"
-            KW_CASE = "case"
-            KW_CATCH = "catch"
-            KW_CONST = "const"
-            KW_CONTINUE = "continue"
-            KW_DEF = "def"
-            KW_DEFAULT = "default"
-            KW_DEFER = "defer"
-            KW_DISTINCT = "distinct"
-            KW_DO = "do"
-            KW_ELSE = "else"
-            KW_ENUM = "enum"
-            KW_EXTERN = "extern"
-            KW_FOREACH = "foreach"
-            KW_FOREACH_R = "foreach_r"
-            KW_FALSE = "false"
-            KW_FAULT = "fault"
-            KW_FOR = "for"
-            KW_FN = "fn"
-            KW_IF = "if"
-            KW_INLINE = "inline"
-            KW_INTERFACE = "interface"
-            KW_IMPORT = "import"
-            KW_MACRO = "macro"
-            KW_MODULE = "module"
-            KW_NEXTCASE = "nextcase"
-            KW_NULL = "null"
-            KW_RETURN = "return"
-            KW_STATIC = "static"
-            KW_STRUCT = "struct"
-            KW_SWITCH = "switch"
-            KW_TLOCAL = "tlocal"
-            KW_TRUE = "true"
-            KW_TRY = "try"
-            KW_TYPEID = "typeid"
-            KW_UNION = "union"
-            KW_VAR = "var"
-            KW_WHILE = "while"
-            KW_CT_ALIGNOF = "$alignof"
-            KW_CT_ASSERT = "$assert"
-            KW_CT_CASE = "$case"
-            KW_CT_DEFAULT = "$default"
-            KW_CT_DEFINED = "$defined"
-            KW_CT_ECHO = "$echo"
-            KW_CT_ELSE = "$else"
-            KW_CT_ENDFOR = "$endfor"
-            KW_CT_ENDFOREACH = "$endforeach"
-            KW_CT_ENDIF = "$endif"
-            KW_CT_ENDSWITCH = "$endswitch"
-            KW_CT_ERROR = "$error"
-            KW_CT_EVAL = "$eval"
-            KW_CT_EVALTYPE = "$evaltype"
-            KW_CT_EXTNAMEOF = "$extnameof"
-            KW_CT_FEATURE = "$feature"
-            KW_CT_FOR = "$for"
-            KW_CT_FOREACH = "$foreach"
-            KW_CT_IF = "$if"
-            KW_CT_IS_CONST = "$is_const"
-            KW_CT_INCLUDE = "$include"
-            KW_CT_NAMEOF = "$nameof"
-            KW_CT_SIZEOF = "$sizeof"
-            KW_CT_STRINGIFY = "$stringify"
-            KW_CT_SWITCH = "$switch"
-            KW_CT_TYPEOF = "$typeof"
-            KW_CT_TYPEFROM = "$typefrom"
-            KW_CT_QNAMEOF = "$qnameof"
-            KW_CT_VACOUNT = "$vacount"
-            KW_CT_VACONST = "$vaconst"
-            KW_CT_VATYPE = "$vatype"
-            KW_CT_VAARG = "$vaarg"
-            KW_CT_VAEXPR = "$vaexpr"
-            KW_CT_VASPLAT = "$vasplat"
-            KW_VOID = "void"
-            KW_BOOL = "bool"
-            KW_CHAR = "char"
-            KW_ICHAR = "ichar"
-            KW_SHORT = "short"
-            KW_USHORT = "ushort"
-            KW_INT = "int"
-            KW_UINT = "uint"
-            KW_LONG = "long"
-            KW_ULONG = "ulong"
-            KW_UINT128 = "uint128"
-            KW_INT128 = "int128"
-            KW_BFLOAT16 = "bfloat16"
-            KW_DOUBLE = "double"
-            KW_FLOAT = "float"
-            KW_FLOAT16 = "float16"
-            KW_FLOAT128 = "float128"
-            KW_UPTR = "uptr"
-            KW_IPTR = "iptr"
-            KW_USZ = "usz"
-            KW_ISZ = "isz"
-            CT_AND="&&&"
-            CT_OR="|||"
-            CT_PLUS="+++"
-            ELLIPSIS="..."
-            SHL_ASSIGN="<<="
-            SHR_ASSIGN=">>="
-            AND="&&"
-            BAD_CHARACTER="->"
-            BIT_AND_ASSIGN="&="
-            BIT_OR_ASSIGN="|="
-            BIT_XOR_ASSIGN="^="
-            DIV_ASSIGN="/="
-            DOTDOT=".."
-            ELVIS="?:"
-            EQ_OP="=="
-            GE_OP=">="
-            IMPLIES="=>"
-            LE_OP="<="
-            LVEC="[<"
-            MINUS_ASSIGN="-="
-            MINUSMINUS="--"
-            MOD_ASSIGN="%="
-            MULT_ASSIGN="*="
-            NE_OP="!="
-            OR="||"
-            PLUS_ASSIGN="+="
-            PLUSPLUS="++"
-            RVEC=">]"
-            SCOPE="::"
-            SHR=">>"
-            SHL="<<"
-            BANGBANG="!!"
-            OPTELSE="??"
-            AMP="&"
-            BAD_CHARACTER="@"
-            BANG="!"
-            BIT_NOT="~"
-            BIT_OR="|"
-            BIT_XOR="^"
-            COLON=":"
-            COMMA=","
-            EOS=";"
-            EQ="="
-            GT_OP=">"
-            DIV="/"
-            UNDERSCORE="_"
-            BAD_CHARACTER="$"
-            DOT="."
-            BAD_CHARACTER="#"
-            LT_OP="<"
-            LB="{"
-            LBT="["
-            LP="("
-            MINUS="-"
-            MOD="%"
-            PLUS="+"
-            QUESTION="?"
-            RBT="]"
-            RB="}"
-            RP=")"
-            STAR="*"
-
-            CONST_IDENT = "regexp:_*[A-Z][A-Z_0-9]"
-            AT_CONST_IDENT = "regexp:@_*[A-Z][A-Z_0-9]"
-            HASH_CONST_IDENT = "regexp:#_*[A-Z][A-Z_0-9]"
-            CT_CONST_IDENT = "regexp:\$_*[A-Z][A-Z_0-9]"
-            AT_TYPE_IDENT = "regexp:@_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
-            HASH_TYPE_IDENT = "regexp:#_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
-            CT_TYPE_IDENT = "regexp:\$_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
-            TYPE_IDENT = "regexp:_*[A-Z][A-Z_0-9]*[a-z][a-zA-Z_0-9]*"
-            BUILTIN_CONST = "regexp:\$\$_*[A-Z][A-Z_0-9]"
-            BUILTIN = "regexp:\$\$_*[a-z][a-zA-Z_0-9]*"
-            AT_IDENT = "regexp:@_*[a-z][a-zA-Z_0-9]*"
-            HASH_IDENT = "regexp:#_*[a-z][a-zA-Z_0-9]*"
-
-            IDENT = "regexp:_*[a-z][a-zA-Z_0-9]*"
-            CT_IDENT = "regexp:\$_*[a-z][a-zA-Z_0-9]*"
-            E = "regexp:[Ee][+-]?[0-9]+}"
-            P = "regexp:[Pp][+-]?[0-9]+"
-            SIZES = "regexp:(8|16|32|64|128)"
-            INTTYPE = "regexp:([lL]|[uU][lL]|[uU](8|16|32|64|128)?|[iI](8|16|32|64|128))"
-            REALTYPE = "regexp:[fF](8|16|32|64|128)?"
-
-            INT_LITERAL = "regexp:[0-9]*"
-            FLOAT_LITERAL = "regexp:(_*[0-9])*"
-            STRING_LIT = "regexp:[\"']\w*([\"'])"
-
-            INT = "regexp:[0-9](_*[0-9])*"
-            HINT = "regexp:[a-fA-F0-9](_*[a-fA-F0-9])*"
-            OINT = "regexp:[0-7](_*[0-7])*"
-            BINT = "regexp:[0-1](_*[0-1])*"
-
-
-            EOL = "\n"
-
-            HEX_LIT = "regexp:0[xX][a-fA-F0-9](_*[a-fA-F0-9])*" //"0" [xX] {HINT}
-            OCTAL_LIT = "regexp:0[oO][0-7](_*[0-7])*" //"0" [oO] {OINT}
-            BINARY_LIT = "regexp:0[bB][0-1](_*[0-1])*" //"0" [bB] {BINT}
-            DECIMAL_LIT = "regexp:[0-9](_*[0-9])*" //{INT}
-
-            WHITESPACE ="regexp:\s+|\n+"
-        ]*/
 }
 
 translation_unit ::= default_module_section? module_section*
@@ -349,17 +147,20 @@ top_level ::= import_decl
     | ct_echo_stmt
     | ct_include_stmt
     | type_decl
-    | def_decl
-    | fault_declaration
+    | alias_decl
+    | faultdef_decl
+    | typedef_decl
+    | attrdef_decl
+    | alias_type_decl
     | macro_definition
     | asm_declaration
     | interface_definition
-    | distinct_declaration
 
 private const_paren_expr ::= LP constant_expr RP
 
 attributes ::= attribute+
 attribute ::= attribute_name (LP attribute_param_list RP)?
+attribute_user_name ::= AT_TYPE_IDENT
 attribute_name ::= AT_IDENT | path? AT_TYPE_IDENT
 attribute_param_list ::= attr_param (COMMA attr_param)*
 attr_param ::= attribute_operator_expr | constant_expr
@@ -378,11 +179,16 @@ func_typedef ::= KW_FN optional_type fn_parameter_list
 typedef_type ::= func_typedef | type generic_parameters?
 generic_parameter ::= expr | type
 generic_parameters ::= LB generic_parameter (COMMA generic_parameter)* RB
-any_ident ::= AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
 
-def_attr_values ::= LB attributes? RB
-def_declaration_source ::= (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameters?
-def_decl ::= KW_ALIAS any_ident (LP parameter_list RP)? EQ def_declaration_source attributes? EOS
+def_attr_values ::= attribute (COMMA attribute)* COMMA?
+alias_declaration_source ::= (path_const | path_ident | path_at_ident) generic_parameters?
+attrdef_decl ::= KW_ATTRDEF attribute_user_name (LP parameter_list RP)? attributes? (EQ def_attr_values)? EOS
+typedef_decl ::= KW_TYPEDEF type_name interface_impl? attributes? EQ KW_INLINE? typedef_type EOS
+alias_type_decl ::= KW_ALIAS type_name attributes? EQ typedef_type EOS
+faultdef_decl ::= KW_FAULTDEF fault_definition (COMMA fault_definition)* COMMA? EOS
+alias_name ::= CONST_IDENT | AT_IDENT | IDENT
+alias_decl ::= KW_ALIAS alias_name attributes? EQ alias_declaration_source EOS
+fault_definition ::= CONST_IDENT attributes?
 
 struct_body ::= LB struct_member_declaration* RB { pin(".*")=2 }
 
@@ -403,7 +209,7 @@ bitstruct_simple_def ::= base_type IDENT EOS
 enum_declaration ::= KW_ENUM type_name interface_impl? (COLON enum_spec)? attributes? LB enum_list RB
 enum_spec ::= enum_param_list | type enum_param_list?
 enum_param_list ::=  LP enum_param_decl (COMMA enum_param_decl)* RP
-enum_param_decl ::= type IDENT
+enum_param_decl ::= KW_INLINE? type IDENT
 enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
 enum_constant ::= CONST_IDENT attributes? [eq_expr_pin]
 arg_list ::= arg (COMMA arg)* COMMA?
@@ -454,7 +260,7 @@ parameter ::= KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT 
 
 ct_error_stmt ::= KW_CT_ERROR constant_expr EOS
 ct_assert_stmt ::= KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
-ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS EOS
+ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS
 assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS
 ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
 
@@ -475,7 +281,7 @@ base_type ::= KW_VOID
     | KW_UPTR
     | KW_ISZ
     | KW_USZ
-    | KW_ANYFAULT
+    | KW_FAULT
     | KW_ANY
     | KW_TYPEID
     | struct_type
@@ -506,6 +312,7 @@ expr_stmt ::= expr EOS {pin=1}
 statement ::= compound_statement
     | var_stmt
     | const_declaration_stmt
+    | expr_stmt
     | local_declaration_stmt
     | return_stmt
     | if_stmt
@@ -526,7 +333,6 @@ statement ::= compound_statement
     | ct_switch_stmt
     | ct_foreach_stmt
     | ct_for_stmt
-    | expr_stmt
     | assert_stmt
     | EOS { recoverWhile=recover_statement }
 private recover_statement ::= !(statement|keyword_list|ident_list|RB|EOS)
@@ -676,8 +482,8 @@ private primary_group ::= literal_expr
     | init_list_expr
 
 expr ::= ternary_group
-    | assign_bin_expr
     | assign_type_expr
+    | assign_bin_expr
     | or_bin_expr
     | and_bin_expr
     | rel_bin_expr
@@ -698,19 +504,15 @@ interface_body ::= LB (func_def EOS)* RB
 func_def ::= KW_FN func_header fn_parameter_list attributes?
 func_definition ::= func_def (macro_func_body | EOS) { pin=1 }
 
-macro_func_body ::= implies_body EOS | compound_statement
+macro_func_body ::= macro_implies_body | implies_body EOS | compound_statement
+
+macro_implies_body ::= IMPLIES AT_IDENT call_invocation compound_statement
 
 interface_impl ::= LP type_name (COMMA type)* RP
-
-distinct_declaration ::= KW_DISTINCT type_name interface_impl? attributes? '=' KW_INLINE? type generic_parameters? EOS
 
 func_name ::= (type DOT)? IDENT
 
 func_header ::= optional_type func_name  { pin=2 }
-
-
-fault_definition ::= CONST_IDENT attributes?
-fault_declaration ::= KW_FAULT fault_definition (COMMA fault_definition)? EOS
 
 macro_name ::= (type DOT)? (AT_IDENT | IDENT)
 macro_definition ::= KW_MACRO macro_header LP macro_params RP attributes? macro_func_body
@@ -719,5 +521,21 @@ macro_header ::= (optional_type !DOT)? macro_name { pin=2 }
 macro_params ::= parameter_list? (EOS trailing_block_param)?
 trailing_block_param ::= AT_IDENT (LP parameter_list? RP)?
 
-private keyword_list ::= KW_ALIAS | KW_ANY | KW_ANYFAULT | KW_ASM | KW_ASSERT | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE | KW_DEFAULT | KW_DEFER | KW_DISTINCT | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FOR | KW_FN | KW_IF | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE | KW_TRY | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16 | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
+private keyword_list ::= KW_ALIAS | KW_ANY | KW_ATTRDEF | KW_ASM | KW_ASSERT
+    | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE
+    | KW_DEFAULT | KW_DEFER | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH
+    | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FAULTDEF | KW_FOR | KW_FN | KW_IF
+    | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE
+    | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE
+    | KW_TRY | KW_TYPEDEF | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF
+    | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO
+    | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH
+    | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE
+    | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE
+    | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF
+    | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE
+    | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL
+    | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG
+    | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16
+    | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
 private ident_list ::= IDENT | TYPE_IDENT | CT_TYPE_IDENT | CT_IDENT | CONST_IDENT | AT_IDENT

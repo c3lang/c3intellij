@@ -5,6 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3PathSuffix extends C3PsiElement {
+public interface C3AliasTypeDecl extends C3PsiElement {
+
+  @Nullable
+  C3Attributes getAttributes();
+
+  @NotNull
+  C3TypeName getTypeName();
+
+  @Nullable
+  C3TypedefType getTypedefType();
 
 }

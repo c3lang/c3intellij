@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3DefAttrValues extends C3PsiElement {
 
-  @Nullable
-  C3Attributes getAttributes();
+  @NotNull
+  List<C3Attribute> getAttributeList();
 
 }

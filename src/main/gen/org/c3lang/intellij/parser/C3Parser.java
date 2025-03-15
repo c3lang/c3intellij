@@ -89,20 +89,95 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // AT_TYPE_IDENT | TYPE_IDENT | CT_TYPE_IDENT | AT_IDENT | IDENT | CONST_IDENT | CT_CONST_IDENT
-  public static boolean any_ident(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "any_ident")) return false;
+  // KW_ALIAS alias_name attributes? EQ alias_declaration_source EOS
+  public static boolean alias_decl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_decl")) return false;
+    if (!nextTokenIs(b, KW_ALIAS)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ALIAS_DECL, null);
+    r = consumeToken(b, KW_ALIAS);
+    r = r && alias_name(b, l + 1);
+    p = r; // pin = 2
+    r = r && report_error_(b, alias_decl_2(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, EQ)) && r;
+    r = p && report_error_(b, alias_declaration_source(b, l + 1)) && r;
+    r = p && consumeToken(b, EOS) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // attributes?
+  private static boolean alias_decl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_decl_2")) return false;
+    attributes(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // (path_const | path_ident | path_at_ident) generic_parameters?
+  public static boolean alias_declaration_source(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_declaration_source")) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, ANY_IDENT, "<any ident>");
-    r = consumeToken(b, AT_TYPE_IDENT);
-    if (!r) r = consumeToken(b, TYPE_IDENT);
-    if (!r) r = consumeToken(b, CT_TYPE_IDENT);
-    if (!r) r = consumeToken(b, AT_IDENT);
-    if (!r) r = consumeToken(b, IDENT);
-    if (!r) r = consumeToken(b, CONST_IDENT);
-    if (!r) r = consumeToken(b, CT_CONST_IDENT);
+    Marker m = enter_section_(b, l, _NONE_, ALIAS_DECLARATION_SOURCE, "<alias declaration source>");
+    r = alias_declaration_source_0(b, l + 1);
+    r = r && alias_declaration_source_1(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  // path_const | path_ident | path_at_ident
+  private static boolean alias_declaration_source_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_declaration_source_0")) return false;
+    boolean r;
+    r = path_const(b, l + 1);
+    if (!r) r = path_ident(b, l + 1);
+    if (!r) r = path_at_ident(b, l + 1);
+    return r;
+  }
+
+  // generic_parameters?
+  private static boolean alias_declaration_source_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_declaration_source_1")) return false;
+    generic_parameters(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // CONST_IDENT | AT_IDENT | IDENT
+  public static boolean alias_name(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_name")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ALIAS_NAME, "<alias name>");
+    r = consumeToken(b, CONST_IDENT);
+    if (!r) r = consumeToken(b, AT_IDENT);
+    if (!r) r = consumeToken(b, IDENT);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // KW_ALIAS type_name attributes? EQ typedef_type EOS
+  public static boolean alias_type_decl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_type_decl")) return false;
+    if (!nextTokenIs(b, KW_ALIAS)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ALIAS_TYPE_DECL, null);
+    r = consumeToken(b, KW_ALIAS);
+    r = r && type_name(b, l + 1);
+    p = r; // pin = 2
+    r = r && report_error_(b, alias_type_decl_2(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, EQ)) && r;
+    r = p && report_error_(b, typedef_type(b, l + 1)) && r;
+    r = p && consumeToken(b, EOS) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // attributes?
+  private static boolean alias_type_decl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "alias_type_decl_2")) return false;
+    attributes(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -723,6 +798,68 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // KW_ATTRDEF attribute_user_name (LP parameter_list RP)? attributes? (EQ def_attr_values)? EOS
+  public static boolean attrdef_decl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "attrdef_decl")) return false;
+    if (!nextTokenIs(b, KW_ATTRDEF)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ATTRDEF_DECL, null);
+    r = consumeToken(b, KW_ATTRDEF);
+    r = r && attribute_user_name(b, l + 1);
+    p = r; // pin = 2
+    r = r && report_error_(b, attrdef_decl_2(b, l + 1));
+    r = p && report_error_(b, attrdef_decl_3(b, l + 1)) && r;
+    r = p && report_error_(b, attrdef_decl_4(b, l + 1)) && r;
+    r = p && consumeToken(b, EOS) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // (LP parameter_list RP)?
+  private static boolean attrdef_decl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "attrdef_decl_2")) return false;
+    attrdef_decl_2_0(b, l + 1);
+    return true;
+  }
+
+  // LP parameter_list RP
+  private static boolean attrdef_decl_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "attrdef_decl_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LP);
+    r = r && parameter_list(b, l + 1);
+    r = r && consumeToken(b, RP);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // attributes?
+  private static boolean attrdef_decl_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "attrdef_decl_3")) return false;
+    attributes(b, l + 1);
+    return true;
+  }
+
+  // (EQ def_attr_values)?
+  private static boolean attrdef_decl_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "attrdef_decl_4")) return false;
+    attrdef_decl_4_0(b, l + 1);
+    return true;
+  }
+
+  // EQ def_attr_values
+  private static boolean attrdef_decl_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "attrdef_decl_4_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, EQ);
+    r = r && def_attr_values(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // attribute_name (LP attribute_param_list RP)?
   public static boolean attribute(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "attribute")) return false;
@@ -849,6 +986,18 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // AT_TYPE_IDENT
+  public static boolean attribute_user_name(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "attribute_user_name")) return false;
+    if (!nextTokenIs(b, AT_TYPE_IDENT)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, AT_TYPE_IDENT);
+    exit_section_(b, m, ATTRIBUTE_USER_NAME, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // attribute+
   public static boolean attributes(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "attributes")) return false;
@@ -873,7 +1022,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   //     | KW_UPTR
   //     | KW_ISZ
   //     | KW_USZ
-  //     | KW_ANYFAULT
+  //     | KW_FAULT
   //     | KW_ANY
   //     | KW_TYPEID
   //     | struct_type
@@ -894,7 +1043,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, KW_UPTR);
     if (!r) r = consumeToken(b, KW_ISZ);
     if (!r) r = consumeToken(b, KW_USZ);
-    if (!r) r = consumeToken(b, KW_ANYFAULT);
+    if (!r) r = consumeToken(b, KW_FAULT);
     if (!r) r = consumeToken(b, KW_ANY);
     if (!r) r = consumeToken(b, KW_TYPEID);
     if (!r) r = struct_type(b, l + 1);
@@ -1763,7 +1912,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_CT_ECHO constant_expr EOS EOS
+  // KW_CT_ECHO constant_expr EOS
   public static boolean ct_echo_stmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ct_echo_stmt")) return false;
     if (!nextTokenIs(b, KW_CT_ECHO)) return false;
@@ -1772,7 +1921,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     r = consumeToken(b, KW_CT_ECHO);
     p = r; // pin = 1
     r = r && report_error_(b, constant_expr(b, l + 1));
-    r = p && report_error_(b, consumeTokens(b, -1, EOS, EOS)) && r;
+    r = p && consumeToken(b, EOS) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
@@ -2055,99 +2204,44 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LB attributes? RB
+  // attribute (COMMA attribute)* COMMA?
   public static boolean def_attr_values(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "def_attr_values")) return false;
-    if (!nextTokenIs(b, LB)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LB);
+    Marker m = enter_section_(b, l, _NONE_, DEF_ATTR_VALUES, "<def attr values>");
+    r = attribute(b, l + 1);
     r = r && def_attr_values_1(b, l + 1);
-    r = r && consumeToken(b, RB);
-    exit_section_(b, m, DEF_ATTR_VALUES, r);
-    return r;
-  }
-
-  // attributes?
-  private static boolean def_attr_values_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_attr_values_1")) return false;
-    attributes(b, l + 1);
-    return true;
-  }
-
-  /* ********************************************************** */
-  // KW_ALIAS any_ident (LP parameter_list RP)? EQ def_declaration_source attributes? EOS
-  public static boolean def_decl(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_decl")) return false;
-    if (!nextTokenIs(b, KW_ALIAS)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, DEF_DECL, null);
-    r = consumeToken(b, KW_ALIAS);
-    r = r && any_ident(b, l + 1);
-    p = r; // pin = 2
-    r = r && report_error_(b, def_decl_2(b, l + 1));
-    r = p && report_error_(b, consumeToken(b, EQ)) && r;
-    r = p && report_error_(b, def_declaration_source(b, l + 1)) && r;
-    r = p && report_error_(b, def_decl_5(b, l + 1)) && r;
-    r = p && consumeToken(b, EOS) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  // (LP parameter_list RP)?
-  private static boolean def_decl_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_decl_2")) return false;
-    def_decl_2_0(b, l + 1);
-    return true;
-  }
-
-  // LP parameter_list RP
-  private static boolean def_decl_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_decl_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LP);
-    r = r && parameter_list(b, l + 1);
-    r = r && consumeToken(b, RP);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // attributes?
-  private static boolean def_decl_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_decl_5")) return false;
-    attributes(b, l + 1);
-    return true;
-  }
-
-  /* ********************************************************** */
-  // (def_attr_values | path_const | path_ident | typedef_type | any_ident) generic_parameters?
-  public static boolean def_declaration_source(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_declaration_source")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, DEF_DECLARATION_SOURCE, "<def declaration source>");
-    r = def_declaration_source_0(b, l + 1);
-    r = r && def_declaration_source_1(b, l + 1);
+    r = r && def_attr_values_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // def_attr_values | path_const | path_ident | typedef_type | any_ident
-  private static boolean def_declaration_source_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_declaration_source_0")) return false;
+  // (COMMA attribute)*
+  private static boolean def_attr_values_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "def_attr_values_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!def_attr_values_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "def_attr_values_1", c)) break;
+    }
+    return true;
+  }
+
+  // COMMA attribute
+  private static boolean def_attr_values_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "def_attr_values_1_0")) return false;
     boolean r;
-    r = def_attr_values(b, l + 1);
-    if (!r) r = path_const(b, l + 1);
-    if (!r) r = path_ident(b, l + 1);
-    if (!r) r = typedef_type(b, l + 1);
-    if (!r) r = any_ident(b, l + 1);
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && attribute(b, l + 1);
+    exit_section_(b, m, null, r);
     return r;
   }
 
-  // generic_parameters?
-  private static boolean def_declaration_source_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "def_declaration_source_1")) return false;
-    generic_parameters(b, l + 1);
+  // COMMA?
+  private static boolean def_attr_values_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "def_attr_values_2")) return false;
+    consumeToken(b, COMMA);
     return true;
   }
 
@@ -2230,55 +2324,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
     r = consumeTokens(b, 0, LP, KW_CATCH, IDENT, RP);
     exit_section_(b, m, null, r);
     return r;
-  }
-
-  /* ********************************************************** */
-  // KW_DISTINCT type_name interface_impl? attributes? '=' KW_INLINE? type generic_parameters? EOS
-  public static boolean distinct_declaration(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "distinct_declaration")) return false;
-    if (!nextTokenIs(b, KW_DISTINCT)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, DISTINCT_DECLARATION, null);
-    r = consumeToken(b, KW_DISTINCT);
-    r = r && type_name(b, l + 1);
-    p = r; // pin = 2
-    r = r && report_error_(b, distinct_declaration_2(b, l + 1));
-    r = p && report_error_(b, distinct_declaration_3(b, l + 1)) && r;
-    r = p && report_error_(b, consumeToken(b, "=")) && r;
-    r = p && report_error_(b, distinct_declaration_5(b, l + 1)) && r;
-    r = p && report_error_(b, type(b, l + 1)) && r;
-    r = p && report_error_(b, distinct_declaration_7(b, l + 1)) && r;
-    r = p && consumeToken(b, EOS) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  // interface_impl?
-  private static boolean distinct_declaration_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "distinct_declaration_2")) return false;
-    interface_impl(b, l + 1);
-    return true;
-  }
-
-  // attributes?
-  private static boolean distinct_declaration_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "distinct_declaration_3")) return false;
-    attributes(b, l + 1);
-    return true;
-  }
-
-  // KW_INLINE?
-  private static boolean distinct_declaration_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "distinct_declaration_5")) return false;
-    consumeToken(b, KW_INLINE);
-    return true;
-  }
-
-  // generic_parameters?
-  private static boolean distinct_declaration_7(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "distinct_declaration_7")) return false;
-    generic_parameters(b, l + 1);
-    return true;
   }
 
   /* ********************************************************** */
@@ -2490,15 +2535,24 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type IDENT
+  // KW_INLINE? type IDENT
   public static boolean enum_param_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enum_param_decl")) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, ENUM_PARAM_DECL, "<enum param decl>");
-    r = type(b, l + 1);
+    r = enum_param_decl_0(b, l + 1);
+    r = r && type(b, l + 1);
+    p = r; // pin = 2
     r = r && consumeToken(b, IDENT);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // KW_INLINE?
+  private static boolean enum_param_decl_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "enum_param_decl_0")) return false;
+    consumeToken(b, KW_INLINE);
+    return true;
   }
 
   /* ********************************************************** */
@@ -2660,40 +2714,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_FAULT fault_definition (COMMA fault_definition)? EOS
-  public static boolean fault_declaration(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fault_declaration")) return false;
-    if (!nextTokenIs(b, KW_FAULT)) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, FAULT_DECLARATION, null);
-    r = consumeToken(b, KW_FAULT);
-    r = r && fault_definition(b, l + 1);
-    p = r; // pin = 2
-    r = r && report_error_(b, fault_declaration_2(b, l + 1));
-    r = p && consumeToken(b, EOS) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  // (COMMA fault_definition)?
-  private static boolean fault_declaration_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fault_declaration_2")) return false;
-    fault_declaration_2_0(b, l + 1);
-    return true;
-  }
-
-  // COMMA fault_definition
-  private static boolean fault_declaration_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fault_declaration_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
-    r = r && fault_definition(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
   // CONST_IDENT attributes?
   public static boolean fault_definition(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fault_definition")) return false;
@@ -2710,6 +2730,52 @@ public class C3Parser implements PsiParser, LightPsiParser {
   private static boolean fault_definition_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fault_definition_1")) return false;
     attributes(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // KW_FAULTDEF fault_definition (COMMA fault_definition)* COMMA? EOS
+  public static boolean faultdef_decl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "faultdef_decl")) return false;
+    if (!nextTokenIs(b, KW_FAULTDEF)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, FAULTDEF_DECL, null);
+    r = consumeToken(b, KW_FAULTDEF);
+    r = r && fault_definition(b, l + 1);
+    p = r; // pin = 2
+    r = r && report_error_(b, faultdef_decl_2(b, l + 1));
+    r = p && report_error_(b, faultdef_decl_3(b, l + 1)) && r;
+    r = p && consumeToken(b, EOS) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // (COMMA fault_definition)*
+  private static boolean faultdef_decl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "faultdef_decl_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!faultdef_decl_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "faultdef_decl_2", c)) break;
+    }
+    return true;
+  }
+
+  // COMMA fault_definition
+  private static boolean faultdef_decl_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "faultdef_decl_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && fault_definition(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // COMMA?
+  private static boolean faultdef_decl_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "faultdef_decl_3")) return false;
+    consumeToken(b, COMMA);
     return true;
   }
 
@@ -3565,13 +3631,29 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_ALIAS | KW_ANY | KW_ANYFAULT | KW_ASM | KW_ASSERT | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE | KW_DEFAULT | KW_DEFER | KW_DISTINCT | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FOR | KW_FN | KW_IF | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE | KW_TRY | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16 | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
+  // KW_ALIAS | KW_ANY | KW_ATTRDEF | KW_ASM | KW_ASSERT
+  //     | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE
+  //     | KW_DEFAULT | KW_DEFER | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH
+  //     | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FAULTDEF | KW_FOR | KW_FN | KW_IF
+  //     | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE
+  //     | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE
+  //     | KW_TRY | KW_TYPEDEF | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF
+  //     | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO
+  //     | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH
+  //     | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE
+  //     | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE
+  //     | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF
+  //     | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE
+  //     | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL
+  //     | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG
+  //     | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16
+  //     | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
   static boolean keyword_list(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "keyword_list")) return false;
     boolean r;
     r = consumeToken(b, KW_ALIAS);
     if (!r) r = consumeToken(b, KW_ANY);
-    if (!r) r = consumeToken(b, KW_ANYFAULT);
+    if (!r) r = consumeToken(b, KW_ATTRDEF);
     if (!r) r = consumeToken(b, KW_ASM);
     if (!r) r = consumeToken(b, KW_ASSERT);
     if (!r) r = consumeToken(b, KW_BITSTRUCT);
@@ -3582,7 +3664,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, KW_CONTINUE);
     if (!r) r = consumeToken(b, KW_DEFAULT);
     if (!r) r = consumeToken(b, KW_DEFER);
-    if (!r) r = consumeToken(b, KW_DISTINCT);
     if (!r) r = consumeToken(b, KW_DO);
     if (!r) r = consumeToken(b, KW_ELSE);
     if (!r) r = consumeToken(b, KW_ENUM);
@@ -3591,6 +3672,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, KW_FOREACH_R);
     if (!r) r = consumeToken(b, KW_FALSE);
     if (!r) r = consumeToken(b, KW_FAULT);
+    if (!r) r = consumeToken(b, KW_FAULTDEF);
     if (!r) r = consumeToken(b, KW_FOR);
     if (!r) r = consumeToken(b, KW_FN);
     if (!r) r = consumeToken(b, KW_IF);
@@ -3608,6 +3690,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, KW_TLOCAL);
     if (!r) r = consumeToken(b, KW_TRUE);
     if (!r) r = consumeToken(b, KW_TRY);
+    if (!r) r = consumeToken(b, KW_TYPEDEF);
     if (!r) r = consumeToken(b, KW_TYPEID);
     if (!r) r = consumeToken(b, KW_UNION);
     if (!r) r = consumeToken(b, KW_VAR);
@@ -3856,21 +3939,22 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // implies_body EOS | compound_statement
+  // macro_implies_body | implies_body EOS | compound_statement
   public static boolean macro_func_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "macro_func_body")) return false;
     if (!nextTokenIs(b, "<macro func body>", IMPLIES, LB)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MACRO_FUNC_BODY, "<macro func body>");
-    r = macro_func_body_0(b, l + 1);
+    r = macro_implies_body(b, l + 1);
+    if (!r) r = macro_func_body_1(b, l + 1);
     if (!r) r = compound_statement(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   // implies_body EOS
-  private static boolean macro_func_body_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "macro_func_body_0")) return false;
+  private static boolean macro_func_body_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "macro_func_body_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = implies_body(b, l + 1);
@@ -3916,6 +4000,20 @@ public class C3Parser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NOT_);
     r = !consumeToken(b, DOT);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // IMPLIES AT_IDENT call_invocation compound_statement
+  public static boolean macro_implies_body(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "macro_implies_body")) return false;
+    if (!nextTokenIs(b, IMPLIES)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, IMPLIES, AT_IDENT);
+    r = r && call_invocation(b, l + 1);
+    r = r && compound_statement(b, l + 1);
+    exit_section_(b, m, MACRO_IMPLIES_BODY, r);
     return r;
   }
 
@@ -4861,6 +4959,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   // compound_statement
   //     | var_stmt
   //     | const_declaration_stmt
+  //     | expr_stmt
   //     | local_declaration_stmt
   //     | return_stmt
   //     | if_stmt
@@ -4881,7 +4980,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
   //     | ct_switch_stmt
   //     | ct_foreach_stmt
   //     | ct_for_stmt
-  //     | expr_stmt
   //     | assert_stmt
   //     | EOS
   public static boolean statement(PsiBuilder b, int l) {
@@ -4891,6 +4989,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     r = compound_statement(b, l + 1);
     if (!r) r = var_stmt(b, l + 1);
     if (!r) r = const_declaration_stmt(b, l + 1);
+    if (!r) r = expr_stmt(b, l + 1);
     if (!r) r = local_declaration_stmt(b, l + 1);
     if (!r) r = return_stmt(b, l + 1);
     if (!r) r = if_stmt(b, l + 1);
@@ -4911,7 +5010,6 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = ct_switch_stmt(b, l + 1);
     if (!r) r = ct_foreach_stmt(b, l + 1);
     if (!r) r = ct_for_stmt(b, l + 1);
-    if (!r) r = expr_stmt(b, l + 1);
     if (!r) r = assert_stmt(b, l + 1);
     if (!r) r = consumeToken(b, EOS);
     exit_section_(b, l, m, r, false, C3Parser::recover_statement);
@@ -5244,12 +5342,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
   //     | ct_echo_stmt
   //     | ct_include_stmt
   //     | type_decl
-  //     | def_decl
-  //     | fault_declaration
+  //     | alias_decl
+  //     | faultdef_decl
+  //     | typedef_decl
+  //     | attrdef_decl
+  //     | alias_type_decl
   //     | macro_definition
   //     | asm_declaration
   //     | interface_definition
-  //     | distinct_declaration
   public static boolean top_level(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "top_level")) return false;
     boolean r;
@@ -5261,12 +5361,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = ct_echo_stmt(b, l + 1);
     if (!r) r = ct_include_stmt(b, l + 1);
     if (!r) r = type_decl(b, l + 1);
-    if (!r) r = def_decl(b, l + 1);
-    if (!r) r = fault_declaration(b, l + 1);
+    if (!r) r = alias_decl(b, l + 1);
+    if (!r) r = faultdef_decl(b, l + 1);
+    if (!r) r = typedef_decl(b, l + 1);
+    if (!r) r = attrdef_decl(b, l + 1);
+    if (!r) r = alias_type_decl(b, l + 1);
     if (!r) r = macro_definition(b, l + 1);
     if (!r) r = asm_declaration(b, l + 1);
     if (!r) r = interface_definition(b, l + 1);
-    if (!r) r = distinct_declaration(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -5568,6 +5670,47 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // KW_TYPEDEF type_name interface_impl? attributes? EQ KW_INLINE? typedef_type EOS
+  public static boolean typedef_decl(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typedef_decl")) return false;
+    if (!nextTokenIs(b, KW_TYPEDEF)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TYPEDEF_DECL, null);
+    r = consumeToken(b, KW_TYPEDEF);
+    r = r && type_name(b, l + 1);
+    p = r; // pin = 2
+    r = r && report_error_(b, typedef_decl_2(b, l + 1));
+    r = p && report_error_(b, typedef_decl_3(b, l + 1)) && r;
+    r = p && report_error_(b, consumeToken(b, EQ)) && r;
+    r = p && report_error_(b, typedef_decl_5(b, l + 1)) && r;
+    r = p && report_error_(b, typedef_type(b, l + 1)) && r;
+    r = p && consumeToken(b, EOS) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // interface_impl?
+  private static boolean typedef_decl_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typedef_decl_2")) return false;
+    interface_impl(b, l + 1);
+    return true;
+  }
+
+  // attributes?
+  private static boolean typedef_decl_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typedef_decl_3")) return false;
+    attributes(b, l + 1);
+    return true;
+  }
+
+  // KW_INLINE?
+  private static boolean typedef_decl_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typedef_decl_5")) return false;
+    consumeToken(b, KW_INLINE);
+    return true;
+  }
+
+  /* ********************************************************** */
   // func_typedef | type generic_parameters?
   public static boolean typedef_type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typedef_type")) return false;
@@ -5742,8 +5885,8 @@ public class C3Parser implements PsiParser, LightPsiParser {
   // Expression root: expr
   // Operator priority table:
   // 0: BINARY(elvis_bin_expr) BINARY(optelse_bin_expr) BINARY(ternary_expr) POSTFIX(optional_expr)
-  // 1: BINARY(assign_bin_expr)
-  // 2: ATOM(assign_type_expr)
+  // 1: ATOM(assign_type_expr)
+  // 2: BINARY(assign_bin_expr)
   // 3: BINARY(or_bin_expr)
   // 4: BINARY(and_bin_expr)
   // 5: BINARY(rel_bin_expr)
@@ -5815,8 +5958,8 @@ public class C3Parser implements PsiParser, LightPsiParser {
         r = true;
         exit_section_(b, l, m, OPTIONAL_EXPR, r, true, null);
       }
-      else if (g < 1 && assign_bin_op(b, l + 1)) {
-        r = expr(b, l, 0);
+      else if (g < 2 && assign_bin_op(b, l + 1)) {
+        r = expr(b, l, 1);
         exit_section_(b, l, m, BINARY_EXPR, r, true, null);
       }
       else if (g < 3 && or_bin_expr_0(b, l + 1)) {

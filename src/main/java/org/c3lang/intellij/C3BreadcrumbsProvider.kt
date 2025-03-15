@@ -18,18 +18,22 @@ class C3BreadcrumbsProvider : BreadcrumbsProvider {
                 || element is C3StructMemberDeclaration
                 || element is C3BitstructDef
                 || element is C3BitstructSimpleDef
-                || element is C3DefDecl
+                || element is C3AttrdefDecl
+                || element is C3TypedefDecl
+                || element is C3AliasDecl
     }
 
     override fun getElementInfo(element: PsiElement): String {
         val text = when (element) {
-            is C3StructDeclaration -> element.getTypeName()?.text
-            is C3EnumDeclaration -> element.getTypeName()?.text
-            is C3MacroDefinition -> element.getMacroHeader()?.getMacroName()?.text
-            is C3DistinctDeclaration -> element.getTypeName()?.text
+            is C3StructDeclaration -> element.getTypeName().text
+            is C3EnumDeclaration -> element.getTypeName().text
+            is C3MacroDefinition -> element.getMacroHeader().getMacroName().text
+            is C3TypedefDecl -> element.getTypeName().text
+            is C3AttrdefDecl -> element.attributeUserName.text
+            is C3AliasTypeDecl -> element.typeName.text
             is C3InterfaceDefinition -> element.getTypeName().text
-            is C3FuncDefinition -> element.getFuncDef().getFuncHeader()?.getFuncName()?.text
-            is C3BitstructDeclaration -> element.getTypeName()?.text
+            is C3FuncDefinition -> element.getFuncDef().getFuncHeader().getFuncName().text
+            is C3BitstructDeclaration -> element.getTypeName().text
             is C3StructMemberDeclaration -> {
                 val list: C3IdentifierList? = element.getIdentifierList()
                 if (list == null) "anonymous"
@@ -41,7 +45,6 @@ class C3BreadcrumbsProvider : BreadcrumbsProvider {
                 if (element == null) "anonymous"
                 element?.text
             }
-            is C3DefDecl -> element.getAnyIdent().text
             else -> ""
         }
 

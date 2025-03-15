@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.0.26] - 2025-03-15
+
+- Support for typedef, attrdef, faultdef. 
+- Fixes issues with `@pool() =>`, `$exec` and `$Type = int`.
+
 ## [0.0.25] - 2025-03-13
 
 Please Use 0.0.24 and 0.0.23 for 0.6.8 and earlier.
