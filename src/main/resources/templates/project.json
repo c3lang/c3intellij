@@ -1,0 +1,18 @@
+{
+  "langrev": "1",
+  "warnings": [ "no-unused" ],
+  "dependency-search-paths": [ "lib" ],
+  "dependencies": [ ],
+  "authors": [ "John Doe <john.doe@example.com>" ],
+  "version": "0.1.0",
+  "sources": [ "src/**" ],
+  "test-sources": [ "test/**" ],
+  "output": "build",
+  "targets": {
+    "test": {
+      "type": "executable"
+    }
+  },
+  "cpu": "generic",
+  "opt": "O0"
+}

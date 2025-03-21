@@ -120,7 +120,6 @@ LINE_COMMENT    = "//" .*
     "tlocal" { return C3Types.KW_TLOCAL; }
     "true" { return C3Types.KW_TRUE; }
     "try" { return C3Types.KW_TRY; }
-    "typedef" { return C3Type.KW_TYPEDEF; }
     "typeid" { return C3Types.KW_TYPEID; }
     "union" { return C3Types.KW_UNION; }
     "var" { return C3Types.KW_VAR; }
