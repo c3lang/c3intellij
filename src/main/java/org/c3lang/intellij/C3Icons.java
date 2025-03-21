@@ -13,6 +13,8 @@ public class C3Icons {
     public static final Icon FILE = IconLoader.getIcon("/icons/c3.svg", C3Icons.class.getClassLoader());
     public static final Icon LIB_FILE = IconLoader.getIcon("/icons/c3l.svg", C3Icons.class.getClassLoader());
 
+    public static final Icon LOGO = IconLoader.getIcon("/icons/logo.svg", C3Icons.class.getClassLoader());
+
     public static class Nodes {
         public static final Icon BITSTRUCT = IconLoader.getIcon("/icons/nodes/bitstruct.svg", C3Icons.class.getClassLoader());
         public static final Icon CONSTANT = IconLoader.getIcon("/icons/nodes/constant.svg", C3Icons.class.getClassLoader());

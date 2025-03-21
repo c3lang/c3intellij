@@ -69,6 +69,9 @@
                      groupName="Debug"
                      implementationClass="org.c3lang.intellij.intention.LogReferencesInspection" />
 
+    <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewProjectWizard"/>
+    <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewLibraryWizard"/>
+
     <!--<gotoDeclarationHandler implementation="org.c3lang.intellij.actions.C3GotoDeclarationHandler"/>-->
 
     <!--    <lang.refactoringSupport language="C3"
@@ -88,5 +91,8 @@
     <langCodeStyleSettingsProvider implementation="org.intellij.sdk.language.SimpleLanguageCodeStyleSettingsProvider"/>
     -->
   </extensions>
-
+  <applicationListeners>
+    <listener class="org.c3lang.intellij.components.C3PluginComponent"
+              topic="com.intellij.openapi.project.ProjectManagerListener"/>
+  </applicationListeners>
 </idea-plugin>
