@@ -3,15 +3,10 @@ package org.c3lang.intellij.wizard;
 import com.intellij.ide.wizard.AbstractNewProjectWizardStep;
 import com.intellij.ide.wizard.NewProjectWizardStep;
 import com.intellij.ide.wizard.language.LanguageGeneratorNewProjectWizard;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.WebModuleBuilder;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiManager;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.c3lang.intellij.C3Icons;
@@ -19,11 +14,9 @@ import org.c3lang.intellij.C3Util;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Objects;
-
-import static com.intellij.ide.wizard.UIWizardUtil.setupProjectFromBuilder;
 
 public class C3NewLibraryWizard implements LanguageGeneratorNewProjectWizard
 {
@@ -68,37 +61,9 @@ public class C3NewLibraryWizard implements LanguageGeneratorNewProjectWizard
         @Override
         public void setupProject(@NotNull Project project)
         {
-            WebModuleBuilder<?> builder = new WebModuleBuilder<>();
-            builder.setName(parent.getContext().getProjectName());
-            builder.setContentEntryPath(parent.getContext().getProjectFileDirectory());
+            Validate.notNull(project.getBasePath(), "Project base path cannot be null");
 
-            setupProjectFromBuilder(this, project, builder);
-
-            StartupManager startupManager = StartupManager.getInstance(project);
-            startupManager.runAfterOpened(() -> {
-                String contentEntryPath = builder.getContentEntryPath();
-                if (contentEntryPath == null) {
-                    return;
-                }
-                VirtualFile root = LocalFileSystem.getInstance().findFileByPath(contentEntryPath);
-                if (root == null) {
-                    return;
-                }
-
-                WriteCommandAction.runWriteCommandAction(project, null, null, () -> {
-                    PsiDirectory directory = PsiManager.getInstance(project).findDirectory(root);
-                    if (directory == null) {
-                        return;
-                    }
-
-                    createFiles(project);
-                });
-            });
-        }
-
-        private void createFiles(Project project)
-        {
-            String[] dirs = new String[] {
+            String[] dirs = new String[]{
                     "freebsd-x64",
                     "linux-aarch64",
                     "linux-riscv32",
@@ -116,23 +81,30 @@ public class C3NewLibraryWizard implements LanguageGeneratorNewProjectWizard
                     "scripts"
             };
 
-            String moduleName = project.getName().replaceAll(" ", "_");
+            String moduleName = project.getName().replaceAll(" ", "_").toLowerCase();
+            File licenseFilePath = Path.of(project.getBasePath(), "LICENSE").toFile();
+            File readmeFilePath = Path.of(project.getBasePath(), "README.md").toFile();
+            File manifestJsonFilePath = Path.of(project.getBasePath(), "manifest.json").toFile();
+            File moduleFilePath = Path.of(project.getBasePath(), moduleName + ".c3i").toFile();
 
-            File licenseFilePath = Path.of(Objects.requireNonNull(project.getBasePath()), "LICENSE").toFile();
-            File readmeFilePath = Path.of(Objects.requireNonNull(project.getBasePath()), "README.md").toFile();
-            File manifestJsonFilePath = Path.of(Objects.requireNonNull(project.getBasePath()), "manifest.json").toFile();
-            File moduleFilePath = Path.of(Objects.requireNonNull(project.getBasePath()), moduleName + ".c3i").toFile();
+            WebModuleBuilder<?> builder = new WebModuleBuilder<>();
+            builder.setName(parent.getContext().getProjectName());
+            builder.setContentEntryPath(parent.getContext().getProjectFileDirectory());
+            builder.commit(project);
 
-            for (String dir : dirs) {
-                FileUtil.createDirectory(Path.of(Objects.requireNonNull(project.getBasePath()), dir).toFile());
+            for (String dir : dirs)
+            {
+                FileUtil.createDirectory(Path.of(project.getBasePath(), dir).toFile());
             }
 
-            try {
+            try
+            {
                 FileUtil.writeToFile(licenseFilePath, "");
                 FileUtil.writeToFile(readmeFilePath, "");
-                C3Util.writeToFile(project.getName(), "templates/module", moduleFilePath);
-                C3Util.writeToFile(project.getName(), "templates/manifest.json", manifestJsonFilePath);
-            } catch (IOException e) {
+                C3Util.writeToFile(moduleName, "templates/library", moduleFilePath);
+                C3Util.writeToFile(moduleName, "templates/manifest.json", manifestJsonFilePath);
+            } catch (IOException e)
+            {
                 log.error(e.getMessage(), e);
             }
         }
