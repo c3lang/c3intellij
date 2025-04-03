@@ -9,7 +9,7 @@
   "test-sources": [ "test/**" ],
   "output": "build",
   "targets": {
-    "test": {
+    "%s": {
       "type": "executable"
     }
   },
