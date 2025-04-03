@@ -3,8 +3,17 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
-- Support for `Find usages`
-- Rename support for function name, variable, argument, parameter, struct name, etc.
+
+## [0.1.1] - 2025-04-04
+
+- Added new file action for c3 projects
+- Fixed project.json target always being called test -> now is the project name
+
+## [0.1.0] - 2025-04-02
+
+- Full 0.7.0 support: faultdef, typedef etc.
+- Find usages and rename.
+- Create project wizard.
 - Color configuration for `return FAULT?;` 
 
 ## [0.0.26] - 2025-03-15
