@@ -22,7 +22,7 @@ class C3LineMarkerProvider : LineMarkerProvider
         val name = element.funcDef.fqName.name
 
         if (name != "main") return null
-        if (type != "int") return null
+        if (type !in listOf("int", "void")) return null
 
         return LineMarkerInfo(
             element,
