@@ -75,6 +75,8 @@
     <codeInsight.lineMarkerProvider language="C3"
                                     implementationClass="org.c3lang.intellij.C3LineMarkerProvider" />
 
+    <colorProvider implementation="org.c3lang.intellij.C3ElementColorProvider" />
+
     <!--<gotoDeclarationHandler implementation="org.c3lang.intellij.actions.C3GotoDeclarationHandler"/>-->
 
     <lang.findUsagesProvider language="C3" implementationClass="org.c3lang.intellij.findUsages.C3FindUsagesProvider"/>
