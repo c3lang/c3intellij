@@ -25,9 +25,12 @@ class C3ElementColorProvider : ElementColorProvider
 
     override fun setColorTo(element: PsiElement, color: Color)
     {
+        // This workaround is due to https://youtrack.jetbrains.com/issue/IDEA-331607/JavaColorProvider-issues
+        // remove when element actually always is the last element!
         if (lastElement == null || element.parent.parent != null) {
             lastElement = element
         }
+        // Try to retain the original formatting (uppercase or lowercase hex)
         val upper = element.text.contains(Regex("[A-F]"))
         val str = if (element.text.length == 8) {
             String.format(if (upper) "0x%02X%02X%02X" else "0x%02x%02x%02x", color.red, color.green, color.blue)
