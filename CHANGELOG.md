@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-04-04
+
+- Line marker for main.
+- Color selector for #ff00aa.
+
 ## [0.1.1] - 2025-04-04
 
 - Added new file action for c3 projects
