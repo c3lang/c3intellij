@@ -77,6 +77,9 @@
 
     <colorProvider implementation="org.c3lang.intellij.C3ElementColorProvider" />
 
+    <lang.documentationProvider language="C3"
+                                implementationClass="org.c3lang.intellij.docs.C3DocumentationProvider" />
+
     <!--<gotoDeclarationHandler implementation="org.c3lang.intellij.actions.C3GotoDeclarationHandler"/>-->
 
     <lang.findUsagesProvider language="C3" implementationClass="org.c3lang.intellij.findUsages.C3FindUsagesProvider"/>
