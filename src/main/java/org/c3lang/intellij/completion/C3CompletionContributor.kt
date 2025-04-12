@@ -4,10 +4,11 @@ import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionInitializationContext
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns.psiElement
-import org.c3lang.intellij.psi.C3ModuleDefinition
 
-class C3CompletionContributor : CompletionContributor() {
-    init {
+class C3CompletionContributor : CompletionContributor()
+{
+    init
+    {
         val pattern = psiElement()/*.inside(C3ModuleDefinition::class.java)*/
 
         extend(CompletionType.BASIC, pattern, FunctionCompletionContributor)
@@ -17,9 +18,11 @@ class C3CompletionContributor : CompletionContributor() {
         extend(CompletionType.BASIC, pattern, FaultCompletionContributor)
         extend(CompletionType.BASIC, pattern, TailExprCompletionContributor)
         extend(CompletionType.BASIC, pattern, InitializerListCompletionContributor)
+        extend(CompletionType.BASIC, pattern, DocCommentCompletionContributor)
     }
 
-    override fun beforeCompletion(context: CompletionInitializationContext) {
+    override fun beforeCompletion(context: CompletionInitializationContext)
+    {
         // path
         context.dummyIdentifier = DUMMY_IDENTIFIER
     }

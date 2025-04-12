@@ -57,35 +57,39 @@ private fun formatReturnSection(desc: String): String
     return desc.replace("\"", "")
 }
 
-private fun formatParamSection(params: Map<String, String>): String
+private fun formatParamSection(params: Map<String, Pair<String, String>>): String
 {
     if (params.isEmpty()) return ""
 
     val builder = StringBuilder()
 
-    for ((name, desc) in params)
+    for ((name, pair) in params)
     {
-        val safeDesc = if (desc.isNotBlank()) " - ${desc.replace("\"", "")}" else ""
-        builder.append("<p><code>$name</code>$safeDesc</p>")
+        val description = pair.first
+        val contract    = pair.second
+        val safeDescription = if (description.isNotBlank()) " - ${description.drop(1).dropLast(1)}" else ""
+        val safeContract    = if (contract.isNotBlank()) """<span style="color:#ffccff;"><i>$contract</i></span>""" else ""
+        builder.append("<p><code>$safeContract$name</code>$safeDescription</p>")
     }
 
     return builder.toString()
 }
 
-private fun extractParamsFromDoc(docComment: String): Map<String, String>
+private fun extractParamsFromDoc(docComment: String): Map<String, Pair<String, String>>
 {
-    val paramRegex = Regex("@param\\s+(\\w+)\\s+(\"[\\w\\s]+\")?")
-    val result = LinkedHashMap<String, String>()
+    val paramRegex = Regex("@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(\\w+)(\\s+:\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?")
+    val result = LinkedHashMap<String, Pair<String, String>>()
 
     for (match in paramRegex.findAll(docComment))
     {
-        val name = match.groupValues[1]
-        val desc = match.groupValues.getOrNull(2)?.trim() ?: ""
+        val contract = match.groupValues[1]
+        val name = match.groupValues[4]
+        val description = match.groupValues[6]
 
-        result[name] = desc
+        result[name] = Pair(description, contract)
     }
 
-    val reversed = LinkedHashMap<String, String>()
+    val reversed = LinkedHashMap<String, Pair<String, String>>()
     for ((key, value) in result.entries.reversed())
     {
         reversed[key] = value

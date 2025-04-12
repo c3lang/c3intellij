@@ -11,17 +11,17 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.elementType
 import org.c3lang.intellij.C3Language
 import org.c3lang.intellij.C3ParserDefinition
+import org.c3lang.intellij.psi.C3DefaultModuleSection
 
 internal fun findDocumentationComment(element: PsiElement): String
 {
-    var prev = element.parent.prevSibling
+    // check if parent is default module or not
+    var prev = if (element.parent.parent is C3DefaultModuleSection) element.parent.parent.prevSibling else element.parent.prevSibling
 
     while (prev is PsiWhiteSpace)
     {
         prev = prev.prevSibling
     }
-
-    println(prev)
 
     if (prev == null) return ""
 
