@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Correctly highlight overloads.
+
 ## [0.1.2] - 2025-04-04
 
 - Line marker for main.

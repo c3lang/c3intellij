@@ -167,7 +167,7 @@ attribute_user_name ::= AT_TYPE_IDENT
 attribute_name ::= AT_IDENT | path? AT_TYPE_IDENT
 attribute_param_list ::= attr_param (COMMA attr_param)*
 attr_param ::= attribute_operator_expr | constant_expr
-attribute_operator_expr ::= LBT RBT EQ | AMP? LBT RBT
+attribute_operator_expr ::= BIT_AND_ASSIGN | BIT_OR_ASSIGN | BIT_XOR_ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | SHL_ASSIGN | SHR_ASSIGN | &RP | MINUS &RP | DIV | STAR &RP | MOD | EQ_OP | NE_OP | BIT_XOR | BIT_NOT | BIT_OR | AMP &RP | SHL | SHR | LBT RBT EQ | AMP? LBT RBT
 private struct_or_union ::= KW_STRUCT | KW_UNION
 
 type_name ::= TYPE_IDENT
