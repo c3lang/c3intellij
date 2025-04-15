@@ -3,23 +3,34 @@ package org.c3lang.intellij.annotation
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.elementType
+import org.c3lang.intellij.C3ParserDefinition
 import org.c3lang.intellij.psi.C3CallExpr
 
-class C3Annotator : Annotator {
+class C3Annotator : Annotator
+{
 
-    override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        when (element) {
+    override fun annotate(element: PsiElement, holder: AnnotationHolder)
+    {
+        when (element)
+        {
             is C3CallExpr -> annotateMissingCallables(element, holder)
+            is PsiComment ->
+            {
+                if (element.elementType == C3ParserDefinition.DOC_COMMENT) annotateDocComment(element, holder)
+            }
         }
 
         org.c3lang.intellij.C3Annotator.INSTANCE.annotate(element, holder)
     }
 
     private fun annotateMissingCallables(
-        callExpr: C3CallExpr,
-        holder: AnnotationHolder
-    ) {
+            callExpr: C3CallExpr,
+            holder: AnnotationHolder
+    )
+    {
 //        val pathIdentExpr = callExpr.expr as? C3PathIdentExpr ?: return
 //        val nameIdentElement = pathIdentExpr.pathIdent.nameIdentElement ?: return
 //        val callName = nameIdentElement.text
@@ -44,19 +55,23 @@ class C3Annotator : Annotator {
 //        }
     }
 
-    private fun AnnotationHolder.error(message: String, element: PsiElement) {
+    private fun AnnotationHolder.error(message: String, element: PsiElement)
+    {
         return newAnnotation(HighlightSeverity.ERROR, message).range(element.textRange).create()
     }
 
-    private fun AnnotationHolder.warning(message: String, element: PsiElement) {
+    private fun AnnotationHolder.warning(message: String, element: PsiElement)
+    {
         return newAnnotation(HighlightSeverity.WARNING, message).range(element.textRange).create()
     }
 
-    private fun AnnotationHolder.weakWarning(message: String, element: PsiElement) {
+    private fun AnnotationHolder.weakWarning(message: String, element: PsiElement)
+    {
         return newAnnotation(HighlightSeverity.WEAK_WARNING, message).range(element.textRange).create()
     }
 
-    private fun AnnotationHolder.info(message: String, element: PsiElement) {
+    private fun AnnotationHolder.info(message: String, element: PsiElement)
+    {
         return newAnnotation(HighlightSeverity.INFORMATION, message).range(element.textRange).create()
     }
 
