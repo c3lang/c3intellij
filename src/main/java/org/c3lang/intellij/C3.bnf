@@ -452,7 +452,9 @@ ct_defined_check_expr_list ::= ct_defined_check_expr (COMMA ct_defined_check_exp
 ct_defined_expr ::= KW_CT_DEFINED LP ct_defined_check_expr_list RP
 lambda_decl_expr ::= lambda_decl compound_statement
 lambda_decl_short_expr ::= lambda_decl IMPLIES expr
-call_expr ::= expr call_expr_tail
+call_expr ::= expr call_expr_tail {
+    methods=[isDeprecated]
+}
 unary_expr ::= unary_op expr { rightAssociative=true }
 expr_terminator ::= EOS | RP | RBT | RB | COMMA | COLON
 ternary_expr ::= expr QUESTION !((BANGBANG | BANG)? expr_terminator) expr COLON expr { rightAssociative=true }

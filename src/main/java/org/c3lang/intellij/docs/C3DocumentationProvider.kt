@@ -5,16 +5,20 @@ import com.intellij.psi.PsiElement
 import org.c3lang.intellij.psi.C3ConstDeclarationStmt
 import org.c3lang.intellij.psi.C3FuncDef
 import org.c3lang.intellij.psi.C3LocalDeclAfterType
+import org.c3lang.intellij.psi.C3MacroDefinition
 
 class C3DocumentationProvider : AbstractDocumentationProvider()
 {
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String?
     {
-        if (element is C3FuncDef) return generateFuncDefDoc(element)
-        if (element is C3LocalDeclAfterType) return generateVarDeclDoc(element)
-        if (element is C3ConstDeclarationStmt) return generateConstDeclDoc(element)
-
-        return null
+        return when (element)
+        {
+            is C3FuncDef              -> generateFuncDefDoc(element)
+            is C3MacroDefinition      -> generateMacroDefinitionDoc(element)
+            is C3LocalDeclAfterType   -> generateVarDeclDoc(element)
+            is C3ConstDeclarationStmt -> generateConstDeclDoc(element)
+            else                      -> null
+        }
     }
 
     override fun generateHoverDoc(element: PsiElement, originalElement: PsiElement?): String?

@@ -13,4 +13,6 @@ public interface C3CallExpr extends C3Expr, C3CallExprMixin {
   @NotNull
   C3Expr getExpr();
 
+  boolean isDeprecated();
+
 }
