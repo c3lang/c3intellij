@@ -18,7 +18,7 @@ class C3EditorNotificationProvider : EditorNotificationProvider
     {
         val settings = C3SettingsState.getInstance()
 
-        if (settings.stdlibPath != null) return null
+        if (settings.stdlibPath != null && settings.stdlibPath.isNotEmpty()) return null
 
         return Function { fileEditor: FileEditor ->
             val stdlibErrorNotification = EditorNotificationPanel(fileEditor, Status.Error)

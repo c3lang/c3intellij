@@ -12,6 +12,7 @@ import org.c3lang.intellij.psi.C3CallExpr
 import org.c3lang.intellij.psi.C3File
 import org.c3lang.intellij.psi.C3FuncDefinition
 import org.c3lang.intellij.psi.C3MacroDefinition
+import org.c3lang.intellij.psi.C3TopLevel
 import org.c3lang.intellij.psi.C3Visitor
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 
@@ -39,9 +40,14 @@ class CallExprInspection : LocalInspectionTool()
 
                 val file = element.containingFile as C3File
                 val fullName = element.text.substring(0, element.text.indexOfFirst { it == '(' })
-                var module = element.moduleDefinition.moduleName?.value ?: ""
+                val module = element.moduleDefinition.moduleName?.value ?: ""
+                val name = fullName.substringAfterLast("::")
+                var callModule = ""
 
-                val callModule = fullName.substringBeforeLast("::")
+                if (fullName.contains("::"))
+                {
+                    callModule = fullName.substringBeforeLast("::")
+                }
 
                 if (callModule.isNotEmpty())
                 {
@@ -51,14 +57,40 @@ class CallExprInspection : LocalInspectionTool()
                         return
                     }
                 }
-
-                if (fullName.contains("::"))
+                else
                 {
-                    module = fullName.substring(0, fullName.lastIndexOf("::"))
+                    val topLevels = element.moduleDefinition.children.filterIsInstance<C3TopLevel>()
+                    val functions = arrayListOf<C3FuncDefinition>()
+                    val macros = arrayListOf<C3MacroDefinition>()
+
+                    topLevels.forEach { topLevel -> functions.addAll(topLevel.children.filterIsInstance<C3FuncDefinition>().filter { it.funcDef.funcHeader.funcName.text == name }) }
+                    topLevels.forEach { topLevel -> macros.addAll(topLevel.children.filterIsInstance<C3MacroDefinition>().filter { it.macroHeader.macroName.text == name }) }
+
+                    if (functions.isEmpty() && macros.isEmpty())
+                    {
+                        holder.registerProblem(element, "'$name' not found in current module")
+                    }
+
+                    return
                 }
+//                    // check if is in current module
+//                    val declarations = findDeclarationsInModule(file.project, module)
+//
+//                    val functions = declarations.filter { it.isLeft }.filter { it.left.funcDef.funcHeader.funcName.text == name }
+//                    val macros    = declarations.filter { it.isRight }.filter { it.right.macroHeader.macroName.text == name }
+//
+//                    if (functions.isNotEmpty() || macros.isNotEmpty())
+//                    {
+//
+//                        return
+//                    }
+//                }
+
+                // TODO: else check if it's builtin
+                // TODO: else check if it's in the current module
+
 
                 var declaration: Either<C3MacroDefinition, C3FuncDefinition>? = null
-                val name = fullName.substringAfterLast("::")
 
                 result.forEach {
                     if (it.endsWith(module))
@@ -72,13 +104,13 @@ class CallExprInspection : LocalInspectionTool()
 
                 if (declaration == null)
                 {
-                    val declarations = findDeclarationsInModule(file.project, module)
+                    val declarations = findDeclarationsInModule(file.project, callModule)
                     val candidates = arrayListOf<String>()
 
                     candidates.addAll(declarations.filter { it.isLeft }.map { it.left.funcDef.funcHeader.funcName.text })
                     candidates.addAll(declarations.filter { it.isRight }.map { it.right.macroHeader.macroName.text })
 
-                    holder.registerProblem(element, "Declaration not found. did you mean ${findBestMatch(name, candidates)}")
+                    holder.registerProblem(element, "Declaration not found. did you mean $callModule::${findBestMatch(name, candidates)}")
                 }
             }
         }

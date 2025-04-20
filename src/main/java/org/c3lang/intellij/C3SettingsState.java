@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class C3SettingsState implements PersistentStateComponent<C3SettingsState>
 {
     public String sdk = "c3c";
-    public String stdlibPath;
+    public String stdlibPath = "";
 
     public static C3SettingsState getInstance()
     {

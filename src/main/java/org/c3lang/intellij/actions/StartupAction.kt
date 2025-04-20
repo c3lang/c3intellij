@@ -14,15 +14,21 @@ class StartupAction : ProjectActivity
         val settings = C3SettingsState.getInstance()
         if (settings.stdlibPath != null && settings.stdlibPath.isNotEmpty()) return
 
-        val runtime = Runtime.getRuntime()
-        val process = withContext(Dispatchers.IO) {
-            runtime.exec(arrayOf("c3c", "compile", "--build-env"))
+        try
+        {
+            val runtime = Runtime.getRuntime()
+            val process = withContext(Dispatchers.IO) {
+                runtime.exec(arrayOf("c3c", "compile", "--build-env"))
+            }
+            process.awaitExit()
+
+            val result = process.inputStream.bufferedReader().readText()
+            val path = result.split("\n").map { it.trim() }.find { it.startsWith("Stdlib") }?.split(":")?.get(1)?.trim()
+
+            settings.stdlibPath = path
+        } catch (_: Exception)
+        {
+            settings.stdlibPath = ""
         }
-        process.awaitExit()
-
-        val result = process.inputStream.bufferedReader().readText()
-        val path = result.split("\n").map { it.trim() }.find { it.startsWith("Stdlib") }?.split(":")?.get(1)?.trim()
-
-        settings.stdlibPath = path
     }
 }

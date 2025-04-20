@@ -137,7 +137,7 @@ private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
         }
     }
 
-    val regex = Regex("@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(\\w+)(\\s+:\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?")
+    val regex = Regex("@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(([$#])?\\w+)(\\s+:\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?")
     val commentText = element.text
     val commentStart = element.textRange.startOffset
 
