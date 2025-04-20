@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-04-16
+
+- Documentation on hover.
 - Correctly highlight overloads.
 
 ## [0.1.2] - 2025-04-04
