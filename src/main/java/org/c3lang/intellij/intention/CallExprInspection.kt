@@ -93,7 +93,7 @@ class CallExprInspection : LocalInspectionTool()
                 var declaration: Either<C3MacroDefinition, C3FuncDefinition>? = null
 
                 result.forEach {
-                    if (it.endsWith(module))
+                    if (it.endsWith(callModule))
                     {
                         // TODO: filter module for function or macro with name
                         declaration = findDeclarationInModule(element.project, it, name)

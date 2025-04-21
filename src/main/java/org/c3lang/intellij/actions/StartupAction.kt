@@ -23,7 +23,7 @@ class StartupAction : ProjectActivity
             process.awaitExit()
 
             val result = process.inputStream.bufferedReader().readText()
-            val path = result.split("\n").map { it.trim() }.find { it.startsWith("Stdlib") }?.split(":")?.get(1)?.trim()
+            val path = result.split("\n").map { it.trim() }.find { it.startsWith("Stdlib") }?.substringAfter(":")?.trim()
 
             settings.stdlibPath = path
         } catch (_: Exception)
