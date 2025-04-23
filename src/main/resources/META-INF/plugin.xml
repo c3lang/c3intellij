@@ -68,12 +68,13 @@
                      displayName="Log references"
                      groupName="Debug"
                      implementationClass="org.c3lang.intellij.intention.LogReferencesInspection" />
-    <localInspection language="C3"
-                     enabledByDefault="true"
-                     displayName="Call expressions"
-                     groupName="Call expressions"
-                     level="WARNING"
-                     implementationClass="org.c3lang.intellij.intention.CallExprInspection" />
+    <!-- TODO: Enable after grammar rewrite -->
+<!--    <localInspection language="C3"-->
+<!--                     enabledByDefault="true"-->
+<!--                     displayName="Call expressions"-->
+<!--                     groupName="Call expressions"-->
+<!--                     level="WARNING"-->
+<!--                     implementationClass="org.c3lang.intellij.intention.CallExprInspection" />-->
 
     <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewProjectWizard"/>
     <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewLibraryWizard"/>
