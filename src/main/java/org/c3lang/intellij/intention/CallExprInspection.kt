@@ -39,8 +39,13 @@ class CallExprInspection : LocalInspectionTool()
                 }
 
                 val file = element.containingFile as C3File
-                val fullName = element.text.substring(0, element.text.indexOfFirst { it == '(' })
-                val module = element.moduleDefinition.moduleName?.value ?: ""
+                val fullName = if (element.text.contains("("))
+                {
+                    element.text.substring(0, element.text.indexOfFirst { it == '(' })
+                } else
+                {
+                    element.text
+                }
                 val name = fullName.substringAfterLast("::")
                 var callModule = ""
 
