@@ -128,12 +128,18 @@ private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
     if (function != null)
     {
         function.funcDef.fnParameterList.parameterList?.paramDeclList?.forEach {
-            args.add(it.parameter.name!!)
+            if (it.parameter.name != null)
+            {
+                args.add(it.parameter.name!!)
+            }
         }
     } else if (macro != null)
     {
         macro.macroParams.parameterList?.paramDeclList?.forEach {
-            args.add(it.parameter.name!!)
+            if (it.parameter.name != null)
+            {
+                args.add(it.parameter.name!!)
+            }
         }
     }
 
