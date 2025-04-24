@@ -4,6 +4,31 @@
 
 ## [Unreleased]
 
+## [0.1.4] - 2025-04-24
+
+### Fixes
+- Fixed doc comments not finding macro parameters
+- Fixed doc comment completions
+- Fixed IDE error caused by doc comment not finding underlying function or macro
+- Fixed doc comment not finding underlying function or macro when in default module
+- Fixed top level code completion interfering with doc comments
+- Fixed hover doc displaying parameters that only existed in the doc comment
+
+### Additions
+- Added hover doc for macros
+- Added doc comment description to hover doc
+- Added inspection for missing imports
+- Added inspection for missing functions or macro in imports
+- Added stdlib path selector in both project wizards
+- Added banner that shows if the stdlib path couldn't be detected
+- Added string highlighting in doc comments for all strings
+- Added settings page
+- Added styled parameter names in doc comments
+
+### Optimizations
+- Optimized stdlib path lookup by the IDE
+- Optimized code completion by implementing new completion system
+
 ## [0.1.3] - 2025-04-16
 
 - Documentation on hover.
