@@ -79,3 +79,111 @@ internal fun appendFileSection(file: String, builder: StringBuilder)
     builder.append(file)
     builder.append(DocumentationMarkup.SECTION_END)
 }
+
+internal fun appendParamsSection(docs: String, builder: StringBuilder, args: List<String>)
+{
+    val params = extractParamsFromDoc(docs, args)
+    if (params.isEmpty()) return
+
+    builder.append(DocumentationMarkup.SECTION_HEADER_START)
+    builder.append("Params:")
+    builder.append(DocumentationMarkup.SECTION_SEPARATOR)
+    builder.append(formatParamSection(params))
+    builder.append(DocumentationMarkup.SECTION_END)
+}
+
+internal fun appendReturnSection(docs: String, builder: StringBuilder)
+{
+    val returnString = extractReturnFromDoc(docs)
+    if (returnString.isEmpty()) return
+
+    builder.append(DocumentationMarkup.SECTION_HEADER_START)
+    builder.append("Returns:")
+    builder.append(DocumentationMarkup.SECTION_SEPARATOR)
+    builder.append(formatReturnSection(returnString))
+    builder.append(DocumentationMarkup.SECTION_END)
+}
+
+internal fun formatReturnSection(desc: String): String
+{
+    return desc.replace("\"", "")
+}
+
+internal fun formatParamSection(params: Map<String, Pair<String, String>>): String
+{
+    if (params.isEmpty()) return ""
+
+    val builder = StringBuilder()
+
+    for ((name, pair) in params)
+    {
+        val description = pair.first
+        val contract = pair.second
+        val safeDescription = if (description.isNotBlank()) " - ${description.drop(1).dropLast(1)}" else ""
+        val safeContract = if (contract.isNotBlank()) """<span style="color:#ffccff;"><i>$contract</i></span>""" else ""
+        builder.append("<p><code>$safeContract$name</code>$safeDescription</p>")
+    }
+
+    return builder.toString()
+}
+
+internal fun extractParamsFromDoc(docComment: String, args: List<String>): Map<String, Pair<String, String>>
+{
+    val paramRegex = Regex("@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(\\w+)(\\s*:\\s*(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?")
+    val result = LinkedHashMap<String, Pair<String, String>>()
+
+    for (match in paramRegex.findAll(docComment))
+    {
+        val contract = match.groupValues[1]
+        val name = match.groupValues[4]
+        val description = match.groupValues[6]
+
+        if (args.contains(name))
+        {
+            result[name] = Pair(description, contract)
+        }
+    }
+
+    val reversed = LinkedHashMap<String, Pair<String, String>>()
+    for ((key, value) in result.entries.reversed())
+    {
+        reversed[key] = value
+    }
+
+    return reversed
+}
+
+internal fun extractReturnFromDoc(docComment: String): String
+{
+    val paramRegex = Regex("@return\\s+(\"[\\w\\s]+\")?")
+
+    for (match in paramRegex.findAll(docComment))
+    {
+        val desc = match.groupValues.getOrNull(1)?.trim() ?: ""
+
+        return desc
+    }
+
+    return ""
+}
+
+internal fun extractDescriptionTextFromDoc(docComment: String): String
+{
+    val description = arrayListOf<String>()
+
+    docComment.split("\n").map { it.trim() }.forEach {
+        if (it.isEmpty()) return@forEach
+        if (!it.startsWith('@'))
+        {
+            description.add(it)
+        }
+    }
+
+    val descriptionBuilder = StringBuilder()
+
+    description.reversed().forEach {
+        descriptionBuilder.appendLine(it)
+    }
+
+    return descriptionBuilder.toString()
+}

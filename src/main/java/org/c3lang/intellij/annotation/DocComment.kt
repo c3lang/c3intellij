@@ -7,13 +7,79 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiWhiteSpace
+import org.c3lang.intellij.psi.C3DefaultModuleSection
 import org.c3lang.intellij.psi.C3FuncDefinition
+import org.c3lang.intellij.psi.C3MacroDefinition
+import org.eclipse.lsp4j.jsonrpc.messages.Either
 
 internal fun annotateDocComment(element: PsiComment, holder: AnnotationHolder)
 {
     annotateDocTags(element, holder)
     annotateParamTags(element, holder)
+//    annotateReturnTags(element, holder)
+//    annotateDeprecatedTags(element, holder)
+    annotateStrings(element, holder)
 }
+
+fun annotateStrings(element: PsiComment, holder: AnnotationHolder)
+{
+    val regex = Regex("(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`)")
+    val commentText = element.text
+    val commentStart = element.textRange.startOffset
+
+    regex.findAll(commentText).forEach { match ->
+        val descriptionRange = TextRange(commentStart + match.range.first, commentStart + match.range.last + 1)
+
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            .range(descriptionRange)
+            .textAttributes(DefaultLanguageHighlighterColors.STRING)
+            .create()
+    }
+}
+
+/* removed for now TODO: add back later
+fun annotateDeprecatedTags(element: PsiComment, holder: AnnotationHolder)
+{
+    val regex = Regex("@deprecated\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`)?")
+    val commentText  = element.text
+    val commentStart = element.textRange.startOffset
+
+    regex.findAll(commentText).forEach { match ->
+        val description = match.groups[1]
+
+        if (description != null)
+        {
+            val descriptionRange = TextRange(commentStart + match.range.first, commentStart + match.range.last + 1)
+
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(descriptionRange)
+                .textAttributes(DefaultLanguageHighlighterColors.STRING)
+                .create()
+        }
+    }
+}
+
+fun annotateReturnTags(element: PsiComment, holder: AnnotationHolder)
+{
+    val regex        = Regex("@return\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`)?")
+    val commentText  = element.text
+    val commentStart = element.textRange.startOffset
+
+    regex.findAll(commentText).forEach { match ->
+        val description = match.groups[1]
+
+        if (description != null)
+        {
+            val descriptionRange = TextRange(commentStart + match.range.first, commentStart + match.range.last + 1)
+
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(descriptionRange)
+                .textAttributes(DefaultLanguageHighlighterColors.STRING)
+                .create()
+        }
+    }
+}
+*/
 
 private fun annotateDocTags(element: PsiComment, holder: AnnotationHolder)
 {
@@ -26,12 +92,12 @@ private fun annotateDocTags(element: PsiComment, holder: AnnotationHolder)
 
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(range)
-            .textAttributes(DOC_COMMENT_TAG)
+            .textAttributes(DefaultLanguageHighlighterColors.DOC_COMMENT_TAG)
             .create()
     }
 }
 
-private fun getUnderlyingFunction(comment: PsiComment): C3FuncDefinition?
+private fun getUnderlyingFunction(comment: PsiComment): Either<C3FuncDefinition?, C3MacroDefinition?>?
 {
     var next = comment.nextSibling
 
@@ -40,23 +106,44 @@ private fun getUnderlyingFunction(comment: PsiComment): C3FuncDefinition?
         next = next.nextSibling
     }
 
-    if (next.firstChild is C3FuncDefinition) return next.firstChild as C3FuncDefinition
+    if (next is C3DefaultModuleSection)
+    {
+        next = next.firstChild
+    }
+
+    if (next == null) return null
+
+    if (next.firstChild is C3FuncDefinition) return Either.forLeft(next.firstChild as C3FuncDefinition)
+    if (next.firstChild is C3MacroDefinition) return Either.forRight(next.firstChild as C3MacroDefinition)
     return null
 }
 
 private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
 {
-    val function = getUnderlyingFunction(element)
+    val functionOrMacro = getUnderlyingFunction(element)
+    val function = functionOrMacro?.left
+    val macro = functionOrMacro?.right
     val args = arrayListOf<String>()
 
     if (function != null)
     {
         function.funcDef.fnParameterList.parameterList?.paramDeclList?.forEach {
-            args.add(it.parameter.name!!)
+            if (it.parameter.name != null)
+            {
+                args.add(it.parameter.name!!)
+            }
+        }
+    } else if (macro != null)
+    {
+        macro.macroParams.parameterList?.paramDeclList?.forEach {
+            if (it.parameter.name != null)
+            {
+                args.add(it.parameter.name!!)
+            }
         }
     }
 
-    val regex = Regex("@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(\\w+)(\\s+:\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?")
+    val regex = Regex("@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(([$#])?\\w+)(\\s+:\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?")
     val commentText = element.text
     val commentStart = element.textRange.startOffset
 
@@ -70,19 +157,8 @@ private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
 
     regex.findAll(commentText).forEach { match ->
         val contract = match.groups[1]
-        val name = match.groups[4]!!
+        val name = match.groups[4]
         val description = match.groups[6]
-
-        if (!args.contains(name.value))
-        {
-            val range = TextRange(commentStart + match.range.first, commentStart + match.range.last + 1)
-
-            holder.newAnnotation(HighlightSeverity.ERROR, "Argument missing in function")
-                .range(range)
-                .create()
-
-            return@forEach
-        }
 
         if (contract != null)
         {
@@ -101,6 +177,25 @@ private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(descriptionRange)
                 .textAttributes(DefaultLanguageHighlighterColors.STRING)
+                .create()
+        }
+
+        if (name != null)
+        {
+            if (!args.contains(name.value))
+            {
+                val range = TextRange(commentStart + match.range.first, commentStart + match.range.last + 1)
+
+                holder.newAnnotation(HighlightSeverity.ERROR, "Argument missing in function")
+                    .range(range)
+                    .create()
+            }
+
+            val nameRange = TextRange(commentStart + name.range.first, commentStart + name.range.last + 1)
+
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(nameRange)
+                .textAttributes(DefaultLanguageHighlighterColors.NUMBER)
                 .create()
         }
     }

@@ -39,7 +39,7 @@
     <sdkType implementation="org.c3lang.intellij.C3SdkType"/>
 <!--    <projectSdkSetupValidator implementation="" />-->
 
-    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.C3CompletionContributor"/>
+<!--    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.C3CompletionContributor"/>-->
     <completion.contributor language="C3" implementationClass="org.c3lang.intellij.completion.C3CompletionContributor" />
 
 <!--    <psi.referenceProvider providerClass="org.c3lang.intellij.C3PsiReferenceProvider" />-->
@@ -68,6 +68,13 @@
                      displayName="Log references"
                      groupName="Debug"
                      implementationClass="org.c3lang.intellij.intention.LogReferencesInspection" />
+    <!-- TODO: Enable after grammar rewrite -->
+<!--    <localInspection language="C3"-->
+<!--                     enabledByDefault="true"-->
+<!--                     displayName="Call expressions"-->
+<!--                     groupName="Call expressions"-->
+<!--                     level="WARNING"-->
+<!--                     implementationClass="org.c3lang.intellij.intention.CallExprInspection" />-->
 
     <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewProjectWizard"/>
     <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewLibraryWizard"/>
@@ -79,6 +86,15 @@
 
     <lang.documentationProvider language="C3"
                                 implementationClass="org.c3lang.intellij.docs.C3DocumentationProvider" />
+
+    <postStartupActivity implementation="org.c3lang.intellij.actions.StartupAction" />
+
+    <editorNotificationProvider implementation="org.c3lang.intellij.actions.C3EditorNotificationProvider" />
+
+    <projectConfigurable instance="org.c3lang.intellij.settings.C3Configurable"
+                         parentId="language"
+                         id="c3.language.settings"
+                         displayName="C3" />
 
     <!--<gotoDeclarationHandler implementation="org.c3lang.intellij.actions.C3GotoDeclarationHandler"/>-->
 

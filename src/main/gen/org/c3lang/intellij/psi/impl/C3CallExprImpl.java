@@ -38,4 +38,9 @@ public class C3CallExprImpl extends C3CallExprMixinImpl implements C3CallExpr {
     return findNotNullChildByClass(C3Expr.class);
   }
 
+  @Override
+  public boolean isDeprecated() {
+    return C3ParserUtils.isDeprecated(this);
+  }
+
 }

@@ -64,6 +64,8 @@ object ConstCompletionContributor : CompletionProvider<CompletionParameters>() {
         }.filterIsInstance<C3ConstDeclarationStmt>().forEach { constDeclaration ->
             val fullyQualifiedName = FullyQualifiedName.from(constDeclaration)
 
+            println(fullyQualifiedName.fullName)
+
             val lookupElementBuilder = LookupElementBuilder
                 .create(constDeclaration, fullyQualifiedName.fullName)
                 .withLookupStrings(
