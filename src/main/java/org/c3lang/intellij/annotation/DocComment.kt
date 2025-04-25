@@ -131,6 +131,9 @@ private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
             if (it.parameter.name != null)
             {
                 args.add(it.parameter.name!!)
+            } else
+            {
+                args.add(it.parameter.type?.text!!)
             }
         }
     } else if (macro != null)
@@ -139,6 +142,9 @@ private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
             if (it.parameter.name != null)
             {
                 args.add(it.parameter.name!!)
+            } else
+            {
+                args.add(it.parameter.type?.text!!)
             }
         }
     }
