@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.1.5] - 2025-04-25
+
+- Fixes $Type in params.
+
 ## [0.1.4] - 2025-04-24
 
 ### Fixes
