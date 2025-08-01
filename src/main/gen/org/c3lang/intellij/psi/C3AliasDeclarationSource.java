@@ -11,6 +11,9 @@ public interface C3AliasDeclarationSource extends C3PsiElement {
   C3GenericParameters getGenericParameters();
 
   @Nullable
+  C3Path getPath();
+
+  @Nullable
   C3PathAtIdent getPathAtIdent();
 
   @Nullable

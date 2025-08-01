@@ -29,8 +29,8 @@ public class C3AssignTypeExprImpl extends C3ExprImpl implements C3AssignTypeExpr
 
   @Override
   @Nullable
-  public C3Type getType() {
-    return findChildByClass(C3Type.class);
+  public C3Expr getExpr() {
+    return findChildByClass(C3Expr.class);
   }
 
 }

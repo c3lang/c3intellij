@@ -86,7 +86,7 @@ bitstruct UInt128LE : uint128 @littleendian
 {
 	uint128 val : 0..127;
 }
-module std::collections::enummap(<Enum, ValueType>);
+module std::collections::enummap{Enum, ValueType};
 
 struct EnumMap
 {
@@ -111,35 +111,14 @@ fn void EnumMap.set(EnumMap* this, Enum key, ValueType value) @operator([]=) => 
 /**
  * @require Enum.kindof == TypeKind.ENUM : "Only enums maybe be used with an enumset"
  **/
-module std::collections::enumset(<Enum>);
+module std::collections::enumset{Enum};
 
 
-$switch
-$case (Enum.elements > 128):
-typedef EnumSetType @private = char[(Enum.elements + 7) / 8];
-const IS_CHAR_ARRAY = true;
-$case (Enum.elements > 64):
-typedef EnumSetType @private = uint128;
-const IS_CHAR_ARRAY = false;
-$case (Enum.elements > 32 || $$C_INT_SIZE > 32):
-typedef EnumSetType @private = ulong;
-const IS_CHAR_ARRAY = false;
-$case (Enum.elements > 16 || $$C_INT_SIZE > 16):
-typedef EnumSetType @private = uint;
-const IS_CHAR_ARRAY = false;
-$case (Enum.elements > 8 || $$C_INT_SIZE > 8):
-typedef EnumSetType @private = ushort;
-const IS_CHAR_ARRAY = false;
-$default:
-typedef EnumSetType @private = char;
-const IS_CHAR_ARRAY = false;
-$endswitch
-
-typedef EnumSet = distinct EnumSetType;
+typedef EnumSet = EnumSetType;
 
 fn void EnumSet.add(EnumSet* this, Enum v)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	(*this)[v / 8] |= (char)(1u << (v % 8));
 $else
     *this = (EnumSet)((EnumSetType)*this | 1u << (EnumSetType)v);
@@ -148,7 +127,7 @@ $endif
 
 fn void EnumSet.clear(EnumSet* this)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	*this = {};
 $else
     *this = 0;
@@ -157,7 +136,7 @@ $endif
 
 fn bool EnumSet.remove(EnumSet* this, Enum v)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	if (!this.has(v) @inline) return false;
 	(*this)[v / 8] &= (char)~(1 << (v % 8));
 	return true;
@@ -171,7 +150,7 @@ $endif
 
 fn bool EnumSet.has(EnumSet* this, Enum v)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	return (bool)(((*this)[v / 8] << (v % 8)) & 0x01);
 $else
     return ((EnumSetType)*this & (1u << (EnumSetType)v)) != 0;
@@ -180,7 +159,7 @@ $endif
 
 fn void EnumSet.add_all(EnumSet* this, EnumSet s)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	foreach (i, c : s) (*this)[i] |= c;
 $else
     *this = (EnumSet)((EnumSetType)*this | (EnumSetType)s);
@@ -189,7 +168,7 @@ $endif
 
 fn void EnumSet.retain_all(EnumSet* this, EnumSet s)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	foreach (i, c : s) (*this)[i] &= c;
 $else
     *this = (EnumSet)((EnumSetType)*this & (EnumSetType)s);
@@ -198,7 +177,7 @@ $endif
 
 fn void EnumSet.remove_all(EnumSet* this, EnumSet s)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	foreach (i, c : s) (*this)[i] &= ~c;
 $else
     *this = (EnumSet)((EnumSetType)*this & ~(EnumSetType)s);
@@ -207,7 +186,7 @@ $endif
 
 fn EnumSet EnumSet.and_of(EnumSet* this, EnumSet s)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	EnumSet copy = *this;
 	copy.retain_all(s);
 	return copy;
@@ -218,7 +197,7 @@ $endif
 
 fn EnumSet EnumSet.or_of(EnumSet* this, EnumSet s)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	EnumSet copy = *this;
 	copy.add_all(s);
 	return copy;
@@ -230,7 +209,7 @@ $endif
 
 fn EnumSet EnumSet.diff_of(EnumSet* this, EnumSet s)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	EnumSet copy = *this;
 	copy.remove_all(s);
 	return copy;
@@ -241,7 +220,7 @@ $endif
 
 fn EnumSet EnumSet.xor_of(EnumSet* this, EnumSet s)
 {
-$if (IS_CHAR_ARRAY)
+$if IS_CHAR_ARRAY:
 	EnumSet copy = *this;
 	foreach (i, c : s) copy[i] ^= c;
 	return copy;
@@ -252,7 +231,7 @@ $endif
 // Copyright (c) 2021 Christoffer Lerno. All rights reserved.
 // Use of this source code is governed by the MIT license
 // a copy of which can be found in the LICENSE_STDLIB file.
-module std::collections::linkedlist<Type>;
+module std::collections::linkedlist{Type};
 
 struct Node @private
 {
@@ -333,16 +312,16 @@ fn void LinkedList.link_last(LinkedList* list, Type value) @private
     list.size++;
 }
 
-fn Type! peek(LinkedList* list) => list.first() @inline;
-fn Type! peek_last(LinkedList* list) => list.last() @inline;
+fn Type? peek(LinkedList* list) => list.first() @inline;
+fn Type? peek_last(LinkedList* list) => list.last() @inline;
 
-fn Type! LinkedList.first(LinkedList *list)
+fn Type? LinkedList.first(LinkedList *list)
 {
 	if (!list._first) return IteratorResult.NO_MORE_ELEMENT?;
 	return list._first.value;
 }
 
-fn Type! LinkedList.last(LinkedList* list)
+fn Type? LinkedList.last(LinkedList* list)
 {
 	if (!list._last) return IteratorResult.NO_MORE_ELEMENT?;
 	return list._last.value;
@@ -489,7 +468,7 @@ fn bool LinkedList.remove_last_value(LinkedList* list, Type t)
 /**
  * @param [&inout] list
  **/
-fn Type! LinkedList.pop(LinkedList* list)
+fn Type? LinkedList.pop(LinkedList* list)
 {
 	if (!list._first) return IteratorResult.NO_MORE_ELEMENT?;
 	defer list.unlink_first();
@@ -499,7 +478,7 @@ fn Type! LinkedList.pop(LinkedList* list)
 /**
  * @param [&inout] list
  **/
-fn void! LinkedList.remove_last(LinkedList* list)
+fn void? LinkedList.remove_last(LinkedList* list)
 {
 	if (!list._first) return IteratorResult.NO_MORE_ELEMENT?;
 	list.unlink_last();
@@ -508,7 +487,7 @@ fn void! LinkedList.remove_last(LinkedList* list)
 /**
  * @param [&inout] list
  **/
-fn void! LinkedList.remove_first(LinkedList* list)
+fn void? LinkedList.remove_first(LinkedList* list)
 {
 	if (!list._first) return IteratorResult.NO_MORE_ELEMENT?;
 	list.unlink_first();
@@ -564,7 +543,7 @@ fn void LinkedList.unlink(LinkedList* list, Node* x) @private
 // Copyright (c) 2021 Christoffer Lerno. All rights reserved.
 // Use of this source code is governed by the MIT license
 // a copy of which can be found in the LICENSE_STDLIB file.
-module std::collections::list<Type>;
+module std::collections::list{Type};
 import std::math;
 
 typedef ElementPredicate = fn bool(Type *type);
@@ -844,9 +823,7 @@ fn void List.ensure_capacity(List* list, usz added = 1) @inline @private
 
 // Functions for equatable types
 
-$if (types::is_equatable_type(Type))
-
-fn usz! List.index_of(List* list, Type type)
+fn usz? List.index_of(List* list, Type type)
 {
 	foreach (i, v : list)
 	{
@@ -855,7 +832,7 @@ fn usz! List.index_of(List* list, Type type)
 	return SearchResult.MISSING?;
 }
 
-fn usz! List.rindex_of(List* list, Type type)
+fn usz? List.rindex_of(List* list, Type type)
 {
 	foreach_r (i, v : list)
 	{
@@ -918,10 +895,6 @@ fn void List.remove_all(List* list, List* other_list)
 }
 
 
-$endif
-
-$if (Type.kindof == POINTER)
-
 /**
  * @param [&in] list
  * @return "The number non-null values in the list"
@@ -948,11 +921,10 @@ fn usz List.compact(List* list)
 	return size - list.size;
 }
 
-$endif
 // Copyright (c) 2023 Christoffer Lerno. All rights reserved.
 // Use of this source code is governed by the MIT license
 // a copy of which can be found in the LICENSE_STDLIB file.
-module std::collections::map<Key, Value>;
+module std::collections::map{Key, Value};
 import std::math;
 
 const uint DEFAULT_INITIAL_CAPACITY = 16;
@@ -1012,7 +984,7 @@ fn bool HashMap.is_empty(HashMap* map) @inline
 	return !map.count;
 }
 
-fn Value*! HashMap.get_ref(HashMap* map, Key key)
+fn Value*? HashMap.get_ref(HashMap* map, Key key)
 {
 	if (!map.count) return SearchResult.MISSING?;
 	uint hash = rehash(key.hash());
@@ -1023,7 +995,7 @@ fn Value*! HashMap.get_ref(HashMap* map, Key key)
 	return SearchResult.MISSING?;
 }
 
-fn Entry*! HashMap.get_entry(HashMap* map, Key key)
+fn Entry*? HashMap.get_entry(HashMap* map, Key key)
 {
 	if (!map.count) return SearchResult.MISSING?;
 	uint hash = rehash(key.hash());
@@ -1056,7 +1028,7 @@ macro Value HashMap.@get_or_set(HashMap* map, Key key, Value #expr)
 	return val;
 }
 
-fn Value! HashMap.get(HashMap* map, Key key) @operator([])
+fn Value? HashMap.get(HashMap* map, Key key) @operator([])
 {
 	return *map.get_ref(key) @inline;
 }
@@ -1087,7 +1059,7 @@ fn bool HashMap.set(HashMap* map, Key key, Value value) @operator([]=)
 	return false;
 }
 
-fn void! HashMap.remove(HashMap* map, Key key) @maydiscard
+fn void? HashMap.remove(HashMap* map, Key key) @maydiscard
 {
 	if (!map.remove_entry_for_key(key)) return SearchResult.MISSING?;
 }
@@ -1156,7 +1128,7 @@ fn Value[] HashMap.value_list(HashMap* map, Allocator* using = mem::heap())
 	return list;
 }
 
-$if (types::is_equatable(Value))
+
 fn bool HashMap.has_value(HashMap* map, Value v)
 {
 	if (!map.count) return false;
@@ -1170,7 +1142,7 @@ fn bool HashMap.has_value(HashMap* map, Value v)
 	}
 	return false;
 }
-$endif
+
 
 // --- private methods
 
@@ -1334,12 +1306,8 @@ struct Object
 	}
 }
 
-static initialize
-{
-	io::formatter_register_type(Object);
-}
 
-fn void! Object.to_format(Object* o, Formatter* formatter)
+fn void? Object.to_format(Object* o, Formatter* formatter)
 {
 	switch (o.type)
 	{
@@ -1508,7 +1476,7 @@ fn void Object.init_array_if_needed(Object* o) @private
 fn void Object.set_object(Object* o, String key, Object* new_object) @private
 {
 	o.init_map_if_needed();
-	ObjectInternalMapEntry*! entry = o.map.get_entry(key);
+	ObjectInternalMapEntry*? entry = o.map.get_entry(key);
 	defer
 	{
 		(void)free(entry.key, .using = o.allocator);
@@ -1521,7 +1489,7 @@ macro Object* object_from_value(value) @private
 {
 	var $Type = $typeof(value);
 
-$switch
+$switch:
 	$case types::is_int($Type):
 		return new_int(value);
 	$case types::is_float($Type):
@@ -1535,10 +1503,10 @@ $switch
 	$case $Type.typeid == void*.typeid:
 		assert(value == null);
 		return &NULL_OBJECT;
-	$case $checks(String s = value):
+	$case $defined(s = value):
 		return new_string(value);
 	$default:
-		$assert(false, "Unsupported object type.");
+		$assert false : "Unsupported object type.";
 $endswitch
 
 }
@@ -1574,7 +1542,7 @@ macro Object* Object.append(Object* o, value)
 /**
  * @require o.is_keyable()
  **/
-fn Object*! Object.get(Object* o, String key) => o.is_empty() ? SearchResult.MISSING? : o.map.get(key);
+fn Object*? Object.get(Object* o, String key) => o.is_empty() ? SearchResult.MISSING? : o.map.get(key);
 
 
 fn bool Object.has_key(Object* o, String key) => o.is_map() && o.map.has_key(key);
@@ -1623,7 +1591,7 @@ macro get_integer_value(Object* value, $Type)
 	}
 	if (value.is_string())
 	{
-		$if ($Type.kindof == TypeKind.SIGNED_INT)
+		$if $Type.kindof == TypeKind.SIGNED_INT:
 			return ($Type)value.s.to_int128();
 		$else
 			return ($Type)value.s.to_uint128();
@@ -1649,34 +1617,34 @@ macro Object.get_integer(Object* o, $Type, String key) @private
 	return get_integer_value(o.get(key), $Type);
 }
 
-fn ichar! Object.get_ichar(Object* o, String key) => o.get_integer(ichar, key);
-fn short! Object.get_short(Object* o, String key) => o.get_integer(short, key);
-fn int! Object.get_int(Object* o, String key) => o.get_integer(int, key);
-fn long! Object.get_long(Object* o, String key) => o.get_integer(long, key);
-fn int128! Object.get_int128(Object* o, String key) => o.get_integer(int128, key);
+fn ichar? Object.get_ichar(Object* o, String key) => o.get_integer(ichar, key);
+fn short? Object.get_short(Object* o, String key) => o.get_integer(short, key);
+fn int? Object.get_int(Object* o, String key) => o.get_integer(int, key);
+fn long? Object.get_long(Object* o, String key) => o.get_integer(long, key);
+fn int128? Object.get_int128(Object* o, String key) => o.get_integer(int128, key);
 
-fn ichar! Object.get_ichar_at(Object* o, usz index) => o.get_integer_at(ichar, index);
-fn short! Object.get_short_at(Object* o, usz index) => o.get_integer_at(short, index);
-fn int! Object.get_int_at(Object* o, usz index) => o.get_integer_at(int, index);
-fn long! Object.get_long_at(Object* o, usz index) => o.get_integer_at(long, index);
-fn int128! Object.get_int128_at(Object* o, usz index) => o.get_integer_at(int128, index);
+fn ichar? Object.get_ichar_at(Object* o, usz index) => o.get_integer_at(ichar, index);
+fn short? Object.get_short_at(Object* o, usz index) => o.get_integer_at(short, index);
+fn int? Object.get_int_at(Object* o, usz index) => o.get_integer_at(int, index);
+fn long? Object.get_long_at(Object* o, usz index) => o.get_integer_at(long, index);
+fn int128? Object.get_int128_at(Object* o, usz index) => o.get_integer_at(int128, index);
 
-fn char! Object.get_char(Object* o, String key) => o.get_integer(ichar, key);
-fn short! Object.get_ushort(Object* o, String key) => o.get_integer(ushort, key);
-fn uint! Object.get_uint(Object* o, String key) => o.get_integer(uint, key);
-fn ulong! Object.get_ulong(Object* o, String key) => o.get_integer(ulong, key);
-fn uint128! Object.get_uint128(Object* o, String key) => o.get_integer(uint128, key);
+fn char? Object.get_char(Object* o, String key) => o.get_integer(ichar, key);
+fn short? Object.get_ushort(Object* o, String key) => o.get_integer(ushort, key);
+fn uint? Object.get_uint(Object* o, String key) => o.get_integer(uint, key);
+fn ulong? Object.get_ulong(Object* o, String key) => o.get_integer(ulong, key);
+fn uint128? Object.get_uint128(Object* o, String key) => o.get_integer(uint128, key);
 
-fn char! Object.get_char_at(Object* o, usz index) => o.get_integer_at(char, index);
-fn ushort! Object.get_ushort_at(Object* o, usz index) => o.get_integer_at(ushort, index);
-fn uint! Object.get_uint_at(Object* o, usz index) => o.get_integer_at(uint, index);
-fn ulong! Object.get_ulong_at(Object* o, usz index) => o.get_integer_at(ulong, index);
-fn uint128! Object.get_uint128_at(Object* o, usz index) => o.get_integer_at(uint128, index);
+fn char? Object.get_char_at(Object* o, usz index) => o.get_integer_at(char, index);
+fn ushort? Object.get_ushort_at(Object* o, usz index) => o.get_integer_at(ushort, index);
+fn uint? Object.get_uint_at(Object* o, usz index) => o.get_integer_at(uint, index);
+fn ulong? Object.get_ulong_at(Object* o, usz index) => o.get_integer_at(ulong, index);
+fn uint128? Object.get_uint128_at(Object* o, usz index) => o.get_integer_at(uint128, index);
 
 /**
  * @require o.is_keyable()
  **/
-fn String! Object.get_string(Object* o, String key)
+fn String? Object.get_string(Object* o, String key)
 {
 	Object* value = o.get(key)!;
 	assert(value.is_string());
@@ -1696,7 +1664,7 @@ fn String Object.get_string_at(Object* o, usz index)
 /**
  * @require o.is_keyable()
  **/
-macro String! Object.get_enum(Object* o, $EnumType, String key)
+macro String? Object.get_enum(Object* o, $EnumType, String key)
 {
 	Object value = o.get(key)!;
 	assert($EnumType.typeid == value.type);
@@ -1716,7 +1684,7 @@ macro String Object.get_enum_at(Object* o, $EnumType, usz index)
 /**
  * @require o.is_keyable()
  **/
-fn bool! Object.get_bool(Object* o, String key)
+fn bool? Object.get_bool(Object* o, String key)
 {
 	Object* value = o.get(key)!;
 	assert(value.is_bool());
@@ -1737,7 +1705,7 @@ fn bool Object.get_bool_at(Object* o, usz index)
 /**
  * @require o.is_keyable()
  **/
-fn double! Object.get_float(Object* o, String key)
+fn double? Object.get_float(Object* o, String key)
 {
 	Object* value = o.get(key)!;
 	switch (value.type.kindof)
@@ -1780,9 +1748,9 @@ fn Object* Object.get_or_create_obj(Object* o, String key)
 	return container;
 }
 
-typedef ObjectInternalMap @private = HashMap<String, Object*>;
-typedef ObjectInternalList @private = List<Object*>;
-typedef ObjectInternalMapEntry @private = Entry<String, Object*>;
+typedef ObjectInternalMap @private = HashMap{String, Object*};
+typedef ObjectInternalList @private = List{Object*};
+typedef ObjectInternalMapEntry @private = Entry{String, Object*};
 
 //  priorityqueue.c3
 //  A priority queue using a classic binary heap for C3.
@@ -1806,10 +1774,10 @@ typedef ObjectInternalMapEntry @private = Entry<String, Object*>;
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
-module std::collections::priorityqueue<Type>;
+module std::collections::priorityqueue{Type};
 import std::collections::list;
 
-typedef Heap = List<Type>;
+typedef Heap = List{Type};
 
 struct PriorityQueue
 {
@@ -1837,7 +1805,7 @@ fn void PriorityQueue.push(PriorityQueue* pq, Type element)
 /**
 * @require pq != null
 */
-fn Type! PriorityQueue.pop(PriorityQueue* pq)
+fn Type? PriorityQueue.pop(PriorityQueue* pq)
 {
 	usz i = 0;
 	usz len = pq.heap.len() @inline;
@@ -1868,7 +1836,7 @@ fn Type! PriorityQueue.pop(PriorityQueue* pq)
 /**
  * @require pq != null
  */
-fn Type! PriorityQueue.peek(PriorityQueue* pq)
+fn Type? PriorityQueue.peek(PriorityQueue* pq)
 {
 	if (!pq.len()) return IteratorResult.NO_MORE_ELEMENT?;
 	return pq.heap.get(0);
@@ -1939,7 +1907,7 @@ struct ArenaAllocatorHeader
  * @require !alignment || math::is_power_of_2(alignment)
  * @require data `unexpectedly missing the allocator`
  */
-fn void*! arena_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
+fn void*? arena_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
 {
 	ArenaAllocator* arena = (ArenaAllocator*)data;
 	bool clear = false;
@@ -1993,7 +1961,7 @@ fn void*! arena_allocator_function(Allocator* data, usz size, usz alignment, usz
  * @require mem::aligned_offset(offset, ArenaAllocatorHeader.alignof) == offset
  * @require this != null
  **/
-fn void*! ArenaAllocator._alloc(ArenaAllocator* this, usz size, usz alignment, usz offset) @private
+fn void*? ArenaAllocator._alloc(ArenaAllocator* this, usz size, usz alignment, usz offset) @private
 {
 	usz total_len = this.data.len;
 	if (size > total_len) return AllocationFailure.CHUNK_TOO_LARGE?;
@@ -2019,7 +1987,7 @@ fn void*! ArenaAllocator._alloc(ArenaAllocator* this, usz size, usz alignment, u
  * @require mem::aligned_offset(offset, ArenaAllocatorHeader.alignof) == offset
  * @require this != null
  **/
-fn void*! ArenaAllocator._realloc(ArenaAllocator* this, void *old_pointer, usz size, usz alignment, usz offset) @private
+fn void*? ArenaAllocator._realloc(ArenaAllocator* this, void *old_pointer, usz size, usz alignment, usz offset) @private
 {
 	assert(old_pointer >= this.data.ptr, "Pointer originates from a different allocator.");
 	usz total_len = this.data.len;
@@ -2131,7 +2099,7 @@ fn void DynamicArenaAllocator.free(DynamicArenaAllocator* this, void* ptr) @priv
  * @require old_pointer && size > 0
  * @require this.page `tried to realloc pointer on invalid allocator`
  */
-fn void*! DynamicArenaAllocator._realloc(DynamicArenaAllocator* this, void* old_pointer, usz size, usz alignment, usz offset) @local
+fn void*? DynamicArenaAllocator._realloc(DynamicArenaAllocator* this, void* old_pointer, usz size, usz alignment, usz offset) @local
 {
 	DynamicArenaPage* current_page = this.page;
 	alignment = alignment_for_allocation(alignment);
@@ -2181,14 +2149,14 @@ fn void DynamicArenaAllocator.reset(DynamicArenaAllocator* this) @private
  * @require math::is_power_of_2(alignment)
  * @require size > 0
  */
-fn void*! DynamicArenaAllocator._alloc_new(DynamicArenaAllocator* this, usz size, usz alignment, usz offset) @local
+fn void*? DynamicArenaAllocator._alloc_new(DynamicArenaAllocator* this, usz size, usz alignment, usz offset) @local
 {
 	// First, make sure that we can align it, extending the page size if needed.
 	usz page_size = max(this.page_size, mem::aligned_offset(size + DynamicArenaChunk.sizeof + offset, alignment) - offset);
 
 	// Grab the page without alignment (we do it ourselves)
 	void* mem = this.backing_allocator.alloc(page_size)!;
-	DynamicArenaPage*! page = malloc(DynamicArenaPage, .using = this.backing_allocator);
+	DynamicArenaPage*? page = malloc(DynamicArenaPage, .using = this.backing_allocator);
 	if (catch err = page)
 	{
 		free(mem, .using = this.backing_allocator);
@@ -2212,7 +2180,7 @@ fn void*! DynamicArenaAllocator._alloc_new(DynamicArenaAllocator* this, usz size
  * @require size > 0
  * @require this
  */
-fn void*! DynamicArenaAllocator._alloc(DynamicArenaAllocator* this, usz size, usz alignment, usz offset) @local
+fn void*? DynamicArenaAllocator._alloc(DynamicArenaAllocator* this, usz size, usz alignment, usz offset) @local
 {
 	alignment = alignment_for_allocation(alignment);
 	DynamicArenaPage* page = this.page;
@@ -2254,7 +2222,7 @@ fn void*! DynamicArenaAllocator._alloc(DynamicArenaAllocator* this, usz size, us
  * @require !alignment || math::is_power_of_2(alignment)
  * @require data `unexpectedly missing the allocator`
  */
-fn void*! dynamic_arena_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
+fn void*? dynamic_arena_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
 {
 	DynamicArenaAllocator* allocator = (DynamicArenaAllocator*)data;
 	switch (kind)
@@ -2302,7 +2270,7 @@ fn void*! dynamic_arena_allocator_function(Allocator* data, usz size, usz alignm
 
 module std::core::mem::allocator;
 
-typedef MemoryAllocFn = fn char[]!(usz);
+typedef MemoryAllocFn = fn char[]?(usz);
 
 struct SimpleHeapAllocator
 {
@@ -2327,7 +2295,7 @@ fn void SimpleHeapAllocator.init(SimpleHeapAllocator* this, MemoryAllocFn alloca
  * @require !alignment || math::is_power_of_2(alignment)
  * @require this `unexpectedly missing the allocator`
  */
-fn void*! simple_heap_allocator_function(Allocator* this, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
+fn void*? simple_heap_allocator_function(Allocator* this, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
 {
 	SimpleHeapAllocator* heap = (SimpleHeapAllocator*)this;
 	switch (kind)
@@ -2364,7 +2332,7 @@ fn void*! simple_heap_allocator_function(Allocator* this, usz size, usz alignmen
 /**
  * @require this && old_pointer && bytes > 0
  **/
-fn void*! SimpleHeapAllocator._realloc(SimpleHeapAllocator* this, void* old_pointer, usz bytes)
+fn void*? SimpleHeapAllocator._realloc(SimpleHeapAllocator* this, void* old_pointer, usz bytes)
 {
 	// Find the block header.
 	Header* block = (Header*)old_pointer - 1;
@@ -2376,14 +2344,14 @@ fn void*! SimpleHeapAllocator._realloc(SimpleHeapAllocator* this, void* old_poin
 	return new;
 }
 
-fn void*! SimpleHeapAllocator._calloc(SimpleHeapAllocator* this, usz bytes) @local
+fn void*? SimpleHeapAllocator._calloc(SimpleHeapAllocator* this, usz bytes) @local
 {
 	void* data = this._alloc(bytes)!;
 	mem::clear(data, bytes, mem::DEFAULT_MEM_ALIGNMENT);
 	return data;
 }
 
-fn void*! SimpleHeapAllocator._alloc(SimpleHeapAllocator* this, usz bytes) @local
+fn void*? SimpleHeapAllocator._alloc(SimpleHeapAllocator* this, usz bytes) @local
 {
 	usz aligned_bytes = mem::aligned_offset(bytes, mem::DEFAULT_MEM_ALIGNMENT);
     if (!this.free_list)
@@ -2432,7 +2400,7 @@ fn void*! SimpleHeapAllocator._alloc(SimpleHeapAllocator* this, usz bytes) @loca
 	return this.alloc(aligned_bytes);
 }
 
-fn void! SimpleHeapAllocator.add_block(SimpleHeapAllocator* this, usz aligned_bytes) @local
+fn void? SimpleHeapAllocator.add_block(SimpleHeapAllocator* this, usz aligned_bytes) @local
 {
 	assert(mem::aligned_offset(aligned_bytes, mem::DEFAULT_MEM_ALIGNMENT) == aligned_bytes);
 	char[] result = this.alloc_fn(aligned_bytes + Header.sizeof)!;
@@ -2529,7 +2497,7 @@ import libc;
 const Allocator _NULL_ALLOCATOR @private = { &null_allocator_fn };
 const Allocator _SYSTEM_ALLOCATOR @private = { &libc_allocator_fn };
 
-fn void*! null_allocator_fn(Allocator* this, usz bytes, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
+fn void*? null_allocator_fn(Allocator* this, usz bytes, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
 {
 	switch (kind)
 	{
@@ -2555,10 +2523,10 @@ struct AlignedBlock
  * @require bytes > 0
  * @require alignment > 0
  **/
-macro void*! @aligned_alloc(#alloc_fn, usz bytes, usz alignment, usz offset)
+macro void*? @aligned_alloc(#alloc_fn, usz bytes, usz alignment, usz offset)
 {
 	usz header = mem::aligned_offset(AlignedBlock.sizeof + offset, alignment) - offset;
-	$if ($checks(#alloc_fn(bytes)!))
+	$if $defined(#alloc_fn(bytes)!):
 		void* data = #alloc_fn(header + bytes)!;
 	$else
 		void* data = #alloc_fn(header + bytes);
@@ -2574,10 +2542,10 @@ macro void*! @aligned_alloc(#alloc_fn, usz bytes, usz alignment, usz offset)
  * @require bytes > 0
  * @require alignment > 0
  **/
-macro void*! @aligned_calloc(#calloc_fn, usz bytes, usz alignment, usz offset)
+macro void*? @aligned_calloc(#calloc_fn, usz bytes, usz alignment, usz offset)
 {
 	usz header = mem::aligned_offset(AlignedBlock.sizeof + offset, alignment) - offset;
-	$if ($checks(#calloc_fn(bytes)!))
+	$if $defined(#calloc_fn(bytes)!):
 		void* data = #calloc_fn(header + bytes)!;
 	$else
 		void* data = #calloc_fn(header + bytes);
@@ -2593,13 +2561,13 @@ macro void*! @aligned_calloc(#calloc_fn, usz bytes, usz alignment, usz offset)
  * @require bytes > 0
  * @require alignment > 0
  **/
-macro void*! @aligned_realloc(#calloc_fn, #free_fn, void* old_pointer, usz bytes, usz alignment, usz offset)
+macro void*? @aligned_realloc(#calloc_fn, #free_fn, void* old_pointer, usz bytes, usz alignment, usz offset)
 {
 	AlignedBlock* desc = (AlignedBlock*)old_pointer - 1;
 	void* data_start = desc.start;
     void* new_data = @aligned_calloc(#calloc_fn, bytes, alignment, offset)!;
 	mem::copy(new_data, old_pointer, desc.len > bytes ? desc.len : bytes, mem::DEFAULT_MEM_ALIGNMENT, mem::DEFAULT_MEM_ALIGNMENT);
-	$if ($checks(#free_fn(data_start)!))
+	$if $defined(#free_fn(data_start)!):
 	#free_fn(data_start)!;
 	$else
 	#free_fn(data_start);
@@ -2607,17 +2575,17 @@ macro void*! @aligned_realloc(#calloc_fn, #free_fn, void* old_pointer, usz bytes
 	return new_data;
 }
 
-macro void! @aligned_free(#free_fn, void* old_pointer)
+macro void? @aligned_free(#free_fn, void* old_pointer)
 {
 	AlignedBlock* desc = (AlignedBlock*)old_pointer - 1;
-	$if ($checks(#free_fn(desc.start)!))
+	$if $defined(#free_fn(desc.start)!):
 	#free_fn(desc.start)!;
 	$else
 	#free_fn(desc.start);
 	$endif
 }
 
-fn void*! libc_allocator_fn(Allocator* unused, usz bytes, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @inline
+fn void*? libc_allocator_fn(Allocator* unused, usz bytes, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @inline
 {
 	if (!alignment) alignment = mem::DEFAULT_MEM_ALIGNMENT;
 	assert(math::is_power_of_2(alignment), "Alignment was not a power of 2");
@@ -2741,7 +2709,7 @@ struct OnStackAllocatorHeader
  * @require !alignment || math::is_power_of_2(alignment)
  * @require data `unexpectedly missing the allocator`
  */
-fn void*! on_stack_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
+fn void*? on_stack_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
 {
 	OnStackAllocator* allocator = (OnStackAllocator*)data;
 	bool clear = false;
@@ -2824,7 +2792,7 @@ fn OnStackAllocatorExtraChunk* on_stack_allocator_find_chunk(OnStackAllocator* a
  * @require mem::aligned_offset(offset, ArenaAllocatorHeader.alignof) == offset
  * @require a != null
  **/
-fn void*! on_stack_allocator_realloc(OnStackAllocator* a, void* old_pointer, usz size, usz alignment, usz offset, bool aligned) @local @inline
+fn void*? on_stack_allocator_realloc(OnStackAllocator* a, void* old_pointer, usz size, usz alignment, usz offset, bool aligned) @local @inline
 {
 	if (!allocation_in_stack_mem(a, old_pointer))
 	{
@@ -2853,7 +2821,7 @@ import std::io;
  * @require mem::aligned_offset(offset, ArenaAllocatorHeader.alignof) == offset
  * @require a != null
  **/
-fn void*! on_stack_allocator_alloc(OnStackAllocator* a, usz size, usz alignment, usz offset, bool clear, bool aligned) @local @inline
+fn void*? on_stack_allocator_alloc(OnStackAllocator* a, usz size, usz alignment, usz offset, bool clear, bool aligned) @local @inline
 {
 	alignment = alignment_for_allocation(alignment);
 	usz total_len = a.data.len;
@@ -2929,7 +2897,7 @@ macro bool TempAllocatorPage.is_aligned(TempAllocatorPage* page) => page.size & 
 /**
  * @require size >= 16
  **/
-fn TempAllocator*! new_temp(usz size, Allocator* backing_allocator)
+fn TempAllocator*? new_temp(usz size, Allocator* backing_allocator)
 {
 	TempAllocator* allocator = malloc_checked(TempAllocator, .using = backing_allocator, .end_padding = size)!;
 	allocator.last_page = null;
@@ -2944,7 +2912,7 @@ fn TempAllocator*! new_temp(usz size, Allocator* backing_allocator)
  * @require !alignment || math::is_power_of_2(alignment)
  * @require data `unexpectedly missing the allocator`
  */
-fn void*! temp_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
+fn void*? temp_allocator_function(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
 {
 	TempAllocator* arena = (TempAllocator*)data;
 	switch (kind)
@@ -2978,7 +2946,7 @@ fn void*! temp_allocator_function(Allocator* data, usz size, usz alignment, usz 
 	unreachable();
 }
 
-fn void! TempAllocator._free(TempAllocator* this, void* old_pointer) @local
+fn void? TempAllocator._free(TempAllocator* this, void* old_pointer) @local
 {
 	// TODO fix free
 	assert((uptr)old_pointer >= (uptr)&this.data, "Pointer originates from a different allocator.");
@@ -2988,7 +2956,7 @@ fn void! TempAllocator._free(TempAllocator* this, void* old_pointer) @local
         this.used -= old_size;
     }
 }
-fn void! TempAllocator._reset(TempAllocator* this, usz mark) @local
+fn void? TempAllocator._reset(TempAllocator* this, usz mark) @local
 {
 	TempAllocatorPage *last_page = this.last_page;
 	while (last_page && last_page.mark > mark)
@@ -3001,14 +2969,14 @@ fn void! TempAllocator._reset(TempAllocator* this, usz mark) @local
 	this.used = mark;
 }
 
-fn void! TempAllocator._free_page(TempAllocator* this, TempAllocatorPage* page) @inline @local
+fn void? TempAllocator._free_page(TempAllocator* this, TempAllocatorPage* page) @inline @local
 {
 	void* mem = page.start;
 	if (page.is_aligned()) return this.backing_allocator.free_aligned(mem);
 	return this.backing_allocator.free(mem);
 }
 
-fn void*! TempAllocator._realloc_page(TempAllocator* this, TempAllocatorPage* page, usz size, usz alignment, usz offset) @inline @local
+fn void*? TempAllocator._realloc_page(TempAllocator* this, TempAllocatorPage* page, usz size, usz alignment, usz offset) @inline @local
 {
 	// Then the actual start pointer:
 	void* real_pointer = page.start;
@@ -3036,7 +3004,7 @@ fn void*! TempAllocator._realloc_page(TempAllocator* this, TempAllocatorPage* pa
 	return data;
 }
 
-fn void*! TempAllocator._realloc(TempAllocator* this, void* pointer, usz size, usz alignment, usz offset) @inline @local
+fn void*? TempAllocator._realloc(TempAllocator* this, void* pointer, usz size, usz alignment, usz offset) @inline @local
 {
 	TempAllocatorChunk *chunk = pointer - TempAllocatorChunk.sizeof;
 	if (chunk.size == (usz)-1)
@@ -3060,7 +3028,7 @@ fn void*! TempAllocator._realloc(TempAllocator* this, void* pointer, usz size, u
  * @require alignment <= mem::MAX_MEMORY_ALIGNMENT `alignment too big`
  * @require this != null
  **/
-fn void*! TempAllocator._alloc(TempAllocator* this, usz size, usz alignment, usz offset, bool clear) @local
+fn void*? TempAllocator._alloc(TempAllocator* this, usz size, usz alignment, usz offset, bool clear) @local
 {
 	void* start_mem = &this.data;
 	void* starting_ptr = start_mem + this.used;
@@ -3151,7 +3119,7 @@ fn void TempAllocator.print_pages(TempAllocator* this, File f)
 module std::core::mem::allocator;
 import std::collections::map;
 
-typedef PtrMap = HashMap<uptr, usz>;
+typedef PtrMap = HashMap{uptr, usz};
 
 // A simple tracking allocator.
 // It tracks allocations using a hash map but
@@ -3186,7 +3154,7 @@ fn void TrackingAllocator.free(TrackingAllocator* this)
  * @param [inout] data
  * @require !alignment || math::is_power_of_2(alignment)
  */
-fn void*! tracking_allocator_fn(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
+fn void*? tracking_allocator_fn(Allocator* data, usz size, usz alignment, usz offset, void* old_pointer, AllocationKind kind) @private
 {
 	TrackingAllocator* this = (TrackingAllocator*)data;
 	void* result = this.inner_allocator.function(this.inner_allocator, size, alignment, offset, old_pointer, kind)!;
@@ -3262,7 +3230,7 @@ struct WasmMemory
 	uptr use;
 }
 
-fn char[]! WasmMemory.allocate_block(WasmMemory* this, usz bytes)
+fn char[]? WasmMemory.allocate_block(WasmMemory* this, usz bytes)
 {
 	if (!this.allocation)
 	{
@@ -3338,7 +3306,6 @@ macro int @main_to_void_main_args(#m, int argc, char** argv)
 	return 0;
 }
 
-$if (env::os_is_win32())
 
 extern fn Char16** _win_command_line_to_argv_w(ushort* cmd_line, int* argc_ptr) @extern("CommandLineToArgvW");
 
@@ -3448,7 +3415,7 @@ macro int @wmain_to_void_main_args(#m, int argc, Char16** argv)
 	return 0;
 }
 
-$endif
+
 module std::core::array;
 
 /**
@@ -3614,29 +3581,7 @@ module std::core::builtin;
 import libc;
 import std::hash;
 
-/**
- * Use `IteratorResult` when reading the end of an iterator, or accessing a result out of bounds.
- **/
-fault IteratorResult
-{
-	NO_MORE_ELEMENT
-}
-
-/**
- * Use `SearchResult` when trying to return a value from some collection but the element is missing.
- **/
-fault SearchResult
-{
-	MISSING
-}
-
-/**
- * Use `CastResult` when an attempt at conversion fails.
- **/
-fault CastResult
-{
-	TYPE_MISMATCH
-}
+faultdef NO_MORE_ELEMENT, MISSING, TYPE_MISMATCH;
 
 /**
  * Stores a variable on the stack, then restores it at the end of the
@@ -3687,7 +3632,7 @@ struct CallstackElement
 fn void default_panic(String message, String file, String function, uint line)
 {
 	CallstackElement* stack = $$stacktrace();
-	$if ($defined(io::stderr) && $defined(File.printf))
+	$if $defined(io::stderr) && $defined(File.printf):
 
 	if (stack) stack = stack.prev;
 	if (stack)
@@ -3735,7 +3680,7 @@ fn void panicf(String fmt, String file, String function, uint line, args...)
  **/
 macro void unreachable(String string = "Unreachable statement reached.", ...) @builtin @noreturn
 {
-	panicf(string, $$FILE, $$FUNC, $$LINE, $vasplat());
+	panicf(string, $$FILE, $$FUNC, $$LINE, $vasplat);
 	$$unreachable();
 }
 
@@ -3745,7 +3690,7 @@ macro void unreachable(String string = "Unreachable statement reached.", ...) @b
  **/
 macro void unsupported(String string = "Unsupported function invoked") @builtin @noreturn
 {
-	panicf(string, $$FILE, $$FUNC, $$LINE, $vasplat());
+	panicf(string, $$FILE, $$FUNC, $$LINE, $vasplat);
 	$$unreachable();
 }
 
@@ -3790,7 +3735,7 @@ macro enum_by_name($Type, String enum_name) @builtin
  **/
 macro bool @likely(bool #value, $probability = 1.0) @builtin
 {
-$if ($probability == 1.0)
+$if $probability == 1.0:
 	return $$expect(#value, true);
 $else
 	return $$expect_with_probability(#value, true, $probability);
@@ -3806,7 +3751,7 @@ $endif
  **/
 macro bool @unlikely(bool #value, $probability = 1.0) @builtin
 {
-$if ($probability == 1.0)
+$if $probability == 1.0:
 	return $$expect(#value, false);
 $else
 	return $$expect_with_probability(#value, false, $probability);
@@ -3820,7 +3765,7 @@ $endif
  **/
 macro @expect(#value, expected, $probability = 1.0) @builtin
 {
-    $if ($probability == 1.0)
+    $if $probability == 1.0:
 	return $$expect(#value, ($typeof(#value))expected);
     $else
 	return $$expect_with_probability(#value, expected, $probability);
@@ -3853,12 +3798,12 @@ macro prefetch(void* ptr, PrefetchLocality $locality = VERY_NEAR, bool $write = 
 
 macro swizzle(v, ...) @builtin
 {
-	return $$swizzle(v, $vasplat());
+	return $$swizzle(v, $vasplat);
 }
 
 macro swizzle2(v, v2, ...) @builtin
 {
-	return $$swizzle2(v, v2, $vasplat());
+	return $$swizzle2(v, v2, $vasplat);
 }
 
 macro bool @castable(#expr, $To) @builtin
@@ -3868,13 +3813,13 @@ macro bool @castable(#expr, $To) @builtin
 
 macro bool @convertible(#expr, $To) @builtin
 {
-	return $checks($To x = #expr);
+	return $defined(x = #expr);
 }
 
-macro anyfault @catchof(#expr) @builtin
+macro fault @catchof(#expr) @builtin
 {
 	if (catch f = #expr) return f;
-    return anyfault {};
+    return fault {};
 }
 
 macro bool @ok(#expr) @builtin
@@ -3907,7 +3852,7 @@ module std::core::builtin;
  **/
 macro less(a, b) @builtin
 {
-$switch
+$switch:
 	$case $defined(a.less):
 		return a.less(b);
 	$case $defined(a.compare_to):
@@ -3922,7 +3867,7 @@ $endswitch
  **/
 macro less_eq(a, b) @builtin
 {
-$switch
+$switch:
 	$case $defined(a.less):
 		return !b.less(a);
 	$case $defined(a.compare_to):
@@ -3937,7 +3882,7 @@ $endswitch
  **/
 macro greater(a, b) @builtin
 {
-$switch
+$switch:
 	$case $defined(a.less):
 		return b.less(a);
 	$case $defined(a.compare_to):
@@ -3952,7 +3897,7 @@ $endswitch
  **/
 macro greater_eq(a, b) @builtin
 {
-$switch
+$switch:
 	$case $defined(a.less):
 		return !a.less(b);
 	$case $defined(a.compare_to):
@@ -3967,7 +3912,7 @@ $endswitch
  **/
 macro bool equals(a, b) @builtin
 {
-$switch
+$switch:
 	$case $defined(a.equals):
 		return a.equals(b);
 	$case $defined(a.compare_to):
@@ -3981,14 +3926,14 @@ $endswitch
 
 macro min(x, ...) @builtin
 {
-    $if ($vacount == 1)
-        return less(x, $vaarg(0)) ? x : $vaarg(0);
+    $if $vacount == 1:
+        return less(x, $vaarg[0]) ? x : $vaarg[0];
     $else
         var result = x;
-        $for (var $i = 0; $i < $vacount; $i++)
-            if (less($vaarg($i), result))
+        $for var $i = 0; $i < $vacount; $i++:
+            if (less($vaarg[$i], result))
             {
-                 result = $vaarg($i);
+                 result = $vaarg[$i];
             }
         $endfor
         return result;
@@ -3997,14 +3942,14 @@ macro min(x, ...) @builtin
 
 macro max(x, ...) @builtin
 {
-    $if ($vacount == 1)
-        return greater(x, $vaarg(0)) ? x : $vaarg(0);
+    $if $vacount == 1:
+        return greater(x, $vaarg[0]) ? x : $vaarg[0];
     $else
         var result = x;
-        $for (var $i = 0; $i < $vacount; $i++)
-            if (greater($vaarg($i), result))
+        $for var $i = 0; $i < $vacount; $i++:
+            if (greater($vaarg[$i], result))
             {
-                 result = $vaarg($i);
+                 result = $vaarg[$i];
             }
         $endfor
         return result;
@@ -4029,75 +3974,12 @@ $assert (C_SHORT_SIZE <= C_INT_SIZE);
 $assert (C_INT_SIZE <= C_LONG_SIZE);
 $assert (C_LONG_SIZE <= C_LONG_LONG_SIZE);
 
-$switch ($$C_INT_SIZE)
-$case 64:
-    typedef CInt = long;
-    typedef CUInt = ulong;
-$case 32:
-    typedef CInt = int;
-    typedef CUInt = uint;
-$case 16:
-    typedef CInt = short;
-    typedef CUInt = ushort;
-$default:
-    $assert(false, "Invalid C int size");
-$endswitch
-
-$switch ($$C_LONG_SIZE)
-$case 64:
-    typedef CLong = long;
-    typedef CULong = ulong;
-$case 32:
-    typedef CLong = int;
-    typedef CULong = uint;
-$case 16:
-    typedef CLong = short;
-    typedef CULong = ushort;
-$default:
-    $assert(false, "Invalid C long size");
-$endswitch
-
-$switch ($$C_SHORT_SIZE)
-$case 32:
-    typedef CShort = int;
-    typedef CUShort = uint;
-$case 16:
-    typedef CShort = short;
-    typedef CUShort = ushort;
-$case 8:
-    typedef CShort = ichar;
-    typedef CUShort = char;
-$default:
-    $assert(false, "Invalid C short size");
-$endswitch
-
-$switch ($$C_LONG_LONG_SIZE)
-$case 128:
-    typedef CLongLong = int128;
-    typedef CULongLong = uint128;
-$case 64:
-    typedef CLongLong = long;
-    typedef CULongLong = ulong;
-$case 32:
-    typedef CLongLong = int;
-    typedef CULongLong = uint;
-$case 16:
-    typedef CLongLong = short;
-    typedef CULongLong = ushort;
-$default:
-    $assert(false, "Invalid C long long size");
-$endswitch
 
 
 
 typedef CSChar = ichar;
 typedef CUChar = char;
 
-$if ($$C_CHAR_IS_SIGNED)
-    typedef CChar = ichar;
-$else
-    typedef CChar = char;
-$endif
 module std::core::string::conv;
 
 const uint UTF16_SURROGATE_OFFSET @private = 0x10000;
@@ -4114,7 +3996,7 @@ const uint UTF16_SURROGATE_HIGH_VALUE @private = 0xD800;
  * @param [out] output `the resulting buffer`
  * @param available `the size available`
  **/
-fn usz! char32_to_utf8(Char32 c, char* output, usz available)
+fn usz? char32_to_utf8(Char32 c, char* output, usz available)
 {
 	if (!available) return UnicodeResult.CONVERSION_FAILED?;
 	switch (true)
@@ -4174,7 +4056,7 @@ fn void char32_to_utf16_unsafe(Char32 c, Char16** output)
  * @param [inout] available `amount of UTF16 data available.`
  * @param [inout] output `the resulting utf8 buffer to write to.`
  **/
-fn void! char16_to_utf8_unsafe(Char16 *ptr, usz *available, char** output)
+fn void? char16_to_utf8_unsafe(Char16 *ptr, usz *available, char** output)
 {
 	Char16 high = *ptr;
 	if (high & UTF16_SURROGATE_GENERIC_MASK != UTF16_SURROGATE_GENERIC_VALUE)
@@ -4231,7 +4113,7 @@ fn void char32_to_utf8_unsafe(Char32 c, char** output)
  * @param [inout] size `Set to max characters to read, set to characters read`
  * @return `the parsed 32 bit codepoint`
  **/
-fn Char32! utf8_to_char32(char* ptr, usz* size)
+fn Char32? utf8_to_char32(char* ptr, usz* size)
 {
 	usz max_size = *size;
 	if (max_size < 1) return UnicodeResult.INVALID_UTF8?;
@@ -4397,7 +4279,7 @@ fn usz utf16len_for_utf32(Char32[] utf32)
  * @param [out] utf8_buffer
  * @return `the number of bytes written.`
  **/
-fn usz! utf32to8(Char32[] utf32, String utf8_buffer)
+fn usz? utf32to8(Char32[] utf32, String utf8_buffer)
 {
 	usz len = utf8_buffer.len;
 	char* ptr = utf8_buffer.ptr;
@@ -4419,7 +4301,7 @@ fn usz! utf32to8(Char32[] utf32, String utf8_buffer)
  * @param [out] utf32_buffer
  * @return `the number of Char32s written.`
  **/
-fn usz! utf8to32(String utf8, Char32[] utf32_buffer)
+fn usz? utf8to32(String utf8, Char32[] utf32_buffer)
 {
 	usz len = utf8.len;
 	Char32* ptr = utf32_buffer.ptr;
@@ -4446,7 +4328,7 @@ fn usz! utf8to32(String utf8, Char32[] utf32_buffer)
  * @param [in] utf16 `The UTF16 array containing the data to convert.`
  * @param [out] utf8_buffer `the (sufficiently large) buffer to hold the UTF16 data.`
  **/
-fn void! utf16to8_unsafe(Char16[] utf16, char* utf8_buffer)
+fn void? utf16to8_unsafe(Char16[] utf16, char* utf8_buffer)
 {
 	usz len16 = utf16.len;
 	for (usz i = 0; i < len16;)
@@ -4465,7 +4347,7 @@ fn void! utf16to8_unsafe(Char16[] utf16, char* utf8_buffer)
  * @param [in] utf8 `The UTF8 buffer containing the data to convert.`
  * @param [out] utf32_buffer `the (sufficiently large) buffer to hold the UTF8 data.`
  **/
-fn void! utf8to32_unsafe(String utf8, Char32* utf32_buffer)
+fn void? utf8to32_unsafe(String utf8, Char32* utf32_buffer)
 {
 	usz len = utf8.len;
 	for (usz i = 0; i < len;)
@@ -4485,7 +4367,7 @@ fn void! utf8to32_unsafe(String utf8, Char32* utf32_buffer)
  * @param [in] utf8 `The UTF8 buffer containing the data to convert.`
  * @param [out] utf16_buffer `the (sufficiently large) buffer to hold the UTF8 data.`
  **/
-fn void! utf8to16_unsafe(String utf8, Char16* utf16_buffer)
+fn void? utf8to16_unsafe(String utf8, Char16* utf16_buffer)
 {
 	usz len = utf8.len;
     for (usz i = 0; i < len;)
@@ -4515,7 +4397,7 @@ fn void utf32to8_unsafe(Char32[] utf32, char* utf8_buffer)
 }
 module std::core::dstring;
 
-typedef DString = distinct void*;
+typedef DString = void*;
 
 const usz MIN_CAPACITY @private = 16;
 
@@ -4806,7 +4688,7 @@ fn void DString.append_char(DString* str, char c)
 macro void DString.append(DString* str, value)
 {
 	var $Type = $typeof(value);
-	$switch ($Type)
+	$switch $Type:
 		$case char:
 		$case ichar:
 			str.append_char(value);
@@ -4817,26 +4699,26 @@ macro void DString.append(DString* str, value)
 		$case Char32:
 			str.append_char32(value);
 		$default:
-			$switch
+			$switch:
 				$case @convertible(value, Char32):
 					str.append_char32(value);
 				$case @convertible(value, String):
 					str.append_chars(value);
 				$default:
-					$assert(false, "Unsupported type for append – use printf instead.");
+					$assert false: "Unsupported type for append – use printf instead.";
 			$endswitch
 	$endswitch
 }
 
 
-fn usz! DString.printf(DString* str, String format, args...) @maydiscard
+fn usz? DString.printf(DString* str, String format, args...) @maydiscard
 {
 	Formatter formatter;
 	formatter.init(&out_string_append_fn, str);
 	return formatter.vprintf(format, args);
 }
 
-fn usz! DString.printfn(DString* str, String format, args...) @maydiscard
+fn usz? DString.printfn(DString* str, String format, args...) @maydiscard
 {
 	Formatter formatter;
 	formatter.init(&out_string_append_fn, str);
@@ -4863,7 +4745,7 @@ fn DString new_join(String[] s, String joiner, Allocator* using = mem::heap())
 	return res;
 }
 
-fn void! out_string_append_fn(char c, void* data) @private
+fn void? out_string_append_fn(char c, void* data) @private
 {
 	DString* s = data;
 	s.append_char(c);
@@ -4890,7 +4772,7 @@ fn void DString.reserve(DString* str, usz addition)
 	*str = (DString)realloc(data, StringData.sizeof + new_capacity, .using = data.allocator);
 }
 
-fn usz! DString.read_from_stream(DString* string, Stream* reader)
+fn usz? DString.read_from_stream(DString* string, Stream* reader)
 {
 	if (reader.supports_available())
 	{
@@ -5064,7 +4946,7 @@ macro bool os_is_win32()
 
 macro bool os_is_darwin()
 {
-	$switch (OS_TYPE)
+	$switch OS_TYPE:
 	$case IOS:
 	$case MACOS:
 	$case TVOS:
@@ -5077,7 +4959,7 @@ macro bool os_is_darwin()
 
 macro bool os_is_posix()
 {
-	$switch (OS_TYPE)
+	$switch OS_TYPE:
 	$case IOS:
 	$case MACOS:
 	$case NETBSD:
@@ -5104,9 +4986,9 @@ macro bool os_is_posix()
  * @param [&in] name
  * @require name.len > 0
  **/
-fn String! get_var(String name)
+fn String? get_var(String name)
 {
-$if (COMPILER_LIBC_AVAILABLE && !os_is_win32())
+$if COMPILER_LIBC_AVAILABLE && !os_is_win32():
 	@pool()
 	{
 		ZString val = libc::getenv(name.zstr_tcopy());
@@ -5125,7 +5007,7 @@ $endif
  **/
 fn void set_var(String name, String value, bool overwrite = true)
 {
-$if (COMPILER_LIBC_AVAILABLE && !os_is_win32())
+$if COMPILER_LIBC_AVAILABLE && !os_is_win32():
 	@pool()
 	{
 		if (libc::setenv(name.zstr_tcopy(), value.zstr_copy(), (int)overwrite))
@@ -5142,7 +5024,7 @@ $endif
  **/
 fn void clear_var(String name)
 {
-$if (COMPILER_LIBC_AVAILABLE && !os_is_win32())
+$if COMPILER_LIBC_AVAILABLE && !os_is_win32():
 	@pool()
 	{
 		if (libc::unsetenv(name.zstr_tcopy()))
@@ -5246,7 +5128,7 @@ fn bool ptr_is_aligned(void* ptr, usz alignment) @inline
 
 macro void clear(void* dst, usz len, usz $dst_align = 0, bool $is_volatile = false, bool $inlined = false)
 {
-	$if ($inlined)
+	$if $inlined:
 		$$memset_inline(dst, (char)0, len, $is_volatile, $dst_align);
 	$else
 		$$memset(dst, (char)0, len, $is_volatile, $dst_align);
@@ -5255,7 +5137,7 @@ macro void clear(void* dst, usz len, usz $dst_align = 0, bool $is_volatile = fal
 
 macro void copy(void* dst, void* src, usz len, usz $dst_align = 0, usz $src_align = 0, bool $is_volatile = false, bool $inlined = false)
 {
-	$if ($inlined)
+	$if $inlined:
 		$$memcpy_inline(dst, src, len, $is_volatile, $dst_align, $src_align);
 	$else
 		$$memcpy(dst, src, len, $is_volatile, $dst_align, $src_align);
@@ -5269,7 +5151,7 @@ macro void move(void* dst, void* src, usz len, usz $dst_align = 0, usz $src_alig
 
 macro void set(void* dst, char val, usz len, usz $dst_align = 0, bool $is_volatile = false, bool $inlined = false)
 {
-	$if ($inlined)
+	$if $inlined:
 		$$memset_inline(dst, val, len, $is_volatile, $dst_align);
 	$else
 		$$memset(dst, val, len, $is_volatile, $dst_align);
@@ -5285,12 +5167,12 @@ macro void set(void* dst, char val, usz len, usz $dst_align = 0, bool $is_volati
  **/
 macro bool equals(a, b, isz len = -1, usz $align = 0)
 {
-	$if (!$align)
+	$if !$align:
 		$align = $typeof(a[0]).alignof;
 	$endif
 	void* x @noinit;
 	void* y @noinit;
-	$if (values::@inner_kind(a) == TypeKind.SUBARRAY)
+	$if values::@inner_kind(a) == TypeKind.SUBARRAY:
 		len = a.len;
 		if (len != b.len) return false;
 		x = a.ptr;
@@ -5303,7 +5185,7 @@ macro bool equals(a, b, isz len = -1, usz $align = 0)
 
 	if (!len) return true;
 	var $Type;
-    $switch ($align)
+    $switch $align:
 		$case 1:
 			$Type = char;
 		$case 2:
@@ -5352,7 +5234,7 @@ macro type_alloc_must_be_aligned($Type)
  **/
 macro malloc(..., Allocator* using = mem::heap(), usz end_padding = 0) @builtin
 {
-	return malloc_checked($vasplat(), .using = using, .end_padding = end_padding)!!;
+	return malloc_checked($vasplat, .using = using, .end_padding = end_padding)!!;
 }
 
 /**
@@ -5361,40 +5243,21 @@ macro malloc(..., Allocator* using = mem::heap(), usz end_padding = 0) @builtin
  **/
 macro malloc_checked(..., Allocator* using = mem::heap(), usz end_padding = 0) @builtin
 {
-	$if ($checks($vatype(0).sizeof))
-		var $Type = $vatype(0);
-		$assert(!type_alloc_must_be_aligned($vatype(0)),  "Type must be allocated with malloc_aligned");
-		$if ($vacount == 2)
-			usz size = $vaarg(1);
+	$if $defined($vatype[0].sizeof):
+		var $Type = $vatype[0];
+		$assert !type_alloc_must_be_aligned($vatype[0]):  "Type must be allocated with malloc_aligned";
+		$if $vacount == 2:
+			usz size = $vaarg[1];
 			return (($Type*)using.alloc($Type.sizeof * size + end_padding))[:size];
 		$else
 			return ($Type*)using.alloc($Type.sizeof + end_padding);
 		$endif
 	$else
-		return using.alloc($vaarg(0) + end_padding);
+		return using.alloc($vaarg[0] + end_padding);
 	$endif
 }
 
 
-/**
- * @require $vacount > 0 && $vacount < 3 "Expected size, type, or type + len"
- * @require $vacount != 2 || $checks($vatype(0).sizeof) "Expected 'malloc(Foo, 12)'"
- * @require alignment && math::is_power_of_2(alignment)
- **/
-macro malloc_aligned(..., usz alignment = 0, usz end_padding = 0, Allocator* using = mem::heap()) @builtin
-{
-	$if ($checks($vatype(0).sizeof))
-		var $Type = $vatype(0);
-		$if ($vacount == 2)
-			usz size = $vaarg(1);
-			return (($Type*)using.alloc_aligned($Type.sizeof * size + end_padding, alignment))[:size];
-		$else
-			return ($Type*)using.alloc_aligned($Type.sizeof + end_padding, alignment);
-		$endif
-	$else
-		return using.alloc_aligned($vaarg(0) + end_padding, alignment);
-	$endif
-}
 
 /**
  * @require $vacount > 0 && $vacount < 3 "Expected size, type, or type + len"
@@ -5402,56 +5265,16 @@ macro malloc_aligned(..., usz alignment = 0, usz end_padding = 0, Allocator* usi
  **/
 macro calloc(..., Allocator* using = mem::heap(), usz end_padding = 0) @builtin
 {
-	return calloc_checked($vasplat(), .using = using, .end_padding = end_padding)!!;
+	return calloc_checked($vasplat, .using = using, .end_padding = end_padding)!!;
 }
 
-/**
- * @require $vacount > 0 && $vacount < 3 "Expected size, type, or type + len"
- * @require $vacount != 2 || $checks($vatype(0).sizeof) "Expected 'malloc(Foo, 12)'"
- **/
-macro calloc_checked(..., Allocator* using = mem::heap(), usz end_padding = 0) @builtin
-{
-	$if ($checks($vatype(0).sizeof))
-		var $Type = $vatype(0);
-		$assert(!type_alloc_must_be_aligned($vatype(0)),  "Type must be allocated with calloc_aligned");
-		$if ($vacount == 2)
-			usz size = $vaarg(1);
-			return (($Type*)using.calloc($Type.sizeof * size + end_padding))[:size];
-		$else
-			return ($Type*)using.calloc($Type.sizeof + end_padding);
-		$endif
-	$else
-		return using.calloc($vaarg(0) + end_padding);
-	$endif
-}
-
-
-/**
- * @require $vacount > 0 && $vacount < 3 "Expected size, type, or type + len"
- * @require $vacount != 2 || $checks($vatype(0).sizeof) "Expected 'malloc(Foo, 12)'"
- * @require alignment && math::is_power_of_2(alignment)
- **/
-macro calloc_aligned(..., usz alignment = 0, Allocator* using = mem::heap(), usz end_padding = 0) @builtin
-{
-	$if ($checks($vatype(0).sizeof))
-		var $Type = $vatype(0);
-		$if ($vacount == 2)
-			usz size = $vaarg(1);
-			return (($Type*)using.calloc_aligned($Type.sizeof * size + end_padding, alignment))[:size];
-		$else
-			return ($Type*)using.calloc_aligned($Type.sizeof + end_padding, alignment);
-		$endif
-	$else
-		return using.calloc_aligned($vaarg(0) + end_padding, alignment);
-	$endif
-}
 
 fn void* realloc(void *ptr, usz new_size, Allocator* using = mem::heap()) @builtin @inline
 {
 	return using.realloc(ptr, new_size)!!;
 }
 
-fn void*! realloc_checked(void *ptr, usz new_size, Allocator* using = mem::heap()) @builtin @inline
+fn void*? realloc_checked(void *ptr, usz new_size, Allocator* using = mem::heap()) @builtin @inline
 {
 	return using.realloc(ptr, new_size);
 }
@@ -5459,15 +5282,15 @@ fn void*! realloc_checked(void *ptr, usz new_size, Allocator* using = mem::heap(
 /**
  * @require alignment && math::is_power_of_2(alignment)
  */
-fn void*! realloc_aligned(void *ptr, usz new_size, usz alignment, Allocator* using = mem::heap()) @builtin @inline
+fn void*? realloc_aligned(void *ptr, usz new_size, usz alignment, Allocator* using = mem::heap()) @builtin @inline
 {
 	return using.realloc_aligned(ptr, new_size, alignment);
 }
 
 macro void free(void* ptr, Allocator* using = mem::heap()) @builtin => using.free(ptr)!!;
-macro void! free_checked(void* ptr, Allocator* using = mem::heap()) @builtin => using.free(ptr);
+macro void? free_checked(void* ptr, Allocator* using = mem::heap()) @builtin => using.free(ptr);
 macro void free_aligned(void* ptr, Allocator* using = mem::heap()) @builtin => using.free_aligned(ptr)!!;
-macro void! free_aligned_checked(void* ptr, Allocator* using = mem::heap()) @builtin => using.free_aligned(ptr);
+macro void? free_aligned_checked(void* ptr, Allocator* using = mem::heap()) @builtin => using.free_aligned(ptr);
 
 /**
  * Run with a specific allocator inside of the macro body.
@@ -5486,37 +5309,19 @@ macro void @scoped(Allocator* using; @body())
  **/
 macro tmalloc(..., usz end_padding = 0, usz alignment = DEFAULT_MEM_ALIGNMENT) @builtin
 {
-	$if ($checks($vatype(0).sizeof))
-		var $Type = $vatype(0);
-		$if ($vacount == 2)
-			usz size = $vaarg(1);
+	$if $defined($vatype[0].sizeof):
+		var $Type = $vatype[0];
+		$if $vacount == 2:
+			usz size = $vaarg[1];
 			return (($Type*)temp().alloc_aligned($Type.sizeof * size + end_padding, alignment))[:size]!!;
 		$else
 			return ($Type*)temp().alloc_aligned($Type.sizeof + end_padding, alignment)!!;
 		$endif
 	$else
-		return temp().alloc_aligned($vaarg(0) + end_padding, alignment)!!;
+		return temp().alloc_aligned($vaarg[0] + end_padding, alignment)!!;
 	$endif
 }
 
-/**
- * @require $vacount > 0 && $vacount < 3 "Expected size, type, or type + len"
- * @require $vacount != 2 || $checks($vatype(0).sizeof) "Expected 'malloc(Foo, 12)'"
- **/
-macro tcalloc(..., usz end_padding = 0, usz alignment = mem::DEFAULT_MEM_ALIGNMENT) @builtin
-{
-	$if ($checks($vatype(0).sizeof))
-		var $Type = $vatype(0);
-		$if ($vacount == 2)
-			usz size = $vaarg(1);
-			return (($Type*)temp().calloc_aligned($Type.sizeof * size + end_padding, alignment))[:size]!!;
-		$else
-			return ($Type*)temp().calloc_aligned($Type.sizeof + end_padding, alignment)!!;
-		$endif
-	$else
-		return temp().calloc_aligned($vaarg(0) + end_padding, alignment)!!;
-	$endif
-}
 
 fn void* trealloc(void* ptr, usz size, usz alignment = mem::DEFAULT_MEM_ALIGNMENT) @builtin @inline
 {
@@ -5549,7 +5354,7 @@ macro TempAllocator* temp()
 {
 	if (!thread_temp_allocator)
 	{
-		$switch (env::MEMORY_ENV)
+		$switch env::MEMORY_ENV:
 		$case NORMAL:
 			thread_temp_allocator = allocator::new_temp(1024 * 256, thread_allocator)!!;
 		$case SMALL:
@@ -5566,22 +5371,9 @@ macro TempAllocator* temp()
 macro Allocator* current_allocator() => thread_allocator;
 macro Allocator* heap() => thread_allocator;
 
-$if (!env::COMPILER_LIBC_AVAILABLE && env::ARCH_TYPE == ArchType.WASM32 || env::ARCH_TYPE == ArchType.WASM64)
-
 SimpleHeapAllocator wasm_allocator @private;
 
 extern int __heap_base;
-
-static initialize @priority(1)
-{
-	allocator::wasm_memory.allocate_block(mem::DEFAULT_MEM_ALIGNMENT)!!; // Give us a valid null.
-	// Check if we need to move the heap.
-	uptr start = (uptr)&__heap_base;
-	if (start > mem::DEFAULT_MEM_ALIGNMENT) allocator::wasm_memory.use = start;
-	wasm_allocator.init(fn (x) => allocator::wasm_memory.allocate_block(x));
-	thread_allocator = &wasm_allocator;
-}
-$endif
 
 module std::core::mem::allocator;
 
@@ -5591,7 +5383,7 @@ const DEFAULT_SIZE_PREFIX_ALIGNMENT = usz.alignof;
 const Allocator* NULL_ALLOCATOR = &_NULL_ALLOCATOR;
 const Allocator* LIBC_ALLOCATOR = &_SYSTEM_ALLOCATOR;
 
-typedef AllocatorFunction = fn void*!(Allocator* allocator, usz new_size, usz alignment, usz offset, void* old_pointer, AllocationKind kind);
+typedef AllocatorFunction = fn void*?(Allocator* allocator, usz new_size, usz alignment, usz offset, void* old_pointer, AllocationKind kind);
 
 struct Allocator
 {
@@ -5612,16 +5404,11 @@ enum AllocationKind
     MARK,
 }
 
-fault AllocationFailure
-{
-    OUT_OF_MEMORY,
-    UNSUPPORTED_OPERATION,
-    CHUNK_TOO_LARGE,
-}
+faultdef OUT_OF_MEMORY, UNSUPPORTED_OPERATION, CHUNK_TOO_LARGE;
 
 
 
-fn void*! Allocator.alloc(Allocator* allocator, usz size) @inline
+fn void*? Allocator.alloc(Allocator* allocator, usz size) @inline
 {
 	return allocator.function(allocator, size, 0, 0, null, ALLOC);
 }
@@ -5629,12 +5416,12 @@ fn void*! Allocator.alloc(Allocator* allocator, usz size) @inline
 /**
  * @require alignment && math::is_power_of_2(alignment)
  */
-fn void*! Allocator.alloc_aligned(Allocator* allocator, usz size, usz alignment, usz offset = 0) @inline
+fn void*? Allocator.alloc_aligned(Allocator* allocator, usz size, usz alignment, usz offset = 0) @inline
 {
 	return allocator.function(allocator, size, alignment, offset, null, ALIGNED_ALLOC);
 }
 
-fn void*! Allocator.realloc(Allocator* allocator, void* old_pointer, usz size) @inline
+fn void*? Allocator.realloc(Allocator* allocator, void* old_pointer, usz size) @inline
 {
 	return allocator.function(allocator, size, 0, 0, old_pointer, REALLOC);
 }
@@ -5642,18 +5429,18 @@ fn void*! Allocator.realloc(Allocator* allocator, void* old_pointer, usz size) @
 /**
  * @require alignment && math::is_power_of_2(alignment)
  */
-fn void*! Allocator.realloc_aligned(Allocator* allocator, void* old_pointer, usz size, usz alignment, usz offset = 0) @inline
+fn void*? Allocator.realloc_aligned(Allocator* allocator, void* old_pointer, usz size, usz alignment, usz offset = 0) @inline
 {
 	return allocator.function(allocator, size, alignment, offset, old_pointer, ALIGNED_REALLOC);
 }
 
-fn usz! Allocator.mark(Allocator* allocator) @inline
+fn usz? Allocator.mark(Allocator* allocator) @inline
 {
 	return (usz)(uptr)allocator.function(allocator, 0, 0, 0, null, MARK);
 }
 
 
-fn void*! Allocator.calloc(Allocator* allocator, usz size) @inline
+fn void*? Allocator.calloc(Allocator* allocator, usz size) @inline
 {
 	return allocator.function(allocator, size, 0, 0, null, CALLOC);
 }
@@ -5661,17 +5448,17 @@ fn void*! Allocator.calloc(Allocator* allocator, usz size) @inline
 /**
  * @require alignment && math::is_power_of_2(alignment)
  */
-fn void*! Allocator.calloc_aligned(Allocator* allocator, usz size, usz alignment, usz offset = 0) @inline
+fn void*? Allocator.calloc_aligned(Allocator* allocator, usz size, usz alignment, usz offset = 0) @inline
 {
 	return allocator.function(allocator, size, alignment, offset, null, ALIGNED_CALLOC);
 }
 
-fn void! Allocator.free(Allocator* allocator, void* old_pointer) @inline
+fn void? Allocator.free(Allocator* allocator, void* old_pointer) @inline
 {
 	allocator.function(allocator, 0, 0, 0, old_pointer, FREE)!;
 }
 
-fn void! Allocator.free_aligned(Allocator* allocator, void* old_pointer) @inline
+fn void? Allocator.free_aligned(Allocator* allocator, void* old_pointer) @inline
 {
 	allocator.function(allocator, 0, 0, 0, old_pointer, ALIGNED_FREE)!;
 }
@@ -5707,7 +5494,7 @@ struct SubArrayContainer
     usz len;
 }
 
-typedef TestFn = fn void!();
+typedef TestFn = fn void?();
 
 struct TestRunner
 {
@@ -5780,28 +5567,21 @@ fn bool __run_default_test_runner()
 	return test_runner_create().run();
 }
 
-$if (!env::COMPILER_LIBC_AVAILABLE && env::ARCH_TYPE == ArchType.WASM32 || env::ARCH_TYPE == ArchType.WASM64)
-
 extern fn void __wasm_call_ctors();
 fn void wasm_initialize() @extern("_initialize") @wasm
 {
 	// The linker synthesizes this to call constructors.
 	__wasm_call_ctors();
 }
-$endif
+
 module std::core::string;
 import std::ascii;
 
-typedef ZString = distinct inline char*;
+typedef ZString = inline char*;
 typedef Char32 = uint;
 typedef Char16 = ushort;
 
-fault UnicodeResult
-{
-	INVALID_UTF8,
-	INVALID_UTF16,
-	CONVERSION_FAILED,
-}
+faultdef INVALID_UTF8, INVALID_UTF16, CONVERSION_FAILED;
 
 const uint SURROGATE_OFFSET @private = 0x10000;
 const uint SURROGATE_GENERIC_MASK @private = 0xF800;
@@ -5811,15 +5591,7 @@ const uint SURROGATE_BITS @private = 10;
 const uint SURROGATE_LOW_VALUE @private = 0xDC00;
 const uint SURROGATE_HIGH_VALUE @private = 0xD800;
 
-fault NumberConversion
-{
-	EMPTY_STRING,
-	NEGATIVE_VALUE,
-	MALFORMED_INTEGER,
-	INTEGER_OVERFLOW,
-	MALFORMED_FLOAT,
-	FLOAT_OUT_OF_RANGE,
-}
+faultdef EMPTY_STRING, NEGATIVE_VALUE, MALFORMED_INTEGER, INTEGER_OVERFLOW, MALFORMED_FLOAT, FLOAT_OUT_OF_RANGE;
 
 macro String printf(String fmt, ..., Allocator* using = mem::heap())
 {
@@ -5827,7 +5599,7 @@ macro String printf(String fmt, ..., Allocator* using = mem::heap())
 	{
 		DString str;
 		str.init(.using = mem);
-		str.printf(fmt, $vasplat());
+		str.printf(fmt, $vasplat);
 		return str.copy_str(using);
 	};
 }
@@ -5836,7 +5608,7 @@ macro String tprintf(String fmt, ...)
 {
 	DString str;
 	str.tinit();
-	str.printf(fmt, $vasplat());
+	str.printf(fmt, $vasplat);
 	return str.str();
 }
 
@@ -5952,7 +5724,7 @@ fn String[] String.split(String s, String needle, usz max = 0, Allocator* using 
 	bool no_more = false;
 	while (!no_more)
 	{
-		usz! index = i == max - 1 ? SearchResult.MISSING? : s.index_of(needle);
+		usz? index = i == max - 1 ? SearchResult.MISSING? : s.index_of(needle);
 		String res @noinit;
 		if (try index)
 		{
@@ -6003,7 +5775,7 @@ fn bool String.contains(String s, String needle)
  * @return "the index of the needle"
  * @return! SearchResult.MISSING "if the needle cannot be found"
  **/
-fn usz! String.index_of(String s, String needle)
+fn usz? String.index_of(String s, String needle)
 {
 	usz match = 0;
 	usz needed = needle.len;
@@ -6039,7 +5811,7 @@ fn usz! String.index_of(String s, String needle)
  * @return "the index of the needle"
  * @return! SearchResult.MISSING "if the needle cannot be found"
  **/
-fn usz! String.rindex_of(String s, String needle)
+fn usz? String.rindex_of(String s, String needle)
 {
 	usz match = 0;
 	usz needed = needle.len;
@@ -6134,7 +5906,7 @@ fn String ZString.tcopy(ZString z) => z.as_str().copy(mem::temp()) @inline;
  * @return! UnicodeResult.INVALID_UTF8 "If the string contained an invalid UTF-8 sequence"
  * @return! AllocationFailure "If allocation of the string fails"
  **/
-fn Char16[]! String.to_utf16(String s, Allocator* using = mem::heap())
+fn Char16[]? String.to_utf16(String s, Allocator* using = mem::heap())
 {
 	usz len16 = conv::utf16len_for_utf8(s);
 	Char16* data = malloc_checked(Char16, len16 + 1, .using = using)!;
@@ -6143,7 +5915,7 @@ fn Char16[]! String.to_utf16(String s, Allocator* using = mem::heap())
 	return data[:len16];
 }
 
-fn Char32[]! String.to_utf32(String s, Allocator* using = mem::heap())
+fn Char32[]? String.to_utf32(String s, Allocator* using = mem::heap())
 {
 	usz codepoints = conv::utf8_codepoints(s);
 	Char32* data = malloc_checked(Char32, codepoints + 1, .using = using)!;
@@ -6152,7 +5924,7 @@ fn Char32[]! String.to_utf32(String s, Allocator* using = mem::heap())
 	return data[:codepoints];
 }
 
-fn String! from_utf32(Char32[] utf32, Allocator* using = mem::heap())
+fn String? from_utf32(Char32[] utf32, Allocator* using = mem::heap())
 {
 	usz len = conv::utf8len_for_utf32(utf32);
 	char* data = malloc_checked(len + 1, .using = using)!;
@@ -6162,7 +5934,7 @@ fn String! from_utf32(Char32[] utf32, Allocator* using = mem::heap())
 	return (String)data[:len];
 }
 
-fn String! from_utf16(Char16[] utf16, Allocator* using = mem::heap())
+fn String? from_utf16(Char16[] utf16, Allocator* using = mem::heap())
 {
 	usz len = conv::utf8len_for_utf16(utf16);
 	char* data = malloc_checked(len + 1, .using = using)!;
@@ -6172,7 +5944,7 @@ fn String! from_utf16(Char16[] utf16, Allocator* using = mem::heap())
 	return (String)data[:len];
 }
 
-fn String! from_zutf16(Char16* utf16_pointer, Allocator* using = mem::heap())
+fn String? from_zutf16(Char16* utf16_pointer, Allocator* using = mem::heap())
 {
 	usz utf16_len;
 	while (utf16_pointer[utf16_len] != 0) utf16_len++;
@@ -6238,47 +6010,29 @@ macro String.to_integer(String string, $Type)
 	$Type value = 0;
 	while (index != len)
 	{
-		char c = {|
-			char ch = string[index++];
-			if (base != 16 || ch < 'A') return (char)(ch - '0');
-			if (ch <= 'F') return (char)(ch - 'A');
-			if (ch < 'a') return NumberConversion.MALFORMED_INTEGER?;
-			if (ch > 'f') return NumberConversion.MALFORMED_INTEGER?;
-			return (char)(ch - 'a');
-		|}!;
+		char c;
 		if (c >= base) return NumberConversion.MALFORMED_INTEGER?;
-		value = {|
-			if (is_negative)
-			{
-				$Type new_value = value * base - c;
-				if (new_value > value) return NumberConversion.INTEGER_OVERFLOW?;
-				return new_value;
-			}
-			$Type new_value = value * base + c;
-			if (new_value < value) return NumberConversion.INTEGER_OVERFLOW?;
-			return new_value;
-		|}!;
 	}
 	return value;
 }
 
 
-fn Char16[]! String.to_temp_utf16(String s) => s.to_utf16(mem::temp());
+fn Char16[]? String.to_temp_utf16(String s) => s.to_utf16(mem::temp());
 
-fn int128! String.to_int128(String s) => s.to_integer(int128);
-fn long! String.to_long(String s) => s.to_integer(long);
-fn int! String.to_int(String s) => s.to_integer(int);
-fn short! String.to_short(String s) => s.to_integer(short);
-fn ichar! String.to_ichar(String s) => s.to_integer(ichar);
+fn int128? String.to_int128(String s) => s.to_integer(int128);
+fn long? String.to_long(String s) => s.to_integer(long);
+fn int? String.to_int(String s) => s.to_integer(int);
+fn short? String.to_short(String s) => s.to_integer(short);
+fn ichar? String.to_ichar(String s) => s.to_integer(ichar);
 
-fn uint128! String.to_uint128(String s) => s.to_integer(uint128);
-fn ulong! String.to_ulong(String s) => s.to_integer(ulong);
-fn uint! String.to_uint(String s) => s.to_integer(uint);
-fn ushort! String.to_ushort(String s) => s.to_integer(ushort);
-fn char! String.to_uchar(String s) => s.to_integer(char);
+fn uint128? String.to_uint128(String s) => s.to_integer(uint128);
+fn ulong? String.to_ulong(String s) => s.to_integer(ulong);
+fn uint? String.to_uint(String s) => s.to_integer(uint);
+fn ushort? String.to_ushort(String s) => s.to_integer(ushort);
+fn char? String.to_uchar(String s) => s.to_integer(char);
 
-fn double! String.to_double(String s) => s.to_real(double);
-fn float! String.to_float(String s) => s.to_real(float);
+fn double? String.to_double(String s) => s.to_real(double);
+fn float? String.to_float(String s) => s.to_real(float);
 module std::core::string::iterator;
 
 struct StringIterator
@@ -6292,7 +6046,7 @@ fn void StringIterator.reset(StringIterator* this)
 	this.current = 0;
 }
 
-fn Char32! StringIterator.next(StringIterator* this)
+fn Char32? StringIterator.next(StringIterator* this)
 {
 	usz len = this.utf8.len;
 	usz current = this.current;
@@ -6338,7 +6092,7 @@ const uint[2] B1B_MAX = { 9007199, 254740991 };
 /**
  * @require chars.len > 0
  **/
-macro double! decfloat(char[] chars, int $bits, int $emin, int sign)
+macro double? decfloat(char[] chars, int $bits, int $emin, int sign)
 {
 	uint[KMAX] x;
 	const uint[2] TH = B1B_MAX;
@@ -6629,7 +6383,7 @@ macro double! decfloat(char[] chars, int $bits, int $emin, int sign)
 	return math::scalbn(y, e2);
 }
 
-macro double! hexfloat(char[] chars, int $bits, int $emin, int sign)
+macro double? hexfloat(char[] chars, int $bits, int $emin, int sign)
 {
 	double scale = 1;
 	uint x;
@@ -6680,10 +6434,7 @@ macro double! hexfloat(char[] chars, int $bits, int $emin, int sign)
 		else
 		{
 			got_digit = true;
-			int d = {|
-				if (c > '9') return (c | 32) + 10 - 'a';
-				return c - '0';
-			|};
+			int d;
 			switch
 			{
 				case dc < 8:
@@ -6756,7 +6507,7 @@ macro double! hexfloat(char[] chars, int $bits, int $emin, int sign)
 macro String.to_real(String chars, $Type) @private
 {
 	int sign = 1;
-	$switch ($Type)
+	$switch $Type:
 	$case float:
 		const int BITS = math::FLOAT_MANT_DIG;
 		const int EMIN = math::FLOAT_MIN_EXP - BITS;
@@ -6764,9 +6515,9 @@ macro String.to_real(String chars, $Type) @private
 		const int BITS = math::DOUBLE_MANT_DIG;
 		const int EMIN = math::DOUBLE_MIN_EXP - BITS;
 	$case float128:
-		$assert(false, "Not yet supported");
+		$assert false: "Not yet supported";
 	$default:
-		$assert(false, "Unexpected type");
+		$assert false: "Unexpected type";
 	$endswitch
 
  	while (chars.len && chars[0] == ' ') chars = chars[1..];
@@ -6794,11 +6545,8 @@ module std::core::types;
 import libc;
 
 
-fault ConversionResult
-{
-	VALUE_OUT_OF_RANGE,
-	VALUE_OUT_OF_UNSIGNED_RANGE,
-}
+faultdef VALUE_OUT_OF_RANGE, VALUE_OUT_OF_UNSIGNED_RANGE;
+
 /**
  * @require $Type.kindof.is_int() || $Type.kindof == TypeKind.ENUM "Argument was not an integer"
  **/
@@ -6868,7 +6616,7 @@ macro any_to_int(any v, $Type)
 macro bool is_numerical($Type)
 {
 	var $kind = $Type.kindof;
-	$if ($kind == TypeKind.DISTINCT)
+	$if $kind == TypeKind.DISTINCT:
 		return is_numerical($Type.inner);
 	$else
 		return $kind == TypeKind.SIGNED_INT || $kind == TypeKind.UNSIGNED_INT || $kind == TypeKind.FLOAT
@@ -6881,15 +6629,10 @@ fn bool TypeKind.is_int(TypeKind kind) @inline
 	return kind == TypeKind.SIGNED_INT || kind == TypeKind.UNSIGNED_INT;
 }
 
-macro bool is_indexable($Type)
-{
-	return $checks($Type t, int i, t[i]);
-}
-
 macro bool is_comparable($Type)
 {
 	var $kind = $Type.kindof;
-	$if ($kind == TypeKind.DISTINCT)
+	$if $kind == TypeKind.DISTINCT:
 		return is_comparable($Type.inner);
 	$else
 		return $kind == TypeKind.SIGNED_INT || $kind == TypeKind.UNSIGNED_INT || $kind == TypeKind.FLOAT
@@ -6898,14 +6641,9 @@ macro bool is_comparable($Type)
 	$endif
 }
 
-macro bool is_equatable($Type)
-{
-	return $checks($Type a, a == a);
-}
-
 macro bool is_subarray_convertable($Type)
 {
-	$switch ($Type.kindof)
+	$switch $Type.kindof:
 		$case SUBARRAY:
 			return true;
 		$case POINTER:
@@ -6920,7 +6658,7 @@ macro bool is_int($Type) => $Type.kindof == TypeKind.SIGNED_INT || $Type.kindof 
 
 macro bool is_intlike($Type)
 {
-	$switch ($Type.kindof)
+	$switch $Type.kindof:
 		$case SIGNED_INT:
 		$case UNSIGNED_INT:
 			return true;
@@ -6936,7 +6674,7 @@ macro bool is_float($Type) => $Type.kindof == TypeKind.FLOAT;
 
 macro bool is_floatlike($Type)
 {
-	$switch ($Type.kindof)
+	$switch $Type.kindof:
 		$case FLOAT:
 			return true;
 		$case VECTOR:
@@ -6953,17 +6691,13 @@ macro bool is_vector($Type)
 
 macro TypeKind inner_kind($Type)
 {
-	$if ($Type.kindof == TypeKind.DISTINCT)
+	$if $Type.kindof == TypeKind.DISTINCT:
 		return inner_kind($typefrom($Type.inner));
 	$else
 		return $Type.kindof;
 	$endif
 }
 
-macro bool @convertable(#a, $TypeB) @builtin
-{
-	return $checks($TypeB x = #a);
-}
 
 macro bool is_same($TypeA, $TypeB)
 {
@@ -6973,11 +6707,11 @@ macro bool is_same($TypeA, $TypeB)
 macro bool @has_same(#a, #b, ...)
 {
 	var $type_a = $typeof(#a).typeid;
-	$if ($type_a != $typeof(#b).typeid)
+	$if $type_a != $typeof(#b).typeid:
 	    return false;
 	$endif
-	$for (var $i = 0; $i < $vacount; $i++)
-		$if ($typeof($vaexpr($i)).typeid != $type_a)
+	$for var $i = 0; $i < $vacount; $i++:
+		$if $typeof($vaexpr[$i]).typeid != $type_a:
 			return false;
 		$endif
 	$endfor
@@ -6986,7 +6720,7 @@ macro bool @has_same(#a, #b, ...)
 
 macro bool may_load_atomic($Type)
 {
-	$switch ($Type.kindof)
+	$switch $Type.kindof:
 	$case SIGNED_INT:
 	$case UNSIGNED_INT:
 	$case POINTER:
@@ -7004,7 +6738,7 @@ macro bool is_promotable_to_float($Type) => types::is_float($Type) || types::is_
 
 macro bool is_same_vector_type($Type1, $Type2)
 {
-	$if ($Type1.kindof != TypeKind.VECTOR)
+	$if $Type1.kindof != TypeKind.VECTOR:
 		return $Type2.kindof != TypeKind.VECTOR;
 	$else
 		return $Type1.inner == $Type2.inner && $Type1.len == $Type2.len;
@@ -7013,7 +6747,7 @@ macro bool is_same_vector_type($Type1, $Type2)
 
 macro bool is_equatable_type($Type)
 {
-	$if ($defined($Type.less) || $defined($Type.compare_to) || $defined($Type.equals))
+	$if $defined($Type.less) || $defined($Type.compare_to) || $defined($Type.equals):
 		return true;
 	$else
 		return is_equatable($Type);
@@ -7027,7 +6761,7 @@ macro bool is_equatable_value(value)
 
 macro bool is_comparable_value(value)
 {
-	$if ($defined(value.less) || $defined(value.compare_to))
+	$if $defined(value.less) || $defined(value.compare_to):
 		return true;
 	$else
 		return is_comparable($typeof(value));
@@ -7069,7 +6803,6 @@ macro TypeKind @typekind(#value) @builtin => $typeof(#value).kindof;
 macro bool @typeis(#value, $Type) @builtin => $typeof(#value).typeid == $Type.typeid;
 macro bool @is_bool(#value) => types::is_bool($typeof(#value));
 macro bool @is_int(#value) => types::is_int($typeof(#value));
-macro bool @convertable_to(#a, #b) => $checks($typeof(#b) x = #a);
 macro bool @is_floatlike(#value) => types::is_floatlike($typeof(#value));
 macro bool @is_float(#value) => types::is_float($typeof(#value));
 macro bool @is_promotable_to_floatlike(#value) => types::is_promotable_to_floatlike($typeof(#value));
@@ -7077,7 +6810,7 @@ macro bool @is_promotable_to_float(#value) => types::is_promotable_to_float($typ
 macro bool @is_same_vector_type(#value1, #value2) => types::is_same_vector_type($typeof(#value1), $typeof(#value2));
 macro promote_int(x)
 {
-	$if (@is_int(x))
+	$if @is_int(x):
 		return (double)x;
 	$else
 		return x;
@@ -7186,26 +6919,19 @@ struct JsonParser
 	DString last_string;
 	double last_number;
 	char current;
-	anyfault current_err;
+	fault current_err;
 	bool skip_comments;
 	bool reached_end;
 }
 
-fault JsonParsingError
-{
-	EOF,
-	UNEXPECTED_CHARACTER,
-	INVALID_ESCAPE_SEQUENCE,
-	DUPLICATE_MEMBERS,
-	INVALID_NUMBER,
-}
+faultdef EOF;
 
 fn void JsonParser.init(JsonParser* parser, Stream s, Allocator* using = mem::heap())
 {
 	*parser = { .last_string = dstring::new_with_capacity(64, using), .stream = s, .allocator = using };
 }
 
-fn Object*! JsonParser.parse_from_token(JsonParser* this, JsonTokenType token)
+fn Object*? JsonParser.parse_from_token(JsonParser* this, JsonTokenType token)
 {
 	switch (token)
 	{
@@ -7225,12 +6951,12 @@ fn Object*! JsonParser.parse_from_token(JsonParser* this, JsonTokenType token)
 	}
 	unreachable();
 }
-fn Object*! JsonParser.parse_any(JsonParser* this)
+fn Object*? JsonParser.parse_any(JsonParser* this)
 {
 	return this.parse_from_token(this.advance());
 }
 
-fn JsonTokenType! JsonParser.lex_number(JsonParser* this, char c)
+fn JsonTokenType? JsonParser.lex_number(JsonParser* this, char c)
 {
 	@pool()
 	{
@@ -7273,13 +6999,13 @@ fn JsonTokenType! JsonParser.lex_number(JsonParser* this, char c)
 			}
 		}
 		this.pushback();
-		double! d = t.str().to_double() ?? JsonParsingError.INVALID_NUMBER?;
+		double? d = t.str().to_double() ?? JsonParsingError.INVALID_NUMBER?;
 		this.last_number = d!;
 		return NUMBER;
 	};
 }
 
-fn Object*! JsonParser.parse_map(JsonParser* this)
+fn Object*? JsonParser.parse_map(JsonParser* this)
 {
 	Object* map = object::new_obj(this.allocator);
 	JsonTokenType token = this.advance()!;
@@ -7310,7 +7036,7 @@ fn Object*! JsonParser.parse_map(JsonParser* this)
 	return map;
 }
 
-fn Object*! JsonParser.parse_array(JsonParser* this)
+fn Object*? JsonParser.parse_array(JsonParser* this)
 {
 	Object* list = object::new_obj(this.allocator);
 	defer catch list.free();
@@ -7335,17 +7061,13 @@ fn void JsonParser.pushback(JsonParser* this)
 	if (!this.reached_end) this.stream.pushback_byte()!!;
 }
 
-fn char! JsonParser.read_next(JsonParser* this)
+fn char? JsonParser.read_next(JsonParser* this)
 {
 	if (this.reached_end) return '\0';
-	char! c = this.stream.read_byte();
+	char? c = this.stream.read_byte();
 	if (catch err = c)
 	{
-		case IoError.EOF:
-			this.reached_end = true;
-			return '\0';
-		default:
-			return err?;
+
 	}
 	if (c == 0)
 	{
@@ -7354,7 +7076,7 @@ fn char! JsonParser.read_next(JsonParser* this)
 	return c;
 }
 
-fn JsonTokenType! JsonParser.advance(JsonParser* this)
+fn JsonTokenType? JsonParser.advance(JsonParser* this)
 {
 	char c;
 	// Skip whitespace
@@ -7434,7 +7156,7 @@ fn JsonTokenType! JsonParser.advance(JsonParser* this)
 	}
 }
 
-fn void! JsonParser.match(JsonParser* this, String str)
+fn void? JsonParser.match(JsonParser* this, String str)
 {
 	foreach (c : str)
 	{
@@ -7443,12 +7165,12 @@ fn void! JsonParser.match(JsonParser* this, String str)
 	}
 }
 
-fn void! JsonParser.parse_expected(JsonParser* this, JsonTokenType token) @local
+fn void? JsonParser.parse_expected(JsonParser* this, JsonTokenType token) @local
 {
 	if (this.advance()! != token) return JsonParsingError.UNEXPECTED_CHARACTER?;
 }
 
-fn JsonTokenType! JsonParser.lex_string(JsonParser *this)
+fn JsonTokenType? JsonParser.lex_string(JsonParser *this)
 {
 	this.last_string.clear();
 	while LOOP: (1)
@@ -7785,7 +7507,7 @@ const ulong[256] CRC64_TABLE @private = {
 // a copy of which can be found in the LICENSE_STDLIB file.
 module std::hash::fnv32a;
 
-typedef Fnv32a = distinct uint;
+typedef Fnv32a = uint;
 
 const FNV32A_START @private = 0x811c9dc5;
 const FNV32A_MUL @private = 0x01000193;
@@ -7919,7 +7641,7 @@ macro @blk(&block, i) @local
 
 macro @blk0(&block, i) @local
 {
-$if (env::BIG_ENDIAN)
+$if env::BIG_ENDIAN:
 	return block.l[i];
 $else
 	return block.l[i] = (block.l[i].rotl(24) & 0xFF00FF00)
@@ -8062,11 +7784,7 @@ module std::io::os;
 import libc;
 
 
-$switch
-
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_posix():
-
-macro void! native_chdir(Path p)
+macro void? native_chdir(Path p)
 {
 	if (posix::chdir(p.as_zstr()))
 	{
@@ -8081,10 +7799,7 @@ macro void! native_chdir(Path p)
 		}
 	}
 }
-
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_win32():
-
-macro void! native_chdir(Path path)
+macro void? native_chdir(Path path)
 {
 	@pool()
 	{
@@ -8094,61 +7809,37 @@ macro void! native_chdir(Path path)
 	return IoError.GENERAL_ERROR?;
 }
 
-$default:
-
-fn void! native_chdir(Path path)
+fn void? native_chdir(Path path)
 {
 	unreachable("'getcwd' not available");
 }
 
-$endswitch
 module std::io::os;
 import libc;
 
-typedef FopenFn = fn void*!(String, String);
-typedef FreopenFn = fn void*!(void*, String, String);
-typedef FcloseFn = fn void!(void*);
-typedef FseekFn = fn void!(void*, isz, Seek);
-typedef FtellFn = fn usz!(void*);
-typedef FwriteFn = fn usz!(void*, char[] buffer);
-typedef FreadFn = fn usz!(void*, char[] buffer);
+typedef FopenFn = fn void*?(String, String);
+typedef FreopenFn = fn void*?(void*, String, String);
+typedef FcloseFn = fn void?(void*);
+typedef FseekFn = fn void?(void*, isz, Seek);
+typedef FtellFn = fn usz?(void*);
+typedef FwriteFn = fn usz?(void*, char[] buffer);
+typedef FreadFn = fn usz?(void*, char[] buffer);
 
-$if (!$defined(native_fopen_fn))
-FopenFn native_fopen_fn @weak;
-$endif
-$if (!$defined(native_fclose_fn))
-FcloseFn native_fclose_fn @weak;
-$endif
-$if (!$defined(native_freopen_fn))
-FreopenFn native_freopen_fn @weak;
-$endif
-$if (!$defined(native_fseek_fn))
-FseekFn native_fseek_fn @weak;
-$endif
-$if (!$defined(native_ftell_fn))
-FtellFn native_ftell_fn @weak;
-$endif
-$if (!$defined(native_fwrite_fn))
-FwriteFn native_fwrite_fn @weak;
-$endif
-$if (!$defined(native_fread_fn))
-FreadFn native_fread_fn @weak;
-$endif
 
 
 /**
  * @require mode.len > 0
  * @require filename.len > 0
  **/
-fn void*! native_fopen(String filename, String mode) @inline
+fn void*? native_fopen(String filename, String mode) @inline
 {
-$if (!env::COMPILER_LIBC_AVAILABLE)
+$if !env::COMPILER_LIBC_AVAILABLE:
 		if (native_fopen_fn) return native_fopen_fn(filename, mode);
 		unreachable("Tried to call fopen without support.");
 $else
 	@pool()
 	{
-	$if (env::os_is_win32())
+	$if env::os_is_win32():
 		void* file = (CFile)_wfopen(filename.to_temp_utf16(), filename.to_temp_utf16())!;
 	$else
 		void* file = libc::fopen(filename.zstr_tcopy(), mode.zstr_tcopy());
@@ -8162,15 +7853,15 @@ $endif
  * @require mode.len > 0
  * @require filename.len > 0
  **/
-fn void*! native_freopen(void* file, String filename, String mode) @inline
+fn void*? native_freopen(void* file, String filename, String mode) @inline
 {
-$if (!env::COMPILER_LIBC_AVAILABLE)
+$if !env::COMPILER_LIBC_AVAILABLE:
 		if (native_freopen_fn) return native_freopen_fn(file, filename, mode);
 		unreachable("Tried to call freopen without support.");
 $else
 	@pool()
 	{
-	$if (env::os_is_win32())
+	$if env::os_is_win32():
 		file = _wfreopen(filename.to_temp_utf16(), mode.to_temp_utf16(), file)!;
 	$else
 		file = libc::freopen(filename.zstr_tcopy(), mode.zstr_tcopy(), file);
@@ -8180,13 +7871,13 @@ $else
 $endif
 }
 
-fn void! native_fseek(void* file, isz offset, Seek seek_mode) @inline
+fn void? native_fseek(void* file, isz offset, Seek seek_mode) @inline
 {
-$if (!env::COMPILER_LIBC_AVAILABLE)
+$if !env::COMPILER_LIBC_AVAILABLE:
 	if (native_fseek_fn) return native_fseek_fn(file, offset, seek_mode);
 	unreachable("Tried to call fseek without support.");
 $else
-	$if (env::os_is_win32())
+	$if env::os_is_win32():
 		bool success = _fseeki64(file, (long)offset, (int)seek_mode) == 0;
 	$else
 		bool success = libc::fseek(file, (SeekIndex)offset, (CInt)seek_mode) == 0;
@@ -8195,13 +7886,13 @@ $else
 $endif
 }
 
-fn usz! native_ftell(CFile file) @inline
+fn usz? native_ftell(CFile file) @inline
 {
-$if (!env::COMPILER_LIBC_AVAILABLE)
+$if !env::COMPILER_LIBC_AVAILABLE:
 	if (native_ftell_fn) return native_ftell_fn(file);
 	unreachable("Tried to call ftell without support.");
 $else
-	$if (env::os_is_win32())
+	$if env::os_is_win32():
 		long index = _ftelli64(file);
 		return index >= 0 ? index : file_seek_errno()?;
 	$else
@@ -8211,9 +7902,9 @@ $else
 $endif
 }
 
-fn usz! native_fwrite(CFile file, char[] buffer) @inline
+fn usz? native_fwrite(CFile file, char[] buffer) @inline
 {
-$if (!env::COMPILER_LIBC_AVAILABLE)
+$if !env::COMPILER_LIBC_AVAILABLE:
 	if (native_fwrite_fn) return native_fwrite_fn(file, buffer);
 	unreachable("Tried to call fwrite without support.");
 $else
@@ -8221,17 +7912,7 @@ $else
 $endif
 }
 
-fn usz! native_fread(CFile file, char[] buffer) @inline
-{
-$if (!env::COMPILER_LIBC_AVAILABLE)
-	if (native_fread_fn) return native_fread_fn(file, buffer);
-	unreachable("Tried to call fread without support.");
-$else
-    return libc::fread(buffer.ptr, 1, buffer.len, file);
-$endif
-}
-
-macro anyfault file_open_errno() @local
+macro fault file_open_errno() @local
 {
 	switch (libc::errno())
 	{
@@ -8259,7 +7940,7 @@ macro anyfault file_open_errno() @local
 	}
 }
 
-macro anyfault file_seek_errno() @local
+macro fault file_seek_errno() @local
 {
 	switch (libc::errno())
 	{
@@ -8277,22 +7958,6 @@ macro anyfault file_seek_errno() @local
 	    default: return IoError.UNKNOWN_ERROR;
 	}
 }
-
-// Win functions
-$if (env::os_is_win32())
-extern fn void* _wfopen(Char16*, Char16*) @local;
-extern fn void* _wfreopen(Char16*, Char16*, CFile) @local;
-extern fn int _fseeki64(CFile, long, int) @local;
-extern fn long _ftelli64(CFile) @local;
-$endif
-
-$if (env::os_is_posix())
-extern fn CInt access(ZString path, CInt mode);
-$endif
-module std::io::file::os;
-import libc;
-
-$if (env::os_is_darwin())
 
 
 struct DarwinTimespec @private
@@ -8332,7 +7997,7 @@ const S_IFREG  = 0o100000; // regular
 const S_IFLNK  = 0o120000; // symbolic link
 const S_IFSOCK = 0o140000; // socket
 
-fn usz! native_file_size(String path)
+fn usz? native_file_size(String path)
 {
 	Darwin64Stat stat;
 	read_stat(&stat, path)!;
@@ -8357,7 +8022,7 @@ fn bool native_is_dir(String path)
 	return @ok(read_stat(&stat, path)) && stat.st_mode & S_IFDIR;
 }
 
-fn void! read_stat(Darwin64Stat* stat, String path) @local
+fn void? read_stat(Darwin64Stat* stat, String path) @local
 {
 	@pool()
 	{
@@ -8390,13 +8055,12 @@ fn void! read_stat(Darwin64Stat* stat, String path) @local
 		}
 	};
 }
-$endif
+
 module std::io::file::os;
 
 // native_temp_directory, for non Win32
-$if (!env::os_is_win32())
 
-fn Path! native_temp_directory(Allocator* using = mem::heap())
+fn Path? native_temp_directory(Allocator* using = mem::heap())
 {
 	foreach (String env : { "TMPDIR", "TMP", "TEMP", "TEMPDIR" })
 	{
@@ -8406,7 +8070,6 @@ fn Path! native_temp_directory(Allocator* using = mem::heap())
 	return path::new("/tmp", using);
 }
 
-$if (env::COMPILER_LIBC_AVAILABLE)
 
 extern fn void* opendir(ZString);
 extern fn void closedir(void*);
@@ -8422,7 +8085,7 @@ const DT_LNK     = 10;
 const DT_SOCK    = 12;
 const DT_WHT     = 14;
 
-fn PathList! native_readdir(Path dir, bool no_dirs, bool no_symlinks, String mask, Allocator* using)
+fn PathList? native_readdir(Path dir, bool no_dirs, bool no_symlinks, String mask, Allocator* using)
 {
 	PathList list;
 	list.init(.using = using);
@@ -8445,7 +8108,7 @@ fn PathList! native_readdir(Path dir, bool no_dirs, bool no_symlinks, String mas
 /**
  * @require dir.as_str()
  **/
-fn void! native_rmtree(Path dir)
+fn void? native_rmtree(Path dir)
 {
 	void* directory = opendir(dir.as_zstr());
 	defer if (directory) closedir(directory);
@@ -8473,20 +8136,13 @@ fn void! native_rmtree(Path dir)
 	os::native_rmdir(dir)!;
 }
 
-$endif
 
-$endif
-
-$if (!env::os_is_darwin() && !env::os_is_win32())
-
-fn usz! native_file_size(String path)
+fn usz? native_file_size(String path)
 {
 	File f = file::open(path, "r")!;
 	defer (void)f.close();
 	return f.seek(0, Seek.END)!;
 }
-
-$if (env::os_is_posix() && env::COMPILER_LIBC_AVAILABLE)
 
 fn bool native_file_or_dir_exists(String path)
 {
@@ -8498,7 +8154,7 @@ fn bool native_file_or_dir_exists(String path)
 
 fn bool native_is_file(String path)
 {
-	File! f = file::open(path, "r");
+	File? f = file::open(path, "r");
 	defer (void)f.close();
 	return @ok(f);
 }
@@ -8507,8 +8163,6 @@ fn bool native_is_dir(String path)
 {
 	return native_file_or_dir_exists(path) && !native_is_file(path);
 }
-
-$else
 
 fn bool native_file_or_dir_exists(String path)
 {
@@ -8525,21 +8179,6 @@ fn bool native_is_file(String path)
 	unreachable("Tried to call is_file without support.");
 }
 
-$endif
-
-$endif
-
-$switch (env::OS_TYPE)
-$case IOS:
-$case MACOS:
-$case TVOS:
-$case WATCHOS:
-
-$if (env::ARCH_TYPE == X86_64)
-extern fn NativeDirentry* readdir(void*) @extern("readdir$INODE64");
-$else
-extern fn NativeDirentry* readdir(void*) @extern("readdir");
-$endif
 
 struct NativeDirentry
 {
@@ -8550,32 +8189,10 @@ struct NativeDirentry
 	char type;
 	char[1024] name;
 }
-$case LINUX:
-extern fn NativeDirentry* readdir(void*);
-struct NativeDirentry
-{
-	usz ino;
-	isz seekoff;
-	ushort reclen;
-	char type;
-	char[*] name;
-}
-$default:
-// Fix this as we go along.
-extern fn NativeDirentry* readdir(void*);
-struct NativeDirentry
-{
-	usz ino;
-	isz seekoff;
-	ushort reclen;
-	char type;
-	char[*] name;
-}
-$endswitch
+
+
 module std::io::file::os;
 import std::os::win32;
-
-$if (env::os_is_win32())
 
 const Win32_DWORD FILE_ATTRIBUTE_READONLY = 0x01;
 const Win32_DWORD FILE_ATTRIBUTE_HIDDEN = 0x02;
@@ -8600,7 +8217,7 @@ const Win32_DWORD FILE_ATTRIBUTE_UNPINNED = 0x100000;
 const Win32_DWORD FILE_ATTRIBUTE_RECALL_ON_OPEN = 0x40000;
 const Win32_DWORD FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS = 0x400000;
 
-fn usz! native_file_size(String path)
+fn usz? native_file_size(String path)
 {
 	@pool()
 	{
@@ -8625,7 +8242,7 @@ fn bool native_file_or_dir_exists(String path)
 
 fn bool native_is_file(String path)
 {
-	File! f = file::open(path, "r");
+	File? f = file::open(path, "r");
 	defer (void)f.close();
 	return @ok(f);
 }
@@ -8635,7 +8252,7 @@ fn bool native_is_dir(String path)
 	return native_file_or_dir_exists(path) && !native_is_file(path);
 }
 
-fn void! native_rmtree(Path path)
+fn void? native_rmtree(Path path)
 {
     Win32_WIN32_FIND_DATAW find_data;
 
@@ -8662,7 +8279,7 @@ fn void! native_rmtree(Path path)
     os::native_rmdir(path)!;
 }
 
-fn Path! native_temp_directory(Allocator* using = mem::heap())
+fn Path? native_temp_directory(Allocator* using = mem::heap())
 {
 	@stack_mem(256; Allocator* mem)
 	{
@@ -8674,25 +8291,8 @@ fn Path! native_temp_directory(Allocator* using = mem::heap())
 	};
 }
 
-/*
 
-	}else if(method == file_size_methods::get_attributes){
-		WIN32_FILE_ATTRIBUTE_DATA file_attr_data;
-		if(GetFileAttributesEx(path, GetFileExInfoStandard, &file_attr_data)){
-			file_size.LowPart = file_attr_data.nFileSizeLow;
-			file_size.HighPart = file_attr_data.nFileSizeHigh;
-		}
-	}
-*/
-$endif
-module std::io::os;
-import libc;
-
-$switch
-
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_win32():
-
-macro String! getcwd(Allocator* using = mem::heap())
+macro String? getcwd(Allocator* using = mem::heap())
 {
 	const DEFAULT_BUFFER = 256;
 	Char16[DEFAULT_BUFFER] buffer;
@@ -8709,43 +8309,14 @@ macro String! getcwd(Allocator* using = mem::heap())
 	return string::from_utf16(str16, using);
 }
 
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_posix():
 
-macro String! getcwd(Allocator* using = mem::heap())
-{
-	const usz DEFAULT_BUFFER = 256;
-	char[DEFAULT_BUFFER] buffer;
-	ZString res = posix::getcwd(&buffer, DEFAULT_BUFFER);
-	bool free = false;
-	if (!res)
-	{
-		// Improve error
-		if (libc::errno() != errno::ERANGE) return IoError.GENERAL_ERROR?;
-		res = posix::getcwd(null, 0);
-		free = true;
-	}
-	defer if (free) libc::free((void*)res);
-	return res.copy(using);
-}
-
-$default:
-
-fn String! getcwd(Allocator* using = mem::heap())
+fn String? getcwd(Allocator* using = mem::heap())
 {
 	unreachable("'getcwd' not available");
 }
 
-$endswitch
-module std::io::os;
-import libc;
-import std::io::path;
-import std::os::win32;
-import std::os::posix;
 
-$switch
-	$case env::COMPILER_LIBC_AVAILABLE && env::os_is_posix():
-
-macro bool! native_mkdir(Path path, MkdirPermissions permissions)
+macro bool? native_mkdir(Path path, MkdirPermissions permissions)
 {
 	if (!posix::mkdir(path.as_zstr(), permissions == NORMAL ? 0o777 : 0o700)) return true;
 	switch (libc::errno())
@@ -8765,9 +8336,7 @@ macro bool! native_mkdir(Path path, MkdirPermissions permissions)
 	}
 }
 
-	$case env::COMPILER_LIBC_AVAILABLE && env::os_is_win32():
-
-macro bool! native_mkdir(Path path, MkdirPermissions permissions)
+macro bool? native_mkdir(Path path, MkdirPermissions permissions)
 {
 	@pool()
     {
@@ -8789,27 +8358,8 @@ macro bool! native_mkdir(Path path, MkdirPermissions permissions)
     };
 }
 
-	$default:
 
-fn bool! native_mkdir(Path path, MkdirPermissions permissions)
-{
-	unreachable("'mkdir' not available");
-	return false;
-}
-
-
-$endswitch
-module std::io::os;
-import libc;
-import std::io::path;
-import std::os::win32;
-import std::os::posix;
-
-$switch
-
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_posix():
-
-macro bool! native_rmdir(Path path)
+macro bool? native_rmdir(Path path)
 {
 	if (!posix::rmdir(path.as_zstr())) return true;
 	switch (libc::errno())
@@ -8827,10 +8377,7 @@ macro bool! native_rmdir(Path path)
 		default: return IoError.GENERAL_ERROR?;
 	}
 }
-
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_win32():
-
-macro bool! native_rmdir(Path path)
+macro bool? native_rmdir(Path path)
 {
 	@pool()
     {
@@ -8852,14 +8399,6 @@ macro bool! native_rmdir(Path path)
     };
 }
 
-$default:
-
-fn bool! native_rmdir(Path path)
-{
-	unreachable("'rmdir' not available");
-}
-
-$endswitch
 module std::io;
 import std::math;
 
@@ -8879,7 +8418,7 @@ fn Stream ByteReader.as_stream(ByteReader* reader)
 	return { .fns = &bytereader_interface, .data = reader };
 }
 
-fn usz! ByteReader.read(ByteReader* reader, char[] bytes)
+fn usz? ByteReader.read(ByteReader* reader, char[] bytes)
 {
 	if (reader.index >= reader.bytes.len) return IoError.EOF?;
 	usz len = math::min(reader.bytes.len - reader.index, bytes.len);
@@ -8889,19 +8428,19 @@ fn usz! ByteReader.read(ByteReader* reader, char[] bytes)
 	return len;
 }
 
-fn char! ByteReader.read_byte(ByteReader* reader)
+fn char? ByteReader.read_byte(ByteReader* reader)
 {
 	if (reader.index >= reader.bytes.len) return IoError.EOF?;
 	return reader.bytes[reader.index++];
 }
 
-fn void! ByteReader.pushback_byte(ByteReader* reader)
+fn void? ByteReader.pushback_byte(ByteReader* reader)
 {
 	if (!reader.index) return IoError.INVALID_PUSHBACK?;
 	reader.index--;
 }
 
-fn usz! ByteReader.seek(ByteReader* reader, isz offset, Seek seek)
+fn usz? ByteReader.seek(ByteReader* reader, isz offset, Seek seek)
 {
 	isz new_index;
 	switch (seek)
@@ -8915,7 +8454,7 @@ fn usz! ByteReader.seek(ByteReader* reader, isz offset, Seek seek)
 	return new_index;
 }
 
-fn usz! ByteReader.write_stream(ByteReader* reader, Stream* writer)
+fn usz? ByteReader.write_stream(ByteReader* reader, Stream* writer)
 {
 	if (reader.index >= reader.bytes.len) return 0;
 	usz written = writer.write(reader.bytes[reader.index..])!;
@@ -8990,7 +8529,7 @@ fn String ByteWriter.as_str(ByteWriter* writer)
 	return (String)writer.bytes[:writer.index];
 }
 
-fn void! ByteWriter.ensure_capacity(ByteWriter* writer, usz len) @inline
+fn void? ByteWriter.ensure_capacity(ByteWriter* writer, usz len) @inline
 {
 	if (writer.bytes.len > len) return;
 	if (!writer.allocator) return IoError.OUT_OF_SPACE?;
@@ -9000,7 +8539,7 @@ fn void! ByteWriter.ensure_capacity(ByteWriter* writer, usz len) @inline
 	writer.bytes = new_ptr[:new_capacity];
 }
 
-fn usz! ByteWriter.write(ByteWriter* writer, char[] bytes)
+fn usz? ByteWriter.write(ByteWriter* writer, char[] bytes)
 {
 	writer.ensure_capacity(writer.index + bytes.len)!;
 	mem::copy(&writer.bytes[writer.index], bytes.ptr, bytes.len);
@@ -9008,7 +8547,7 @@ fn usz! ByteWriter.write(ByteWriter* writer, char[] bytes)
 	return bytes.len;
 }
 
-fn void! ByteWriter.write_byte(ByteWriter* writer, char c)
+fn void? ByteWriter.write_byte(ByteWriter* writer, char c)
 {
 	writer.ensure_capacity(writer.index + 1)!;
 	writer.bytes[writer.index++] = c;
@@ -9018,7 +8557,7 @@ fn void! ByteWriter.write_byte(ByteWriter* writer, char c)
  * @param [&inout] writer
  * @param [&inout] reader
  **/
-fn usz! ByteWriter.read_from(ByteWriter* writer, Stream* reader)
+fn usz? ByteWriter.read_from(ByteWriter* writer, Stream* reader)
 {
 	if (reader.supports_available())
 	{
@@ -9108,37 +8647,6 @@ enum Seek
     END
 }
 
-fault IoError
-{
-    FILE_NOT_FOUND,
-    FILE_NOT_VALID,
-    INVALID_POSITION,
-    OVERFLOW,
-    FILE_IS_PIPE,
-    FILE_EOF,
-    INCOMPLETE_WRITE,
-    BUSY,
-    NO_PERMISSION,
-    OUT_OF_SPACE,
-    INVALID_PUSHBACK,
-    EOF,
-    CANNOT_READ_DIR,
-    TOO_MANY_DESCRIPTORS,
-    FILE_IS_DIR,
-    READ_ONLY,
-    FILE_NOT_DIR,
-    SYMLINK_FAILED,
-    ALREADY_EXISTS,
-    NOT_SEEKABLE,
-    NAME_TOO_LONG,
-    WOULD_BLOCK,
-    DIR_NOT_EMPTY,
-    INTERRUPTED,
-    GENERAL_ERROR,
-    UNKNOWN_ERROR,
-    UNSUPPORTED_OPERATION,
-}
-
 fn void putchar(char c) @inline
 {
     libc::putchar(c);
@@ -9147,7 +8655,7 @@ fn void putchar(char c) @inline
 macro void print(x)
 {
 	var $Type = $typeof(x);
-	$switch ($Type)
+	$switch $Type:
 	$case String:
 		(void)stdout().print(x);
 	$case ZString:
@@ -9155,18 +8663,14 @@ macro void print(x)
 	$case DString:
 		(void)stdout().print(x.str());
 	$default:
-		$if (@convertible(x, String))
-			(void)stdout().print((String)x);
-		$else
-			(void)stdout().printf("%s", x);
-		$endif
+
 	$endswitch
 }
 
 macro void printn(x = "")
 {
 	var $Type = $typeof(x);
-	$switch ($Type)
+	$switch $Type:
 	$case String:
 		(void)stdout().printn(x);
 	$case ZString:
@@ -9174,11 +8678,7 @@ macro void printn(x = "")
 	$case DString:
 		(void)stdout().printn(x.str());
 	$default:
-		$if (@convertible(x, String))
 			(void)stdout().printn((String)x);
-		$else
-			(void)stdout().printfn("%s", x);
-		$endif
 	$endswitch
 }
 
@@ -9197,43 +8697,16 @@ fn File stdin()
 	return { libc::stdin() };
 }
 
-/*
 
-
-error FileError
-{
-    ulong errno;
-}
-
-fn FileError errorFromErrno()
-{
-    return FileError { };
-}
-
-
-
-
-pubic fn void! File.clearerr(File *file) @inline
-{
-    clearerr(file->file);
-}
-
-
-
-fn void File.error(File *file) @inline
-{
-    int err = ferror
-}
-*/
 module std::io::file;
 import libc;
 
-fn File! open(String filename, String mode)
+fn File? open(String filename, String mode)
 {
 	return { .file = os::native_fopen(filename, mode) };
 }
 
-fn File! open_path(Path path, String mode)
+fn File? open_path(Path path, String mode)
 {
 	return { .file = os::native_fopen(path.as_str(), mode) };
 }
@@ -9241,7 +8714,7 @@ fn File! open_path(Path path, String mode)
 /**
  * @require file.file != null
  **/
-fn void! File.reopen(File* file, String filename, String mode)
+fn void? File.reopen(File* file, String filename, String mode)
 {
 	file.file = os::native_freopen(file.file, filename, mode)!;
 }
@@ -9249,33 +8722,19 @@ fn void! File.reopen(File* file, String filename, String mode)
 /**
  * @require file.file != null
  **/
-fn usz! File.seek(File file, isz offset, Seek seek_mode = Seek.SET)
+fn usz? File.seek(File file, isz offset, Seek seek_mode = Seek.SET)
 {
 	os::native_fseek(file.file, offset, seek_mode)!;
 	return os::native_ftell(file.file);
 }
 
 
-/*
-Implement later
-/**
- * @require file.file == null
- **/
-fn void! File.memopen(File* file, char[] data, String mode)
-{
-	@pool()
-	{
-		file.file = libc::memopen(data.ptr, data.len, mode.zstr_tcopy(), file.file);
-		// TODO errors
-	};
-}
-*/
 
 
 /**
  * @require file && file.file != null
  */
-fn void! File.putc(File *file, char c)
+fn void? File.putc(File *file, char c)
 {
     if (!libc::fputc(c, file.file)) return IoError.FILE_EOF?;
 }
@@ -9283,7 +8742,7 @@ fn void! File.putc(File *file, char c)
 /**
  * @require file != null
  */
-fn void! File.close(File *file) @inline
+fn void? File.close(File *file) @inline
 {
     if (file.file && libc::fclose(file.file))
     {
@@ -9317,7 +8776,7 @@ fn bool File.eof(File* file) @inline
 /**
  * @param [in] buffer
  */
-fn usz! File.read(File* file, char[] buffer)
+fn usz? File.read(File* file, char[] buffer)
 {
 	return os::native_fread(file.file, buffer);
 }
@@ -9327,7 +8786,7 @@ fn usz! File.read(File* file, char[] buffer)
  * @param [&out] buffer
  * @require file.file `File must be initialized`
  */
-fn usz! File.write(File file, char[] buffer)
+fn usz? File.write(File file, char[] buffer)
 {
 	return os::native_fwrite(file.file, buffer);
 }
@@ -9336,7 +8795,7 @@ fn usz! File.write(File file, char[] buffer)
  * @param [&in] file
  * @require file.file `File must be initialized`
  */
-fn usz! File.printn(File file, String string)
+fn usz? File.printn(File file, String string)
 {
 	usz len = file.print(string)!;
 	if (!libc::putc('\n', file.file)) return IoError.UNKNOWN_ERROR?;
@@ -9347,7 +8806,7 @@ fn usz! File.printn(File file, String string)
  * @param [&in] file
  * @require file.file `File must be initialized`
  */
-fn usz! File.print(File file, String string)
+fn usz? File.print(File file, String string)
 {
     usz len = string.len;
     if (len != file.write((char[])string)!) return IoError.UNKNOWN_ERROR?;
@@ -9381,7 +8840,7 @@ fn String File.tgetline(File* file)
 	return file.getline(mem::temp()).zstr().as_str();
 }
 
-fn char! File.getc(File* file)
+fn char? File.getc(File* file)
 {
 	int c = libc::fgetc(file.file);
 	if (c == -1) return IoError.FILE_EOF?;
@@ -9407,7 +8866,7 @@ fn bool is_file(String path)
 	return os::native_is_file(path);
 }
 
-fn usz! get_size(String path)
+fn usz? get_size(String path)
 {
 	return os::native_file_size(path);
 }
@@ -9416,20 +8875,20 @@ module std::io;
 const char[16] XDIGITS_H = "0123456789ABCDEF";
 const char[16] XDIGITS_L = "0123456789abcdef";
 
-fn void! Formatter.left_adjust(Formatter* this, usz len) @local
+fn void? Formatter.left_adjust(Formatter* this, usz len) @local
 {
 	if (!this.flags.left) return;
 	for (usz l = len; l < this.width; l++) this.out(' ')!;
 }
 
-fn void! Formatter.right_adjust(Formatter* this, usz len) @local
+fn void? Formatter.right_adjust(Formatter* this, usz len) @local
 {
 	if (this.flags.left) return;
 	for (usz l = len; l < this.width; l++) this.out(' ')!;
 }
 
 
-fn uint128! int_from_any(any arg, bool *is_neg) @private
+fn uint128? int_from_any(any arg, bool *is_neg) @private
 {
 	*is_neg = false;
 	if (arg.type.kindof == TypeKind.POINTER)
@@ -9480,12 +8939,12 @@ fn uint128! int_from_any(any arg, bool *is_neg) @private
 	}
 }
 
-fn FloatType! float_from_any(any arg) @private
+fn FloatType? float_from_any(any arg) @private
 {
-	$if (env::F128_SUPPORT)
+	$if env::F128_SUPPORT:
 		if (arg.type == float128.typeid) return (FloatType)*((float128*)arg.ptr);
 	$endif
-	$if (env::F16_SUPPORT)
+	$if env::F16_SUPPORT:
 		if (arg.type == float16.typeid) return *((float16*)arg.ptr);
 	$endif
 	if (arg.type.kindof == TypeKind.DISTINCT)
@@ -9549,7 +9008,7 @@ fn uint simple_atoi(char* buf, usz maxlen, usz* len_ptr) @inline @private
     return i;
 }
 
-fn void! Formatter.out_substr(Formatter *this, String str) @private
+fn void? Formatter.out_substr(Formatter *this, String str) @private
 {
 	usz l = conv::utf8_codepoints(str);
 	uint prec = this.prec;
@@ -9569,7 +9028,7 @@ fn void! Formatter.out_substr(Formatter *this, String str) @private
 	return this.left_adjust(l);
 }
 
-fn void! Formatter.pad(Formatter* this, char c, isz width, isz len) @inline
+fn void? Formatter.pad(Formatter* this, char c, isz width, isz len) @inline
 {
 	for (isz i = len; i < width; i++) this.out(c)!;
 }
@@ -9581,7 +9040,7 @@ fn char* fmt_u(uint128 x, char* s)
 	return s;
 }
 
-fn void! Formatter.out_chars(Formatter* this, char[] s)
+fn void? Formatter.out_chars(Formatter* this, char[] s)
 {
 	foreach (c : s) this.out(c)!;
 }
@@ -9594,12 +9053,12 @@ enum FloatFormatting
 	HEX
 }
 
-fn void! Formatter.etoa(Formatter* this, double y) => this.floatformat(EXPONENTIAL, y);
-fn void! Formatter.ftoa(Formatter* this, double y) => this.floatformat(FLOAT, y);
-fn void! Formatter.gtoa(Formatter* this, double y) => this.floatformat(ADAPTIVE, y);
-fn void! Formatter.atoa(Formatter* this, double y) => this.floatformat(HEX, y);
+fn void? Formatter.etoa(Formatter* this, double y) => this.floatformat(EXPONENTIAL, y);
+fn void? Formatter.ftoa(Formatter* this, double y) => this.floatformat(FLOAT, y);
+fn void? Formatter.gtoa(Formatter* this, double y) => this.floatformat(ADAPTIVE, y);
+fn void? Formatter.atoa(Formatter* this, double y) => this.floatformat(HEX, y);
 
-fn void! Formatter.floatformat(Formatter* this, FloatFormatting formatting, double y) @private
+fn void? Formatter.floatformat(Formatter* this, FloatFormatting formatting, double y) @private
 {
 	// This code is heavily based on musl's printf code
 	const BUF_SIZE = (math::DOUBLE_MANT_DIG + 28) / 29 + 1
@@ -9677,7 +9136,7 @@ fn void! Formatter.floatformat(Formatter* this, FloatFormatting formatting, doub
 		usz l = p && outlen - 2 < p
 				? p + 2 + explen
 				: outlen + explen;
-		if (!this.flags.left && !this.flags.zeropad) this.pad(' ', this.width, pl + l)!;
+		if (!this.flags.left && !this.flags.zeropad) this.pad(' ', this.width, pl + l)?;
 		if (is_neg || this.flags.plus) this.out(is_neg ? '-' : '+')!;
 		this.out_chars(this.flags.uppercase ? "0X" : "0x")!;
 		if (this.flags.zeropad) this.pad('0', this.width, pl + l)!;
@@ -9914,7 +9373,7 @@ fn void! Formatter.floatformat(Formatter* this, FloatFormatting formatting, doub
 	return;
 }
 
-fn void! Formatter.ntoa(Formatter* this, uint128 value, bool negative, uint base) @private
+fn void? Formatter.ntoa(Formatter* this, uint128 value, bool negative, uint base) @private
 {
 	char[PRINTF_NTOA_BUFFER_SIZE] buf @noinit;
 	usz len = 0;
@@ -9938,7 +9397,7 @@ fn void! Formatter.ntoa(Formatter* this, uint128 value, bool negative, uint base
 	return this.ntoa_format((String)buf[:PRINTF_NTOA_BUFFER_SIZE], len, negative, base);
 }
 
-fn void! Formatter.ntoa_format(Formatter* this, String buf, usz len, bool negative, uint base) @private
+fn void? Formatter.ntoa_format(Formatter* this, String buf, usz len, bool negative, uint base) @private
 {
 	// pad leading zeros
 	if (!this.flags.left)
@@ -9999,14 +9458,14 @@ fn void! Formatter.ntoa_format(Formatter* this, String buf, usz len, bool negati
 }
 
 
-fn void! Formatter.ntoa_any(Formatter* this, any arg, uint base) @private
+fn void? Formatter.ntoa_any(Formatter* this, any arg, uint base) @private
 {
 	bool is_neg;
 	uint128 val = int_from_any(arg, &is_neg)!!;
 	return this.ntoa(val, is_neg, base) @inline;
 }
 
-fn void! Formatter.out_char(Formatter* this, any arg) @private
+fn void? Formatter.out_char(Formatter* this, any arg) @private
 {
 	uint l = 1;
 	// pre padding
@@ -10034,7 +9493,7 @@ fn void! Formatter.out_char(Formatter* this, any arg) @private
 }
 
 
-fn void! Formatter.out_reverse(Formatter* this, char[] buf) @private
+fn void? Formatter.out_reverse(Formatter* this, char[] buf) @private
 {
 	usz buffer_start_idx = this.idx;
 	usz len = buf.len;
@@ -10053,19 +9512,19 @@ fn void! Formatter.out_reverse(Formatter* this, char[] buf) @private
 	return this.left_adjust(this.idx - buffer_start_idx);
 }
 
-fn void! printf_advance_format(usz format_len, usz *index_ptr) @inline @private
+fn void? printf_advance_format(usz format_len, usz *index_ptr) @inline @private
 {
 	usz val = ++(*index_ptr);
 	if (val >= format_len) return FormattingFault.UNTERMINATED_FORMAT?;
 }
 
-fn any! next_any(any* args_ptr, usz args_len, usz* arg_index_ptr) @inline @private
+fn any? next_any(any* args_ptr, usz args_len, usz* arg_index_ptr) @inline @private
 {
 	if (*arg_index_ptr >= args_len) return FormattingFault.MISSING_ARG?;
 	return args_ptr[(*arg_index_ptr)++];
 }
 
-fn int! printf_parse_format_field(
+fn int? printf_parse_format_field(
 	any* args_ptr, usz args_len, usz* args_index_ptr,
 	char* format_ptr, usz format_len, usz* index_ptr) @inline @private
 {
@@ -10075,7 +9534,7 @@ fn int! printf_parse_format_field(
 	printf_advance_format(format_len, index_ptr)!;
 	any val = next_any(args_ptr, args_len, args_index_ptr)!;
     if (!val.type.kindof.is_int()) return FormattingFault.INVALID_WIDTH_ARG?;
-    uint! intval = types::any_to_int(val, int);
+    uint? intval = types::any_to_int(val, int);
 	return intval ?? FormattingFault.INVALID_WIDTH_ARG?;
 }
 module std::io;
@@ -10084,36 +9543,20 @@ import libc;
 
 const int PRINTF_NTOA_BUFFER_SIZE = 256;
 
-fault PrintFault
-{
-	BUFFER_EXCEEDED,
-	INTERNAL_BUFFER_EXCEEDED,
-	INVALID_FORMAT_STRING,
-	MISSING_ARG,
-	INVALID_ARGUMENT_TYPE,
-}
 
-fault FormattingFault
-{
-	UNTERMINATED_FORMAT,
-	MISSING_ARG,
-	INVALID_WIDTH_ARG,
-	INVALID_FORMAT_TYPE,
-}
-
-typedef OutputFn = fn void!(char c, void* buffer);
+typedef OutputFn = fn void?(char c, void* buffer);
 typedef ToStringFunction = fn String(void* value, Allocator *using);
-typedef ToFormatFunction = fn void!(void* value, Formatter* formatter);
+typedef ToFormatFunction = fn void?(void* value, Formatter* formatter);
 typedef FloatType = double;
 
-fn usz! printf(String format, args...) @maydiscard
+fn usz? printf(String format, args...) @maydiscard
 {
 	Formatter formatter;
 	formatter.init(&out_putchar_fn);
     return formatter.vprintf(format, args);
 }
 
-fn usz! printfn(String format, args...) @maydiscard
+fn usz? printfn(String format, args...) @maydiscard
 {
 	Formatter formatter;
 	formatter.init(&out_putchar_fn);
@@ -10122,7 +9565,7 @@ fn usz! printfn(String format, args...) @maydiscard
 	return len + 1;
 }
 
-fn char[]! bprintf(char[] buffer, String format, args...) @maydiscard
+fn char[]? bprintf(char[] buffer, String format, args...) @maydiscard
 {
 	Formatter formatter;
 	BufferData data = { .buffer = buffer };
@@ -10131,14 +9574,14 @@ fn char[]! bprintf(char[] buffer, String format, args...) @maydiscard
     return buffer[:data.written];
 }
 
-fn usz! File.printf(File file, String format, args...) @maydiscard
+fn usz? File.printf(File file, String format, args...) @maydiscard
 {
 	Formatter formatter;
     formatter.init(&out_fputchar_fn, &file);
     return formatter.vprintf(format, args)!;
 }
 
-fn usz! File.printfn(File file, String format, args...) @maydiscard
+fn usz? File.printfn(File file, String format, args...) @maydiscard
 {
 	Formatter formatter;
     formatter.init(&out_fputchar_fn, &file);
@@ -10148,7 +9591,7 @@ fn usz! File.printfn(File file, String format, args...) @maydiscard
 	return len + 1;
 }
 
-fn usz! Formatter.printf(Formatter* this, String format, args...)
+fn usz? Formatter.printf(Formatter* this, String format, args...)
 {
 	return this.vprintf(format, args) @inline;
 }
@@ -10189,7 +9632,7 @@ fn void Formatter.init(Formatter* this, OutputFn out_fn, void* data = null)
  */
 macro void formatter_register_type($Type)
 {
-	$if ($checks($Type a, a.to_format(&&Formatter {})))
+	$if $defined(a.to_format(&&Formatter {})):
 		if (!toformat_functions.table.len)
 		{
 			toformat_functions.init(64);
@@ -10205,24 +9648,13 @@ macro void formatter_register_type($Type)
 }
 
 
-static initialize @priority(101)
-{
-	if (!toformat_functions.table.len)
-	{
-		toformat_functions.init(64);
-	}
-	if (!tostring_functions.table.len)
-	{
-		tostring_functions.init(64);
-	}
-}
 
-fn void! Formatter.out(Formatter* this, char c) @private
+fn void? Formatter.out(Formatter* this, char c) @private
 {
 	this.out_fn(c, this.data)!;
 }
 
-macro bool! Formatter.print_with_function(Formatter* this, any arg)
+macro bool? Formatter.print_with_function(Formatter* this, any arg)
 {
 	if (try to_format = toformat_functions.get(arg.type))
 	{
@@ -10258,7 +9690,7 @@ macro bool! Formatter.print_with_function(Formatter* this, any arg)
     return false;
 }
 
-fn void! Formatter.out_str(Formatter* this, any arg) @private
+fn void? Formatter.out_str(Formatter* this, any arg) @private
 {
 	switch (arg.type.kindof)
 	{
@@ -10268,7 +9700,7 @@ fn void! Formatter.out_str(Formatter* this, any arg) @private
         	return this.out_substr("void");
 		case ANYFAULT:
 		case FAULT:
-        	return this.out_substr((*(anyfault*)arg.ptr).nameof);
+        	return this.out_substr((*(fault*)arg.ptr).nameof);
 		case ANY:
 			return this.out_str(*(any*)arg);
 		case ENUM:
@@ -10379,23 +9811,23 @@ fn void! Formatter.out_str(Formatter* this, any arg) @private
 
 
 
-fn void! out_buffer_fn(char c, void *data) @private
+fn void? out_buffer_fn(char c, void *data) @private
 {
 	BufferData *buffer_data = data;
 	if (buffer_data.written >= buffer_data.buffer.len) return PrintFault.BUFFER_EXCEEDED?;
 	buffer_data.buffer[buffer_data.written++] = c;
 }
 
-fn void! out_null_fn(char c @unused, void* data @unused) @private
+fn void? out_null_fn(char c @unused, void* data @unused) @private
 {
 }
 
-fn void! out_putchar_fn(char c, void* data @unused) @private
+fn void? out_putchar_fn(char c, void* data @unused) @private
 {
 	libc::putchar(c);
 }
 
-fn void! out_fputchar_fn(char c, void* data) @private
+fn void? out_fputchar_fn(char c, void* data) @private
 {
 	File* f = data;
 	f.putc(c)!;
@@ -10408,7 +9840,7 @@ struct BufferData @private
 }
 
 
-fn usz! Formatter.vprintf(Formatter* this, String format, any[] anys)
+fn usz? Formatter.vprintf(Formatter* this, String format, any[] anys)
 {
 	if (!this.out_fn)
 	{
@@ -10552,26 +9984,26 @@ fn usz! Formatter.vprintf(Formatter* this, String format, any[] anys)
 	return this.idx;
 }
 
-typedef StringFunctionMap @private = HashMap<typeid, ToStringFunction>;
-typedef FormatterFunctionMap @private = HashMap<typeid, ToFormatFunction>;
+typedef StringFunctionMap @private = HashMap{typeid, ToStringFunction};
+typedef FormatterFunctionMap @private = HashMap{typeid, ToFormatFunction};
 
 FormatterFunctionMap toformat_functions @private;
 StringFunctionMap tostring_functions @private;
 module std::io;
 
-typedef CloseStreamFn = fn void!(Stream*);
-typedef FlushStreamFn = fn void!(Stream*);
-typedef SeekStreamFn = fn usz!(Stream*, isz offset, Seek seek);
+typedef CloseStreamFn = fn void?(Stream*);
+typedef FlushStreamFn = fn void?(Stream*);
+typedef SeekStreamFn = fn usz?(Stream*, isz offset, Seek seek);
 typedef LenStreamFn = fn usz(Stream*);
 typedef AvailableStreamFn = fn usz(Stream*);
-typedef ReadStreamFn = fn usz!(Stream*, char[] bytes);
-typedef ReadFromStreamFn = fn usz!(Stream*, Stream*);
-typedef ReadByteStreamFn = fn char!(Stream*);
-typedef PushbackByteStreamFn = fn void!(Stream*);
-typedef WriteStreamFn = fn usz!(Stream*, char[] bytes);
-typedef WriteToStreamFn = fn usz!(Stream*, Stream* out);
-typedef WriteByteStreamFn = fn void!(Stream*, char c);
-typedef DestroyStreamFn = fn void!(Stream*);
+typedef ReadStreamFn = fn usz?(Stream*, char[] bytes);
+typedef ReadFromStreamFn = fn usz?(Stream*, Stream*);
+typedef ReadByteStreamFn = fn char?(Stream*);
+typedef PushbackByteStreamFn = fn void?(Stream*);
+typedef WriteStreamFn = fn usz?(Stream*, char[] bytes);
+typedef WriteToStreamFn = fn usz?(Stream*, Stream* out);
+typedef WriteByteStreamFn = fn void?(Stream*, char c);
+typedef DestroyStreamFn = fn void?(Stream*);
 
 struct StreamInterface
 {
@@ -10605,24 +10037,24 @@ fn bool Stream.supports_write_to(Stream* s) @inline => (bool)s.fns.write_stream_
 fn bool Stream.supports_pushback_byte(Stream* s) @inline => s.fns.pushback_byte_fn || s.fns.seek_fn;
 fn bool Stream.supports_write(Stream* s) @inline => s.fns.write_fn || s.fns.write_byte_fn;
 
-fn void! Stream.destroy(Stream* s) @inline @maydiscard
+fn void? Stream.destroy(Stream* s) @inline @maydiscard
 {
 	if (s.fns.destroy_fn) return s.fns.destroy_fn(s);
 	return s.close();
 }
 
-fn void! Stream.close(Stream* s) @inline @maydiscard
+fn void? Stream.close(Stream* s) @inline @maydiscard
 {
 	if (CloseStreamFn func = s.fns.close_fn) return func(s);
 }
 
-fn usz! Stream.seek(Stream* s, isz offset, Seek seek) @inline
+fn usz? Stream.seek(Stream* s, isz offset, Seek seek) @inline
 {
 	if (SeekStreamFn func = s.fns.seek_fn) return func(s, offset, seek);
 	return IoError.NOT_SEEKABLE?;
 }
 
-fn usz! Stream.available(Stream* s) @inline
+fn usz? Stream.available(Stream* s) @inline
 {
 	if (AvailableStreamFn func = s.fns.available_fn) return func(s);
 	if (SeekStreamFn func = s.fns.seek_fn)
@@ -10635,7 +10067,7 @@ fn usz! Stream.available(Stream* s) @inline
 	return IoError.NOT_SEEKABLE?;
 }
 
-fn usz! Stream.read(Stream* s, char[] buffer)
+fn usz? Stream.read(Stream* s, char[] buffer)
 {
 	if (ReadStreamFn func = s.fns.read_fn) return func(s, buffer);
 	if (ReadByteStreamFn func = s.fns.read_byte_fn)
@@ -10643,12 +10075,8 @@ fn usz! Stream.read(Stream* s, char[] buffer)
 		usz len = 0;
 		foreach (&cptr : buffer)
 		{
-			char! c = func(s);
-			if (catch err = c)
-			{
-				case IoError.EOF: return len;
-				default: return err?;
-			}
+			char? c = func(s);
+
 			*cptr = c;
 			len++;
 		}
@@ -10656,13 +10084,13 @@ fn usz! Stream.read(Stream* s, char[] buffer)
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn char! Stream.read_byte(Stream* s) @inline
+fn char? Stream.read_byte(Stream* s) @inline
 {
 	if (ReadByteStreamFn func = s.fns.read_byte_fn) return func(s);
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn usz! Stream.write(Stream* s, char[] bytes) @inline
+fn usz? Stream.write(Stream* s, char[] bytes) @inline
 {
 	if (WriteStreamFn func = s.fns.write_fn) return func(s, bytes);
 	if (WriteByteStreamFn func = s.fns.write_byte_fn)
@@ -10673,31 +10101,31 @@ fn usz! Stream.write(Stream* s, char[] bytes) @inline
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn void! Stream.write_byte(Stream* s, char b) @inline
+fn void? Stream.write_byte(Stream* s, char b) @inline
 {
 	if (WriteByteStreamFn func = s.fns.write_byte_fn) return func(s, b);
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn usz! Stream.write_to(Stream* s, Stream* to) @inline
+fn usz? Stream.write_to(Stream* s, Stream* to) @inline
 {
 	if (WriteToStreamFn func = s.fns.write_stream_fn) return func(s, to);
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn usz! Stream.read_from(Stream* s, Stream* from) @inline
+fn usz? Stream.read_from(Stream* s, Stream* from) @inline
 {
 	if (ReadFromStreamFn func = s.fns.read_stream_fn) return func(s, from);
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn void! Stream.flush(Stream* s) @inline @maydiscard
+fn void? Stream.flush(Stream* s) @inline @maydiscard
 {
 	if (FlushStreamFn func = s.fns.flush_fn) return func(s);
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn usz! Stream.len(Stream* s) @inline
+fn usz? Stream.len(Stream* s) @inline
 {
 	if (LenStreamFn func = s.fns.len_fn) return func(s);
 	if (SeekStreamFn func = s.fns.seek_fn)
@@ -10710,7 +10138,7 @@ fn usz! Stream.len(Stream* s) @inline
 	return IoError.NOT_SEEKABLE?;
 }
 
-fn void! Stream.pushback_byte(Stream* s) @inline
+fn void? Stream.pushback_byte(Stream* s) @inline
 {
 	if (PushbackByteStreamFn func = s.fns.pushback_byte_fn) return func(s);
 	if (SeekStreamFn func = s.fns.seek_fn)
@@ -10721,14 +10149,14 @@ fn void! Stream.pushback_byte(Stream* s) @inline
 	return IoError.UNSUPPORTED_OPERATION?;
 }
 
-fn void! Stream.write_string(Stream* s, String str) @inline => (void)(s.write((char[])str)!);
+fn void? Stream.write_string(Stream* s, String str) @inline => (void)(s.write((char[])str)!);
 
-fn usz! Stream.copy_to(Stream* s, Stream* dst, char[] buffer = {})
+fn usz? Stream.copy_to(Stream* s, Stream* dst, char[] buffer = {})
 {
 	if (buffer.len) return copy_through_buffer(s, dst, buffer);
 	if (WriteToStreamFn func = s.fns.write_stream_fn) return func(s, dst);
 	if (ReadFromStreamFn func = dst.fns.read_stream_fn) return func(dst, s);
-$switch (env::MEMORY_ENV)
+$switch env::MEMORY_ENV:
 $case NORMAL:
 	@pool()
 	{
@@ -10745,17 +10173,13 @@ $case NONE:
 $endswitch
 }
 
-macro usz! copy_through_buffer(Stream* s, Stream* dst, char[] buffer) @local
+macro usz? copy_through_buffer(Stream* s, Stream* dst, char[] buffer) @local
 {
 	usz total_copied;
 	while (true)
 	{
-		usz! len = s.read(buffer);
-		if (catch err = len)
-		{
-			case IoError.EOF: return total_copied;
-			default: return err?;
-		}
+		usz? len = s.read(buffer);
+
 		if (!len) return total_copied;
 		usz written = dst.write(buffer[:len])!;
 		total_copied += len;
@@ -10770,13 +10194,8 @@ const char PREFERRED_SEPARATOR_WIN32 = '\\';
 const char PREFERRED_SEPARATOR_POSIX = '/';
 const char PREFERRED_SEPARATOR = env::os_is_win32() ? PREFERRED_SEPARATOR_WIN32 : PREFERRED_SEPARATOR_POSIX;
 
-typedef PathList = List<Path>;
+typedef PathList = List{Path};
 
-fault PathResult
-{
-	INVALID_PATH,
-	NO_PARENT,
-}
 
 struct Path
 {
@@ -10791,7 +10210,7 @@ enum PathEnv
 }
 
 
-fn Path! getcwd(Allocator* using = mem::heap())
+fn Path? getcwd(Allocator* using = mem::heap())
 {
 	@stack_mem(256; Allocator* mem)
 	{
@@ -10801,11 +10220,11 @@ fn Path! getcwd(Allocator* using = mem::heap())
 
 fn bool is_dir(Path path) => os::native_is_dir(path.as_str());
 fn bool is_file(Path path) => os::native_is_file(path.as_str());
-fn usz! file_size(Path path) => os::native_file_size(path.as_str());
+fn usz? file_size(Path path) => os::native_file_size(path.as_str());
 fn bool exists(Path path) => os::native_file_or_dir_exists(path.as_str());
-fn Path! tgetcwd() => getcwd(mem::temp()) @inline;
-fn void! chdir(Path path) => os::native_chdir(path) @inline;
-fn Path! temp_directory(Allocator* using = mem::heap()) => os::native_temp_directory(using);
+fn Path? tgetcwd() => getcwd(mem::temp()) @inline;
+fn void? chdir(Path path) => os::native_chdir(path) @inline;
+fn Path? temp_directory(Allocator* using = mem::heap()) => os::native_temp_directory(using);
 
 macro bool is_separator(char c, PathEnv path_env = DEFAULT_PATH_ENV)
 {
@@ -10822,7 +10241,7 @@ macro bool is_win32_separator(char c)
 	return c == '/' || c == '\\';
 }
 
-fn Path[]! ls(Path path)
+fn Path[]? ls(Path path)
 {
 	unreachable();
 }
@@ -10836,7 +10255,7 @@ enum MkdirPermissions
 
 
 
-fn bool! mkdir(Path path, bool recursive = false, MkdirPermissions permissions = NORMAL)
+fn bool? mkdir(Path path, bool recursive = false, MkdirPermissions permissions = NORMAL)
 {
 	if (!path.path_string.len) return PathResult.INVALID_PATH?;
 	if (is_dir(path)) return false;
@@ -10851,33 +10270,33 @@ fn bool! mkdir(Path path, bool recursive = false, MkdirPermissions permissions =
 	return os::native_mkdir(path, permissions);
 }
 
-fn bool! rmdir(Path path)
+fn bool? rmdir(Path path)
 {
 	if (!path.path_string.len) return PathResult.INVALID_PATH?;
 	return os::native_rmdir(path);
 }
 
-fn void! rmtree(Path path)
+fn void? rmtree(Path path)
 {
 	if (!path.path_string.len) return PathResult.INVALID_PATH?;
-$if ($defined(os::native_rmtree))
+$if $defined(os::native_rmtree):
 	return os::native_rmtree(path);
 $else
 	assert(false, "rmtree is not available");
 $endif
 }
 
-fn Path! new(String path, Allocator* using = mem::heap(), PathEnv path_env = DEFAULT_PATH_ENV)
+fn Path? new(String path, Allocator* using = mem::heap(), PathEnv path_env = DEFAULT_PATH_ENV)
 {
 	return { normalize(path.copy(using), path_env), path_env };
 }
 
-fn Path! new_windows(String path, Allocator* using = mem::heap())
+fn Path? new_windows(String path, Allocator* using = mem::heap())
 {
 	return new(path, using, WIN32);
 }
 
-fn Path! new_posix(String path, Allocator* using = mem::heap())
+fn Path? new_posix(String path, Allocator* using = mem::heap())
 {
 	return new(path, using, POSIX);
 }
@@ -10894,7 +10313,7 @@ fn bool Path.equals(Path p1, Path p2)
  * @param [in] filename
  * @ensure return.path_string.len >= path.path_string.len
  **/
-fn Path! Path.append(Path path, String filename, Allocator* using = mem::heap())
+fn Path? Path.append(Path path, String filename, Allocator* using = mem::heap())
 {
 	if (!path.path_string.len) return new(filename, using, path.env)!;
 	assert(!is_separator(path.path_string[^1], path.env));
@@ -10909,7 +10328,7 @@ fn Path! Path.append(Path path, String filename, Allocator* using = mem::heap())
 	};
 }
 
-fn Path! Path.tappend(Path path, String filename) => path.append(filename, mem::temp());
+fn Path? Path.tappend(Path path, String filename) => path.append(filename, mem::temp());
 
 fn usz Path.start_of_base_name(Path path) @local
 {
@@ -10940,7 +10359,7 @@ fn String Path.dirname(Path path)
 	return path_str[:basename_start - 1];
 }
 
-fn String! Path.extension(Path path)
+fn String? Path.extension(Path path)
 {
 	String basename = path.basename();
 	usz index = basename.rindex_of(".")!;
@@ -10957,7 +10376,7 @@ fn String Path.volume_name(Path path)
 	return path.path_string[:len];
 }
 
-fn usz! volume_name_len(String path, PathEnv path_env) @local
+fn usz? volume_name_len(String path, PathEnv path_env) @local
 {
 	usz len = path.len;
 	if (len < 2 || path_env != PathEnv.WIN32) return 0;
@@ -10986,7 +10405,7 @@ fn usz! volume_name_len(String path, PathEnv path_env) @local
     }
 }
 
-fn Path! Path.parent(Path path)
+fn Path? Path.parent(Path path)
 {
 	if (path.path_string.len == 1 && is_separator(path.path_string[0], path.env)) return PathResult.NO_PARENT?;
 	foreach_r(i, c : path.path_string)
@@ -10999,7 +10418,7 @@ fn Path! Path.parent(Path path)
 	return PathResult.NO_PARENT?;
 }
 
-fn String! normalize(String path_str, PathEnv path_env = DEFAULT_PATH_ENV)
+fn String? normalize(String path_str, PathEnv path_env = DEFAULT_PATH_ENV)
 {
 	if (!path_str.len) return path_str;
     usz path_start = volume_name_len(path_str, path_env)!;
@@ -11178,21 +10597,7 @@ macro bool is_reserved_path_char(char c, PathEnv path_env = DEFAULT_PATH_ENV)
 module libc::os;
 
 
-$switch
 
-$case env::COMPILER_LIBC_AVAILABLE && env::OS_TYPE == LINUX:
-
-extern fn int* __errno_location();
-macro int errno() => *__errno_location();
-macro void errno_set(int err) => *(__errno_location()) = err;
-
-$case env::COMPILER_LIBC_AVAILABLE && env::OS_TYPE == MACOS:
-
-extern fn int* __error();
-macro int errno() => *__error();
-macro void errno_set(int err) => *(__error()) = err;
-
-$case env::COMPILER_LIBC_AVAILABLE && env::OS_TYPE == WIN32:
 
 macro int errno()
 {
@@ -11206,13 +10611,6 @@ macro void errno_set(int err) => _set_errno(err);
 extern fn void _get_errno(int* result);
 extern fn void _set_errno(int err);
 
-$default:
-
-tlocal int _errno_c3 = 0;
-fn void errno_set(int err) => _errno_c3 = err;
-fn int errno() => _errno_c3;
-
-$endswitch
 // Copyright (c) 2021 Christoffer Lerno. All rights reserved.
 // Use of this source code is governed by the MIT license
 // a copy of which can be found in the LICENSE_STDLIB file.
@@ -11250,7 +10648,6 @@ typedef TerminateFunction = fn void();
 typedef CompareFunction = fn int(void*, void*);
 typedef JmpBuf = uptr[$$JMP_BUF_SIZE];
 
-$if (env::COMPILER_LIBC_AVAILABLE)
 
 extern fn double atof(char* str);
 extern fn int atoi(char* str);
@@ -11274,13 +10671,7 @@ extern fn int rand();
 extern fn void srand(uint seed);
 
 extern fn void longjmp(JmpBuf* buffer, CInt value);
-$if (env::os_is_win32())
-// TODO win32 aarch64
-extern fn CInt _setjmp(void* frameptr, JmpBuf* buffer);
-macro CInt setjmp(JmpBuf* buffer) => _setjmp($$frameaddress(), buffer);
-$else
-extern fn CInt setjmp(JmpBuf* buffer);
-$endif
+
 // MB functions omitted
 
 // string
@@ -11312,92 +10703,11 @@ extern fn void* calloc(usz count, usz size);
 extern fn void* free(void*);
 extern fn void* realloc(void* ptr, usz size);
 
-$else
-
-fn void longjmp(JmpBuf* buffer, CInt value) @weak @extern("longjmp") @nostrip
-{
-	unreachable("longjmp unavailable");
-}
-
-fn CInt setjmp(JmpBuf* buffer) @weak @extern("setjmp") @nostrip
-{
-	unreachable("setjmp unavailable");
-}
-
-fn void* malloc(usz size) @weak @extern("malloc") @nostrip
-{
-	unreachable("malloc unavailable");
-}
-fn void* calloc(usz count, usz size) @weak @extern("calloc") @nostrip
-{
-	unreachable("calloc unavailable");
-}
-fn void* free(void*) @weak @extern("free")
-{
-	unreachable("free unavailable");
-}
-
-fn void* realloc(void* ptr, usz size) @weak @extern("realloc") @nostrip
-{
-	unreachable("realloc unavailable");
-}
-
-fn void* memcpy(void* dest, void* src, usz n) @weak @extern("memcpy") @nostrip
-{
-	for (usz i = 0; i < n; i++) ((char*)dest)[i] = ((char*)src)[i];
-	return dest;
-}
-
-fn void* memmove(void* dest, void* src, usz n) @weak @extern("memmove") @nostrip
-{
-	return memcpy(dest, src, n) @inline;
-}
-
-fn void* memset(void* dest, CInt value, usz n) @weak @extern("memset") @nostrip
-{
-	for (usz i = 0; i < n; i++) ((char*)dest)[i] = (char)value;
-	return dest;
-}
-
-$endif
-
 // stdio
 
 typedef Fpos = long;
 typedef CFile = void*;
 
-$switch
-$case env::COMPILER_LIBC_AVAILABLE && env::OS_TYPE == LINUX:
-    extern CFile __stdin @extern("stdin");
-    extern CFile __stdout @extern("stdout");
-    extern CFile __stderr @extern("stderr");
-    extern fn usz malloc_usable_size(void* ptr);
-    macro usz malloc_size(void* ptr) { return malloc_usable_size(ptr); }
-	extern fn void* aligned_alloc(usz align, usz size);
-    macro CFile stdin() { return __stdin; }
-    macro CFile stdout() { return __stdout; }
-    macro CFile stderr() { return __stderr; }
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_darwin():
-    extern CFile __stdinp;
-    extern CFile __stdoutp;
-    extern CFile __stderrp;
-    extern fn usz malloc_size(void* ptr);
-    extern fn void* aligned_alloc(usz align, usz size);
-	macro CFile stdin() { return __stdinp; }
-    macro CFile stdout() { return __stdoutp; }
-    macro CFile stderr() { return __stderrp; }
-$case env::COMPILER_LIBC_AVAILABLE && env::os_is_win32():
-    extern fn CFile __acrt_iob_func(CInt c);
-    extern fn usz _msize(void* ptr);
-    macro usz malloc_size(void* ptr) { return _msize(ptr); }
-    macro CFile stdin() { return __acrt_iob_func(0); }
-    macro CFile stdout() { return __acrt_iob_func(1); }
-    macro CFile stderr() { return __acrt_iob_func(2); }
-$default:
-    macro CFile stdin() { return (CFile*)(uptr)0; }
-    macro CFile stdout() { return (CFile*)(uptr)1; }
-    macro CFile stderr() { return (CFile*)(uptr)2; }
-$endswitch
 
 const HAS_MALLOC_SIZE =
 	env::OS_TYPE == LINUX
@@ -11417,10 +10727,9 @@ const int EOF = -1;
 const int FOPEN_MAX = 20;
 const int FILENAME_MAX = 1024;
 
-typedef Errno = distinct CInt;
+typedef Errno = CInt;
 typedef SeekIndex = CLong;
 
-$if (env::COMPILER_LIBC_AVAILABLE)
 
 extern fn int fclose(CFile stream);
 extern fn void clearerr(CFile stream);
@@ -11461,76 +10770,6 @@ extern fn int ungetc(int c, CFile stream);
 extern fn void perror(char* str);
 extern fn isz getline(char** linep, usz* linecapp, CFile stream);
 
-$else
-
-fn int fseek(CFile stream, SeekIndex offset, int whence) @weak @extern("fseek") @nostrip
-{
-	unreachable("'fseek' not available.");
-}
-fn CFile fopen(ZString filename, ZString mode) @weak @extern("fopen") @nostrip
-{
-	unreachable("'fopen' not available.");
-}
-
-fn CFile freopen(ZString filename, ZString mode, CFile stream) @weak @extern("fopen") @nostrip
-{
-	unreachable("'freopen' not available.");
-}
-
-fn usz fwrite(void* ptr, usz size, usz nmemb, CFile stream) @weak @extern("fwrite") @nostrip
-{
-	unreachable("'fwrite' not available.");
-}
-
-fn usz fread(void* ptr, usz size, usz nmemb, CFile stream) @weak @extern("fread") @nostrip
-{
-	unreachable("'fread' not available.");
-}
-
-fn CFile fclose(CFile) @weak @extern("fclose") @nostrip
-{
-	unreachable("'fclose' not available.");
-}
-
-fn int fflush(CFile stream) @weak @extern("fflush") @nostrip
-{
-	unreachable("'fflush' not available.");
-}
-
-fn int fputc(int c, CFile stream) @weak @extern("fputc") @nostrip
-{
-	unreachable("'fputc' not available.");
-}
-
-fn char* fgets(ZString str, int n, CFile stream) @weak @extern("fgets") @nostrip
-{
-	unreachable("'fgets' not available.");
-}
-
-fn int fgetc(CFile stream) @weak @extern("fgetc") @nostrip
-{
-	unreachable("'fgetc' not available.");
-}
-
-fn int feof(CFile stream) @weak @extern("feof") @nostrip
-{
-	unreachable("'feof' not available.");
-}
-
-fn int putc(int c, CFile stream) @weak @extern("putc") @nostrip
-{
-	unreachable("'putc' not available.");
-}
-fn int putchar(int c) @weak @extern("putchar") @nostrip
-{
-	unreachable("'putchar' not available.");
-}
-fn int puts(ZString str) @weak @extern("puts") @nostrip
-{
-	unreachable("'puts' not available.");
-}
-
-$endif
 // vsprintf vprintf not supported
 
 // time.h
@@ -11549,65 +10788,6 @@ struct TmCommon @private
 }
 
 
-$switch (env::OS_TYPE)
-
-$case WIN32:
-
-typedef Tm = TmCommon;
-
-$case WASI:
-
-typedef TimeOffset = int;
-struct Tm
-{
-	inline TmCommon common;
-	TimeOffset tm_gmtoff;	/* offset from UTC in seconds */
-    char *tm_zone;	/* timezone abbreviation */
-    int tm_nsec;
-}
-
-$case MACOS:
-$case IOS:
-$case TVOS:
-$case WATCHOS:
-$case OPENBSD:
-$case FREEBSD:
-$default:
-
-typedef TimeOffset = CLong;
-struct Tm
-{
-	inline TmCommon common;
-	TimeOffset tm_gmtoff;	/* offset from UTC in seconds */
-    char *tm_zone;	/* timezone abbreviation */
-}
-
-$endswitch
-
-
-$if (env::os_is_win32())
-
-struct TimeSpec
-{
-	Time_t s;
-	ulong ns;
-}
-
-typedef Time_t = long;
-typedef Clock_t = ulong;
-
-$else
-
-struct TimeSpec
-{
-	Time_t s;
-	CLong ns;
-}
-
-typedef Time_t = CLong;
-typedef Clock_t = CULong;
-
-$endif
 
 const int TIME_UTC = 1;
 
@@ -11626,22 +10806,6 @@ extern fn Tm* gmtime(Time_t *timer);
 
 extern fn Tm* localtime(Time_t *timer);
 
-$if (env::os_is_win32())
-extern fn Tm* _gmtime64_s(Tm* buf, Time_t *timer);
-extern fn Tm* _localtime64_s(Tm* buf, Time_t *timer);
-extern fn void _get_timezone(CLong *timezone);
-
-macro Tm* gmtime_r(Time_t *timer, Tm* buf) => _gmtime64_s(buf, timer);
-macro Tm* localtime_r(Time_t *timer, Tm* buf) => _localtime64_s(buf, timer);
-
-extern fn Time_t mktime(Tm *timeptr) @extern("_mktime64");
-extern fn Time_t timegm(Tm *timeptr) @extern("_mkgmtime64");
-$else
-extern fn Tm* gmtime_r(Time_t *timer, Tm* buf);
-extern fn Tm* localtime_r(Time_t *timer, Tm* buf);
-extern fn Time_t mktime(Tm *timeptr);
-extern fn Time_t timegm(Tm *timeptr);
-$endif
 
 extern fn usz strftime(char* str, usz maxsize, char* format, Tm *timeptr);
 extern fn Time_t time(Time_t *timer);
@@ -11665,76 +10829,6 @@ const Errno E2BIG = 7;      // Argument list too long
 const Errno ENOEXEC = 8;    // Exec format error
 const Errno EBADF = 9;      // Bad file number
 const Errno ECHILD = 10;    // No child processes
-
-$if (env::OS_TYPE == MACOS)
-const Errno EAGAIN = 35;    // Try again Macos
-$else
-const Errno EAGAIN = 11;    // Try again
-$endif
-
-const Errno ENOMEM = 12;    // Out of memory
-const Errno EACCES = 13;    // Permission denied
-const Errno EFAULT = 14;    // Bad address
-const Errno ENOTBLK = 15;   // Block device required, not on Win32
-const Errno EBUSY = 16;     // Device or resource busy
-const Errno EEXIST = 17;    // File exists
-const Errno EXDEV = 18;     // Cross-device link
-const Errno ENODEV = 19;    // No such device
-const Errno ENOTDIR = 20;   // Not a directory
-const Errno EISDIR = 21;    // Is a directory
-const Errno EINVAL = 22;    // Invalid argument
-const Errno ENFILE = 23;    // File table overflow
-const Errno EMFILE = 24;    // Too many open files
-const Errno ENOTTY = 25;    // Not a typewriter
-const Errno ETXTBSY = 26;   // Text file busy, not on Win32
-const Errno EFBIG = 27;     // File too large
-const Errno ENOSPC = 28;    // No space left on device
-const Errno ESPIPE = 29;    // Illegal seek
-const Errno EROFS = 30;     // Read-only file system
-const Errno EMLINK = 31;    // Too many links
-const Errno EPIPE = 32;     // Broken pipe
-const Errno EDOM = 33;      // Math argument out of domain of func
-const Errno ERANGE = 34;    // Math result not representable
-
-$switch (env::OS_TYPE)
-
-$case MACOS:
-const Errno EDEADLK = 11;       // Resource deadlock would occur MacOS
-const Errno ENAMETOOLONG = 63;  // File name too long MacOS
-const Errno ELOOP = 62;         // Too many symbolic links encountered
-const Errno EOVERFLOW = 84;     // Value too large for defined data type Macos
-const Errno ECONNRESET = 54;    // Connection reset by peer Macos
-const Errno ENETDOWN = 50;      // Network is down MacOS
-const Errno ENETUNREACH = 51;   // Network is unreachable MacOS
-const Errno ENETRESET = 52;     // Network dropped connection because of reset MacOS
-const Errno EOPNOTSUPP = 45;    // Operation not supported on transport endpoint
-const Errno ENOTEMPTY = 66;     // Directory not empty
-
-$case WIN32:
-const Errno EDEADLK = 36;       // Resource deadlock would occur Win32
-const Errno ENAMETOOLONG = 38;  // File name too long Win32
-const Errno ELOOP = 114;        // Too many symbolic links encountered
-const Errno EOVERFLOW = 132;    // Value too large for defined data type
-const Errno ENETDOWN = 116;     // Network is down
-const Errno ECONNRESET = 108;   // Connection reset by peer
-const Errno ENETUNREACH = 118;  // Network is unreachable
-const Errno ENETRESET = 117;    // Network dropped connection because of reset
-const Errno EOPNOTSUPP = 130;   // Operation not supported on transport endpoint
-const Errno ENOTEMPTY = 41;     // Directory not empty
-
-$default:
-const Errno EDEADLK = 35;       // Resource deadlock would occur Linux (others?)
-const Errno ENAMETOOLONG = 36;  // File name too long Linux (others?)
-const Errno ELOOP = 40;         // Too many symbolic links encountered
-const Errno EOVERFLOW = 75;     // Value too large for defined data type
-const Errno ENETDOWN = 100;     // Network is down
-const Errno ECONNRESET = 104;   // Connection reset by peer
-const Errno ENETUNREACH = 101;  // Network is unreachable
-const Errno ENETRESET = 102;    // Network dropped connection because of reset
-const Errno EOPNOTSUPP = 95;    // Operation not supported on transport endpoint
-const Errno ENOTEMPTY = 39;     // Directory not empty
-
-$endswitch
 
 
 
@@ -11809,30 +10903,6 @@ const Errno EHOSTDOWN = 112; /* Host is down */
 const Errno EHOSTUNREACH = 113; /* No route to host */
 */
 
-$switch (env::OS_TYPE)
-
-$case MACOS:
-const Errno ETIMEDOUT = 60;     // Connection timed out
-const Errno EINPROGRESS = 36;   // Operation now in progress MacOS
-const Errno EALREADY = 37;      // Operation already in progress MacOS
-const Errno EDQUOT = 69;        // Quota exceeded, MacOS
-const Errno EWOULDBLOCK = 35;   // Operation would block
-
-$case WIN32:
-const Errno ETIMEDOUT = 138;    // Connection timed out
-const Errno EALREADY = 103;     // Operation already in progress
-const Errno EINPROGRESS = 112;  // Operation now in progress Win32
-const Errno EDQUOT = -122;      // Quota exceeded, not in Win32
-const Errno EWOULDBLOCK = 140;  // Operation would block
-
-$default:
-const Errno ETIMEDOUT = 110;    // Connection timed out
-const Errno EALREADY = 114;     // Operation already in progress
-const Errno EINPROGRESS = 115;  // Operation now in progress
-const Errno EDQUOT = 122;       // Quota exceeded
-const Errno EWOULDBLOCK = 41;   // Operation would block
-$endswitch
-
 /*
 const Errno ESTALE = 116; /* Stale NFS file handle */
 const Errno EUCLEAN = 117; /* Structure needs cleaning */
@@ -11854,7 +10924,7 @@ const Errno ENOTRECOVERABLE = 131; /* State not recoverable */
 */
 module std::math::nolibc;
 
-$if (!env::COMPILER_LIBC_AVAILABLE)
+
 
 /* origin: FreeBSD /usr/src/lib/msun/src/k_cos.c */
 /*
@@ -11884,5 +10954,3 @@ fn double __cos(double x, double y) @extern("__cos") @weak @nostrip
 	w = 1.0 - hz;
 	return w + (((1.0 - w) - hz) + (z * r - x * y));
 }
-
-$endif

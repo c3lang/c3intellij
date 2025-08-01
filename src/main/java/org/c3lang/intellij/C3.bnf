@@ -167,7 +167,7 @@ attribute_user_name ::= AT_TYPE_IDENT
 attribute_name ::= AT_IDENT | path? AT_TYPE_IDENT
 attribute_param_list ::= attr_param (COMMA attr_param)*
 attr_param ::= attribute_operator_expr | constant_expr
-attribute_operator_expr ::= BIT_AND_ASSIGN | BIT_OR_ASSIGN | BIT_XOR_ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | SHL_ASSIGN | SHR_ASSIGN | &RP | MINUS &RP | DIV | STAR &RP | MOD | EQ_OP | NE_OP | BIT_XOR | BIT_NOT | BIT_OR | AMP &RP | SHL | SHR | LBT RBT EQ | AMP? LBT RBT
+attribute_operator_expr ::= BIT_AND_ASSIGN | BIT_OR_ASSIGN | BIT_XOR_ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | SHL_ASSIGN | SHR_ASSIGN | &RP | PLUS &RP | MINUS &RP | DIV | STAR &RP | MOD | EQ_OP | NE_OP | BIT_XOR | BIT_NOT | BIT_OR | AMP &RP | SHL | SHR | LBT RBT EQ | AMP? LBT RBT
 private struct_or_union ::= KW_STRUCT | KW_UNION
 
 type_name ::= TYPE_IDENT
@@ -184,7 +184,7 @@ generic_parameter ::= expr | type
 generic_parameters ::= LB generic_parameter (COMMA generic_parameter)* RB
 
 def_attr_values ::= attribute (COMMA attribute)* COMMA?
-alias_declaration_source ::= (path_const | path_ident | path_at_ident) generic_parameters?
+alias_declaration_source ::= (KW_MODULE path) | ((path_const | path_ident | path_at_ident) generic_parameters?)
 attrdef_decl ::= KW_ATTRDEF attribute_user_name (LP parameter_list RP)? attributes? (EQ def_attr_values)? EOS
 typedef_decl ::= KW_TYPEDEF type_name interface_impl? attributes? EQ KW_INLINE? typedef_type EOS
 alias_type_decl ::= KW_ALIAS type_name attributes? EQ typedef_type EOS
@@ -210,9 +210,9 @@ bitstruct_def ::= base_type IDENT COLON constant_expr (DOTDOT constant_expr)? EO
 bitstruct_simple_def ::= base_type IDENT EOS
 
 enum_declaration ::= KW_ENUM type_name interface_impl? (COLON enum_spec)? attributes? LB enum_list RB
-enum_spec ::= enum_param_list | type enum_param_list?
+enum_spec ::= (KW_CONST KW_INLINE? type?) | enum_param_list | KW_INLINE? type enum_param_list?
 enum_param_list ::=  LP enum_param_decl (COMMA enum_param_decl)* RP
-enum_param_decl ::= KW_INLINE? type IDENT
+enum_param_decl ::= type IDENT
 enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
 enum_constant ::= CONST_IDENT attributes? [eq_expr_pin]
 arg_list ::= arg (COMMA arg)* COMMA?
@@ -307,8 +307,7 @@ ct_foreach_stmt ::= KW_CT_FOREACH CT_IDENT (COMMA CT_IDENT)? COLON expr COLON st
 ct_for_stmt ::= KW_CT_FOR for_cond COLON statement_list? KW_CT_ENDFOR
 
 private eq_expr_pin ::= EQ expr { pin=1 }
-private eq_type_pin ::= EQ type { pin=1 }
-var_decl ::= KW_VAR (IDENT eq_expr_pin | CT_TYPE_IDENT eq_type_pin? | CT_IDENT eq_expr_pin?)
+var_decl ::= KW_VAR (IDENT eq_expr_pin | CT_TYPE_IDENT eq_expr_pin? | CT_IDENT eq_expr_pin?)
 var_stmt ::= var_decl EOS
 expr_stmt ::= expr EOS {pin=1}
 
@@ -420,7 +419,7 @@ assign_bin_op ::= EQ
     | BIT_XOR_ASSIGN
     | BIT_OR_ASSIGN { name = "operator" }
 
-assign_type_expr ::= CT_TYPE_IDENT /*EQ type*/eq_type_pin
+assign_type_expr ::= CT_TYPE_IDENT /*EQ type*/eq_expr_pin
 assign_bin_expr ::= expr assign_bin_op expr { rightAssociative=true }
 rel_bin_expr ::= expr rel_bin_op expr
 add_bin_expr ::= expr add_bin_op expr

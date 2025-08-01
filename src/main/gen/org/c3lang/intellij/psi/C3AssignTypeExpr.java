@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface C3AssignTypeExpr extends C3Expr {
 
   @Nullable
-  C3Type getType();
+  C3Expr getExpr();
 
 }

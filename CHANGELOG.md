@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [0.1.6] - 2025-08-01
+
+- Support 1LL. Remove support for 1u64.
+- Support const enums.
+- Support inline enum types.
+- Support `$Type = <expr>` works.
+- Support `@operator(+)`.
+- Support `alias foo = module abc`.
+
 ## [0.1.5] - 2025-04-25
 
 - Fixes $Type in params.
