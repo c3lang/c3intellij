@@ -184,13 +184,13 @@ generic_parameter ::= expr | type
 generic_parameters ::= LB generic_parameter (COMMA generic_parameter)* RB
 
 def_attr_values ::= attribute (COMMA attribute)* COMMA?
-alias_declaration_source ::= (KW_MODULE path) | ((path_const | path_ident | path_at_ident) generic_parameters?)
+alias_declaration_source ::= (path_const | path_ident | path_at_ident) generic_parameters?
 attrdef_decl ::= KW_ATTRDEF attribute_user_name (LP parameter_list RP)? attributes? (EQ def_attr_values)? EOS
 typedef_decl ::= KW_TYPEDEF type_name interface_impl? attributes? EQ KW_INLINE? typedef_type EOS
 alias_type_decl ::= KW_ALIAS type_name attributes? EQ typedef_type EOS
 faultdef_decl ::= KW_FAULTDEF fault_definition (COMMA fault_definition)* COMMA? EOS
 alias_name ::= CONST_IDENT | AT_IDENT | IDENT
-alias_decl ::= KW_ALIAS alias_name attributes? EQ alias_declaration_source EOS
+alias_decl ::= KW_ALIAS alias_name attributes? EQ ((KW_MODULE module_path) | alias_declaration_source) EOS
 fault_definition ::= CONST_IDENT attributes?
 
 struct_body ::= LB struct_member_declaration* RB { pin(".*")=2 }
@@ -307,7 +307,7 @@ ct_foreach_stmt ::= KW_CT_FOREACH CT_IDENT (COMMA CT_IDENT)? COLON expr COLON st
 ct_for_stmt ::= KW_CT_FOR for_cond COLON statement_list? KW_CT_ENDFOR
 
 private eq_expr_pin ::= EQ expr { pin=1 }
-var_decl ::= KW_VAR (IDENT eq_expr_pin | CT_TYPE_IDENT eq_expr_pin? | CT_IDENT eq_expr_pin?)
+var_decl ::= KW_VAR (IDENT eq_expr_pin | CT_TYPE_IDENT (EQ (type !DOT | expr ))? | CT_IDENT eq_expr_pin?)
 var_stmt ::= var_decl EOS
 expr_stmt ::= expr EOS {pin=1}
 

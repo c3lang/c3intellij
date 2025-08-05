@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.1.7] - 2025-08-05
+
+- Fixes to `$Type = <expr>` and `alias module`
+
 ## [0.1.6] - 2025-08-01
 
 - Support 1LL. Remove support for 1u64.

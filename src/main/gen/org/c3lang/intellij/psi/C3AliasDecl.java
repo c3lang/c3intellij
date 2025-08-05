@@ -16,4 +16,7 @@ public interface C3AliasDecl extends C3PsiElement {
   @Nullable
   C3Attributes getAttributes();
 
+  @Nullable
+  C3ModulePath getModulePath();
+
 }

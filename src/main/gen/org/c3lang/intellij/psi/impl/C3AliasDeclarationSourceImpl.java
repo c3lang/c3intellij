@@ -34,12 +34,6 @@ public class C3AliasDeclarationSourceImpl extends C3PsiElementImpl implements C3
 
   @Override
   @Nullable
-  public C3Path getPath() {
-    return findChildByClass(C3Path.class);
-  }
-
-  @Override
-  @Nullable
   public C3PathAtIdent getPathAtIdent() {
     return findChildByClass(C3PathAtIdent.class);
   }

@@ -10,4 +10,7 @@ public interface C3VarDecl extends C3PsiElement {
   @Nullable
   C3Expr getExpr();
 
+  @Nullable
+  C3Type getType();
+
 }

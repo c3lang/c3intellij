@@ -44,4 +44,10 @@ public class C3AliasDeclImpl extends C3PsiElementImpl implements C3AliasDecl {
     return findChildByClass(C3Attributes.class);
   }
 
+  @Override
+  @Nullable
+  public C3ModulePath getModulePath() {
+    return findChildByClass(C3ModulePath.class);
+  }
+
 }
