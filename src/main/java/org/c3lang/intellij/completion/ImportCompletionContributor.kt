@@ -9,7 +9,6 @@ import com.intellij.patterns.StandardPatterns.or
 import com.intellij.util.ProcessingContext
 import org.c3lang.intellij.C3Util.findC3ModulesStartingWith
 import org.c3lang.intellij.psi.C3ImportPath
-import org.c3lang.intellij.psi.impl.C3ImportPathMixinImpl
 
 @Suppress("DuplicatedCode")
 object ImportCompletionContributor : CompletionProvider<CompletionParameters>()
