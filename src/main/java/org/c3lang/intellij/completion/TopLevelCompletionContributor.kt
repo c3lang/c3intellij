@@ -35,9 +35,10 @@ object TopLevelCompletionContributor : CompletionProvider<CompletionParameters>(
             listOf(
                 "fn",
                 "struct",
-                "fault",
+                "faultdef",
                 "macro",
-                "def",
+                "alias",
+                "typedef",
                 "module",
                 "import",
                 "extern",
