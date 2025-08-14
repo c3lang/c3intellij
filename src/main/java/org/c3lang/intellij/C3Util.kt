@@ -156,8 +156,8 @@ object C3Util
             }
 
         // search stdlib after
-        File(stdLibPath).walk()
-            .asSequence()
+        File(stdLibPath)
+            .walk()
             .filter { file ->
                 file.isFile && file.extension == "c3"
             }
