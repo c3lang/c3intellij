@@ -3,6 +3,10 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Support ???:
+- Support foo = ...
+- Support trailing , in parameter list.
+- Support unary !!.
 
 ## [0.1.7] - 2025-08-05
 

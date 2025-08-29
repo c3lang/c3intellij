@@ -223,6 +223,7 @@ public interface C3Types {
   IElementType CT_IDENT = new C3TokenType("CT_IDENT");
   IElementType CT_OR = new C3TokenType("CT_OR");
   IElementType CT_PLUS = new C3TokenType("CT_PLUS");
+  IElementType CT_TERNARY = new C3TokenType("CT_TERNARY");
   IElementType CT_TYPE_IDENT = new C3TokenType("CT_TYPE_IDENT");
   IElementType DIV = new C3TokenType("DIV");
   IElementType DIV_ASSIGN = new C3TokenType("DIV_ASSIGN");

@@ -186,6 +186,7 @@ LINE_COMMENT    = "//" .*
 
     "&&&" { return C3Types.CT_AND; }
     "|||" { return C3Types.CT_OR; }
+    "???" { return C3Types.CT_TERNARY; }
     "+++" { return C3Types.CT_PLUS; }
     "..." { return C3Types.ELLIPSIS; }
     "<<=" { return C3Types.SHL_ASSIGN; }
