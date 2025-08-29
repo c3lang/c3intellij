@@ -24,6 +24,8 @@
     <stubIndex implementation="org.c3lang.intellij.index.StructDeclarationIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.StructMemberDeclarationIndex"/>
 
+    <additionalLibraryRootsProvider implementation="org.c3lang.intellij.C3StdLibRootsProvider"/>
+
     <fileType name="C3 File" implementationClass="org.c3lang.intellij.C3SourceFileType" fieldName="INSTANCE" language="C3" extensions="c3;c3t"/>
     <fileType name="C3 Interface File" implementationClass="org.c3lang.intellij.C3InterfaceFileType" fieldName="INSTANCE" language="C3" extensions="c3i"/>
 <!--    <fileType name="C3 Library File" implementationClass="org.c3lang.intellij.C3LibFileType" fieldName="INSTANCE" language="C3" extensions="c3l"/>-->
