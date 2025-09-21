@@ -73,6 +73,7 @@ DEC_FLOAT_LIT       = {INT}{E} | {INT} "." {INT} {E}?
 HEX_FLOAT_LIT       = "0"[xX]{HINT}("."{HINT})?{P}
 
 LINE_COMMENT    = "//" .*
+SHEBANG_COMMENT = "#!" .*
 
 %state IN_COMMENT, IN_RAW_STRING, IN_DOC_COMMENT, IN_STRING, IN_CHAR, IN_BYTES_STRING, IN_BYTES_CHAR, IN_BYTES_RAW_STRING
 
@@ -272,7 +273,9 @@ LINE_COMMENT    = "//" .*
     {BUILTIN_CONST} { return C3Types.BUILTIN_CONST; }
 
     {WHITESPACE}+ { return TokenType.WHITE_SPACE; }
+
     {LINE_COMMENT} { return C3ParserDefinition.LINE_COMMENT; }
+    {SHEBANG_COMMENT} { return C3ParserDefinition.LINE_COMMENT; }
     "b64\"" { yybegin(IN_BYTES_STRING); }
     "x\"" { yybegin(IN_BYTES_STRING); }
     "b64\`" { yybegin(IN_BYTES_RAW_STRING); }

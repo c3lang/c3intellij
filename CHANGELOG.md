@@ -7,6 +7,7 @@
 - Support foo = ...
 - Support trailing , in parameter list.
 - Support unary !!.
+- Support #! shebang comment
 
 ## [0.1.7] - 2025-08-05
 
