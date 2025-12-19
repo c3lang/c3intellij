@@ -2,12 +2,13 @@
 
 # C3IntelliJ Changelog
 
-## [Unreleased]
+## [0.1.8] - 2025-12-19
 - Support ???:
 - Support foo = ...
 - Support trailing , in parameter list.
 - Support unary !!.
 - Support #! shebang comment
+- Support experimental ~ postfix.
 
 ## [0.1.7] - 2025-08-05
 

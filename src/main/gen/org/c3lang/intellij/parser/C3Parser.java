@@ -1484,6 +1484,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   //     | LBT (range_exp | range_loc) RBT
   //     | generic_parameters
   //     | dot_access_ident
+  //     | BIT_NOT
   //     | PLUSPLUS
   //     | MINUSMINUS
   //     | BANG
@@ -1496,6 +1497,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = call_expr_tail_1(b, l + 1);
     if (!r) r = generic_parameters(b, l + 1);
     if (!r) r = dot_access_ident(b, l + 1);
+    if (!r) r = consumeToken(b, BIT_NOT);
     if (!r) r = consumeToken(b, PLUSPLUS);
     if (!r) r = consumeToken(b, MINUSMINUS);
     if (!r) r = consumeToken(b, BANG);
@@ -5939,13 +5941,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // AMP | AND | STAR | PLUS | MINUS | BIT_NOT | BANG | BANGBANG | PLUSPLUS | MINUSMINUS | LP type RP
+  // AMP | AND | BIT_XOR | STAR | PLUS | MINUS | BIT_NOT | BANG | BANGBANG | PLUSPLUS | MINUSMINUS | LP type RP
   public static boolean unary_op(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unary_op")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, UNARY_OP, "<operator>");
     r = consumeToken(b, AMP);
     if (!r) r = consumeToken(b, AND);
+    if (!r) r = consumeToken(b, BIT_XOR);
     if (!r) r = consumeToken(b, STAR);
     if (!r) r = consumeToken(b, PLUS);
     if (!r) r = consumeToken(b, MINUS);
@@ -5954,14 +5957,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, BANGBANG);
     if (!r) r = consumeToken(b, PLUSPLUS);
     if (!r) r = consumeToken(b, MINUSMINUS);
-    if (!r) r = unary_op_10(b, l + 1);
+    if (!r) r = unary_op_11(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   // LP type RP
-  private static boolean unary_op_10(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "unary_op_10")) return false;
+  private static boolean unary_op_11(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "unary_op_11")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, LP);

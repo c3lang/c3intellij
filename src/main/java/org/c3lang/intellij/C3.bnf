@@ -236,6 +236,7 @@ call_expr_tail ::= call_invocation compound_statement?
     | LBT (range_exp | range_loc) RBT
     | generic_parameters
     | dot_access_ident
+    | BIT_NOT
     | PLUSPLUS
     | MINUSMINUS
     | BANG
@@ -392,7 +393,7 @@ compound_statement ::= LB statement_list* RB { pin(".*")=2 }
 
 statement_list ::= statement+
 
-unary_op ::= AMP | AND | STAR | PLUS | MINUS | BIT_NOT | BANG | BANGBANG | PLUSPLUS | MINUSMINUS | LP type RP { name = "operator" }
+unary_op ::= AMP | AND | BIT_XOR | STAR | PLUS | MINUS | BIT_NOT | BANG | BANGBANG | PLUSPLUS | MINUSMINUS | LP type RP { name = "operator" }
 mult_bin_op ::= STAR | DIV | MOD { name = "operator" }
 shift_bin_op ::= SHL | SHR { name = "operator "}
 bit_bin_op ::= AMP | BIT_XOR | BIT_OR { name = "operator" }
