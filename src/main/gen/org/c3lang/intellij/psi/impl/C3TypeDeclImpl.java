@@ -34,6 +34,12 @@ public class C3TypeDeclImpl extends C3PsiElementImpl implements C3TypeDecl {
 
   @Override
   @Nullable
+  public C3ConstdefDeclaration getConstdefDeclaration() {
+    return findChildByClass(C3ConstdefDeclaration.class);
+  }
+
+  @Override
+  @Nullable
   public C3EnumDeclaration getEnumDeclaration() {
     return findChildByClass(C3EnumDeclaration.class);
   }

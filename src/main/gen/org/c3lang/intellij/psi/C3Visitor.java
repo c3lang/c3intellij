@@ -203,6 +203,22 @@ public class C3Visitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
+  public void visitConstdefConstant(@NotNull C3ConstdefConstant o) {
+    visitPsiElement(o);
+  }
+
+  public void visitConstdefDeclaration(@NotNull C3ConstdefDeclaration o) {
+    visitPsiElement(o);
+  }
+
+  public void visitConstdefList(@NotNull C3ConstdefList o) {
+    visitPsiElement(o);
+  }
+
+  public void visitConstdefSpec(@NotNull C3ConstdefSpec o) {
+    visitPsiElement(o);
+  }
+
   public void visitContinueStmt(@NotNull C3ContinueStmt o) {
     visitPsiElement(o);
   }
@@ -420,6 +436,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitFuncTypedef(@NotNull C3FuncTypedef o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGenericDecl(@NotNull C3GenericDecl o) {
     visitPsiElement(o);
   }
 

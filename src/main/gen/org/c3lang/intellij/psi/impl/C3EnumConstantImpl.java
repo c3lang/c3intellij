@@ -45,8 +45,8 @@ public class C3EnumConstantImpl extends C3EnumConstantMixinImpl implements C3Enu
 
   @Override
   @Nullable
-  public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+  public C3InitializerList getInitializerList() {
+    return findChildByClass(C3InitializerList.class);
   }
 
 }

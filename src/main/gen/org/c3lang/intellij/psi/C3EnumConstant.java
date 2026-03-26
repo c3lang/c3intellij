@@ -11,6 +11,6 @@ public interface C3EnumConstant extends C3EnumConstantMixin {
   C3Attributes getAttributes();
 
   @Nullable
-  C3Expr getExpr();
+  C3InitializerList getInitializerList();
 
 }

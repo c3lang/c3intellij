@@ -45,8 +45,8 @@ public class C3ModuleImpl extends C3ModuleMixinImpl implements C3Module {
 
   @Override
   @Nullable
-  public C3ModuleParams getModuleParams() {
-    return findChildByClass(C3ModuleParams.class);
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
   }
 
   @Override

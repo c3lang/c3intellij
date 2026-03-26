@@ -11,6 +11,9 @@ public interface C3TypeDecl extends C3PsiElement {
   C3BitstructDeclaration getBitstructDeclaration();
 
   @Nullable
+  C3ConstdefDeclaration getConstdefDeclaration();
+
+  @Nullable
   C3EnumDeclaration getEnumDeclaration();
 
   @Nullable

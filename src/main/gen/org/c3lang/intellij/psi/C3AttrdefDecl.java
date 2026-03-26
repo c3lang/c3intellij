@@ -17,6 +17,9 @@ public interface C3AttrdefDecl extends C3PsiElement {
   C3DefAttrValues getDefAttrValues();
 
   @Nullable
+  C3GenericDecl getGenericDecl();
+
+  @Nullable
   C3ParameterList getParameterList();
 
 }

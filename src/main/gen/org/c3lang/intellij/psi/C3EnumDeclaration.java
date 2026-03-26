@@ -17,6 +17,9 @@ public interface C3EnumDeclaration extends C3PsiElement {
   C3EnumSpec getEnumSpec();
 
   @Nullable
+  C3GenericDecl getGenericDecl();
+
+  @Nullable
   C3InterfaceImpl getInterfaceImpl();
 
   @NotNull

@@ -13,4 +13,7 @@ public interface C3GlobalSingleDeclaration extends C3PsiElement {
   @Nullable
   C3Expr getExpr();
 
+  @Nullable
+  C3GenericDecl getGenericDecl();
+
 }

@@ -27,8 +27,7 @@ public class C3PathImpl extends C3PathMixinImpl implements C3Path {
   }
 
   @Override
-  @Nullable
-  public String getImportIntention() {
+  public @Nullable String getImportIntention() {
     return C3ParserUtils.getImportIntention(this);
   }
 

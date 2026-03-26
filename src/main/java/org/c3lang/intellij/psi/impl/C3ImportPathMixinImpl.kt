@@ -1,8 +1,8 @@
 package org.c3lang.intellij.psi.impl
 
-import ai.grazie.utils.dropPostfix
 import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
+import org.c3lang.intellij.dropPostfix
 import org.c3lang.intellij.psi.*
 import org.c3lang.intellij.psi.reference.C3ReferenceBase
 

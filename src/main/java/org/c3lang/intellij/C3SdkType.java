@@ -21,6 +21,7 @@ public class C3SdkType extends SdkType {
         super("C3");
     }
 
+    @SuppressWarnings("deprecation")
     public @Nullable String suggestHomePath() {
         return null;
     }

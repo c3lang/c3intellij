@@ -104,6 +104,7 @@ abstract class C3StructMemberDeclarationMixinImpl : C3StubBasedPsiElementBase<C3
 
             FullyQualifiedName(structType.module, "${structType.name}.$innerStructName")
         } else {
+            if (type == null) return null
             FullyQualifiedName.from(checkNotNull(type))
         }
 

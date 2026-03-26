@@ -90,6 +90,7 @@ SHEBANG_COMMENT = "#!" .*
     "break" { return C3Types.KW_BREAK; }
     "case" { return C3Types.KW_CASE; }
     "catch" { return C3Types.KW_CATCH; }
+    "constdef" { return C3Types.KW_CONSTDEF; }
     "const" { return C3Types.KW_CONST; }
     "continue" { return C3Types.KW_CONTINUE; }
     "default" { return C3Types.KW_DEFAULT; }

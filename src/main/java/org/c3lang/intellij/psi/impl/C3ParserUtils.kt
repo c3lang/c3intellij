@@ -2,9 +2,9 @@
 
 package org.c3lang.intellij.psi.impl
 
-import ai.grazie.utils.dropPostfix
 import com.intellij.util.text.nullize
 import org.c3lang.intellij.docs.findDocumentationComment
+import org.c3lang.intellij.dropPostfix
 import org.c3lang.intellij.psi.C3CallExpr
 import org.c3lang.intellij.psi.C3Path
 import org.c3lang.intellij.psi.C3PathIdent

@@ -38,4 +38,10 @@ public class C3GlobalSingleDeclarationImpl extends C3PsiElementImpl implements C
     return findChildByClass(C3Expr.class);
   }
 
+  @Override
+  @Nullable
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
+  }
+
 }

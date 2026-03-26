@@ -55,4 +55,10 @@ public class C3FuncDefImpl extends C3FuncDefMixinImpl implements C3FuncDef {
     return findNotNullChildByClass(C3FuncHeader.class);
   }
 
+  @Override
+  @Nullable
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
+  }
+
 }

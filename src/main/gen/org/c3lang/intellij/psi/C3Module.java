@@ -11,7 +11,7 @@ public interface C3Module extends C3ModuleMixin {
   C3Attributes getAttributes();
 
   @Nullable
-  C3ModuleParams getModuleParams();
+  C3GenericDecl getGenericDecl();
 
   @NotNull
   C3ModulePath getModulePath();

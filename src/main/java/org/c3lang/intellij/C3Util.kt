@@ -24,6 +24,21 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 
+fun String.dropPrefix(prefix: String): String {
+    return if (startsWith(prefix)) {
+        this.drop(prefix.length)
+    } else {
+        this
+    }
+}
+
+fun String.dropPostfix(postfix: String): String {
+    return if (endsWith(postfix)) {
+        this.dropLast(postfix.length)
+    } else {
+        this
+    }
+}
 object C3Util
 {
     private val log: Log = LogFactory.getLog(C3Util::class.java)

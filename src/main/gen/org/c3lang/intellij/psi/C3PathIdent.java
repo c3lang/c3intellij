@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement;
 
 public interface C3PathIdent extends C3PathIdentMixin {
 
-  @Nullable
-  C3Path getPath();
+  @Nullable C3Path getPath();
 
 }

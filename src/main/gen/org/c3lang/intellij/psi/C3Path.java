@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement;
 
 public interface C3Path extends C3PathMixin {
 
-  @Nullable
-  String getImportIntention();
+  @Nullable String getImportIntention();
 
 }

@@ -56,6 +56,10 @@ public interface C3Types {
   IElementType COND = new C3ElementType("COND");
   IElementType COND_REPEAT = new C3ElementType("COND_REPEAT");
   IElementType CONSTANT_EXPR = new C3ElementType("CONSTANT_EXPR");
+  IElementType CONSTDEF_CONSTANT = new C3ElementType("CONSTDEF_CONSTANT");
+  IElementType CONSTDEF_DECLARATION = new C3ElementType("CONSTDEF_DECLARATION");
+  IElementType CONSTDEF_LIST = new C3ElementType("CONSTDEF_LIST");
+  IElementType CONSTDEF_SPEC = new C3ElementType("CONSTDEF_SPEC");
   IElementType CONST_DECLARATION_STMT = C3StubElementTypeFactory.stubFactory("CONST_DECLARATION_STMT");
   IElementType CONTINUE_STMT = new C3ElementType("CONTINUE_STMT");
   IElementType CT_ANALYZE = new C3ElementType("CT_ANALYZE");
@@ -112,6 +116,7 @@ public interface C3Types {
   IElementType FUNC_HEADER = new C3ElementType("FUNC_HEADER");
   IElementType FUNC_NAME = new C3ElementType("FUNC_NAME");
   IElementType FUNC_TYPEDEF = new C3ElementType("FUNC_TYPEDEF");
+  IElementType GENERIC_DECL = new C3ElementType("GENERIC_DECL");
   IElementType GENERIC_PARAMETER = new C3ElementType("GENERIC_PARAMETER");
   IElementType GENERIC_PARAMETERS = new C3ElementType("GENERIC_PARAMETERS");
   IElementType GLOBAL_DECL = new C3ElementType("GLOBAL_DECL");
@@ -254,6 +259,7 @@ public interface C3Types {
   IElementType KW_CATCH = new C3TokenType("KW_CATCH");
   IElementType KW_CHAR = new C3TokenType("KW_CHAR");
   IElementType KW_CONST = new C3TokenType("KW_CONST");
+  IElementType KW_CONSTDEF = new C3TokenType("KW_CONSTDEF");
   IElementType KW_CONTINUE = new C3TokenType("KW_CONTINUE");
   IElementType KW_CT_ALIGNOF = new C3TokenType("KW_CT_ALIGNOF");
   IElementType KW_CT_ASSERT = new C3TokenType("KW_CT_ASSERT");
@@ -519,6 +525,18 @@ public interface C3Types {
       else if (type == COND_REPEAT) {
         return new C3CondRepeatImpl(node);
       }
+      else if (type == CONSTDEF_CONSTANT) {
+        return new C3ConstdefConstantImpl(node);
+      }
+      else if (type == CONSTDEF_DECLARATION) {
+        return new C3ConstdefDeclarationImpl(node);
+      }
+      else if (type == CONSTDEF_LIST) {
+        return new C3ConstdefListImpl(node);
+      }
+      else if (type == CONSTDEF_SPEC) {
+        return new C3ConstdefSpecImpl(node);
+      }
       else if (type == CONST_DECLARATION_STMT) {
         return new C3ConstDeclarationStmtImpl(node);
       }
@@ -683,6 +701,9 @@ public interface C3Types {
       }
       else if (type == FUNC_TYPEDEF) {
         return new C3FuncTypedefImpl(node);
+      }
+      else if (type == GENERIC_DECL) {
+        return new C3GenericDeclImpl(node);
       }
       else if (type == GENERIC_PARAMETER) {
         return new C3GenericParameterImpl(node);

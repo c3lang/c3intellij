@@ -1,10 +1,9 @@
 package org.c3lang.intellij.annotation
 
-import ai.grazie.text.range
+import com.intellij.openapi.util.TextRange
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiWhiteSpace
 import org.c3lang.intellij.psi.C3DefaultModuleSection
@@ -153,13 +152,6 @@ private fun annotateParamTags(element: PsiComment, holder: AnnotationHolder)
     val commentText = element.text
     val commentStart = element.textRange.startOffset
 
-    val nonMatchingLines = commentText.lines().filter { it.trim().startsWith("@param") && !regex.matches(it.trim()) }
-
-    nonMatchingLines.forEach {
-        holder.newAnnotation(HighlightSeverity.ERROR, "Invalid syntax")
-            .range(TextRange(commentStart + it.range.start, commentStart + it.range.endInclusive + 1))
-            .create()
-    }
 
     regex.findAll(commentText).forEach { match ->
         val contract = match.groups[1]

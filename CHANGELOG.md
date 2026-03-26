@@ -2,6 +2,14 @@
 
 # C3IntelliJ Changelog
 
+## [0.2.0] - 2026-03-26
+- IntelliJ 2026 compatibility
+- Handle `$defined(int a = 123)`
+- Support new generics syntax.
+- Fix crash when backtracking on a definition.
+- Support int as expression.
+- Support attributes on `var foo = 123`
+
 ## [0.1.8] - 2025-12-19
 - Support ???:
 - Support foo = ...

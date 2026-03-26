@@ -45,6 +45,12 @@ public class C3StructDeclarationImpl extends C3StructDeclarationMixinImpl implem
 
   @Override
   @Nullable
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
+  }
+
+  @Override
+  @Nullable
   public C3InterfaceImpl getInterfaceImpl() {
     return findChildByClass(C3InterfaceImpl.class);
   }

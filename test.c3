@@ -86,7 +86,7 @@ bitstruct UInt128LE : uint128 @littleendian
 {
 	uint128 val : 0..127;
 }
-module std::collections::enummap{Enum, ValueType};
+module std::collections::enummap <Enum, ValueType>;
 
 struct EnumMap
 {

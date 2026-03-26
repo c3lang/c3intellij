@@ -1,11 +1,11 @@
 package org.c3lang.intellij.psi
 
-import ai.grazie.utils.dropPostfix
 import com.intellij.psi.stubs.StubInputStream
 import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.text.nullize
+import org.c3lang.intellij.dropPostfix
 import org.c3lang.intellij.psi.ShortType.Companion.toShortType
 import org.c3lang.intellij.stubs.readNullableUTFFast
 import org.c3lang.intellij.stubs.writeNullableUTFFast

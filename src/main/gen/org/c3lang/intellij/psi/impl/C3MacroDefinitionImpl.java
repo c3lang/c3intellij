@@ -44,6 +44,12 @@ public class C3MacroDefinitionImpl extends C3MacroDefinitionMixinImpl implements
   }
 
   @Override
+  @Nullable
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
+  }
+
+  @Override
   @NotNull
   public C3MacroFuncBody getMacroFuncBody() {
     return findNotNullChildByClass(C3MacroFuncBody.class);

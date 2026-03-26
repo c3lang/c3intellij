@@ -16,4 +16,7 @@ public interface C3FuncDef extends C3FuncDefMixin {
   @NotNull
   C3FuncHeader getFuncHeader();
 
+  @Nullable
+  C3GenericDecl getGenericDecl();
+
 }

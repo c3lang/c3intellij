@@ -11,6 +11,9 @@ public interface C3TypedefDecl extends C3PsiElement {
   C3Attributes getAttributes();
 
   @Nullable
+  C3GenericDecl getGenericDecl();
+
+  @Nullable
   C3InterfaceImpl getInterfaceImpl();
 
   @NotNull

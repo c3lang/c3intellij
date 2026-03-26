@@ -40,6 +40,12 @@ public class C3BitstructDeclarationImpl extends C3PsiElementImpl implements C3Bi
 
   @Override
   @Nullable
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
+  }
+
+  @Override
+  @Nullable
   public C3InterfaceImpl getInterfaceImpl() {
     return findChildByClass(C3InterfaceImpl.class);
   }

@@ -14,6 +14,9 @@ public interface C3BitstructDeclaration extends C3PsiElement {
   C3BitstructBody getBitstructBody();
 
   @Nullable
+  C3GenericDecl getGenericDecl();
+
+  @Nullable
   C3InterfaceImpl getInterfaceImpl();
 
   @Nullable

@@ -26,7 +26,7 @@ class C3BreadcrumbsProvider : BreadcrumbsProvider {
     override fun getElementInfo(element: PsiElement): String {
         val text = when (element) {
             is C3StructDeclaration -> element.getTypeName().text
-            is C3EnumDeclaration -> element.getTypeName().text
+            is C3EnumDeclaration -> element.getTypeName()!!.text
             is C3MacroDefinition -> element.getMacroHeader().getMacroName().text
             is C3TypedefDecl -> element.getTypeName().text
             is C3AttrdefDecl -> element.attributeUserName.text

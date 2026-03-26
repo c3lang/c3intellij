@@ -46,6 +46,12 @@ public class C3AttrdefDeclImpl extends C3PsiElementImpl implements C3AttrdefDecl
 
   @Override
   @Nullable
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
+  }
+
+  @Override
+  @Nullable
   public C3ParameterList getParameterList() {
     return findChildByClass(C3ParameterList.class);
   }
