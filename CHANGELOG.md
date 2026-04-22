@@ -2,6 +2,9 @@
 
 # C3IntelliJ Changelog
 
+## [0.2.1] - 2026-04-21
+- 0.8.0 Syntax compatibility
+
 ## [0.2.0] - 2026-03-26
 - IntelliJ 2026 compatibility
 - Handle `$defined(int a = 123)`

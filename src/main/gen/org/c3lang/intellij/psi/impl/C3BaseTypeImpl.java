@@ -46,12 +46,6 @@ public class C3BaseTypeImpl extends C3BaseTypeMixinImpl implements C3BaseType {
 
   @Override
   @Nullable
-  public C3GroupedExpression getGroupedExpression() {
-    return findChildByClass(C3GroupedExpression.class);
-  }
-
-  @Override
-  @Nullable
   public C3IntegerType getIntegerType() {
     return findChildByClass(C3IntegerType.class);
   }

@@ -34,8 +34,8 @@ public class C3DoStmtImpl extends C3PsiElementImpl implements C3DoStmt {
 
   @Override
   @Nullable
-  public C3GroupedExpression getGroupedExpression() {
-    return findChildByClass(C3GroupedExpression.class);
+  public C3GroupedExpr getGroupedExpr() {
+    return findChildByClass(C3GroupedExpr.class);
   }
 
   @Override

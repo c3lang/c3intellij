@@ -215,10 +215,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitConstdefSpec(@NotNull C3ConstdefSpec o) {
-    visitPsiElement(o);
-  }
-
   public void visitContinueStmt(@NotNull C3ContinueStmt o) {
     visitPsiElement(o);
   }
@@ -241,14 +237,6 @@ public class C3Visitor extends PsiElementVisitor {
 
   public void visitCtAssertStmt(@NotNull C3CtAssertStmt o) {
     visitPsiElement(o);
-  }
-
-  public void visitCtCall(@NotNull C3CtCall o) {
-    visitPsiElement(o);
-  }
-
-  public void visitCtCallExpr(@NotNull C3CtCallExpr o) {
-    visitExpr(o);
   }
 
   public void visitCtCaseStmt(@NotNull C3CtCaseStmt o) {
@@ -295,10 +283,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitCtSwitch(@NotNull C3CtSwitch o) {
-    visitPsiElement(o);
-  }
-
   public void visitCtSwitchBody(@NotNull C3CtSwitchBody o) {
     visitPsiElement(o);
   }
@@ -339,6 +323,10 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitEnumAccessExpr(@NotNull C3EnumAccessExpr o) {
+    visitExpr(o);
+  }
+
   public void visitEnumConstant(@NotNull C3EnumConstant o) {
     visitEnumConstantMixin(o);
   }
@@ -359,19 +347,11 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitEnumSpec(@NotNull C3EnumSpec o) {
-    visitPsiElement(o);
-  }
-
   public void visitExpr(@NotNull C3Expr o) {
     visitPsiElement(o);
   }
 
   public void visitExprStmt(@NotNull C3ExprStmt o) {
-    visitPsiElement(o);
-  }
-
-  public void visitExprTerminator(@NotNull C3ExprTerminator o) {
     visitPsiElement(o);
   }
 
@@ -384,10 +364,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitFaultdefDecl(@NotNull C3FaultdefDecl o) {
-    visitPsiElement(o);
-  }
-
-  public void visitFlatPath(@NotNull C3FlatPath o) {
     visitPsiElement(o);
   }
 
@@ -435,10 +411,6 @@ public class C3Visitor extends PsiElementVisitor {
     visitFuncNameMixin(o);
   }
 
-  public void visitFuncTypedef(@NotNull C3FuncTypedef o) {
-    visitPsiElement(o);
-  }
-
   public void visitGenericDecl(@NotNull C3GenericDecl o) {
     visitPsiElement(o);
   }
@@ -455,20 +427,8 @@ public class C3Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitGlobalMultiDeclaration(@NotNull C3GlobalMultiDeclaration o) {
-    visitPsiElement(o);
-  }
-
-  public void visitGlobalSingleDeclaration(@NotNull C3GlobalSingleDeclaration o) {
-    visitPsiElement(o);
-  }
-
   public void visitGroupedExpr(@NotNull C3GroupedExpr o) {
     visitExpr(o);
-  }
-
-  public void visitGroupedExpression(@NotNull C3GroupedExpression o) {
-    visitPsiElement(o);
   }
 
   public void visitIdentifierList(@NotNull C3IdentifierList o) {
@@ -476,10 +436,6 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitIfStmt(@NotNull C3IfStmt o) {
-    visitPsiElement(o);
-  }
-
-  public void visitImpliesBody(@NotNull C3ImpliesBody o) {
     visitPsiElement(o);
   }
 
@@ -603,20 +559,12 @@ public class C3Visitor extends PsiElementVisitor {
     visitModuleDefinition(o);
   }
 
-  public void visitMultiDeclaration(@NotNull C3MultiDeclaration o) {
-    visitPsiElement(o);
-  }
-
   public void visitNamedIdent(@NotNull C3NamedIdent o) {
     visitPsiElement(o);
   }
 
   public void visitNextcaseStmt(@NotNull C3NextcaseStmt o) {
     visitPsiElement(o);
-  }
-
-  public void visitOptionalExpr(@NotNull C3OptionalExpr o) {
-    visitExpr(o);
   }
 
   public void visitOptionalType(@NotNull C3OptionalType o) {
@@ -750,6 +698,10 @@ public class C3Visitor extends PsiElementVisitor {
 
   public void visitTypeDecl(@NotNull C3TypeDecl o) {
     visitPsiElement(o);
+  }
+
+  public void visitTypeExpr(@NotNull C3TypeExpr o) {
+    visitExpr(o);
   }
 
   public void visitTypeName(@NotNull C3TypeName o) {

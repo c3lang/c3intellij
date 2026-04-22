@@ -34,8 +34,8 @@ public class C3MacroFuncBodyImpl extends C3PsiElementImpl implements C3MacroFunc
 
   @Override
   @Nullable
-  public C3ImpliesBody getImpliesBody() {
-    return findChildByClass(C3ImpliesBody.class);
+  public C3Expr getExpr() {
+    return findChildByClass(C3Expr.class);
   }
 
   @Override

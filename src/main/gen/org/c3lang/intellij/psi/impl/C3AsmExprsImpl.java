@@ -28,8 +28,8 @@ public class C3AsmExprsImpl extends C3PsiElementImpl implements C3AsmExprs {
 
   @Override
   @NotNull
-  public List<C3AsmExpr> getAsmExprList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3AsmExpr.class);
+  public List<C3Expr> getExprList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, C3Expr.class);
   }
 
 }

@@ -19,7 +19,4 @@ public interface C3Arg extends C3ArgMixin {
   @Nullable
   C3RangeExp getRangeExp();
 
-  @Nullable
-  C3Type getType();
-
 }

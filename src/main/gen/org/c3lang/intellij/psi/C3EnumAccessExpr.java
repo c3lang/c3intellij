@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3MultiDeclaration extends C3PsiElement {
+public interface C3EnumAccessExpr extends C3Expr {
+
+  @NotNull
+  C3BaseType getBaseType();
 
 }

@@ -11,7 +11,7 @@ public interface C3DoStmt extends C3PsiElement {
   C3CompoundStatement getCompoundStatement();
 
   @Nullable
-  C3GroupedExpression getGroupedExpression();
+  C3GroupedExpr getGroupedExpr();
 
   @Nullable
   C3Label getLabel();

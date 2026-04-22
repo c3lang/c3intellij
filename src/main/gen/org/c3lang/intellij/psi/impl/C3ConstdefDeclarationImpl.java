@@ -40,14 +40,14 @@ public class C3ConstdefDeclarationImpl extends C3PsiElementImpl implements C3Con
 
   @Override
   @Nullable
-  public C3ConstdefSpec getConstdefSpec() {
-    return findChildByClass(C3ConstdefSpec.class);
+  public C3InterfaceImpl getInterfaceImpl() {
+    return findChildByClass(C3InterfaceImpl.class);
   }
 
   @Override
   @Nullable
-  public C3InterfaceImpl getInterfaceImpl() {
-    return findChildByClass(C3InterfaceImpl.class);
+  public C3Type getType() {
+    return findChildByClass(C3Type.class);
   }
 
   @Override

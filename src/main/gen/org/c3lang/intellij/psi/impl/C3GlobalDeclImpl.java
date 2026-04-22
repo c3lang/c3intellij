@@ -28,14 +28,20 @@ public class C3GlobalDeclImpl extends C3PsiElementImpl implements C3GlobalDecl {
 
   @Override
   @Nullable
-  public C3GlobalMultiDeclaration getGlobalMultiDeclaration() {
-    return findChildByClass(C3GlobalMultiDeclaration.class);
+  public C3Attributes getAttributes() {
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @Nullable
-  public C3GlobalSingleDeclaration getGlobalSingleDeclaration() {
-    return findChildByClass(C3GlobalSingleDeclaration.class);
+  public C3Expr getExpr() {
+    return findChildByClass(C3Expr.class);
+  }
+
+  @Override
+  @Nullable
+  public C3GenericDecl getGenericDecl() {
+    return findChildByClass(C3GenericDecl.class);
   }
 
   @Override

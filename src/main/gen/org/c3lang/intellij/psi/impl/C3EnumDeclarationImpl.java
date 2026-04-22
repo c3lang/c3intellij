@@ -40,8 +40,8 @@ public class C3EnumDeclarationImpl extends C3PsiElementImpl implements C3EnumDec
 
   @Override
   @Nullable
-  public C3EnumSpec getEnumSpec() {
-    return findChildByClass(C3EnumSpec.class);
+  public C3EnumParamList getEnumParamList() {
+    return findChildByClass(C3EnumParamList.class);
   }
 
   @Override
@@ -54,6 +54,12 @@ public class C3EnumDeclarationImpl extends C3PsiElementImpl implements C3EnumDec
   @Nullable
   public C3InterfaceImpl getInterfaceImpl() {
     return findChildByClass(C3InterfaceImpl.class);
+  }
+
+  @Override
+  @Nullable
+  public C3Type getType() {
+    return findChildByClass(C3Type.class);
   }
 
   @Override

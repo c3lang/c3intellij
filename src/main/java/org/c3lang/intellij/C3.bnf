@@ -105,6 +105,8 @@
     pin(".*_stmt") = 1
 }
 
+// -- TOP-LEVEL STRUCTURE --
+
 translation_unit ::= default_module_section? module_section*
 default_module_section ::= top_level+
 module_section ::= module top_level*
@@ -118,11 +120,6 @@ type_decl ::= struct_declaration
     | constdef_declaration
     | bitstruct_declaration
 
-fake binary_expr ::= expr+ {
-    methods = [left = "expr[0]" right = "expr[1]"]
-}
-
-fake binary_op ::= add_bin_op | mult_bin_op | bit_bin_op | shift_bin_op | rel_bin_op | assign_bin_op
 
 //path ::=  <<parsePath>>
 path ::= (IDENT SCOPE)+ { pin(".*")=2 }
@@ -160,7 +157,7 @@ top_level ::= import_decl
     | asm_declaration
     | interface_definition
 
-private const_paren_expr ::= LP constant_expr RP
+// -- ATTRIBUTES --
 
 attributes ::= attribute+
 attribute ::= attribute_name (LP attribute_param_list RP)?
@@ -168,19 +165,17 @@ attribute_user_name ::= AT_TYPE_IDENT
 attribute_name ::= AT_IDENT | path? AT_TYPE_IDENT
 attribute_param_list ::= attr_param (COMMA attr_param)*
 attr_param ::= attribute_operator_expr | constant_expr
-attribute_operator_expr ::= BIT_AND_ASSIGN | BIT_OR_ASSIGN | BIT_XOR_ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | SHL_ASSIGN | SHR_ASSIGN | &RP | PLUS &RP | MINUS &RP | DIV | STAR &RP | MOD | EQ_OP | NE_OP | BIT_XOR | BIT_NOT | BIT_OR | AMP &RP | SHL | SHR | LBT RBT EQ | AMP? LBT RBT
-private struct_or_union ::= KW_STRUCT | KW_UNION
+attribute_operator_expr ::= BIT_AND_ASSIGN | BIT_OR_ASSIGN | BIT_XOR_ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | SHL_ASSIGN | SHR_ASSIGN | &RP | PLUS &RP | MINUS &RP | DIV | LT_OP | STAR &RP | MOD | EQ_OP | BIT_XOR | BIT_NOT | BIT_OR | AMP &RP | SHL | SHR | LBT RBT EQ | AMP? LBT RBT
+
+
+// -- TYPE DECLARATIONS --
 
 type_name ::= TYPE_IDENT
 
-struct_declaration ::= struct_or_union type_name interface_impl? generic_decl? attributes? struct_body
-
+struct_declaration ::= (KW_STRUCT | KW_UNION) type_name interface_impl? generic_decl? attributes? struct_body
 bitstruct_declaration ::= KW_BITSTRUCT type_name interface_impl? COLON type generic_decl? attributes? bitstruct_body
 
-func_typedef ::= KW_FN optional_type fn_parameter_list
-
-
-typedef_type ::= func_typedef | type generic_parameters?
+typedef_type ::= KW_FN optional_type fn_parameter_list | type generic_parameters?
 generic_parameter ::= expr | type
 generic_parameters ::= LB generic_parameter (COMMA generic_parameter)* RB
 
@@ -196,9 +191,11 @@ fault_definition ::= CONST_IDENT attributes?
 
 struct_body ::= LB struct_member_declaration* RB { pin(".*")=2 }
 
+identifier_list ::= IDENT (COMMA IDENT)*
+
 private struct_member_declaration_1 ::= type identifier_list attributes? EOS { pin(".*")=1 }
 private struct_member_declaration_2 ::= KW_INLINE type IDENT? attributes? EOS { pin(".*")=2 }
-private struct_member_declaration_3 ::= struct_or_union IDENT? attributes? struct_body { pin(".*")=1}
+private struct_member_declaration_3 ::= (KW_STRUCT | KW_UNION) IDENT? attributes? struct_body { pin(".*")=1}
 private struct_member_declaration_4 ::= KW_BITSTRUCT IDENT? ':' type attributes? bitstruct_body {pin(".*")=4}
 
 struct_member_declaration ::= struct_member_declaration_1
@@ -210,37 +207,30 @@ bitstruct_body ::= LB (bitstruct_def+ | bitstruct_simple_def+)? RB
 bitstruct_def ::= base_type IDENT COLON constant_expr (DOTDOT constant_expr)? EOS
 bitstruct_simple_def ::= base_type IDENT EOS
 
-constdef_declaration ::= KW_CONSTDEF type_name interface_impl? (COLON constdef_spec)? attributes? LB constdef_list RB
-constdef_spec ::= KW_INLINE? type?
+constdef_declaration ::= KW_CONSTDEF type_name interface_impl? (COLON KW_INLINE? type?)? attributes? LB constdef_list RB
 constdef_list ::= constdef_constant (COMMA constdef_constant ?)* COMMA?
 constdef_constant ::= CONST_IDENT attributes? [eq_expr_pin]
 
-enum_declaration ::= KW_ENUM type_name interface_impl? (COLON enum_spec)? generic_decl? attributes? LB enum_list RB
-enum_spec ::= KW_INLINE? type? enum_param_list?
+enum_declaration ::= KW_ENUM type_name interface_impl? (COLON KW_INLINE? type? enum_param_list?)? generic_decl? attributes? LB enum_list RB
 enum_param_list ::=  LP enum_param_decl (COMMA enum_param_decl)* RP
 enum_param_decl ::= type IDENT
 enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
 enum_constant ::= CONST_IDENT attributes? initializer_list?
 
-arg_list ::= arg (COMMA arg)* COMMA?
-named_ident ::= CT_IDENT | HASH_IDENT | IDENT | CT_TYPE_IDENT
-arg ::= (named_ident COLON (ELLIPSIS? expr | type)) | param_path (EQ (expr | type))? | expr | type | KW_CT_VASPLAT (LBT range_exp RBT)? | ELLIPSIS expr
+global_decl ::= KW_TLOCAL? optional_type IDENT ((COMMA IDENT)+ generic_decl? attributes? | generic_decl? attributes? eq_expr_pin?) EOS
 
-
-global_decl ::= KW_TLOCAL? optional_type IDENT (global_multi_declaration | global_single_declaration) EOS
-global_multi_declaration ::= multi_declaration generic_decl? attributes?
-global_single_declaration ::= generic_decl? attributes? [eq_expr_pin]
-multi_declaration ::= (COMMA IDENT)+
-
-grouped_expression ::= LP expr RP
+// -- CALL & ARGUMENT HELPERS --
 
 access_ident ::= IDENT | AT_IDENT | HASH_IDENT | KW_CT_EVAL '(' expr ')' | KW_TYPEID
 
+arg_list ::= arg (COMMA arg)* COMMA?
+named_ident ::= CT_IDENT | HASH_IDENT | IDENT | CT_TYPE_IDENT
+arg ::= (named_ident |  COLON ELLIPSIS? expr) | param_path (EQ expr)? | expr | KW_CT_VASPLAT (LBT range_exp RBT)? | ELLIPSIS expr
 call_arg_list ::= arg_list? (EOS parameter_list?)?
 call_invocation ::= LP call_arg_list RP AT_IDENT*
 private dot_access_ident ::= DOT access_ident { pin=1 }
 call_expr_tail ::= call_invocation compound_statement?
-    | LBT (range_exp | range_loc) RBT
+    | DOT? LBT (range_exp | range_loc) RBT
     | generic_parameters
     | dot_access_ident
     | BIT_NOT
@@ -250,18 +240,11 @@ call_expr_tail ::= call_invocation compound_statement?
     | BANGBANG
 
 
-ct_call ::= KW_CT_ALIGNOF | KW_CT_EXTNAMEOF | KW_CT_NAMEOF | KW_CT_OFFSETOF | KW_CT_QNAMEOF
-ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAEXPR
-ct_analyze ::= KW_CT_EVAL | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_IS_CONST
-
-flat_path ::= primary_group param_path? | type
 param_path ::= param_path_element+
 param_path_element ::= LBT expr (DOTDOT expr)? RBT | DOT primary_group | DOT CT_TYPE_IDENT { pin(".*")=1 }
 
 range_exp ::= range_loc? (DOTDOT | COLON) range_loc?
 range_loc ::= BIT_XOR? expr
-lambda_decl ::= KW_FN optional_type? fn_parameter_list attributes?
-optional_type ::= type QUESTION?
 fn_parameter_list ::= LP parameter_list? COMMA? RP
 param_decl ::= parameter ((EQ ELLIPSIS) | [eq_expr_pin])
 parameter_list ::= param_decl (COMMA param_decl)* { pin(".*")=2 }
@@ -269,20 +252,14 @@ parameter ::= KW_INLINE? type (ELLIPSIS? IDENT attributes? | ELLIPSIS? CT_IDENT 
     | ELLIPSIS | HASH_IDENT attributes?| AMP IDENT attributes?  | IDENT ELLIPSIS? attributes?
     | CT_IDENT | CT_IDENT ELLIPSIS
 
-ct_error_stmt ::= KW_CT_ERROR constant_expr EOS
-ct_assert_stmt ::= KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
-ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS
-assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS
-ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
-
-ct_switch_stmt ::= ct_switch ct_switch_body KW_CT_ENDSWITCH
 initializer_list ::= LB (arg_list COMMA?)? RB { pin=2 }
 
+// -- TYPES --
+
 integer_type ::= KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_INT128 | KW_UINT128
-
 float_type ::= KW_FLOAT16 | KW_FLOAT | KW_DOUBLE | KW_FLOAT128 | KW_BFLOAT16
-
 private struct_type ::= path? TYPE_IDENT generic_parameters? { pin=2 }
+private const_paren_expr ::= LP constant_expr RP
 
 base_type ::= KW_VOID
     | KW_BOOL
@@ -290,34 +267,25 @@ base_type ::= KW_VOID
     | float_type
     | KW_IPTR
     | KW_UPTR
-    | KW_ISZ
+    | KW_SZ
+    | KW_UNTYPEDLIST
     | KW_USZ
     | KW_FAULT
     | KW_ANY
     | KW_TYPEID
     | struct_type
     | CT_TYPE_IDENT
-    | KW_CT_TYPEOF grouped_expression
+    | KW_CT_REFLECT grouped_expr
+    | KW_CT_TYPEOF grouped_expr
     | KW_CT_TYPEFROM const_paren_expr
     | KW_CT_VATYPE LBT expr RBT
-    | KW_CT_EVALTYPE const_paren_expr
-
 
 type_suffix ::= STAR | LBT PLUS RBT | LBT (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
-
 type ::= base_type type_suffix*
+optional_type ::= type QUESTION?
 
-ct_switch ::= KW_CT_SWITCH (constant_expr | type)? COLON
 
-ct_case_stmt ::= (KW_CT_CASE (constant_expr | type) | KW_CT_DEFAULT) COLON statement_list?
-ct_switch_body ::= ct_case_stmt+
-ct_foreach_stmt ::= KW_CT_FOREACH CT_IDENT (COMMA CT_IDENT)? COLON expr COLON statement_list? KW_CT_ENDFOREACH
-ct_for_stmt ::= KW_CT_FOR for_cond COLON statement_list? KW_CT_ENDFOR
-
-private eq_expr_pin ::= EQ expr { pin=1 }
-var_decl ::= KW_VAR (IDENT attributes? eq_expr_pin | CT_TYPE_IDENT (EQ (type !DOT | expr ))? | CT_IDENT eq_expr_pin?)
-var_stmt ::= var_decl EOS
-expr_stmt ::= expr EOS {pin=1}
+// -- STATEMENTS --
 
 statement ::= compound_statement
     | var_stmt
@@ -349,15 +317,28 @@ private recover_statement ::= !(statement|keyword_list|ident_list|RB|EOS)
 
 local_decl_storage ::= KW_STATIC | KW_TLOCAL
 
-private local_decl_after_type_1 ::= CT_IDENT (EQ constant_expr)?
-private local_decl_after_type_2 ::= IDENT attributes? (eq_expr_pin)?
-local_decl_after_type ::= local_decl_after_type_1 | local_decl_after_type_2
+local_decl_after_type ::= CT_IDENT (EQ constant_expr)? | IDENT attributes? (eq_expr_pin)?
 
 decl_stmt_after_type ::= local_decl_after_type (COMMA local_decl_after_type)* {pin=1}
+private eq_expr_pin ::= EQ expr { pin=1 }
+var_decl ::= KW_VAR (IDENT attributes? eq_expr_pin | CT_TYPE_IDENT (EQ expr)? | CT_IDENT eq_expr_pin?)
+var_stmt ::= var_decl EOS
+expr_stmt ::= expr EOS {pin=1}
+
+ct_error_stmt ::= KW_CT_ERROR constant_expr EOS
+ct_assert_stmt ::= KW_CT_ASSERT constant_expr (COLON constant_expr)? EOS
+ct_echo_stmt ::= KW_CT_ECHO constant_expr EOS
+ct_if_stmt ::= KW_CT_IF constant_expr COLON statement_list? (KW_CT_ELSE statement_list?)? KW_CT_ENDIF
+ct_case_stmt ::= (KW_CT_CASE constant_expr | KW_CT_DEFAULT) COLON statement_list?
+ct_switch_body ::= ct_case_stmt+
+ct_switch_stmt ::= KW_CT_SWITCH constant_expr? COLON ct_switch_body KW_CT_ENDSWITCH
+ct_foreach_stmt ::= KW_CT_FOREACH CT_IDENT (COMMA CT_IDENT)? COLON expr COLON statement_list? KW_CT_ENDFOREACH
+ct_for_stmt ::= KW_CT_FOR for_cond COLON statement_list? KW_CT_ENDFOR
 
 const_declaration_stmt ::= KW_CONST type? CONST_IDENT attributes? eq_expr_pin EOS { pin=3 }
 local_declaration_stmt ::= local_decl_storage? optional_type decl_stmt_after_type EOS { pin=2 }
 
+assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS
 return_stmt ::= KW_RETURN expr? EOS
 label ::= CONST_IDENT COLON
 paren_cond ::= LP cond RP { pin(".*")=2 }
@@ -365,14 +346,18 @@ if_stmt ::= KW_IF label? paren_cond (compound_statement else_part | statement)
 
 
 while_stmt ::= KW_WHILE label? paren_cond statement
-do_stmt ::= KW_DO label? compound_statement (KW_WHILE grouped_expression)? EOS
+do_stmt ::= KW_DO label? compound_statement (KW_WHILE grouped_expr)? EOS
 else_part ::= KW_ELSE (if_stmt | compound_statement)
 switch_body ::= (case_stmt | default_stmt)+
-case_stmt ::= KW_CASE (expr (DOTDOT expr)? | type) COLON statement_list?
+case_stmt ::= KW_CASE expr (DOTDOT expr)? COLON statement_list?
 default_stmt ::= KW_DEFAULT COLON statement_list?
 switch_stmt ::= KW_SWITCH label? paren_cond? AT_IDENT? LB switch_body? RB
 expression_list ::= decl_or_expr (COMMA decl_or_expr)*
 
+catch_unwrap_list ::= expr (COMMA expr)*
+catch_unwrap ::= KW_CATCH (type? IDENT EQ)? catch_unwrap_list
+try_unwrap ::= KW_TRY (type? IDENT EQ)? expr
+try_unwrap_chain ::= try_unwrap (AND (try_unwrap | expr))*
 cond ::= cond_repeat (COMMA (try_unwrap_chain | catch_unwrap))? | try_unwrap_chain | catch_unwrap
 cond_repeat ::= decl_or_expr (COMMA decl_or_expr)*
 decl_or_expr ::= var_decl | optional_type local_decl_after_type | expr
@@ -383,14 +368,14 @@ foreach_vars ::= foreach_var (COMMA foreach_var)?
 foreach_var ::= optional_type? AMP? IDENT
 continue_stmt ::= KW_CONTINUE CONST_IDENT? EOS
 break_stmt ::= KW_BREAK CONST_IDENT? EOS
-nextcase_stmt ::= KW_NEXTCASE ((CONST_IDENT COLON)? (type | expr | KW_DEFAULT))? EOS
+nextcase_stmt ::= KW_NEXTCASE ((CONST_IDENT COLON)? (expr | KW_DEFAULT))? EOS
 
 asm_block_stmt ::= KW_ASM (LP expr RP attributes? | attributes? LB asm_stmt* RB)
 asm_stmt ::= asm_instr asm_exprs? EOS
 asm_instr ::= (KW_INT | IDENT) (DOT IDENT)?
 asm_exprs ::= asm_expr (COMMA asm_expr)*
 asm_expr ::= CT_IDENT | CT_CONST_IDENT | AMP? IDENT | CONST_IDENT
-    | MINUS? FLOAT_LITERAL | MINUS? INT_LITERAL | grouped_expression | LBT asm_addr RBT
+    | MINUS? FLOAT_LITERAL | MINUS? INT_LITERAL | grouped_expr | LBT asm_addr RBT
 asm_addr ::= asm_expr (add_bin_op asm_expr asm_addr_trailing?)?
 asm_addr_trailing ::= STAR INT_LITERAL (add_bin_op INT_LITERAL)? | (shift_bin_op | add_bin_op) INT_LITERAL
 
@@ -400,18 +385,19 @@ compound_statement ::= LB statement_list* RB { pin(".*")=2 }
 
 statement_list ::= statement+
 
-unary_op ::= AMP | AND | BIT_XOR | STAR | PLUS | MINUS | BIT_NOT | BANG | BANGBANG | PLUSPLUS | MINUSMINUS | LP type RP { name = "operator" }
+// -- EXPRESSIONS --
+
+fake binary_expr ::= expr+ {
+    methods = [left = "expr[0]" right = "expr[1]"]
+}
+
+fake binary_op ::= elvis_bin_expr | optelse_bin_expr | add_bin_op | mult_bin_op | bit_bin_op | shift_bin_op | rel_bin_op | assign_bin_op
+unary_op ::= AMP | AND | BIT_XOR | STAR | PLUS | MINUS | BIT_NOT | BANG | BANGBANG | PLUSPLUS | MINUSMINUS | LP type RP !LB { name = "operator" }
 mult_bin_op ::= STAR | DIV | MOD { name = "operator" }
 shift_bin_op ::= SHL | SHR { name = "operator "}
 bit_bin_op ::= AMP | BIT_XOR | BIT_OR { name = "operator" }
 add_bin_op ::= PLUS | MINUS | CT_PLUS { name = "operator" }
 rel_bin_op ::= LT_OP !LBT | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP { name = "operator" }
-
-catch_unwrap_list ::= expr (COMMA expr)*
-catch_unwrap ::= KW_CATCH (type? IDENT EQ)? catch_unwrap_list
-try_unwrap ::= KW_TRY (type? IDENT EQ)? expr
-try_unwrap_chain ::= try_unwrap (AND (try_unwrap | expr))*
-implies_body ::= IMPLIES expr
 
 constant_expr ::= expr
 
@@ -429,8 +415,7 @@ assign_bin_op ::= EQ
 
 assign_type_expr ::= CT_TYPE_IDENT /*EQ type*/eq_expr_pin
 assign_bin_expr ::= expr assign_bin_op expr { rightAssociative=true }
-rel_bin_expr ::= expr rel_bin_op (expr | type)
-rel_type_bin_expr ::= type rel_bin_op (expr | type)
+rel_bin_expr ::= expr rel_bin_op expr
 add_bin_expr ::= expr add_bin_op expr
 bit_bin_expr ::= expr bit_bin_op expr
 shift_bin_expr ::= expr shift_bin_op expr
@@ -447,29 +432,30 @@ path_const_expr ::= path_const
 path_at_ident_expr ::= path_at_ident
 string_expr ::= STRING_LIT+ | CHAR_LIT
 bytes_expr ::= BYTES+
-compound_init_expr ::= type initializer_list
 grouped_expr ::= LP expr RP
+compound_init_expr ::= LP type RP initializer_list
 local_ident_expr ::= CT_IDENT | HASH_IDENT
-type_access_expr ::= type DOT (access_ident | CONST_IDENT)
-ct_call_expr ::= ct_call LP flat_path RP
+type_access_expr ::= type SCOPE access_ident
+enum_access_expr ::= base_type DOT CONST_IDENT
 ct_feature_expr ::= KW_CT_FEATURE LP CONST_IDENT RP
+type_expr ::= type !IDENT !CT_IDENT !KW_CT_EVAL !QUESTION
+ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAEXPR
+ct_analyze ::= KW_CT_EVAL | KW_CT_REFLECT | KW_CT_STRINGIFY | KW_CT_IS_CONST
 ct_arg_expr ::= ct_arg LBT expr RBT
-ct_analyze_expr ::= ct_analyze grouped_expression
+ct_analyze_expr ::= ct_analyze grouped_expr
 ct_defined_check_expr ::= decl_or_expr | type
 ct_defined_check_expr_list ::= ct_defined_check_expr (COMMA ct_defined_check_expr)*
 ct_defined_expr ::= KW_CT_DEFINED LP ct_defined_check_expr_list RP
+lambda_decl ::= KW_FN optional_type? fn_parameter_list attributes?
 lambda_decl_expr ::= lambda_decl compound_statement
 lambda_decl_short_expr ::= lambda_decl IMPLIES expr
 call_expr ::= expr call_expr_tail {
     methods=[isDeprecated]
 }
 unary_expr ::= unary_op expr { rightAssociative=true }
-expr_terminator ::= EOS | RP | RBT | RB | COMMA | COLON
-ternary_expr ::= expr (QUESTION | CT_TERNARY) !((BANGBANG | BANG)? expr_terminator) expr COLON expr { rightAssociative=true }
-optional_expr ::= expr QUESTION &((BANGBANG | BANG)? expr_terminator)
+ternary_expr ::= expr (QUESTION | CT_TERNARY) expr COLON expr { rightAssociative=true }
 elvis_bin_expr ::= expr ELVIS expr { rightAssociative=true }
 optelse_bin_expr ::= expr OPTELSE expr { rightAssociative=true }
-private ternary_group ::= elvis_bin_expr | optelse_bin_expr | ternary_expr | optional_expr
 init_list_expr ::= initializer_list
 
 private primary_group ::= literal_expr
@@ -485,7 +471,8 @@ private primary_group ::= literal_expr
     | grouped_expr
     | local_ident_expr
     | type_access_expr
-    | ct_call_expr
+    | enum_access_expr
+    | type_expr
     | ct_feature_expr
     | ct_arg_expr
     | ct_analyze_expr
@@ -495,14 +482,15 @@ private primary_group ::= literal_expr
     | init_list_expr
 
 
-expr ::= ternary_group
+expr ::= ternary_expr
     | assign_type_expr
     | assign_bin_expr
     | or_bin_expr
     | and_bin_expr
     | rel_bin_expr
-    | rel_type_bin_expr
     | add_bin_expr
+    | elvis_bin_expr
+    | optelse_bin_expr
     | bit_bin_expr
     | shift_bin_expr
     | mult_bin_expr
@@ -510,16 +498,15 @@ expr ::= ternary_group
     | call_expr
     | primary_group
 
-identifier_list ::= IDENT (COMMA IDENT)*
+// -- FUNCTIONS, MACROS & INTERFACES --
 
 interface_definition ::= KW_INTERFACE type_name (COLON type (COMMA type)*)? interface_body
-
 interface_body ::= LB (func_def EOS)* RB
 
 func_def ::= KW_FN func_header fn_parameter_list generic_decl? attributes?
 func_definition ::= func_def (macro_func_body | EOS) { pin=1 }
 
-macro_func_body ::= macro_implies_body | implies_body EOS | compound_statement
+macro_func_body ::= macro_implies_body | IMPLIES expr EOS | compound_statement
 
 macro_implies_body ::= IMPLIES AT_IDENT call_invocation compound_statement
 
@@ -536,21 +523,24 @@ macro_header ::= (optional_type !DOT)? macro_name { pin=2 }
 macro_params ::= parameter_list? (EOS trailing_block_param)?
 trailing_block_param ::= AT_IDENT (LP parameter_list? RP)?
 
+// -- RECOVERY HELPERS --
+
 private keyword_list ::= KW_ALIAS | KW_ANY | KW_ATTRDEF | KW_ASM | KW_ASSERT
     | KW_BITSTRUCT | KW_BREAK | KW_CASE | KW_CATCH | KW_CONST | KW_CONTINUE
     | KW_DEFAULT | KW_DEFER | KW_DO | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FOREACH
     | KW_FOREACH_R | KW_FALSE | KW_FAULT | KW_FAULTDEF | KW_FOR | KW_FN | KW_IF
     | KW_INLINE | KW_INTERFACE | KW_IMPORT | KW_MACRO | KW_MODULE | KW_NEXTCASE
     | KW_NULL | KW_RETURN | KW_STATIC | KW_STRUCT | KW_SWITCH | KW_TLOCAL | KW_TRUE
-    | KW_TRY | KW_TYPEDEF | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE | KW_CT_ALIGNOF
+    | KW_TRY | KW_TYPEDEF | KW_TYPEID | KW_UNION | KW_VAR | KW_WHILE
     | KW_CT_ASSERT | KW_CT_CASE | KW_CT_DEFAULT | KW_CT_DEFINED | KW_CT_ECHO
     | KW_CT_ELSE | KW_CT_ENDFOR | KW_CT_ENDFOREACH | KW_CT_ENDIF | KW_CT_ENDSWITCH
-    | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_EXTNAMEOF | KW_CT_FEATURE
-    | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_IS_CONST | KW_CT_INCLUDE
-    | KW_CT_NAMEOF | KW_CT_SIZEOF | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF
-    | KW_CT_TYPEFROM | KW_CT_QNAMEOF | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE
-    | KW_CT_VAARG | KW_CT_VAREF | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL
+    | KW_CT_ERROR | KW_CT_EVAL | KW_CT_EVALTYPE | KW_CT_FEATURE
+    | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_INCLUDE
+    | KW_CT_REFLECT
+    | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF
+    | KW_CT_TYPEFROM | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE
+    | KW_CT_VAARG | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL
     | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG
     | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16
-    | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_ISZ
+    | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_SZ | KW_UNTYPEDLIST
 private ident_list ::= IDENT | TYPE_IDENT | CT_TYPE_IDENT | CT_IDENT | CONST_IDENT | AT_IDENT

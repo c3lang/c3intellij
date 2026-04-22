@@ -27,7 +27,7 @@ public class C3PathIdentImpl extends C3PathIdentMixinImpl implements C3PathIdent
   }
 
   @Override
-  public @Nullable C3Path getPath() {
+  public @NotNull C3Path getPath() {
     return C3ParserUtils.getPath(this);
   }
 

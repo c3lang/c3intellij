@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface C3BinaryOp extends C3PsiElement {
 
-  @NotNull
+  @Nullable
+  C3BinaryExpr getBinaryExpr();
+
+  @Nullable
   C3BinaryOp getBinaryOp();
 
 }

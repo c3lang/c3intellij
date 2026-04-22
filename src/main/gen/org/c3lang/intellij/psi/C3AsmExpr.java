@@ -10,7 +10,4 @@ public interface C3AsmExpr extends C3Expr {
   @Nullable
   C3AsmAddr getAsmAddr();
 
-  @Nullable
-  C3GroupedExpression getGroupedExpression();
-
 }

@@ -8,10 +8,13 @@ import com.intellij.psi.PsiElement;
 public interface C3GlobalDecl extends C3PsiElement {
 
   @Nullable
-  C3GlobalMultiDeclaration getGlobalMultiDeclaration();
+  C3Attributes getAttributes();
 
   @Nullable
-  C3GlobalSingleDeclaration getGlobalSingleDeclaration();
+  C3Expr getExpr();
+
+  @Nullable
+  C3GenericDecl getGenericDecl();
 
   @NotNull
   C3OptionalType getOptionalType();

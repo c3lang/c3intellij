@@ -10,7 +10,7 @@ public interface C3CtAnalyzeExpr extends C3Expr {
   @NotNull
   C3CtAnalyze getCtAnalyze();
 
-  @NotNull
-  C3GroupedExpression getGroupedExpression();
+  @Nullable
+  C3GroupedExpr getGroupedExpr();
 
 }

@@ -33,10 +33,4 @@ public class C3AsmExprImpl extends C3ExprImpl implements C3AsmExpr {
     return findChildByClass(C3AsmAddr.class);
   }
 
-  @Override
-  @Nullable
-  public C3GroupedExpression getGroupedExpression() {
-    return findChildByClass(C3GroupedExpression.class);
-  }
-
 }

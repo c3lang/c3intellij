@@ -11,7 +11,7 @@ public interface C3MacroFuncBody extends C3PsiElement {
   C3CompoundStatement getCompoundStatement();
 
   @Nullable
-  C3ImpliesBody getImpliesBody();
+  C3Expr getExpr();
 
   @Nullable
   C3MacroImpliesBody getMacroImpliesBody();

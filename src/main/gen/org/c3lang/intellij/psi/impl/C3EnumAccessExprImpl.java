@@ -10,14 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3EnumSpecImpl extends C3PsiElementImpl implements C3EnumSpec {
+public class C3EnumAccessExprImpl extends C3ExprImpl implements C3EnumAccessExpr {
 
-  public C3EnumSpecImpl(@NotNull ASTNode node) {
+  public C3EnumAccessExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
+  @Override
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitEnumSpec(this);
+    visitor.visitEnumAccessExpr(this);
   }
 
   @Override
@@ -27,15 +28,9 @@ public class C3EnumSpecImpl extends C3PsiElementImpl implements C3EnumSpec {
   }
 
   @Override
-  @Nullable
-  public C3EnumParamList getEnumParamList() {
-    return findChildByClass(C3EnumParamList.class);
-  }
-
-  @Override
-  @Nullable
-  public C3Type getType() {
-    return findChildByClass(C3Type.class);
+  @NotNull
+  public C3BaseType getBaseType() {
+    return findNotNullChildByClass(C3BaseType.class);
   }
 
 }

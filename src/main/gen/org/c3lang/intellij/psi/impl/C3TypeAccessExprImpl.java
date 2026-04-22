@@ -28,9 +28,9 @@ public class C3TypeAccessExprImpl extends C3ExprImpl implements C3TypeAccessExpr
   }
 
   @Override
-  @Nullable
+  @NotNull
   public C3AccessIdent getAccessIdent() {
-    return findChildByClass(C3AccessIdent.class);
+    return findNotNullChildByClass(C3AccessIdent.class);
   }
 
   @Override

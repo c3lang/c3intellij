@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface C3AsmExprs extends C3PsiElement {
 
   @NotNull
-  List<C3AsmExpr> getAsmExprList();
+  List<C3Expr> getExprList();
 
 }

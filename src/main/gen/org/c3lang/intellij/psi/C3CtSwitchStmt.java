@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface C3CtSwitchStmt extends C3PsiElement {
 
-  @NotNull
-  C3CtSwitch getCtSwitch();
-
   @Nullable
   C3CtSwitchBody getCtSwitchBody();
+
+  @Nullable
+  C3Expr getExpr();
 
 }

@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface C3VarDecl extends C3PsiElement {
 
   @Nullable
-  C3Expr getExpr();
+  C3Attributes getAttributes();
 
   @Nullable
-  C3Type getType();
+  C3Expr getExpr();
 
 }

@@ -32,10 +32,4 @@ public class C3NextcaseStmtImpl extends C3PsiElementImpl implements C3NextcaseSt
     return findChildByClass(C3Expr.class);
   }
 
-  @Override
-  @Nullable
-  public C3Type getType() {
-    return findChildByClass(C3Type.class);
-  }
-
 }

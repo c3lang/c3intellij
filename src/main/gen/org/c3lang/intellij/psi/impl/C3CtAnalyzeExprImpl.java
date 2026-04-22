@@ -34,9 +34,9 @@ public class C3CtAnalyzeExprImpl extends C3ExprImpl implements C3CtAnalyzeExpr {
   }
 
   @Override
-  @NotNull
-  public C3GroupedExpression getGroupedExpression() {
-    return findNotNullChildByClass(C3GroupedExpression.class);
+  @Nullable
+  public C3GroupedExpr getGroupedExpr() {
+    return findChildByClass(C3GroupedExpr.class);
   }
 
 }

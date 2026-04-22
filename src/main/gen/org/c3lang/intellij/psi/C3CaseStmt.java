@@ -13,7 +13,4 @@ public interface C3CaseStmt extends C3PsiElement {
   @Nullable
   C3StatementList getStatementList();
 
-  @Nullable
-  C3Type getType();
-
 }

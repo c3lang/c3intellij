@@ -17,9 +17,6 @@ public interface C3BaseType extends C3BaseTypeMixin {
   C3GenericParameters getGenericParameters();
 
   @Nullable
-  C3GroupedExpression getGroupedExpression();
-
-  @Nullable
   C3IntegerType getIntegerType();
 
   @Nullable

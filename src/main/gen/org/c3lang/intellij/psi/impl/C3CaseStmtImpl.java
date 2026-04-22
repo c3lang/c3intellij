@@ -38,10 +38,4 @@ public class C3CaseStmtImpl extends C3PsiElementImpl implements C3CaseStmt {
     return findChildByClass(C3StatementList.class);
   }
 
-  @Override
-  @Nullable
-  public C3Type getType() {
-    return findChildByClass(C3Type.class);
-  }
-
 }

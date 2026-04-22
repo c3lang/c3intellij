@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ConstdefSpec extends C3PsiElement {
+public interface C3TypeExpr extends C3Expr {
 
-  @Nullable
+  @NotNull
   C3Type getType();
 
 }

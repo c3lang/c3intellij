@@ -28,14 +28,14 @@ public class C3VarDeclImpl extends C3PsiElementImpl implements C3VarDecl {
 
   @Override
   @Nullable
-  public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
+  public C3Attributes getAttributes() {
+    return findChildByClass(C3Attributes.class);
   }
 
   @Override
   @Nullable
-  public C3Type getType() {
-    return findChildByClass(C3Type.class);
+  public C3Expr getExpr() {
+    return findChildByClass(C3Expr.class);
   }
 
 }

@@ -14,10 +14,10 @@ public interface C3ConstdefDeclaration extends C3PsiElement {
   C3ConstdefList getConstdefList();
 
   @Nullable
-  C3ConstdefSpec getConstdefSpec();
+  C3InterfaceImpl getInterfaceImpl();
 
   @Nullable
-  C3InterfaceImpl getInterfaceImpl();
+  C3Type getType();
 
   @NotNull
   C3TypeName getTypeName();

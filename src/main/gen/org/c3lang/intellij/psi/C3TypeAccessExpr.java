@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3TypeAccessExpr extends C3Expr {
 
-  @Nullable
+  @NotNull
   C3AccessIdent getAccessIdent();
 
   @NotNull

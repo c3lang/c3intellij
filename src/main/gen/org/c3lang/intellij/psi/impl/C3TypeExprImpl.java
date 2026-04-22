@@ -10,14 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3FlatPathImpl extends C3PsiElementImpl implements C3FlatPath {
+public class C3TypeExprImpl extends C3ExprImpl implements C3TypeExpr {
 
-  public C3FlatPathImpl(@NotNull ASTNode node) {
+  public C3TypeExprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
+  @Override
   public void accept(@NotNull C3Visitor visitor) {
-    visitor.visitFlatPath(this);
+    visitor.visitTypeExpr(this);
   }
 
   @Override
@@ -27,21 +28,9 @@ public class C3FlatPathImpl extends C3PsiElementImpl implements C3FlatPath {
   }
 
   @Override
-  @Nullable
-  public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
-  }
-
-  @Override
-  @Nullable
-  public C3ParamPath getParamPath() {
-    return findChildByClass(C3ParamPath.class);
-  }
-
-  @Override
-  @Nullable
+  @NotNull
   public C3Type getType() {
-    return findChildByClass(C3Type.class);
+    return findNotNullChildByClass(C3Type.class);
   }
 
 }
