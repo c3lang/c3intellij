@@ -61,7 +61,7 @@ data class FullyQualifiedName(
 
         fun parse(string: String): FullyQualifiedName {
             val segments = string.split("::").toMutableList()
-            val type = segments.removeLast()
+            val type = segments.removeAt(segments.lastIndex)
 
             return FullyQualifiedName(
                 module = segments.joinToString("::").nullize()?.let(::ModuleName),

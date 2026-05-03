@@ -6,7 +6,7 @@
   <id>org.c3lang.c3intellij</id>
 
   <!-- Text to display as name on Preferences/Settings | Plugin page -->
-  <name>C3 Language</name>
+  <name>C3 Language Support</name>
 
   <!-- Product and plugin compatibility requirements -->
   <depends>com.intellij.modules.platform</depends>
