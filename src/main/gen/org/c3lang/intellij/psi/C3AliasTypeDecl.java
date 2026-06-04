@@ -11,12 +11,12 @@ public interface C3AliasTypeDecl extends C3PsiElement {
   C3Attributes getAttributes();
 
   @Nullable
+  C3Expr getExpr();
+
+  @Nullable
   C3GenericDecl getGenericDecl();
 
   @NotNull
   C3TypeName getTypeName();
-
-  @Nullable
-  C3TypedefType getTypedefType();
 
 }

@@ -17,11 +17,29 @@ data class ModuleName(
         value.split("::").last()
     }
 
+    fun covers(moduleName: ModuleName?): Boolean {
+        if (moduleName == null) return false
+        return moduleName.value == value || moduleName.value.startsWith("$value::")
+    }
+
+    fun relativePathTo(moduleName: ModuleName?): String? {
+        if (!covers(moduleName)) return null
+        if (moduleName == null || moduleName.value == value) return ""
+        return moduleName.value.removePrefix("$value::")
+    }
+
     companion object {
+        private val CORE_MODULE = ModuleName("std::core")
+
         fun from(psi: C3PsiElement): ModuleName? =
             psi.parentOfType<C3ModuleSection>(true)?.module?.modulePath?.text?.let { ModuleName(it) }
 
         fun deserialize(string: String): ModuleName = ModuleName(string)
+
+        @JvmStatic
+        fun autoImportedPrefix(moduleName: ModuleName?): ModuleName? {
+            return CORE_MODULE.takeIf { it.covers(moduleName) }
+        }
 
         fun getImportList(psi: C3PsiElement): List<ModuleName> {
             val moduleSection = psi.parentOfType<C3ModuleDefinition>(true) ?: return emptyList()

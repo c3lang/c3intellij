@@ -44,10 +44,4 @@ public class C3ArgImpl extends C3ArgMixinImpl implements C3Arg {
     return findChildByClass(C3ParamPath.class);
   }
 
-  @Override
-  @Nullable
-  public C3RangeExp getRangeExp() {
-    return findChildByClass(C3RangeExp.class);
-  }
-
 }

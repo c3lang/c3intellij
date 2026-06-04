@@ -63,7 +63,6 @@ public interface C3TokenSets
                                      C3Types.KW_CT_EVALTYPE,
                                      C3Types.KW_CT_TYPEFROM,
                                      C3Types.KW_CT_TYPEOF,
-                                     C3Types.KW_CT_VATYPE,
                                      C3Types.KW_DOUBLE,
                                      C3Types.KW_FLOAT,
                                      C3Types.KW_FLOAT128,
@@ -92,7 +91,6 @@ public interface C3TokenSets
             C3Types.KW_CT_EVALTYPE,
             C3Types.KW_CT_TYPEFROM,
             C3Types.KW_CT_TYPEOF,
-            C3Types.KW_CT_VATYPE,
             C3Types.KW_DOUBLE,
             C3Types.KW_FAULT,
             C3Types.KW_FLOAT,
@@ -136,11 +134,7 @@ public interface C3TokenSets
                                            C3Types.KW_CT_REFLECT,
                                            C3Types.KW_CT_STRINGIFY,
                                            C3Types.KW_CT_SWITCH,
-                                           C3Types.KW_CT_VAARG,
-                                           C3Types.KW_CT_VACONST,
-                                           C3Types.KW_CT_VACOUNT,
-                                           C3Types.KW_CT_VAEXPR,
-                                           C3Types.KW_CT_VASPLAT);
+                                           C3Types.KW_CT_VAARG);
     TokenSet CONSTANTS = TokenSet.create(C3Types.CONST_IDENT, C3Types.BUILTIN_CONST);
     TokenSet KEYWORDS = TokenSet.create(C3Types.KW_ALIAS,
                                         C3Types.KW_ASM,

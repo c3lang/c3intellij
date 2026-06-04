@@ -63,7 +63,6 @@ public interface C3Types {
   IElementType CONTINUE_STMT = new C3ElementType("CONTINUE_STMT");
   IElementType CT_ANALYZE = new C3ElementType("CT_ANALYZE");
   IElementType CT_ANALYZE_EXPR = new C3ElementType("CT_ANALYZE_EXPR");
-  IElementType CT_ARG = new C3ElementType("CT_ARG");
   IElementType CT_ARG_EXPR = new C3ElementType("CT_ARG_EXPR");
   IElementType CT_ASSERT_STMT = new C3ElementType("CT_ASSERT_STMT");
   IElementType CT_CASE_STMT = new C3ElementType("CT_CASE_STMT");
@@ -275,11 +274,6 @@ public interface C3Types {
   IElementType KW_CT_TYPEFROM = new C3TokenType("KW_CT_TYPEFROM");
   IElementType KW_CT_TYPEOF = new C3TokenType("KW_CT_TYPEOF");
   IElementType KW_CT_VAARG = new C3TokenType("KW_CT_VAARG");
-  IElementType KW_CT_VACONST = new C3TokenType("KW_CT_VACONST");
-  IElementType KW_CT_VACOUNT = new C3TokenType("KW_CT_VACOUNT");
-  IElementType KW_CT_VAEXPR = new C3TokenType("KW_CT_VAEXPR");
-  IElementType KW_CT_VASPLAT = new C3TokenType("KW_CT_VASPLAT");
-  IElementType KW_CT_VATYPE = new C3TokenType("KW_CT_VATYPE");
   IElementType KW_DEFAULT = new C3TokenType("KW_DEFAULT");
   IElementType KW_DEFER = new C3TokenType("KW_DEFER");
   IElementType KW_DO = new C3TokenType("KW_DO");
@@ -529,9 +523,6 @@ public interface C3Types {
       }
       else if (type == CT_ANALYZE_EXPR) {
         return new C3CtAnalyzeExprImpl(node);
-      }
-      else if (type == CT_ARG) {
-        return new C3CtArgImpl(node);
       }
       else if (type == CT_ARG_EXPR) {
         return new C3CtArgExprImpl(node);

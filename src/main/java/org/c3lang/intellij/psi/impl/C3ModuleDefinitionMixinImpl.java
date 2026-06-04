@@ -58,12 +58,12 @@ public abstract class C3ModuleDefinitionMixinImpl extends C3PsiElementImpl imple
 	@Override
 	public boolean containsImportOrSameModule(@NotNull C3FullyQualifiedNamePsiElement callable)
 	{
-		if (Objects.equals(callable.getModuleName(), getModuleName())
-			&& Objects.equals(callable.getContainingFile(), getContainingFile()))
+		if (Objects.equals(callable.getModuleName(), getModuleName()))
 		{
 			return true;
 		}
-		return getImports().contains(callable.getModuleName());
+		return ModuleName.autoImportedPrefix(callable.getModuleName()) != null
+			|| getImportedModuleCovering(callable.getModuleName()) != null;
 	}
 
 	@Override
@@ -108,7 +108,17 @@ public abstract class C3ModuleDefinitionMixinImpl extends C3PsiElementImpl imple
 		for (C3ImportPath importPath : getImportPaths())
 		{
 			ModuleName mn = importPath.getModuleName();
-			if (mn != null && moduleValues.contains(mn.getValue())) result.add(importPath);
+				if (mn != null)
+				{
+					for (String moduleValue : moduleValues)
+					{
+						if (mn.covers(new ModuleName(moduleValue)))
+						{
+							result.add(importPath);
+							break;
+						}
+					}
+				}
 		}
 		return result;
 	}

@@ -16,7 +16,4 @@ public interface C3Arg extends C3ArgMixin {
   @Nullable
   C3ParamPath getParamPath();
 
-  @Nullable
-  C3RangeExp getRangeExp();
-
 }

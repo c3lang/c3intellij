@@ -59,7 +59,6 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
         val lookupString = parameters.getLookupString(lookupTarget)
         val matcher = getMatcher(lookupString)
 
-        val moduleName = moduleDefinition.moduleName
         val elementRange = lookupTarget.textRange
         val project = parameters.position.project
         val containingFileName = parameters.position.containingFile.name
@@ -83,7 +82,7 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
         }.filterIsInstance<C3CallablePsiElement>().forEach { element ->
             val sameFileBonus = if (element.sourceFileName == containingFileName) 1.0 else 0.0
             val sameModuleBonus = if (element.moduleName == moduleDefinition.moduleName) 1.0 else 0.0
-            val importBonus = if (moduleDefinition.imports.contains(element.moduleName)) 1.0 else 0.0
+            val importBonus = if (moduleDefinition.getVisibleModulePrefix(element.moduleName) != null) 1.0 else 0.0
 
             val fqName = element.fqName
             val nameDegree = matcher.matchingDegreeOrZero(fqName.fullName)
@@ -103,7 +102,7 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
 
             result.addElement(
                 PrioritizedLookupElement.withPriority(
-                    createLookupElementBuilder(moduleName, element, fqName, insertHandler),
+                    createLookupElementBuilder(moduleDefinition, element, fqName, insertHandler),
                     priority
                 )
             )
@@ -143,7 +142,7 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
     }
 
     private fun createLookupElementBuilder(
-        moduleName: ModuleName?,
+        moduleDefinition: C3ModuleDefinition,
         element: C3CallablePsiElement,
         fqName: FullyQualifiedName,
         insertHandler: InsertHandler<LookupElement>,
@@ -160,9 +159,11 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
                 it.name
             ).joinToString(" ")
         }
+        val moduleToUse = moduleDefinition.getVisibleModulePrefix(element.moduleName) ?: element.moduleName
+        val textToInsert = moduleDefinition.textToInsert(moduleToUse, element)
 
         val lookupElementBuilder =
-            LookupElementBuilder.create(element, fqName.fullName)
+            LookupElementBuilder.create(element, textToInsert)
                 .withLookupStrings(
                     listOf(
                         fqName.fullName,
@@ -171,7 +172,7 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
                     )
                 )
                 .withIcon(icon)
-                .withPresentableText(if (fqName.module == moduleName) fqName.name else fqName.fullName)
+                .withPresentableText(textToInsert)
                 .appendTailText("($parameterList)", false)
                 .withTypeText(element.returnType?.fullName ?: "")
                 .withInsertHandler(insertHandler)

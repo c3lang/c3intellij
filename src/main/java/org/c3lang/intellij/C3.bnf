@@ -187,7 +187,7 @@ def_attr_values ::= attribute (COMMA attribute)* COMMA?
 alias_declaration_source ::= (path_const | path_ident | path_at_ident) generic_parameters?
 attrdef_decl ::= KW_ATTRDEF attribute_user_name (LP parameter_list RP)? generic_decl? attributes? (EQ def_attr_values)? EOS
 typedef_decl ::= KW_TYPEDEF type_name interface_impl? generic_decl? attributes? EQ KW_INLINE? typedef_type EOS
-alias_type_decl ::= KW_ALIAS type_name generic_decl? attributes? EQ typedef_type EOS
+alias_type_decl ::= KW_ALIAS type_name generic_decl? attributes? EQ expr EOS
 faultdef_decl ::= KW_FAULTDEF fault_definition (COMMA fault_definition)* COMMA? EOS
 alias_name ::= CONST_IDENT | AT_IDENT | IDENT
 alias_decl ::= KW_ALIAS alias_name generic_decl? attributes? EQ ((KW_MODULE module_path) | alias_declaration_source) EOS
@@ -229,7 +229,7 @@ access_ident ::= IDENT | AT_IDENT | HASH_IDENT | KW_CT_EVAL '(' expr ')' | KW_TY
 
 arg_list ::= arg (COMMA arg)* COMMA?
 named_ident ::= CT_IDENT | HASH_IDENT | IDENT | CT_TYPE_IDENT
-arg ::= (named_ident COLON (ELLIPSIS? expr)) | param_path (EQ (expr))? | expr | KW_CT_VASPLAT (LBT range_exp RBT)? | ELLIPSIS expr
+arg ::= (named_ident COLON (ELLIPSIS? expr)) | param_path (EQ (expr))? | expr | ELLIPSIS expr
 call_arg_list ::= arg_list? (EOS parameter_list?)?
 call_invocation ::= LP call_arg_list RP AT_IDENT*
 private dot_access_ident ::= DOT access_ident { pin=1 }
@@ -281,7 +281,6 @@ base_type ::= KW_VOID
     | KW_CT_REFLECT grouped_expr
     | KW_CT_TYPEOF grouped_expr
     | KW_CT_TYPEFROM const_paren_expr
-    | KW_CT_VATYPE LBT expr RBT
 
 type_suffix ::= STAR | LBT PLUS RBT | LBT (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
 type ::= base_type type_suffix*
@@ -427,7 +426,7 @@ and_bin_expr ::= expr (AND | CT_AND) expr
 or_bin_expr ::= expr (OR | CT_OR) expr
 
 literal_expr ::= INT_LITERAL | FLOAT_LITERAL
-keyword_expr ::= KW_NULL | KW_TRUE | KW_FALSE | KW_CT_VACOUNT
+keyword_expr ::= KW_NULL | KW_TRUE | KW_FALSE
 builtin_const_expr ::= BUILTIN_CONST
 builtin_expr ::= BUILTIN
 path_ident_expr ::= path_ident
@@ -442,9 +441,8 @@ type_access_expr ::= type SCOPE access_ident
 enum_access_expr ::= base_type DOT CONST_IDENT
 ct_feature_expr ::= KW_CT_FEATURE LP CONST_IDENT RP
 type_expr ::= type !IDENT !CT_IDENT !KW_CT_EVAL !QUESTION
-ct_arg ::= KW_CT_VACONST | KW_CT_VAARG | KW_CT_VAEXPR
 ct_analyze ::= KW_CT_EVAL | KW_CT_REFLECT | KW_CT_STRINGIFY | KW_CT_EXPAND
-ct_arg_expr ::= ct_arg (LBT expr RBT | LP expr RP)
+ct_arg_expr ::= KW_CT_VAARG (LBT (range_exp | range_loc) RBT)?
 ct_analyze_expr ::= ct_analyze grouped_expr
 ct_defined_check_expr ::= decl_or_expr | type
 ct_defined_check_expr_list ::= ct_defined_check_expr (COMMA ct_defined_check_expr)*
@@ -541,8 +539,8 @@ private keyword_list ::= KW_ALIAS | KW_ANY | KW_ATTRDEF | KW_ASM | KW_ASSERT
     | KW_CT_FOR | KW_CT_FOREACH | KW_CT_IF | KW_CT_INCLUDE | KW_CT_EXPAND
     | KW_CT_REFLECT
     | KW_CT_STRINGIFY | KW_CT_SWITCH | KW_CT_TYPEOF
-    | KW_CT_TYPEFROM | KW_CT_VACOUNT | KW_CT_VACONST | KW_CT_VATYPE
-    | KW_CT_VAARG | KW_CT_VAEXPR | KW_CT_VASPLAT | KW_VOID | KW_BOOL
+    | KW_CT_TYPEFROM
+    | KW_CT_VAARG | KW_VOID | KW_BOOL
     | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG
     | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16
     | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_SZ | KW_UNTYPEDLIST

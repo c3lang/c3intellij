@@ -28,15 +28,15 @@ public class C3CtArgExprImpl extends C3ExprImpl implements C3CtArgExpr {
   }
 
   @Override
-  @NotNull
-  public C3CtArg getCtArg() {
-    return findNotNullChildByClass(C3CtArg.class);
+  @Nullable
+  public C3RangeExp getRangeExp() {
+    return findChildByClass(C3RangeExp.class);
   }
 
   @Override
-  @NotNull
-  public C3Expr getExpr() {
-    return findNotNullChildByClass(C3Expr.class);
+  @Nullable
+  public C3RangeLoc getRangeLoc() {
+    return findChildByClass(C3RangeLoc.class);
   }
 
 }

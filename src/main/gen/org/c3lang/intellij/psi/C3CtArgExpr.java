@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface C3CtArgExpr extends C3Expr {
 
-  @NotNull
-  C3CtArg getCtArg();
+  @Nullable
+  C3RangeExp getRangeExp();
 
-  @NotNull
-  C3Expr getExpr();
+  @Nullable
+  C3RangeLoc getRangeLoc();
 
 }

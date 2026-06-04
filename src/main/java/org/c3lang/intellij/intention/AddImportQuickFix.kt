@@ -78,11 +78,9 @@ class AddImportQuickFix(
             project: Project
         ): ModuleName? {
             val moduleName = element.moduleName ?: return null
-
-            val moduleImported = moduleSection.isImported(element)
-
-            if (moduleImported) {
-                return element.moduleName
+            val visibleModulePrefix = moduleSection.getVisibleModulePrefix(moduleName)
+            if (visibleModulePrefix != null) {
+                return visibleModulePrefix
             }
 
             val imports = moduleSection.importDeclarations
@@ -118,27 +116,29 @@ class AddImportQuickFix(
             moduleSection: C3ModuleDefinition
         ): ImportAction? {
             val moduleName = element.moduleName ?: return null
-
-            val moduleImported = moduleSection.isImported(element)
-
-            if (moduleImported) {
-                return ImportAction.Imported(moduleName)
+            val visibleModulePrefix = moduleSection.getVisibleModulePrefix(moduleName)
+            if (visibleModulePrefix != null) {
+                return ImportAction.Imported(visibleModulePrefix)
             }
 
             val imports = moduleSection.importDeclarations
 
-            val startOffset = if (imports.isNotEmpty()) {
-                // add import after last import in module section
-                val parent = imports.last().parent
-                parent.textRange.endOffset
-            } else if (moduleSection is C3ModuleSection) {
+            if (imports.isNotEmpty()) {
+                val lastImport = imports.last()
+                return ImportAction.AppendToImport(
+                    offset = lastImport.importPaths.textRange.endOffset,
+                    moduleName = moduleName,
+                )
+            }
+
+            val startOffset = if (moduleSection is C3ModuleSection) {
                 moduleSection.module.textRange.endOffset
             } else /*if (moduleSection is C3DefaultModuleSection)*/ {
                 // add import to default module in first position
                 moduleSection.firstChild.textRange.startOffset
             }
 
-            return ImportAction.ShouldImport(startOffset, moduleName)
+            return ImportAction.InsertImport(startOffset, moduleName)
         }
 
         fun writeImport(
@@ -158,9 +158,15 @@ class AddImportQuickFix(
 
         val moduleName: ModuleName
 
-        class ShouldImport(val offset: Int, override val moduleName: ModuleName) : ImportAction {
+        class InsertImport(val offset: Int, override val moduleName: ModuleName) : ImportAction {
             override fun write(document: Document) {
                 document.insertString(offset, "\nimport ${moduleName.value};\n")
+            }
+        }
+
+        class AppendToImport(val offset: Int, override val moduleName: ModuleName) : ImportAction {
+            override fun write(document: Document) {
+                document.insertString(offset, ", ${moduleName.value}")
             }
         }
 

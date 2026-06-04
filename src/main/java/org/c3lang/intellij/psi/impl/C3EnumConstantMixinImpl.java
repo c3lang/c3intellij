@@ -63,10 +63,9 @@ public abstract class C3EnumConstantMixinImpl extends C3StubBasedPsiElementBase<
 	@Override
 	public @NotNull LeafPsiElement getNameIdentElement()
 	{
-		PsiElement last = getLastChild();
-		if (last != null && last.getNode().getElementType() == C3Types.CONST_IDENT)
-			return (LeafPsiElement) last;
-		throw new IllegalStateException("CONST_IDENT not found in " + getText());
+		ASTNode child = getNode().findChildByType(C3Types.CONST_IDENT);
+		if (child == null) throw new IllegalStateException("CONST_IDENT not found in " + getText());
+		return (LeafPsiElement) child.getPsi();
 	}
 
 	@Override
@@ -98,8 +97,8 @@ public abstract class C3EnumConstantMixinImpl extends C3StubBasedPsiElementBase<
 
 	private @NotNull FullyQualifiedName getParentFullyQualifiedName()
 	{
-		C3FullyQualifiedNamePsiElement parent = PsiTreeUtil.getParentOfType(this, C3FullyQualifiedNamePsiElement.class);
-		if (parent == null) throw new IllegalStateException("No C3FullyQualifiedNamePsiElement parent for " + getText());
-		return parent.getFqName();
+		C3EnumDeclaration enumDeclaration = PsiTreeUtil.getParentOfType(this, C3EnumDeclaration.class);
+		if (enumDeclaration == null) throw new IllegalStateException("No C3EnumDeclaration parent for " + getText());
+		return enumDeclaration.getTypeName().getFqName();
 	}
 }

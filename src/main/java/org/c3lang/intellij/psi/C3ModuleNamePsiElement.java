@@ -11,8 +11,7 @@ public interface C3ModuleNamePsiElement extends C3PsiElement
 
 	default boolean isSameModule(@NotNull C3FullyQualifiedNamePsiElement other)
 	{
-		return getContainingFile().getName().equals(other.getContainingFile().getName())
-			&& Objects.equals(getModuleName(), other.getModuleName());
+		return Objects.equals(getModuleName(), other.getModuleName());
 	}
 
 	default boolean isImported(@NotNull C3FullyQualifiedNamePsiElement other)
@@ -20,15 +19,24 @@ public interface C3ModuleNamePsiElement extends C3PsiElement
 		C3ModuleDefinition moduleDefinition = Objects.requireNonNull(
 			PsiTreeUtil.getParentOfType(this, C3ModuleDefinition.class, true));
 		return other.getModuleDefinition().equals(moduleDefinition)
-			|| moduleDefinition.getImports().contains(other.getModuleName());
+			|| moduleDefinition.getVisibleModulePrefix(other.getModuleName()) != null;
 	}
 
 	default @NotNull String textToInsert(@Nullable ModuleName imported, @NotNull C3FullyQualifiedNamePsiElement element)
 	{
-		if (isSameModule(element) || imported == null)
+		if (isSameModule(element) || element.getModuleName() == null)
 			return element.getFqName().getName();
-		if (isImported(element) || imported.equals(element.getModuleName()))
-			return element.getFqName().getSuffixName();
+
+		if (imported != null)
+		{
+			String relativePath = imported.relativePathTo(element.getModuleName());
+			if (relativePath != null)
+			{
+				if (relativePath.isEmpty()) return element.getFqName().getSuffixName();
+				return relativePath + "::" + element.getFqName().getName();
+			}
+		}
+
 		return element.getFqName().getFullName();
 	}
 }

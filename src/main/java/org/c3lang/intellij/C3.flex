@@ -33,9 +33,8 @@ TYPE        = [_]*{UC}{UA}*{DC}{AN}*
 IDENTIFIER  = [_]*{DC}{AN}*
 E			= [Ee][+-]?{D}+
 P           = [Pp][+-]?{D}+
-SIZES       = 8|16|32|64|128
 INTTYPE     = [lL][lL]? | [uU]([lL][lL]?)?
-REALTYPE    = [fF]{SIZES}?
+REALTYPE    = [fFdD]
 INT         = {D}(_*{D})*
 HINT        = {H}(_*{H})*
 OINT        = {O}(_*{O})*
@@ -60,7 +59,7 @@ HASH_IDENT          = "#" {IDENTIFIER}
 CT_IDENT            = "$" {IDENTIFIER}
 
 EOL                 = "\n"
-WHITESPACE          = [ \t\x0b\f] | {EOL}
+WHITESPACE          = [ \t\r] | {EOL}
 
 INTEGER             = ({DECIMAL_LIT} | {BINARY_LIT} | {OCTAL_LIT} | {HEX_LIT}) {INTTYPE}?
 HEX_LIT             = "0" [xX] {HINT}
@@ -148,14 +147,9 @@ SHEBANG_COMMENT = "#!" .*
     "$stringify" { return C3Types.KW_CT_STRINGIFY; }
     "$switch" { return C3Types.KW_CT_SWITCH; }
     "$reflect" { return C3Types.KW_CT_REFLECT; }
-    "$typeof" { return C3Types.KW_CT_TYPEOF; }
-    "$typefrom" { return C3Types.KW_CT_TYPEFROM; }
-    "$vacount" { return C3Types.KW_CT_VACOUNT; }
-    "$vaconst" { return C3Types.KW_CT_VACONST; }
-    "$vatype" { return C3Types.KW_CT_VATYPE; }
+    "$Typeof" { return C3Types.KW_CT_TYPEOF; }
+    "$Typefrom" { return C3Types.KW_CT_TYPEFROM; }
     "$vaarg" { return C3Types.KW_CT_VAARG; }
-    "$vaexpr" { return C3Types.KW_CT_VAEXPR; }
-    "$vasplat" { return C3Types.KW_CT_VASPLAT; }
 
     "void" { return C3Types.KW_VOID; }
     "bool" { return C3Types.KW_BOOL; }
@@ -191,9 +185,6 @@ SHEBANG_COMMENT = "#!" .*
     "<<=" { return C3Types.SHL_ASSIGN; }
     ">>=" { return C3Types.SHR_ASSIGN; }
 
-    "$#" { return C3Types.KW_CT_VACOUNT; }
-    "$_" { return C3Types.KW_CT_VAARG; }
-    "$@" { return C3Types.KW_CT_VAARG; }
     "&&" { return C3Types.AND; }
     "->" { return TokenType.BAD_CHARACTER; } // Arrow
     "&=" { return C3Types.BIT_AND_ASSIGN; }
