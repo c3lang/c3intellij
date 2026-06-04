@@ -4,12 +4,9 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/21619.svg)](https://plugins.jetbrains.com/plugin/21619)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/21619.svg)](https://plugins.jetbrains.com/plugin/21619)
 
-<!-- Plugin description -->
 Support for the [C3 Language](https://c3-lang.org/) in IntelliJ, CLion and many others.
 
 The plugin, which is part of the official C3 project, is available on [Github](https://github.com/c3lang/c3intellij).
-
-<!-- Plugin description end -->
 
 ## Installation
 

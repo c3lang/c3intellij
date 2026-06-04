@@ -1,13 +1,12 @@
-# GitHub Actions Workflow is created for testing and preparing the plugin release in the following steps:
-# - Validate Gradle Wrapper.
-# - Run 'test' and 'verifyPlugin' tasks.
-# - Run the 'buildPlugin' task and prepare artifact for further tests.
-# - Run the 'runPluginVerifier' task.
-# - Create a draft release.
+# GitHub Actions workflow for building, testing, verifying, and preparing plugin release drafts:
+# - Build the plugin ZIP with the 'buildPlugin' task and upload it as a workflow artifact.
+# - Run the 'check' task and upload test reports on failure.
+# - Run the 'verifyPlugin' task and upload Plugin Verifier reports.
+# - Create a draft GitHub release on non-pull-request runs.
 #
-# The workflow is triggered on push and pull_request events.
+# The workflow is triggered on pushes to the 'main' branch and on pull_request events.
 #
-# GitHub Actions reference: https://help.github.com/en/actions
+# GitHub Actions reference: https://docs.github.com/actions
 #
 ## JBIJPPTPL
 
@@ -33,9 +32,8 @@ jobs:
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
+          tool-cache: false
           large-packages: false
-          docker-images: false
-          swap-storage: false
 
       # Check out the current repository
       - name: Fetch Sources
@@ -55,26 +53,15 @@ jobs:
       # Build plugin
       - name: Build Plugin
         run: ./gradlew buildPlugin
-      
-      # Prepare plugin archive content for creating artifact
-      - name: Prepare Plugin Artifact
-        id: artifact
-        shell: bash
-        run: |
-          cd ${{ github.workspace }}/build/distributions
-          FILENAME=`ls *.zip`
-          unzip "$FILENAME" -d content
-
-          echo "filename=${FILENAME:0:-4}" >> $GITHUB_OUTPUT
 
       # Store an already-built plugin as an artifact for downloading
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ steps.artifact.outputs.filename }}
-          path: ./build/distributions/content/*/*
+          name: plugin-distribution
+          path: ./build/distributions/*.zip
           
-  # Run tests and upload a code coverage report
+  # Run tests and upload test reports on failure
   test:
     name: Test
     needs: build
@@ -85,9 +72,8 @@ jobs:
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
+          tool-cache: false
           large-packages: false
-          docker-images: false
-          swap-storage: false
 
       # Check out the current repository
       - name: Fetch Sources
@@ -129,9 +115,8 @@ jobs:
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
+          tool-cache: false
           large-packages: false
-          docker-images: false
-          swap-storage: false
 
       # Check out the current repository
       - name: Fetch Sources
@@ -181,8 +166,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
-          distribution: corretto
-          java-version: 17
+          distribution: zulu
+          java-version: 21
 
       # Setup Gradle 
       - name: Setup Gradle

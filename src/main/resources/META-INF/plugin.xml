@@ -1,22 +1,20 @@
 <!-- Copyright 2000-2020 JetBrains s.r.o. and other contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file. -->
 
 <idea-plugin>
-
-  <!-- Unique id for this plugin. Must stay constant for the life of the plugin. -->
   <id>org.c3lang.c3intellij</id>
-
-  <!-- Text to display as name on Preferences/Settings | Plugin page -->
   <name>C3 Language Support</name>
-
-  <!-- Product and plugin compatibility requirements -->
-  <depends>com.intellij.modules.platform</depends>
-  <!-- <depends optional="true" config-file="cidrdebugger.xml">com.intellij.modules.cidr.debugger</depends> -->
-
-  <!-- Text to display as company information on Preferences/Settings | Plugin page -->
   <vendor url="https://www.c3-lang.org">C3 Lang</vendor>
+  <description><![CDATA[
+        <p>Support for the [C3 Language](https://c3-lang.org/) in IntelliJ, CLion and many others.</p>
+        <p>The plugin, which is part of the official C3 project, is available on [Github](https://github.com/c3lang/c3intellij).</p>
+    ]]></description>
+  
+  <depends>com.intellij.modules.platform</depends>
+  <!--<depends optional="true" config-file="cidrdebugger.xml">com.intellij.modules.cidr.debugger</depends>-->
 
   <extensions defaultExtensionNs="com.intellij">
-
+    <stubElementTypeHolder externalIdPrefix="c3."
+                           class="org.c3lang.intellij.psi.C3Types"/>
     <stubIndex implementation="org.c3lang.intellij.index.ModuleIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.NameIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.TypeIndex"/>
@@ -25,109 +23,125 @@
     <stubIndex implementation="org.c3lang.intellij.index.StructMemberDeclarationIndex"/>
 
     <additionalLibraryRootsProvider implementation="org.c3lang.intellij.C3StdLibRootsProvider"/>
+    <fileType name="C3 File"
+              implementationClass="org.c3lang.intellij.C3SourceFileType"
+              fieldName="INSTANCE"
+              language="C3"
+              extensions="c3;c3t"/>
+    <fileType name="C3 Interface File"
+              implementationClass="org.c3lang.intellij.C3InterfaceFileType"
+              fieldName="INSTANCE"
+              language="C3"
+              extensions="c3i"/>
+    <!--<fileType name="C3 Library File"
+                  implementationClass="org.c3lang.intellij.C3LibFileType"
+                  fieldName="INSTANCE"
+                  language="C3"
+                  extensions="c3l"/>-->
 
-    <fileType name="C3 File" implementationClass="org.c3lang.intellij.C3SourceFileType" fieldName="INSTANCE" language="C3" extensions="c3;c3t"/>
-    <fileType name="C3 Interface File" implementationClass="org.c3lang.intellij.C3InterfaceFileType" fieldName="INSTANCE" language="C3" extensions="c3i"/>
-<!--    <fileType name="C3 Library File" implementationClass="org.c3lang.intellij.C3LibFileType" fieldName="INSTANCE" language="C3" extensions="c3l"/>-->
-
-    <stubElementTypeHolder externalIdPrefix="c3." class="org.c3lang.intellij.psi.C3Types"/>
-
-    <lang.parserDefinition language="C3" implementationClass="org.c3lang.intellij.C3ParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="C3" implementationClass="org.c3lang.intellij.C3SyntaxHighlighterFactory"/>
-    <lang.braceMatcher language="C3" implementationClass="org.c3lang.intellij.C3BraceMatcher"/>
-    <lang.commenter language="C3" implementationClass="org.c3lang.intellij.C3Commenter"/>
-    <lang.quoteHandler language="C3" implementationClass="org.c3lang.intellij.C3QuoteHandler"/>
-
-    <sdkType implementation="org.c3lang.intellij.C3SdkType"/>
-<!--    <projectSdkSetupValidator implementation="" />-->
-
-<!--    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.C3CompletionContributor"/>-->
-    <completion.contributor language="C3" implementationClass="org.c3lang.intellij.completion.C3CompletionContributor" />
-
-<!--    <psi.referenceProvider providerClass="org.c3lang.intellij.C3PsiReferenceProvider" />-->
-
-    <colorSettingsPage implementation="org.c3lang.intellij.C3ColorSettingsPage"/>
-    <annotator language="C3" implementationClass="org.c3lang.intellij.annotation.C3Annotator"/>
-    <breadcrumbsInfoProvider implementation="org.c3lang.intellij.C3BreadcrumbsProvider"/>
-    <applicationConfigurable id="org.c3lang.compiler" displayName="C3 Compiler" parentId="build" instance="org.c3lang.intellij.C3CompilerConfigurable" />
-    <applicationService serviceImplementation="org.c3lang.intellij.C3SettingsState"/>
-
-    <configurationType implementation="org.c3lang.intellij.C3CompileRunConfigurationType"/>
-    <configurationType implementation="org.c3lang.intellij.C3BuildRunConfigurationType"/>
-
+    <lang.parserDefinition language="C3"
+                           implementationClass="org.c3lang.intellij.C3ParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="C3"
+                                   implementationClass="org.c3lang.intellij.C3SyntaxHighlighterFactory"/>
+    <lang.braceMatcher language="C3"
+                       implementationClass="org.c3lang.intellij.C3BraceMatcher"/>
+    <lang.commenter language="C3"
+                    implementationClass="org.c3lang.intellij.C3Commenter"/>
+    <lang.quoteHandler language="C3"
+                       implementationClass="org.c3lang.intellij.C3QuoteHandler"/>
+    <lang.findUsagesProvider language="C3"
+                             implementationClass="org.c3lang.intellij.findUsages.C3FindUsagesProvider"/>
+    <lang.documentationProvider language="C3"
+                                implementationClass="org.c3lang.intellij.docs.C3DocumentationProvider" />
     <lang.elementManipulator implementationClass="org.c3lang.intellij.psi.NamedElementManipulator"
                              forClass="org.c3lang.intellij.psi.C3PsiNamedElement" />
+    <!--<lang.refactoringSupport language="C3"
+                                 implementationClass="org.c3lang.intellij.C3RefactoringSupportProvider"/>-->
+    <!--<lang.foldingBuilder language="JAVA"
+                             implementationClass="org.intellij.sdk.language.SimpleFoldingBuilder"/>-->
+    <!--<lang.psiStructureViewFactory language="Simple"
+                                  implementationClass="org.intellij.sdk.language.SimpleStructureViewFactory"/>-->
+    <!--<lang.formatter language="Simple"
+                        implementationClass="org.intellij.sdk.language.SimpleFormattingModelBuilder"/>-->
+    
+    
+    <annotator language="C3"
+               implementationClass="org.c3lang.intellij.annotation.C3Annotator"/>
+    <completion.contributor language="C3"
+                            implementationClass="org.c3lang.intellij.completion.C3CompletionContributor" />
+    <codeInsight.lineMarkerProvider language="C3"
+                                    implementationClass="org.c3lang.intellij.C3LineMarkerProvider" />
+    <!--<completion.contributor language="C3"
+                                implementationClass="org.c3lang.intellij.C3CompletionContributor" />-->
+    <!--<psi.referenceProvider providerClass="org.c3lang.intellij.C3PsiReferenceProvider" />-->
+    <!--<codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="org.intellij.sdk.language.SimpleLineMarkerProvider"/>-->
+    <!--<psi.referenceContributor implementation="org.intellij.sdk.language.SimpleReferenceContributor"/>-->
 
     <localInspection language="C3"
                      displayName="Import module"
                      groupName="Import group"
                      enabledByDefault="true"
                      level="WARNING"
-                     implementationClass="org.c3lang.intellij.intention.ImportModuleInspection"
-    />
+                     implementationClass="org.c3lang.intellij.intention.ImportModuleInspection" />
     <localInspection language="C3"
                      enabledByDefault="true"
                      displayName="Log references"
                      groupName="Debug"
                      implementationClass="org.c3lang.intellij.intention.LogReferencesInspection" />
     <!-- TODO: Enable after grammar rewrite -->
-<!--    <localInspection language="C3"-->
-<!--                     enabledByDefault="true"-->
-<!--                     displayName="Call expressions"-->
-<!--                     groupName="Call expressions"-->
-<!--                     level="WARNING"-->
-<!--                     implementationClass="org.c3lang.intellij.intention.CallExprInspection" />-->
+    <!--<localInspection language="C3"
+                         enabledByDefault="true"
+                         displayName="Call expressions"
+                         groupName="Call expressions"
+                         level="WARNING"
+                         implementationClass="org.c3lang.intellij.intention.CallExprInspection" />-->
 
-    <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewProjectWizard"/>
-    <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewLibraryWizard"/>
-
-    <codeInsight.lineMarkerProvider language="C3"
-                                    implementationClass="org.c3lang.intellij.C3LineMarkerProvider" />
-
+    <colorSettingsPage implementation="org.c3lang.intellij.C3ColorSettingsPage"/>
     <colorProvider implementation="org.c3lang.intellij.C3ElementColorProvider" />
-
-    <lang.documentationProvider language="C3"
-                                implementationClass="org.c3lang.intellij.docs.C3DocumentationProvider" />
-
-    <postStartupActivity implementation="org.c3lang.intellij.actions.StartupAction" />
-
+    <breadcrumbsInfoProvider implementation="org.c3lang.intellij.C3BreadcrumbsProvider"/>
     <editorNotificationProvider implementation="org.c3lang.intellij.actions.C3EditorNotificationProvider" />
+
+    <applicationConfigurable id="org.c3lang.compiler"
+                             displayName="C3 Compiler"
+                             parentId="build"
+                             instance="org.c3lang.intellij.C3CompilerConfigurable" />
+    <applicationService serviceImplementation="org.c3lang.intellij.C3SettingsState"/>
 
     <projectConfigurable instance="org.c3lang.intellij.settings.C3Configurable"
                          parentId="language"
                          id="c3.language.settings"
                          displayName="C3" />
+    
+    <sdkType implementation="org.c3lang.intellij.C3SdkType"/>
+    <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewProjectWizard"/>
+    <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewLibraryWizard"/>
+    <!--<projectSdkSetupValidator implementation="" />-->
+ 
+    <configurationType implementation="org.c3lang.intellij.C3CompileRunConfigurationType"/>
+    <configurationType implementation="org.c3lang.intellij.C3BuildRunConfigurationType"/>
+ 
+    <postStartupActivity implementation="org.c3lang.intellij.actions.StartupAction" />
 
     <!--<gotoDeclarationHandler implementation="org.c3lang.intellij.actions.C3GotoDeclarationHandler"/>-->
-
-    <lang.findUsagesProvider language="C3" implementationClass="org.c3lang.intellij.findUsages.C3FindUsagesProvider"/>
-
-    <!--    <findUsagesHandlerFactory implementation="org.c3lang.intellij.findUsages.C3FindUsagesHandlerFactory" />-->
-
-    <!--    <lang.refactoringSupport language="C3"
-                                 implementationClass="org.c3lang.intellij.C3RefactoringSupportProvider"/>
-    -->
-      <!--
-    <codeInsight.lineMarkerProvider language="JAVA"
-                                    implementationClass="org.intellij.sdk.language.SimpleLineMarkerProvider"/>
-    <psi.referenceContributor implementation="org.intellij.sdk.language.SimpleReferenceContributor"/>
-    <lang.foldingBuilder language="JAVA" implementationClass="org.intellij.sdk.language.SimpleFoldingBuilder"/>
-    <gotoSymbolContributor implementation="org.intellij.sdk.language.SimpleChooseByNameContributor"/>
-    <lang.psiStructureViewFactory language="Simple"
-                                  implementationClass="org.intellij.sdk.language.SimpleStructureViewFactory"/>
-    <lang.formatter language="Simple" implementationClass="org.intellij.sdk.language.SimpleFormattingModelBuilder"/>
-    <codeStyleSettingsProvider implementation="org.intellij.sdk.language.SimpleCodeStyleSettingsProvider"/>
-    <langCodeStyleSettingsProvider implementation="org.intellij.sdk.language.SimpleLanguageCodeStyleSettingsProvider"/>
-    -->
+    <!--<findUsagesHandlerFactory implementation="org.c3lang.intellij.findUsages.C3FindUsagesHandlerFactory" />-->
+    <!--<gotoSymbolContributor implementation="org.intellij.sdk.language.SimpleChooseByNameContributor"/>-->
+    <!--<codeStyleSettingsProvider implementation="org.intellij.sdk.language.SimpleCodeStyleSettingsProvider"/>-->
+    <!--<langCodeStyleSettingsProvider implementation="org.intellij.sdk.language.SimpleLanguageCodeStyleSettingsProvider"/>-->
   </extensions>
 
     <actions>
-        <action id="C3NewInterfaceFileAction" class="org.c3lang.intellij.actions.C3NewInterfaceFileAction" text="C3 Interface File">
-            <add-to-group group-id="NewGroup" anchor="first"/>
+        <action id="C3NewInterfaceFileAction"
+                class="org.c3lang.intellij.actions.C3NewInterfaceFileAction"
+                text="C3 Interface File">
+            <add-to-group group-id="NewGroup"
+                          anchor="first"/>
         </action>
-        <action id="C3NewFileAction" class="org.c3lang.intellij.actions.C3NewFileAction" text="C3 File">
-            <add-to-group group-id="NewGroup" anchor="first"/>
+        <action id="C3NewFileAction"
+                class="org.c3lang.intellij.actions.C3NewFileAction"
+                text="C3 File">
+            <add-to-group group-id="NewGroup"
+                          anchor="first"/>
         </action>
     </actions>
-
 </idea-plugin>
