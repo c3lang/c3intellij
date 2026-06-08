@@ -3,6 +3,7 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Find usages / rename / goto declaration works for locals.
 
 ## [0.2.3]
 - Correctly handle `$defined(Random r = random)`

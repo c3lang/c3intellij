@@ -4,7 +4,6 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.impl.source.resolve.reference.impl.PsiMultiReference;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.c3lang.intellij.completion.CompletionExtensionsKt;
@@ -73,9 +72,7 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 	{
 		List<C3LocalDeclAfterType> decls = findLocalDeclAfterType();
 		if (decls.size() != 1) return null;
-		C3PsiElement single = (C3PsiElement) decls.get(0);
-		if (!(single instanceof C3FullyQualifiedTypeNameProvider)) return null;
-		return ((C3FullyQualifiedTypeNameProvider) single).findTypeName();
+		return decls.getFirst().findTypeName();
 	}
 
 	@Override
@@ -87,31 +84,83 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 
 		Collection<C3LocalDeclAfterType> all =
 			PsiTreeUtil.collectElementsOfType(compoundStatement, C3LocalDeclAfterType.class);
-		List<C3LocalDeclAfterType> result = new ArrayList<>();
+		C3LocalDeclAfterType best = null;
 		for (C3LocalDeclAfterType decl : all)
 		{
 			if (decl.getTextOffset() < getTextOffset()
 				&& decl.getNameIdent() != null
-				&& decl.getNameIdent().equals(getNameIdent()))
+				&& decl.getNameIdent().equals(getNameIdent())
+				&& (best == null || decl.getTextOffset() > best.getTextOffset()))
 			{
-				result.add(decl);
+				best = decl;
 			}
 		}
-		return result;
+		return best != null ? Collections.singletonList(best) : Collections.emptyList();
+	}
+
+
+	private boolean hasLocalDeclBeforeUse()
+	{
+		return !new C3LocalDeclAfterTypeReference(this).multiResolve().isEmpty();
+	}
+
+	private boolean hasParameterBeforeUse()
+	{
+		return !new C3ParameterReference(this).multiResolve().isEmpty();
+	}
+
+	private boolean isStructMemberAccess()
+	{
+		return CompletionExtensionsKt.getRootType(this) != null
+			&& PsiTreeUtil.getParentOfType(this, C3PathNameProvider.class) != null;
+	}
+
+	private boolean isCallablePosition()
+	{
+		return isCallCallee() || isReflectOperand() || isAddressOfOperand();
+	}
+
+	private boolean isCallCallee()
+	{
+		C3PathIdentExpr expr = PsiTreeUtil.getParentOfType(this, C3PathIdentExpr.class);
+		if (expr == null) return false;
+
+		C3CallExpr call = PsiTreeUtil.getParentOfType(expr, C3CallExpr.class);
+		return call != null && call.getExpr() == expr;
+	}
+
+	private boolean isReflectOperand()
+	{
+		C3PathIdentExpr expr = PsiTreeUtil.getParentOfType(this, C3PathIdentExpr.class);
+		if (expr == null) return false;
+
+		C3CtAnalyzeExpr analyzeExpr = PsiTreeUtil.getParentOfType(expr, C3CtAnalyzeExpr.class);
+		if (analyzeExpr == null) return false;
+
+		return analyzeExpr.getCtAnalyze().getText().equals("$reflect")
+			&& analyzeExpr.getGroupedExpr() != null
+			&& PsiTreeUtil.isAncestor(analyzeExpr.getGroupedExpr(), expr, false);
+	}
+
+	private boolean isAddressOfOperand()
+	{
+		C3PathIdentExpr expr = PsiTreeUtil.getParentOfType(this, C3PathIdentExpr.class);
+		if (expr == null) return false;
+
+		C3UnaryExpr unaryExpr = PsiTreeUtil.getParentOfType(expr, C3UnaryExpr.class);
+		if (unaryExpr == null) return false;
+
+		return unaryExpr.getExpr() == expr && unaryExpr.getUnaryOp().getText().equals("&");
 	}
 
 	@Override
 	public @NotNull PsiReference getReference()
 	{
-		return new PsiMultiReference(
-			new PsiReference[]{
-				new C3LocalDeclAfterTypeReference(this),
-				new C3ParameterReference(this),
-				new C3FuncNameReference(this),
-				new C3StructMemberReference(this)
-			},
-			this
-		);
+		if (hasLocalDeclBeforeUse()) return new C3LocalDeclAfterTypeReference(this);
+		if (hasParameterBeforeUse()) return new C3ParameterReference(this);
+		if (isCallablePosition()) return new C3FuncNameReference(this);
+		if (isStructMemberAccess()) return new C3StructMemberReference(this);
+		return new C3LocalDeclAfterTypeReference(this);
 	}
 
 	private static class C3LocalDeclAfterTypeReference extends C3ReferenceBase<C3PathIdent>
@@ -130,17 +179,18 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 
 			Collection<C3LocalDeclAfterType> all =
 				PsiTreeUtil.collectElementsOfType(compoundStatement, C3LocalDeclAfterType.class);
-			List<C3PsiElement> result = new ArrayList<>();
+			C3LocalDeclAfterType best = null;
 			for (C3LocalDeclAfterType decl : all)
 			{
 				if (decl.getTextOffset() < myElement.getTextOffset()
 					&& decl.getNameIdent() != null
-					&& decl.getNameIdent().equals(myElement.getNameIdent()))
+					&& decl.getNameIdent().equals(myElement.getNameIdent())
+					&& (best == null || decl.getTextOffset() > best.getTextOffset()))
 				{
-					result.add(decl);
+					best = decl;
 				}
 			}
-			return result;
+			return best != null ? Collections.singletonList(best) : Collections.emptyList();
 		}
 	}
 
@@ -160,17 +210,14 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 
 			Collection<C3Parameter> params =
 				PsiTreeUtil.collectElementsOfType(funcDef, C3Parameter.class);
-			List<C3PsiElement> result = new ArrayList<>();
 			for (C3Parameter param : params)
 			{
-				if (param.getTextOffset() < myElement.getTextOffset()
-					&& param.getNameIdent() != null
-					&& param.getNameIdent().equals(myElement.getNameIdent()))
+				if (param.getNameIdent() != null && param.getNameIdent().equals(myElement.getNameIdent()))
 				{
-					result.add(param);
+					return Collections.singleton(param);
 				}
 			}
-			return result;
+			return Collections.emptyList();
 		}
 	}
 
@@ -190,6 +237,7 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 				NameIndexService.INSTANCE.findByNameEndsWith(myElement.getText(), myElement.getProject()))
 			{
 				if (el instanceof C3CallablePsiElement
+					&& el.getFqName().getName().equals(myElement.getNameIdent())
 					&& moduleDefinition.containsImportOrSameModule(el))
 				{
 					result.add(el);
