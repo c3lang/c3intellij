@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 - Find usages / rename / goto declaration works for locals.
+- Find definition of module from import.
 
 ## [0.2.3]
 - Correctly handle `$defined(Random r = random)`
