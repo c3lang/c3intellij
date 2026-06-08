@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface C3CtDefinedCheckExpr extends C3Expr {
 
-  @Nullable
-  C3Type getType();
-
 }

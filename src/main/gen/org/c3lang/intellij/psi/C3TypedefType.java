@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface C3TypedefType extends C3PsiElement {
 
   @Nullable
+  C3Expr getExpr();
+
+  @Nullable
   C3FnParameterList getFnParameterList();
 
   @Nullable

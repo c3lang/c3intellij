@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3CtDefinedCheckExprImpl extends C3ExprImpl implements C3CtDefinedCheckExpr {
+public abstract class C3CtDefinedCheckExprImpl extends C3ExprImpl implements C3CtDefinedCheckExpr {
 
   public C3CtDefinedCheckExprImpl(@NotNull ASTNode node) {
     super(node);
@@ -25,12 +25,6 @@ public class C3CtDefinedCheckExprImpl extends C3ExprImpl implements C3CtDefinedC
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof C3Visitor) accept((C3Visitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public C3Type getType() {
-    return findChildByClass(C3Type.class);
   }
 
 }

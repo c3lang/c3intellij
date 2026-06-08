@@ -26,8 +26,7 @@ public final class C3Configurable implements Configurable
 	public boolean isModified()
 	{
 		C3SettingsState settings = C3SettingsState.getInstance();
-		return c3SettingsComponent == null
-			? settings.stdlibPath != null
+		return c3SettingsComponent == null ? settings.stdlibPath != null
 			: !c3SettingsComponent.getStdlibPath().equals(settings.stdlibPath);
 	}
 

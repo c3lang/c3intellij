@@ -186,7 +186,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_ALIAS type_name generic_decl? attributes? EQ expr EOS
+  // KW_ALIAS type_name generic_decl? attributes? EQ typedef_type EOS
   public static boolean alias_type_decl(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "alias_type_decl")) return false;
     if (!nextTokenIs(b, KW_ALIAS)) return false;
@@ -198,7 +198,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     r = r && report_error_(b, alias_type_decl_2(b, l + 1));
     r = p && report_error_(b, alias_type_decl_3(b, l + 1)) && r;
     r = p && report_error_(b, consumeToken(b, EQ)) && r;
-    r = p && report_error_(b, expr(b, l + 1, -1)) && r;
+    r = p && report_error_(b, typedef_type(b, l + 1)) && r;
     r = p && consumeToken(b, EOS) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
@@ -2123,13 +2123,12 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // decl_or_expr | type
+  // decl_or_expr
   public static boolean ct_defined_check_expr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ct_defined_check_expr")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _COLLAPSE_, CT_DEFINED_CHECK_EXPR, "<ct defined check expr>");
     r = decl_or_expr(b, l + 1);
-    if (!r) r = type(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -5957,13 +5956,14 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_FN optional_type fn_parameter_list | type generic_parameters?
+  // KW_FN optional_type fn_parameter_list | type generic_parameters? | expr
   public static boolean typedef_type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typedef_type")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, TYPEDEF_TYPE, "<typedef type>");
     r = typedef_type_0(b, l + 1);
     if (!r) r = typedef_type_1(b, l + 1);
+    if (!r) r = expr(b, l + 1, -1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

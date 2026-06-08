@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.2.3]
+- Correctly handle `$defined(Random r = random)`
+- Type aliases to function were incorrectly flagged as incorrect.
+- Import suggestion on std::thread::channel even if std::thread was imported.
+
 ## [0.2.2] - 2026-06-04
 - `$assert`, `$error` now work with vaargs.
 - Updated new file syntax

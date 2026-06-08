@@ -34,12 +34,6 @@ public class C3AliasTypeDeclImpl extends C3PsiElementImpl implements C3AliasType
 
   @Override
   @Nullable
-  public C3Expr getExpr() {
-    return findChildByClass(C3Expr.class);
-  }
-
-  @Override
-  @Nullable
   public C3GenericDecl getGenericDecl() {
     return findChildByClass(C3GenericDecl.class);
   }
@@ -48,6 +42,12 @@ public class C3AliasTypeDeclImpl extends C3PsiElementImpl implements C3AliasType
   @NotNull
   public C3TypeName getTypeName() {
     return findNotNullChildByClass(C3TypeName.class);
+  }
+
+  @Override
+  @Nullable
+  public C3TypedefType getTypedefType() {
+    return findChildByClass(C3TypedefType.class);
   }
 
 }

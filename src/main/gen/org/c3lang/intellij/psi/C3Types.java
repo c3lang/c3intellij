@@ -533,9 +533,6 @@ public interface C3Types {
       else if (type == CT_CASE_STMT) {
         return new C3CtCaseStmtImpl(node);
       }
-      else if (type == CT_DEFINED_CHECK_EXPR) {
-        return new C3CtDefinedCheckExprImpl(node);
-      }
       else if (type == CT_DEFINED_CHECK_EXPR_LIST) {
         return new C3CtDefinedCheckExprListImpl(node);
       }

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class C3FileElementType extends IStubFileElementType<C3FileStub> {
     public static final C3FileElementType INSTANCE = new C3FileElementType();
 
-    public static final int STUB_VERSION = 1;
+    public static final int STUB_VERSION = 2;
 
     public C3FileElementType() {
         super("c3.FILE", C3Language.INSTANCE);

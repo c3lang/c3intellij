@@ -59,7 +59,7 @@ class ImportModuleInspection : LocalInspectionTool() {
 
                 if (importIntention.value == "std::core" || importIntention.value.startsWith("std::core::")) return;
 
-                if (importProvider.imports.contains(importIntention)) return
+                if (importProvider.containsImportOrSameModule(element)) return
 
                 val applied = psi.removeUserData(AddImportQuickFix.KEY)
                 if (applied != null) return

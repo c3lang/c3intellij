@@ -28,6 +28,12 @@ public class C3TypedefTypeImpl extends C3PsiElementImpl implements C3TypedefType
 
   @Override
   @Nullable
+  public C3Expr getExpr() {
+    return findChildByClass(C3Expr.class);
+  }
+
+  @Override
+  @Nullable
   public C3FnParameterList getFnParameterList() {
     return findChildByClass(C3FnParameterList.class);
   }
