@@ -34,14 +34,14 @@ object InitializerListCompletionContributor : CompletionProvider<CompletionParam
             return;
         }
 
-        val lookupTarget: C3PsiElement = parameters.siblingOf<C3AccessIdent>()
-            ?: parameters.siblingOf<C3PathIdent>()
+        val lookupTarget: C3PsiElement = CompletionExtensionsKt.siblingOf(parameters, C3AccessIdent::class.java)
+            ?: CompletionExtensionsKt.siblingOf(parameters, C3PathIdent::class.java)
             ?: return
 
-        val lookupString = parameters.getLookupString(lookupTarget)
+        val lookupString = CompletionExtensionsKt.getLookupString(parameters, lookupTarget)
         val project = parameters.position.project
 
-        val rootType = getRootType(lookupTarget)
+        val rootType = CompletionExtensionsKt.getRootType(lookupTarget)
             ?: return
         val parentArg = lookupTarget.parentOfType<C3Arg>()
 

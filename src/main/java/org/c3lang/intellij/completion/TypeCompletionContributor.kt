@@ -48,12 +48,12 @@ object TypeCompletionContributor : CompletionProvider<CompletionParameters>() {
 //            it.parent
 //        }.any { it.reference?.resolve() != null }
 
-        val lookupTarget = parameters.siblingOf<C3Type>()
+        val lookupTarget = CompletionExtensionsKt.siblingOf(parameters, C3Type::class.java)
             ?: return
-        val lookupString = parameters.getLookupString(lookupTarget)
-        val matcher = getMatcher(lookupString)
+        val lookupString = CompletionExtensionsKt.getLookupString(parameters, lookupTarget)
+        val matcher = CompletionExtensionsKt.getMatcher(lookupString)
 
-        val moduleDefinition = parameters.moduleDefinition ?: return
+        val moduleDefinition = CompletionExtensionsKt.getModuleDefinition(parameters) ?: return
         val project = parameters.position.project
         val moduleName = moduleDefinition.moduleName
 

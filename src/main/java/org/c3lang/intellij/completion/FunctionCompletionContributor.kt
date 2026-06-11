@@ -52,12 +52,12 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
             return
         }
 
-        val moduleDefinition = parameters.moduleDefinition
+        val moduleDefinition = CompletionExtensionsKt.getModuleDefinition(parameters)
             ?: return
-        val lookupTarget = parameters.siblingOf<C3PathIdentExpr>()
+        val lookupTarget = CompletionExtensionsKt.siblingOf(parameters, C3PathIdentExpr::class.java)
             ?: return
-        val lookupString = parameters.getLookupString(lookupTarget)
-        val matcher = getMatcher(lookupString)
+        val lookupString = CompletionExtensionsKt.getLookupString(parameters, lookupTarget)
+        val matcher = CompletionExtensionsKt.getMatcher(lookupString)
 
         val elementRange = lookupTarget.textRange
         val project = parameters.position.project
@@ -85,8 +85,8 @@ object FunctionCompletionContributor : CompletionProvider<CompletionParameters>(
             val importBonus = if (moduleDefinition.getVisibleModulePrefix(element.moduleName) != null) 1.0 else 0.0
 
             val fqName = element.fqName
-            val nameDegree = matcher.matchingDegreeOrZero(fqName.fullName)
-            val moduleDegree = element.moduleName?.value?.let(matcher::matchingDegreeOrZero) ?: 0
+            val nameDegree = CompletionExtensionsKt.matchingDegreeOrZero(matcher, fqName.fullName)
+            val moduleDegree = element.moduleName?.value?.let({ CompletionExtensionsKt.matchingDegreeOrZero(matcher, it) }) ?: 0
             val typeDegree = 0 // TODO match against type of declaration
 
             val priority = listOf(

@@ -1,13 +1,14 @@
-@file:JvmName("C3ColorSettingsPageDemoText")
-package org.c3lang.intellij
+package org.c3lang.intellij;
 
-const val DEMO_TEXT = """
+public final class C3ColorSettingsPageDemoText
+{
+	public static final String DEMO_TEXT = """
 module stack <Type>;
 // Above: the parameterized type is applied to the entire module.
 
 faultdef FILE_NOT_FOUND, FILE_IS_DIR;
 
-fn void fault_example() 
+fn void fault_example()\s
 {
     return FILE_NOT_FOUND?;
 }
@@ -40,4 +41,7 @@ macro bool Stack.empty(Stack* this)
 {
     return !this.size;
 }
-"""
+""";
+
+	private C3ColorSettingsPageDemoText() {}
+}

@@ -35,11 +35,11 @@ object ConstCompletionContributor : CompletionProvider<CompletionParameters>() {
             return;
         }
 
-        val moduleDefinition = parameters.moduleDefinition ?: return
-        val lookupTarget = parameters.siblingOf<C3PathConstExpr>()
+        val moduleDefinition = CompletionExtensionsKt.getModuleDefinition(parameters) ?: return
+        val lookupTarget = CompletionExtensionsKt.siblingOf(parameters, C3PathConstExpr::class.java)
             ?: return
-        val lookupString = parameters.getLookupString(lookupTarget)
-        val matcher = getMatcher(lookupString)
+        val lookupString = CompletionExtensionsKt.getLookupString(parameters, lookupTarget)
+        val matcher = CompletionExtensionsKt.getMatcher(lookupString)
 
         val moduleName = moduleDefinition.moduleName
         val elementRange = lookupTarget.textRange
