@@ -48,11 +48,12 @@ public final class CallExpr
         {
             module = moduleName.getValue();
         }
-        if (fullName.contains("::"))
+        int moduleSeparator = fullName.lastIndexOf("::");
+        if (moduleSeparator >= 0)
         {
-            module = fullName.substring(0, fullName.lastIndexOf("::"));
+            module = fullName.substring(0, moduleSeparator);
         }
-        String name = fullName.substring(fullName.lastIndexOf("::") + 2);
+        String name = moduleSeparator >= 0 ? fullName.substring(moduleSeparator + 2) : fullName;
 
         PsiElement declaration = findDeclaration(element.getProject(), element, file, module, name, holder);
         if (declaration == null)

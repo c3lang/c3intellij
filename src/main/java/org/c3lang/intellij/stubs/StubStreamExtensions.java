@@ -2,6 +2,7 @@ package org.c3lang.intellij.stubs;
 
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
+import com.intellij.util.io.DataInputOutputUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,20 +16,12 @@ public final class StubStreamExtensions
 
 	public static void writeNullableUTFFast(@NotNull StubOutputStream s, @Nullable String arg) throws IOException
 	{
-		if (arg == null)
-		{
-			s.writeBoolean(false);
-		}
-		else
-		{
-			s.writeBoolean(true);
-			s.writeUTFFast(arg);
-		}
+		DataInputOutputUtil.writeNullable(s, arg, s::writeUTFFast);
 	}
 
 	public static @Nullable String readNullableUTFFast(@NotNull StubInputStream s) throws IOException
 	{
-		return s.readBoolean() ? s.readUTFFast() : null;
+		return DataInputOutputUtil.readNullable(s, s::readUTFFast);
 	}
 
 	public static void writeList(@NotNull StubOutputStream s, @NotNull List<String> list) throws IOException

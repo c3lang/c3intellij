@@ -15,19 +15,19 @@ public final class C3DocumentationProvider extends AbstractDocumentationProvider
 	{
 		if (element instanceof C3FuncDef)
 		{
-			return FuncDefinitionDocsKt.generateFuncDefDoc((C3FuncDef) element);
+			return FuncDefinitionDocs.generateFuncDefDoc((C3FuncDef) element);
 		}
 		if (element instanceof C3MacroDefinition)
 		{
-			return MacroDefinitionDocsKt.generateMacroDefinitionDoc((C3MacroDefinition) element);
+			return MacroDefinitionDocs.generateMacroDefinitionDoc((C3MacroDefinition) element);
 		}
 		if (element instanceof C3LocalDeclAfterType)
 		{
-			return VarDeclDocsKt.generateVarDeclDoc((C3LocalDeclAfterType) element);
+			return VarDeclDocs.generateVarDeclDoc((C3LocalDeclAfterType) element);
 		}
 		if (element instanceof C3ConstDeclarationStmt)
 		{
-			return ConstDeclDocsKt.generateConstDeclDoc((C3ConstDeclarationStmt) element);
+			return ConstDeclDocs.generateConstDeclDoc((C3ConstDeclarationStmt) element);
 		}
 		return null;
 	}
