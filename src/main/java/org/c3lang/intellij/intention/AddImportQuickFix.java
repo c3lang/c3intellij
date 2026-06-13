@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -29,7 +30,7 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
 
     private final ModuleName importIntention;
 
-    public AddImportQuickFix(@NotNull C3Path target, @NotNull ModuleName importIntention)
+    public AddImportQuickFix(@NotNull PsiElement target, @NotNull ModuleName importIntention)
     {
         super(target);
         this.importIntention = importIntention;
@@ -56,21 +57,34 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
             @NotNull PsiElement endElement)
     {
         WriteCommandAction.runWriteCommandAction(project, () -> {
-            C3Path path = (C3Path) startElement;
+            C3Path path = startElement instanceof C3Path c3Path
+                ? c3Path
+                : PsiTreeUtil.findChildOfType(startElement, C3Path.class);
+            if (path == null)
+            {
+                return;
+            }
             C3ModuleDefinition moduleSection = java.util.Objects.requireNonNull(
                 PsiTreeUtil.getParentOfType(path, C3ModuleDefinition.class)
             );
 
             path.putUserData(KEY, importIntention);
 
-            C3FullyQualifiedNamePsiElement element =
-                PsiTreeUtil.getParentOfType(path, C3FullyQualifiedNamePsiElement.class);
-            if (element != null)
+            Document document = editor != null
+                ? editor.getDocument()
+                : PsiDocumentManager.getInstance(project).getDocument(file);
+            if (document == null)
             {
-                addImport(element, moduleSection, project);
+                return;
             }
 
-            path.shorten();
+            ImportAction importAction = addImportAsText(importIntention, moduleSection);
+            if (importAction != null)
+            {
+                path.shorten();
+                importAction.write(document);
+                PsiDocumentManager.getInstance(project).commitDocument(document);
+            }
         });
     }
 
@@ -87,6 +101,13 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
             @NotNull C3ModuleDefinition moduleSection)
     {
         return Companion.addImportAsText(element, moduleSection);
+    }
+
+    public static @Nullable ImportAction addImportAsText(
+            @NotNull ModuleName moduleName,
+            @NotNull C3ModuleDefinition moduleSection)
+    {
+        return Companion.addImportAsText(moduleName, moduleSection);
     }
 
     public static void writeImport(@NotNull Document document, int offset, @NotNull ModuleName moduleName)
@@ -123,7 +144,7 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
             if (!imports.isEmpty())
             {
                 PsiElement importDeclarationElement = moduleSection.addAfter(
-                    PsiElementUtils.createImport(project, moduleName.getValue()),
+                    PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
                     imports.get(imports.size() - 1).getParent()
                 );
                 moduleSection.addBefore(PsiElementUtils.createNewLine(project), importDeclarationElement);
@@ -131,7 +152,7 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
             else if (moduleSection instanceof C3ModuleSection module)
             {
                 PsiElement importDeclarationElement = moduleSection.addAfter(
-                    PsiElementUtils.createImport(project, moduleName.getValue()),
+                    PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
                     module.getModule()
                 );
                 moduleSection.addBefore(PsiElementUtils.createNewLine(project), importDeclarationElement);
@@ -139,7 +160,7 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
             else if (moduleSection instanceof C3DefaultModuleSection)
             {
                 PsiElement importDeclarationElement = moduleSection.addBefore(
-                    PsiElementUtils.createImport(project, moduleName.getValue()),
+                    PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
                     moduleSection.getFirstChild()
                 );
                 moduleSection.addAfter(PsiElementUtils.createNewLine(project), importDeclarationElement);
@@ -155,6 +176,13 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
             ModuleName moduleName = element.getModuleName();
             if (moduleName == null) return null;
 
+            return addImportAsText(moduleName, moduleSection);
+        }
+
+        public @Nullable ImportAction addImportAsText(
+                @NotNull ModuleName moduleName,
+                @NotNull C3ModuleDefinition moduleSection)
+        {
             ModuleName visibleModulePrefix = moduleSection.getVisibleModulePrefix(moduleName);
             if (visibleModulePrefix != null)
             {

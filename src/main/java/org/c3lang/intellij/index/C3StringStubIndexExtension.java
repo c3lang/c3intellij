@@ -8,6 +8,6 @@ public abstract class C3StringStubIndexExtension<T extends PsiElement> extends S
     @Override
     public int getVersion()
     {
-        return 6;
+        return 7;
     }
 }

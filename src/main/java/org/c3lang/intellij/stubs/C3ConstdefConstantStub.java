@@ -48,16 +48,10 @@ public class C3ConstdefConstantStub extends StubBase<C3ConstdefConstant>
 		this(
 			parent,
 			elementType,
-			readModuleName(dataStream),
+			StubStreamExtensions.readModuleName(dataStream),
 			FullyQualifiedName.Companion.parse(dataStream.readUTFFast()),
 			dataStream.readUTFFast()
 		);
-	}
-
-	private static @Nullable ModuleName readModuleName(@NotNull StubInputStream dataStream) throws IOException
-	{
-		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
-		return value != null ? new ModuleName(value) : null;
 	}
 
 	public @Nullable ModuleName getModule()

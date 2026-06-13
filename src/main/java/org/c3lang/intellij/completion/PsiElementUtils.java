@@ -11,6 +11,7 @@ import org.c3lang.intellij.psi.C3FuncName;
 import org.c3lang.intellij.psi.C3ImportDecl;
 import org.c3lang.intellij.psi.C3PathIdentExpr;
 import org.c3lang.intellij.psi.C3Statement;
+import org.c3lang.intellij.psi.C3TopLevel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -28,6 +29,13 @@ public final class PsiElementUtils
         PsiFile file = PsiFileFactory.getInstance(project)
             .createFileFromText(C3Language.INSTANCE, "import " + importPath + ";");
         return Objects.requireNonNull(PsiTreeUtil.findChildOfType(file, C3ImportDecl.class));
+    }
+
+    public static @NotNull C3TopLevel createImportTopLevel(@NotNull Project project, @NotNull String importPath)
+    {
+        PsiFile file = PsiFileFactory.getInstance(project)
+            .createFileFromText(C3Language.INSTANCE, "import " + importPath + ";");
+        return Objects.requireNonNull(PsiTreeUtil.findChildOfType(file, C3TopLevel.class));
     }
 
     public static @NotNull PsiElement createNewLine(@NotNull Project project)

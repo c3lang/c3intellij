@@ -5,18 +5,15 @@ import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.c3lang.intellij.completion.ImportCompletionContributor;
 import org.c3lang.intellij.index.NameIndexService;
-import org.c3lang.intellij.psi.C3BaseType;
-import org.c3lang.intellij.psi.C3CallExpr;
-import org.c3lang.intellij.psi.C3Expr;
 import org.c3lang.intellij.psi.C3File;
 import org.c3lang.intellij.psi.C3FullyQualifiedNamePsiElement;
 import org.c3lang.intellij.psi.C3ModuleDefinition;
 import org.c3lang.intellij.psi.C3Path;
-import org.c3lang.intellij.psi.C3PathIdentExpr;
 import org.c3lang.intellij.psi.C3Visitor;
 import org.c3lang.intellij.psi.ModuleName;
 import org.jetbrains.annotations.NotNull;
@@ -55,25 +52,6 @@ public class ImportModuleInspection extends LocalInspectionTool
         return new C3Visitor()
         {
             @Override
-            public void visitCallExpr(@NotNull C3CallExpr psi)
-            {
-                C3Expr expr = psi.getExpr();
-                if (expr instanceof C3PathIdentExpr pathIdentExpr && pathIdentExpr.getPathIdent().getPath() != null)
-                {
-                    registerPathProblem(pathIdentExpr.getPathIdent().getPath());
-                }
-            }
-
-            @Override
-            public void visitBaseType(@NotNull C3BaseType o)
-            {
-                if (o.getPath() != null)
-                {
-                    registerPathProblem(o.getPath());
-                }
-            }
-
-            @Override
             public void visitPath(@NotNull C3Path o)
             {
                 registerPathProblem(o);
@@ -81,8 +59,9 @@ public class ImportModuleInspection extends LocalInspectionTool
 
             private void registerPathProblem(@NotNull C3Path psi)
             {
+                PsiElement problemElement = psi.getParent();
                 Collection<C3FullyQualifiedNamePsiElement> callables =
-                    NameIndexService.INSTANCE.findByNameEndsWith(psi.getParent().getText(), psi.getProject());
+                    NameIndexService.INSTANCE.findByNameEndsWith(problemElement.getText(), psi.getProject());
                 List<C3FullyQualifiedNamePsiElement> callableList = new ArrayList<>(callables);
                 C3FullyQualifiedNamePsiElement element = callableList.size() == 1 ? callableList.get(0) : null;
 
@@ -114,10 +93,10 @@ public class ImportModuleInspection extends LocalInspectionTool
                 if (applied != null) return;
 
                 holder.registerProblem(
-                    psi,
+                    problemElement,
                     "Import " + importIntention.getValue(),
-                    ProblemHighlightType.WEAK_WARNING,
-                    new AddImportQuickFix(psi, importIntention)
+                    ProblemHighlightType.GENERIC_ERROR,
+                    new AddImportQuickFix(problemElement, importIntention)
                 );
             }
         };

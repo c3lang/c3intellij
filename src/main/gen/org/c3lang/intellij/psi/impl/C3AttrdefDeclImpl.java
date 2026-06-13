@@ -9,11 +9,22 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
+import org.c3lang.intellij.stubs.C3AttrdefDeclStub;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class C3AttrdefDeclImpl extends C3PsiElementImpl implements C3AttrdefDecl {
+public class C3AttrdefDeclImpl extends C3AttrdefDeclMixinImpl implements C3AttrdefDecl {
 
   public C3AttrdefDeclImpl(@NotNull ASTNode node) {
     super(node);
+  }
+
+  public C3AttrdefDeclImpl(@NotNull C3AttrdefDeclStub stub, @NotNull IStubElementType<?, ?> type) {
+    super(stub, type);
+  }
+
+  public C3AttrdefDeclImpl(@NotNull C3AttrdefDeclStub stub, @Nullable IElementType type, @Nullable ASTNode node) {
+    super(stub, type, node);
   }
 
   public void accept(@NotNull C3Visitor visitor) {

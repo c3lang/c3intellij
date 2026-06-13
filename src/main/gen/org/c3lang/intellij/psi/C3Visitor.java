@@ -79,7 +79,7 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitAttrdefDecl(@NotNull C3AttrdefDecl o) {
-    visitPsiElement(o);
+    visitAttrdefDeclMixin(o);
   }
 
   public void visitAttribute(@NotNull C3Attribute o) {
@@ -741,6 +741,10 @@ public class C3Visitor extends PsiElementVisitor {
   }
 
   public void visitArgMixin(@NotNull C3ArgMixin o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAttrdefDeclMixin(@NotNull C3AttrdefDeclMixin o) {
     visitPsiElement(o);
   }
 

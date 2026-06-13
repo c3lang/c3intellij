@@ -18,6 +18,7 @@
     <stubIndex implementation="org.c3lang.intellij.index.ModuleIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.NameIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.TypeIndex"/>
+    <stubIndex implementation="org.c3lang.intellij.index.AttributeIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.ReturnTypeIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.StructDeclarationIndex"/>
     <stubIndex implementation="org.c3lang.intellij.index.StructMemberDeclarationIndex"/>

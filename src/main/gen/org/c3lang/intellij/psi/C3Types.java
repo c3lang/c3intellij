@@ -25,7 +25,7 @@ public interface C3Types {
   IElementType ASM_STMT = new C3ElementType("ASM_STMT");
   IElementType ASSERT_STMT = new C3ElementType("ASSERT_STMT");
   IElementType ASSIGN_TYPE_EXPR = new C3ElementType("ASSIGN_TYPE_EXPR");
-  IElementType ATTRDEF_DECL = new C3ElementType("ATTRDEF_DECL");
+  IElementType ATTRDEF_DECL = C3StubElementTypeFactory.stubFactory("ATTRDEF_DECL");
   IElementType ATTRIBUTE = new C3ElementType("ATTRIBUTE");
   IElementType ATTRIBUTES = new C3ElementType("ATTRIBUTES");
   IElementType ATTRIBUTE_NAME = new C3ElementType("ATTRIBUTE_NAME");

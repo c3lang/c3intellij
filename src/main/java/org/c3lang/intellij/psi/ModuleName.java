@@ -114,7 +114,15 @@ public final class ModuleName
 
         public @NotNull List<ModuleName> getImportList(@NotNull C3PsiElement psi)
         {
-            C3ModuleDefinition moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleDefinition.class, true);
+            C3ModuleDefinition moduleSection;
+            if (psi instanceof C3ModuleDefinition definition)
+            {
+                moduleSection = definition;
+            }
+            else
+            {
+                moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleDefinition.class, false);
+            }
             if (moduleSection == null) return List.of();
 
             List<ModuleName> imports = new ArrayList<>();

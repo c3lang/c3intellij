@@ -3,6 +3,7 @@ package org.c3lang.intellij.stubs;
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
 import com.intellij.util.io.DataInputOutputUtil;
+import org.c3lang.intellij.psi.ModuleName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +14,12 @@ import java.util.List;
 public final class StubStreamExtensions
 {
 	private StubStreamExtensions() {}
+
+	public static @Nullable ModuleName readModuleName(@NotNull StubInputStream dataStream) throws IOException
+	{
+		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
+		return value != null ? new ModuleName(value) : null;
+	}
 
 	public static void writeNullableUTFFast(@NotNull StubOutputStream s, @Nullable String arg) throws IOException
 	{
