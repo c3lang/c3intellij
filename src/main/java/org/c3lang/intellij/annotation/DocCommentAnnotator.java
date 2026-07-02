@@ -134,7 +134,7 @@ public final class DocCommentAnnotator
 		}
 
 		Pattern pattern = Pattern.compile(
-				"@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(([$#])?\\w+)(\\s+:\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?");
+				"@param\\s+((\\[(in|&in|out|&out|inout|&inout|own|&own|init|&init|drop|&drop)])\\s+)?(([$#])?\\w+)(\\s+:\\s+(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?");
 		String commentText = element.getText();
 		int commentStart = element.getTextRange().getStartOffset();
 

@@ -69,9 +69,15 @@ public final class DocCommentCompletionContributor extends CompletionProvider<Co
 				"[in]",
 				"[out]",
 				"[inout]",
+				"[own]",
+				"[init]",
+				"[drop]",
 				"[&in]",
 				"[&out]",
-				"[&inout]"
+				"[&inout]",
+				"[&own]",
+				"[&init]",
+				"[&drop]"
 			)
 		);
 

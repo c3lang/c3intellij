@@ -3,6 +3,7 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Support new `@param` types.
 
 ## [0.2.4]
 - Find usages / rename / goto declaration works for locals.

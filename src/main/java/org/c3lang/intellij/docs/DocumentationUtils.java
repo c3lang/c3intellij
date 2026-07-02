@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 final class DocumentationUtils
 {
     private static final Pattern PARAM_PATTERN = Pattern.compile(
-        "@param\\s+((\\[(in|&in|out|&out|inout|&inout)])\\s+)?(\\w+)(\\s*:\\s*(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?"
+        "@param\\s+((\\[(in|&in|out|&out|inout|&inout|own|&own|init|&init|drop|&drop)])\\s+)?(\\w+)(\\s*:\\s*(\"((?:[^\"\\\\]|\\\\.)*)\"|`((?:[^`\\\\]|\\\\.)*)`))?"
     );
     private static final Pattern RETURN_PATTERN = Pattern.compile("@return\\s+(\"[\\w\\s]+\")?");
 
