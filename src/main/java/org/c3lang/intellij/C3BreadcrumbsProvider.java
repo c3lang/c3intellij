@@ -48,28 +48,34 @@ public class C3BreadcrumbsProvider implements BreadcrumbsProvider
 	@Override
 	public @NotNull String getElementInfo(@NotNull PsiElement element)
 	{
-		if (element instanceof C3StructDeclaration declaration) return declaration.getTypeName().getText();
-		if (element instanceof C3EnumDeclaration declaration) return declaration.getTypeName().getText();
-		if (element instanceof C3MacroDefinition definition) return definition.getMacroHeader().getMacroName().getText();
-		if (element instanceof C3TypedefDecl declaration) return declaration.getTypeName().getText();
-		if (element instanceof C3AttrdefDecl declaration) return declaration.getAttributeUserName().getText();
-		if (element instanceof C3AliasTypeDecl declaration) return declaration.getTypeName().getText();
-		if (element instanceof C3InterfaceDefinition definition) return definition.getTypeName().getText();
-		if (element instanceof C3FuncDefinition definition)
+		switch (element)
 		{
-			return definition.getFuncDef().getFuncHeader().getFuncName().getText();
+			case C3AliasDecl declaration: return declaration.getAliasName().getText();
+			case C3TypedefDecl declaration: return declaration.getTypeName().getText();
+			case C3StructDeclaration declaration: return declaration.getTypeName().getText();
+			case C3EnumDeclaration declaration: return declaration.getTypeName().getText();
+			case C3MacroDefinition definition: return definition.getMacroHeader().getMacroName().getText();
+			case C3AttrdefDecl declaration: return declaration.getAttributeUserName().getText();
+			case C3AliasTypeDecl declaration: return declaration.getTypeName().getText();
+			case C3InterfaceDefinition definition: return definition.getTypeName().getText();
+			case C3FuncDefinition definition: return definition.getFuncDef().getFuncHeader().getFuncName().getText();
+			case C3BitstructDeclaration definition: return definition.getTypeName().getText();
+			case C3StructMemberDeclaration declaration:
+			{
+				C3IdentifierList list = declaration.getIdentifierList();
+				return list != null ? list.getText() : "anonymous";
+			}
+			case C3BitstructDef definition:
+			{
+				ASTNode ident = element.getNode().findChildByType(C3Types.IDENT);
+				return ident != null ? ident.getText() : "anonymous";
+			}
+			case C3BitstructSimpleDef definition:
+			{
+				ASTNode ident = element.getNode().findChildByType(C3Types.IDENT);
+				return ident != null ? ident.getText() : "anonymous";
+			}
+			default: return "";
 		}
-		if (element instanceof C3BitstructDeclaration declaration) return declaration.getTypeName().getText();
-		if (element instanceof C3StructMemberDeclaration declaration)
-		{
-			C3IdentifierList list = declaration.getIdentifierList();
-			return list != null ? list.getText() : "anonymous";
-		}
-		if (element instanceof C3BitstructDef || element instanceof C3BitstructSimpleDef)
-		{
-			ASTNode ident = element.getNode().findChildByType(C3Types.IDENT);
-			return ident != null ? ident.getText() : "anonymous";
-		}
-		return "";
 	}
 }

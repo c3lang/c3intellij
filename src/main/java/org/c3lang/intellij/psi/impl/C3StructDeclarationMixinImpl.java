@@ -34,13 +34,13 @@ public abstract class C3StructDeclarationMixinImpl extends C3StubBasedPsiElement
 		if (s != null) return s.getFields();
 		C3StructBody structBody = getStructBody();
 		if (structBody == null) return Collections.emptyList();
-		return StructField.Companion.collectFields(structBody, null);
+		return StructField.collectFields(structBody, null);
 	}
 
 	@Override
-	public @Nullable FullyQualifiedName getDeclaredIn()
+	public @NotNull FullyQualifiedName getDeclaredIn()
 	{
 		C3TypeName typeName = getTypeName();
-		return typeName != null ? FullyQualifiedName.Companion.from(typeName, typeName.getModuleName()) : null;
+		return FullyQualifiedName.from(typeName, typeName.getModuleName());
 	}
 }

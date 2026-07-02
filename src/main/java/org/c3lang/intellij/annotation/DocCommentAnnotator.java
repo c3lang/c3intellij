@@ -9,7 +9,6 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import org.c3lang.intellij.psi.*;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

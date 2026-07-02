@@ -10,7 +10,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
-import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.c3lang.intellij.lexer.C3LexerAdapter;
 import org.c3lang.intellij.parser.C3Parser;

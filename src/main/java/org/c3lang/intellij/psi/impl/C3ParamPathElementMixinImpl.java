@@ -2,7 +2,6 @@ package org.c3lang.intellij.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import org.c3lang.intellij.psi.C3ParamPathElement;
-import org.c3lang.intellij.psi.C3PathNameProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

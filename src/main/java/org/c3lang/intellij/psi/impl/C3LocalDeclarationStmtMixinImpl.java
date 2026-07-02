@@ -16,6 +16,6 @@ public abstract class C3LocalDeclarationStmtMixinImpl extends C3PsiElementImpl i
 	@Override
 	public @Nullable FullyQualifiedName findTypeName()
 	{
-		return FullyQualifiedName.Companion.from(getOptionalType());
+		return FullyQualifiedName.from(getOptionalType());
 	}
 }

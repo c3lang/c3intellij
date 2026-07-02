@@ -25,7 +25,6 @@ import java.util.List;
 
 public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiElement
 {
-    public static final Companion Companion = new Companion();
     public static final Key<ModuleName> KEY = Key.create("AddImportQuickFix");
 
     private final ModuleName importIntention;
@@ -93,129 +92,90 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
             @NotNull C3ModuleDefinition moduleSection,
             @NotNull Project project)
     {
-        return Companion.addImport(element, moduleSection, project);
+        ModuleName moduleName = element.getModuleName();
+        if (moduleName == null) return null;
+
+        ModuleName visibleModulePrefix = moduleSection.getVisibleModulePrefix(moduleName);
+        if (visibleModulePrefix != null)
+        {
+            return visibleModulePrefix;
+        }
+
+        List<C3ImportDecl> imports = moduleSection.getImportDeclarations();
+        if (!imports.isEmpty())
+        {
+            PsiElement importDeclarationElement = moduleSection.addAfter(
+                PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
+                imports.get(imports.size() - 1).getParent()
+            );
+            moduleSection.addBefore(PsiElementUtils.createNewLine(project), importDeclarationElement);
+        }
+        else if (moduleSection instanceof C3ModuleSection module)
+        {
+            PsiElement importDeclarationElement = moduleSection.addAfter(
+                PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
+                module.getModule()
+            );
+            moduleSection.addBefore(PsiElementUtils.createNewLine(project), importDeclarationElement);
+        }
+        else if (moduleSection instanceof C3DefaultModuleSection)
+        {
+            PsiElement importDeclarationElement = moduleSection.addBefore(
+                PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
+                moduleSection.getFirstChild()
+            );
+            moduleSection.addAfter(PsiElementUtils.createNewLine(project), importDeclarationElement);
+        }
+
+        return moduleName;
     }
 
     public static @Nullable ImportAction addImportAsText(
             @NotNull C3FullyQualifiedNamePsiElement element,
             @NotNull C3ModuleDefinition moduleSection)
     {
-        return Companion.addImportAsText(element, moduleSection);
+        ModuleName moduleName = element.getModuleName();
+        if (moduleName == null) return null;
+
+        return addImportAsText(moduleName, moduleSection);
     }
 
-    public static @Nullable ImportAction addImportAsText(
+    public static @NotNull ImportAction addImportAsText(
             @NotNull ModuleName moduleName,
             @NotNull C3ModuleDefinition moduleSection)
     {
-        return Companion.addImportAsText(moduleName, moduleSection);
+        ModuleName visibleModulePrefix = moduleSection.getVisibleModulePrefix(moduleName);
+        if (visibleModulePrefix != null)
+        {
+            return new ImportAction.Imported(visibleModulePrefix);
+        }
+
+        List<C3ImportDecl> imports = moduleSection.getImportDeclarations();
+        if (!imports.isEmpty())
+        {
+            C3ImportDecl lastImport = imports.get(imports.size() - 1);
+            return new ImportAction.AppendToImport(
+                lastImport.getImportPaths().getTextRange().getEndOffset(),
+                moduleName
+            );
+        }
+
+        int startOffset;
+        if (moduleSection instanceof C3ModuleSection module)
+        {
+            startOffset = module.getModule().getTextRange().getEndOffset();
+        }
+        else
+        {
+            startOffset = moduleSection.getFirstChild().getTextRange().getStartOffset();
+        }
+
+        return new ImportAction.InsertImport(startOffset, moduleName);
     }
 
     public static void writeImport(@NotNull Document document, int offset, @NotNull ModuleName moduleName)
     {
-        Companion.writeImport(document, offset, moduleName);
-    }
-
-    public static final class Companion
-    {
-        private Companion()
-        {
-        }
-
-        public @NotNull Key<ModuleName> getKEY()
-        {
-            return KEY;
-        }
-
-        public @Nullable ModuleName addImport(
-                @NotNull C3FullyQualifiedNamePsiElement element,
-                @NotNull C3ModuleDefinition moduleSection,
-                @NotNull Project project)
-        {
-            ModuleName moduleName = element.getModuleName();
-            if (moduleName == null) return null;
-
-            ModuleName visibleModulePrefix = moduleSection.getVisibleModulePrefix(moduleName);
-            if (visibleModulePrefix != null)
-            {
-                return visibleModulePrefix;
-            }
-
-            List<C3ImportDecl> imports = moduleSection.getImportDeclarations();
-            if (!imports.isEmpty())
-            {
-                PsiElement importDeclarationElement = moduleSection.addAfter(
-                    PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
-                    imports.get(imports.size() - 1).getParent()
-                );
-                moduleSection.addBefore(PsiElementUtils.createNewLine(project), importDeclarationElement);
-            }
-            else if (moduleSection instanceof C3ModuleSection module)
-            {
-                PsiElement importDeclarationElement = moduleSection.addAfter(
-                    PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
-                    module.getModule()
-                );
-                moduleSection.addBefore(PsiElementUtils.createNewLine(project), importDeclarationElement);
-            }
-            else if (moduleSection instanceof C3DefaultModuleSection)
-            {
-                PsiElement importDeclarationElement = moduleSection.addBefore(
-                    PsiElementUtils.createImportTopLevel(project, moduleName.getValue()),
-                    moduleSection.getFirstChild()
-                );
-                moduleSection.addAfter(PsiElementUtils.createNewLine(project), importDeclarationElement);
-            }
-
-            return moduleName;
-        }
-
-        public @Nullable ImportAction addImportAsText(
-                @NotNull C3FullyQualifiedNamePsiElement element,
-                @NotNull C3ModuleDefinition moduleSection)
-        {
-            ModuleName moduleName = element.getModuleName();
-            if (moduleName == null) return null;
-
-            return addImportAsText(moduleName, moduleSection);
-        }
-
-        public @Nullable ImportAction addImportAsText(
-                @NotNull ModuleName moduleName,
-                @NotNull C3ModuleDefinition moduleSection)
-        {
-            ModuleName visibleModulePrefix = moduleSection.getVisibleModulePrefix(moduleName);
-            if (visibleModulePrefix != null)
-            {
-                return new ImportAction.Imported(visibleModulePrefix);
-            }
-
-            List<C3ImportDecl> imports = moduleSection.getImportDeclarations();
-            if (!imports.isEmpty())
-            {
-                C3ImportDecl lastImport = imports.get(imports.size() - 1);
-                return new ImportAction.AppendToImport(
-                    lastImport.getImportPaths().getTextRange().getEndOffset(),
-                    moduleName
-                );
-            }
-
-            int startOffset;
-            if (moduleSection instanceof C3ModuleSection module)
-            {
-                startOffset = module.getModule().getTextRange().getEndOffset();
-            }
-            else
-            {
-                startOffset = moduleSection.getFirstChild().getTextRange().getStartOffset();
-            }
-
-            return new ImportAction.InsertImport(startOffset, moduleName);
-        }
-
-        public void writeImport(@NotNull Document document, int offset, @NotNull ModuleName moduleName)
-        {
-            document.insertString(offset, "\nimport " + moduleName.getValue() + ";\n");
-        }
+        document.insertString(offset, "\nimport " + moduleName.getValue() + ";\n");
     }
 
     public sealed interface ImportAction permits ImportAction.InsertImport, ImportAction.AppendToImport, ImportAction.Imported

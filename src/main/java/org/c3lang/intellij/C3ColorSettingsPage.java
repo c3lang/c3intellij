@@ -1,20 +1,16 @@
 package org.c3lang.intellij;
 
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
-import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Map;
-
-import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 /**
  * Undocumented Class

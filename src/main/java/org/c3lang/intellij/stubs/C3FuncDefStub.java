@@ -5,11 +5,7 @@ import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
-import org.c3lang.intellij.psi.C3FuncDef;
-import org.c3lang.intellij.psi.FullyQualifiedName;
-import org.c3lang.intellij.psi.ModuleName;
-import org.c3lang.intellij.psi.ParamType;
-import org.c3lang.intellij.psi.ShortType;
+import org.c3lang.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,15 +49,13 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 			parent,
 			elementType,
 			psi.getContainingFile().getName(),
-			ModuleName.Companion.from(psi),
+			ModuleName.from(psi),
 			psi.getFuncHeader().getFuncName().getType() != null
-				? ShortType.Companion.toShortType(psi.getFuncHeader().getFuncName().getType())
+				? ShortType.from(psi.getFuncHeader().getFuncName().getType())
 				: null,
-			FullyQualifiedName.Companion.from(psi.getFuncHeader(), ModuleName.Companion.from(psi)),
-			psi.getFuncHeader().getOptionalType().getType() != null
-				? ShortType.Companion.toShortType(psi.getFuncHeader().getOptionalType().getType())
-				: null,
-			ParamType.Companion.toParamTypeList(
+			FullyQualifiedName.from(psi.getFuncHeader(), ModuleName.from(psi)),
+			ShortType.from(psi.getFuncHeader().getOptionalType().getType()),
+			ParamType.toParamTypeList(
 				psi.getFnParameterList().getParameterList() != null
 					? psi.getFnParameterList().getParameterList().getParamDeclList()
 					: null)
@@ -77,24 +71,18 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 			parent,
 			elementType,
 			dataStream.readUTFFast(),
-			readModuleName(dataStream),
+			StubStreamExtensions.readModuleName(dataStream),
 			readShortType(dataStream),
-			FullyQualifiedName.Companion.parse(dataStream.readUTFFast()),
+			FullyQualifiedName.parse(dataStream.readUTFFast()),
 			readShortType(dataStream),
-			ParamType.Companion.deserialize(dataStream)
+			ParamType.deserialize(dataStream)
 		);
-	}
-
-	private static @Nullable ModuleName readModuleName(@NotNull StubInputStream dataStream) throws IOException
-	{
-		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
-		return value != null ? new ModuleName(value) : null;
 	}
 
 	private static @Nullable ShortType readShortType(@NotNull StubInputStream dataStream) throws IOException
 	{
 		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
-		return value != null ? ShortType.Companion.parse(value) : null;
+		return value != null ? ShortType.parse(value) : null;
 	}
 
 	public @NotNull String getSourceFileName()
@@ -134,6 +122,6 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 		StubStreamExtensions.writeNullableUTFFast(dataStream, type != null ? type.getFullName() : null);
 		dataStream.writeUTFFast(fqName.getFullName());
 		StubStreamExtensions.writeNullableUTFFast(dataStream, returnType != null ? returnType.getFullName() : null);
-		ParamType.Companion.serialize(dataStream, parameterTypes);
+		ParamType.serialize(dataStream, parameterTypes);
 	}
 }

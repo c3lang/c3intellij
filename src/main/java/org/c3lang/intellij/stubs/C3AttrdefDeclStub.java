@@ -31,8 +31,8 @@ public class C3AttrdefDeclStub extends StubBase<C3AttrdefDecl>
 		@NotNull C3AttrdefDecl psi)
 	{
 		this(parent, elementType,
-			 new FullyQualifiedName(ModuleName.Companion.from(psi), psi.getAttributeUserName().getText()),
-			 ModuleName.Companion.from(psi)
+			 new FullyQualifiedName(ModuleName.from(psi), psi.getAttributeUserName().getText()),
+			 ModuleName.from(psi)
 		);
 	}
 
@@ -41,7 +41,7 @@ public class C3AttrdefDeclStub extends StubBase<C3AttrdefDecl>
 		@NotNull C3AttrdefDeclElementType elementType,
 		@NotNull StubInputStream dataStream) throws IOException
 	{
-		this(parent, elementType, FullyQualifiedName.Companion.parse(dataStream.readUTFFast()), StubStreamExtensions.readModuleName(dataStream));
+		this(parent, elementType, FullyQualifiedName.parse(dataStream.readUTFFast()), StubStreamExtensions.readModuleName(dataStream));
 	}
 
 	public @NotNull FullyQualifiedName getFqName()

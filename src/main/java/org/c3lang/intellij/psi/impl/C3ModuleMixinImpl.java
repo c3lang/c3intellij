@@ -34,7 +34,7 @@ public abstract class C3ModuleMixinImpl extends C3StubBasedPsiElementBase<C3Modu
 	public @Nullable ModuleName getModuleName()
 	{
 		C3ModuleStub s = getGreenStub();
-		return s != null ? s.getModule() : ModuleName.Companion.from(this);
+		return s != null ? s.getModule() : ModuleName.from(this);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public abstract class C3ModuleMixinImpl extends C3StubBasedPsiElementBase<C3Modu
 			}
 
 			@Override
-			public @Nullable Icon getIcon(boolean unused)
+			public @NotNull Icon getIcon(boolean unused)
 			{
 				return C3Icons.Nodes.MODULE;
 			}

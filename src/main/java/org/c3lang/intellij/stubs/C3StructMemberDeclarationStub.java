@@ -60,7 +60,7 @@ public class C3StructMemberDeclarationStub extends StubBase<C3StructMemberDeclar
 	private static @Nullable FullyQualifiedName readFullyQualifiedName(@NotNull StubInputStream dataStream) throws IOException
 	{
 		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
-		return value != null ? FullyQualifiedName.Companion.parse(value) : null;
+		return value != null ? FullyQualifiedName.parse(value) : null;
 	}
 
 	private static @Nullable String buildFullPath(@Nullable FullyQualifiedName structType, @Nullable String structPath)

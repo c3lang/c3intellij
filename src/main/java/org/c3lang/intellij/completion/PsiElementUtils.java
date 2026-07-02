@@ -18,8 +18,6 @@ import java.util.Objects;
 
 public final class PsiElementUtils
 {
-    public static final PsiElementUtils INSTANCE = new PsiElementUtils();
-
     private PsiElementUtils()
     {
     }

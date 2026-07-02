@@ -9,11 +9,9 @@ import java.util.Objects;
 
 public final class ShortType
 {
-    public static final Companion Companion = new Companion();
-
     private final String value;
-    private final String prefix;
-    private final String fullName;
+    private final @Nullable String prefix;
+    private final @NotNull  String fullName;
 
     public ShortType(@NotNull String value)
     {
@@ -47,22 +45,27 @@ public final class ShortType
 
     public static @NotNull ShortType from(@NotNull C3Type psi)
     {
-        return Companion.from(psi);
+		return new ShortType(psi.getText());
     }
 
     public static @NotNull ShortType toShortType(@NotNull C3Type psi)
     {
-        return Companion.toShortType(psi);
+        return from(psi);
     }
 
     public static @NotNull ShortType parse(@NotNull String string)
     {
-        return Companion.parse(string);
+		return new ShortType(string);
     }
 
     public static @NotNull List<ShortType> parse(@NotNull List<String> strings)
     {
-        return Companion.parse(strings);
+		List<ShortType> result = new ArrayList<>(strings.size());
+		for (String string : strings)
+		{
+			result.add(parse(string));
+		}
+		return result;
     }
 
     @Override
@@ -85,35 +88,4 @@ public final class ShortType
         return "ShortType(value=" + value + ", prefix=" + prefix + ")";
     }
 
-    public static final class Companion
-    {
-        private Companion()
-        {
-        }
-
-        public @NotNull ShortType from(@NotNull C3Type psi)
-        {
-            return new ShortType(psi.getText());
-        }
-
-        public @NotNull ShortType toShortType(@NotNull C3Type psi)
-        {
-            return from(psi);
-        }
-
-        public @NotNull ShortType parse(@NotNull String string)
-        {
-            return new ShortType(string);
-        }
-
-        public @NotNull List<ShortType> parse(@NotNull List<String> strings)
-        {
-            List<ShortType> result = new ArrayList<>(strings.size());
-            for (String string : strings)
-            {
-                result.add(parse(string));
-            }
-            return result;
-        }
-    }
 }

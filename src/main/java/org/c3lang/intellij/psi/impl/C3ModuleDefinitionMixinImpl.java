@@ -22,7 +22,7 @@ public abstract class C3ModuleDefinitionMixinImpl extends C3PsiElementImpl imple
 	@Override
 	public @NotNull List<ModuleName> getImports()
 	{
-		return ModuleName.Companion.getImportList(this);
+		return ModuleName.getImportList(this);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public abstract class C3ModuleDefinitionMixinImpl extends C3PsiElementImpl imple
 	@Override
 	public @Nullable ModuleName getModuleName()
 	{
-		return ModuleName.Companion.from(this);
+		return ModuleName.from(this);
 	}
 
 	@Override

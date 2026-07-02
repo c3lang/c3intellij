@@ -37,7 +37,7 @@ public class C3ConstdefConstantStub extends StubBase<C3ConstdefConstant>
 		@Nullable IStubElementType<?, ?> elementType,
 		@NotNull C3ConstdefConstant psi)
 	{
-		this(parent, elementType, ModuleName.Companion.from(psi), psi.getFqName(), psi.getConstIdent());
+		this(parent, elementType, ModuleName.from(psi), psi.getFqName(), psi.getConstIdent());
 	}
 
 	public C3ConstdefConstantStub(
@@ -49,7 +49,7 @@ public class C3ConstdefConstantStub extends StubBase<C3ConstdefConstant>
 			parent,
 			elementType,
 			StubStreamExtensions.readModuleName(dataStream),
-			FullyQualifiedName.Companion.parse(dataStream.readUTFFast()),
+			FullyQualifiedName.parse(dataStream.readUTFFast()),
 			dataStream.readUTFFast()
 		);
 	}

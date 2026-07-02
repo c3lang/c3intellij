@@ -31,7 +31,7 @@ public class C3ModuleStub extends StubBase<C3Module>
 		@NotNull C3ModuleElementType elementType,
 		@NotNull C3Module psi)
 	{
-		this(parent, elementType, ModuleName.Companion.from(psi));
+		this(parent, elementType, ModuleName.from(psi));
 	}
 
 	public C3ModuleStub(
@@ -39,13 +39,7 @@ public class C3ModuleStub extends StubBase<C3Module>
 		@NotNull C3ModuleElementType elementType,
 		@NotNull StubInputStream dataStream) throws IOException
 	{
-		this(parent, elementType, readModule(dataStream));
-	}
-
-	private static @Nullable ModuleName readModule(@NotNull StubInputStream dataStream) throws IOException
-	{
-		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
-		return value != null ? new ModuleName(value) : null;
+		this(parent, elementType, StubStreamExtensions.readModuleName(dataStream));
 	}
 
 	public @Nullable ModuleName getModule()

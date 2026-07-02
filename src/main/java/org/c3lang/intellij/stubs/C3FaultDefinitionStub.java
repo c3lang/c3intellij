@@ -31,7 +31,7 @@ public class C3FaultDefinitionStub extends StubBase<C3FaultDefinition>
 		@NotNull C3FaultDefinitionElementType elementType,
 		@NotNull C3FaultDefinition psi)
 	{
-		this(parent, elementType, FullyQualifiedName.Companion.from(psi, ModuleName.Companion.from(psi)));
+		this(parent, elementType, FullyQualifiedName.from(psi, ModuleName.from(psi)));
 	}
 
 	public C3FaultDefinitionStub(
@@ -39,7 +39,7 @@ public class C3FaultDefinitionStub extends StubBase<C3FaultDefinition>
 		@NotNull C3FaultDefinitionElementType elementType,
 		@NotNull StubInputStream dataStream) throws IOException
 	{
-		this(parent, elementType, FullyQualifiedName.Companion.parse(dataStream.readUTFFast()));
+		this(parent, elementType, FullyQualifiedName.parse(dataStream.readUTFFast()));
 	}
 
 	public @NotNull FullyQualifiedName getName()

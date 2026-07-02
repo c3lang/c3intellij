@@ -105,14 +105,6 @@ public final class CallExpr
             }
         }
 
-        if (!hasValidImport)
-        {
-//            holder.newAnnotation(HighlightSeverity.WARNING, "Missing import")
-//                    .range(element)
-//                    .newLocalQuickFix(new AddMissingImportFix(), InspectionManager.getInstance(project).createProblemDescriptor("", new AddMissingImportFix()))
-//                    .registerFix();
-        }
-
         return firstMatch;
     }
 

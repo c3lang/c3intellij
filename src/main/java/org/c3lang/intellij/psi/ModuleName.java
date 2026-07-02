@@ -10,8 +10,6 @@ import java.util.Objects;
 
 public final class ModuleName
 {
-    public static final Companion Companion = new Companion();
-
     private static final ModuleName CORE_MODULE = new ModuleName("std::core");
 
     private final String value;
@@ -45,28 +43,49 @@ public final class ModuleName
     public @Nullable String relativePathTo(@Nullable ModuleName moduleName)
     {
         if (!covers(moduleName)) return null;
-        if (moduleName == null || moduleName.value.equals(value)) return "";
+        if (moduleName.value.equals(value)) return "";
         return moduleName.value.substring((value + "::").length());
     }
 
     public static @Nullable ModuleName from(@NotNull C3PsiElement psi)
     {
-        return Companion.from(psi);
+        C3ModuleSection moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleSection.class, true);
+        if (moduleSection == null) return null;
+        return new ModuleName(moduleSection.getModule().getModulePath().getText());
     }
 
     public static @NotNull ModuleName deserialize(@NotNull String string)
     {
-        return Companion.deserialize(string);
+        return new ModuleName(string);
     }
 
     public static @Nullable ModuleName autoImportedPrefix(@Nullable ModuleName moduleName)
     {
-        return Companion.autoImportedPrefix(moduleName);
+        return CORE_MODULE.covers(moduleName) ? CORE_MODULE : null;
     }
 
     public static @NotNull List<ModuleName> getImportList(@NotNull C3PsiElement psi)
     {
-        return Companion.getImportList(psi);
+        C3ModuleDefinition moduleSection;
+        if (psi instanceof C3ModuleDefinition definition)
+        {
+            moduleSection = definition;
+        }
+        else
+        {
+            moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleDefinition.class, false);
+        }
+        if (moduleSection == null) return List.of();
+
+        List<ModuleName> imports = new ArrayList<>();
+        for (C3ImportDecl importDecl : moduleSection.getImportDeclarations())
+        {
+            for (C3ImportPath importPath : importDecl.getImportPaths().getImportPathList())
+            {
+                imports.add(new ModuleName(importPath.getText()));
+            }
+        }
+        return imports;
     }
 
     @Override
@@ -89,51 +108,4 @@ public final class ModuleName
         return "ModuleName(value=" + value + ")";
     }
 
-    public static final class Companion
-    {
-        private Companion()
-        {
-        }
-
-        public @Nullable ModuleName from(@NotNull C3PsiElement psi)
-        {
-            C3ModuleSection moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleSection.class, true);
-            if (moduleSection == null) return null;
-            return new ModuleName(moduleSection.getModule().getModulePath().getText());
-        }
-
-        public @NotNull ModuleName deserialize(@NotNull String string)
-        {
-            return new ModuleName(string);
-        }
-
-        public @Nullable ModuleName autoImportedPrefix(@Nullable ModuleName moduleName)
-        {
-            return CORE_MODULE.covers(moduleName) ? CORE_MODULE : null;
-        }
-
-        public @NotNull List<ModuleName> getImportList(@NotNull C3PsiElement psi)
-        {
-            C3ModuleDefinition moduleSection;
-            if (psi instanceof C3ModuleDefinition definition)
-            {
-                moduleSection = definition;
-            }
-            else
-            {
-                moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleDefinition.class, false);
-            }
-            if (moduleSection == null) return List.of();
-
-            List<ModuleName> imports = new ArrayList<>();
-            for (C3ImportDecl importDecl : moduleSection.getImportDeclarations())
-            {
-                for (C3ImportPath importPath : importDecl.getImportPaths().getImportPathList())
-                {
-                    imports.add(new ModuleName(importPath.getText()));
-                }
-            }
-            return imports;
-        }
-    }
 }

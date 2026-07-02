@@ -127,26 +127,23 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 		{
 			List<C3PsiElement> accessSequence = new ArrayList<>();
 			C3PsiElement current = callExpr;
-			while (current != null)
+			while (true)
 			{
 				accessSequence.add(current);
 				if (current instanceof C3ExprStmt)
 				{
-					current = (C3PsiElement) ((C3ExprStmt) current).getExpr();
+					current = ((C3ExprStmt)current).getExpr();
+					continue;
 				}
-				else if (current instanceof C3CallExpr)
+				if (current instanceof C3CallExpr)
 				{
-					current = (C3PsiElement) ((C3CallExpr) current).getExpr();
+					current = ((C3CallExpr) current).getExpr();
+					continue;
 				}
-				else
-				{
-					break;
-				}
+				break;
 			}
 
-			if (accessSequence.isEmpty()) return null;
-
-			C3PsiElement last = accessSequence.remove(accessSequence.size() - 1);
+			C3PsiElement last = accessSequence.removeLast();
 			if (!(last instanceof C3PathIdentExpr)) return null;
 
 			C3PathIdentExpr rootExpr = (C3PathIdentExpr) last;

@@ -10,8 +10,6 @@ import java.util.Objects;
 
 public sealed interface StructDeclarationFields permits StructDeclarationFields.Complex, StructDeclarationFields.Simple
 {
-    Companion Companion = new Companion();
-
     @NotNull
     FullyQualifiedPath getDeclaredIn();
 
@@ -19,12 +17,29 @@ public sealed interface StructDeclarationFields permits StructDeclarationFields.
 
     static @Nullable StructDeclarationFields build(@NotNull C3StructMemberDeclaration source)
     {
-        return Companion.build(source);
+        C3Type type = source.getType();
+        if (type == null) return null;
+
+        FullyQualifiedName declaredIn = source.getDeclaredIn();
+        if (declaredIn == null) return null;
+
+        String declaredInPathPath = source.getDeclaredInPath();
+        if (type.getBaseType().getFirstChild().getNode().getElementType() == C3Types.TYPE_IDENT)
+        {
+            return new Complex(new FullyQualifiedPath(
+                declaredIn,
+                declaredInPathPath != null ? declaredInPathPath : "<empty>"
+            ));
+        }
+
+        return new Simple(new FullyQualifiedPath(declaredIn, "-build-"));
     }
 
     static @NotNull StructDeclarationFields deserialize(@NotNull StubInputStream stream) throws IOException
     {
-        return Companion.deserialize(stream);
+        FullyQualifiedName typeName = FullyQualifiedName.parse(stream.readUTFFast());
+        String path = stream.readUTFFast();
+        return new Complex(new FullyQualifiedPath(typeName, path));
     }
 
     final class Complex implements StructDeclarationFields
@@ -113,37 +128,4 @@ public sealed interface StructDeclarationFields permits StructDeclarationFields.
         }
     }
 
-    final class Companion
-    {
-        private Companion()
-        {
-        }
-
-        public @Nullable StructDeclarationFields build(@NotNull C3StructMemberDeclaration source)
-        {
-            C3Type type = source.getType();
-            if (type == null || type.getBaseType() == null) return null;
-
-            FullyQualifiedName declaredIn = source.getDeclaredIn();
-            if (declaredIn == null) return null;
-
-            String declaredInPathPath = source.getDeclaredInPath();
-            if (type.getBaseType().getFirstChild().getNode().getElementType() == C3Types.TYPE_IDENT)
-            {
-                return new Complex(new FullyQualifiedPath(
-                    declaredIn,
-                    declaredInPathPath != null ? declaredInPathPath : "<empty>"
-                ));
-            }
-
-            return new Simple(new FullyQualifiedPath(declaredIn, "-build-"));
-        }
-
-        public @NotNull StructDeclarationFields deserialize(@NotNull StubInputStream stream) throws IOException
-        {
-            FullyQualifiedName typeName = FullyQualifiedName.Companion.parse(stream.readUTFFast());
-            String path = stream.readUTFFast();
-            return new Complex(new FullyQualifiedPath(typeName, path));
-        }
-    }
 }

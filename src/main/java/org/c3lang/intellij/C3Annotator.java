@@ -85,7 +85,7 @@ public class C3Annotator implements Annotator
             else if (is_ident)
             {
                 annotationHolder.newAnnotation(HighlightSeverity.ERROR, "An @-alias may not alias non-@ identifiers.")
-                                .range(source.getPathIdent())
+                                .range(source.getPathAtIdent())
                                 .create();
             }
         }
@@ -319,7 +319,7 @@ public class C3Annotator implements Annotator
 
             TextAttributesKey color = C3SyntaxHighlighter.MACRO_KEY;
             String name = psiElement.getLastChild().getText();
-            boolean at_macro = name != null && name.length() > 0 && name.charAt(0) == '@';
+            boolean at_macro = name != null && !name.isEmpty() && name.charAt(0) == '@';
             if (element.getType() != null)
             {
                 color = at_macro ? C3SyntaxHighlighter.AT_MACRO_METHOD_KEY : C3SyntaxHighlighter.MACRO_METHOD_KEY;

@@ -1,11 +1,7 @@
 package org.c3lang.intellij;
 
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 

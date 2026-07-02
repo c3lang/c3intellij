@@ -13,10 +13,8 @@ import java.util.Objects;
 
 public final class ParamType
 {
-    public static final Companion Companion = new Companion();
-
     private final String name;
-    private final ShortType type;
+    private final @Nullable ShortType type;
 
     public ParamType(@NotNull String name, @Nullable ShortType type)
     {
@@ -38,22 +36,46 @@ public final class ParamType
 
     public static @NotNull List<ParamType> from(@NotNull List<C3ParamDecl> list)
     {
-        return Companion.from(list);
+        List<ParamType> result = new ArrayList<>(list.size());
+        for (C3ParamDecl decl : list)
+        {
+            C3Type type = decl.getParameter().getType();
+            result.add(new ParamType(
+                decl.getParameter().getLastChild().getText(),
+                type != null ? ShortType.toShortType(type) : null
+            ));
+        }
+        return result;
     }
 
     public static @NotNull List<ParamType> toParamTypeList(@Nullable List<C3ParamDecl> list)
     {
-        return Companion.toParamTypeList(list);
+        return list != null ? from(list) : List.of();
     }
 
     public static @NotNull List<ParamType> deserialize(@NotNull StubInputStream dataStream) throws IOException
     {
-        return Companion.deserialize(dataStream);
+        int count = dataStream.readVarInt();
+        List<ParamType> result = new ArrayList<>(count);
+        for (int i = 0; i < count; i++)
+        {
+            String name = dataStream.readUTFFast();
+            String typeValue = StubStreamExtensions.readNullableUTFFast(dataStream);
+            String typePrefix = StubStreamExtensions.readNullableUTFFast(dataStream);
+            result.add(new ParamType(name, typeValue != null ? new ShortType(typeValue, typePrefix) : null));
+        }
+        return result;
     }
 
     public static void serialize(@NotNull StubOutputStream dataStream, @NotNull List<ParamType> parameterTypes) throws IOException
     {
-        Companion.serialize(dataStream, parameterTypes);
+        dataStream.writeVarInt(parameterTypes.size());
+        for (ParamType parameterType : parameterTypes)
+        {
+            dataStream.writeUTFFast(parameterType.name);
+            StubStreamExtensions.writeNullableUTFFast(dataStream, parameterType.type != null ? parameterType.type.getValue() : null);
+            StubStreamExtensions.writeNullableUTFFast(dataStream, parameterType.type != null ? parameterType.type.getPrefix() : null);
+        }
     }
 
     @Override
@@ -76,54 +98,4 @@ public final class ParamType
         return "ParamType(name=" + name + ", type=" + type + ")";
     }
 
-    public static final class Companion
-    {
-        private Companion()
-        {
-        }
-
-        public @NotNull List<ParamType> from(@NotNull List<C3ParamDecl> list)
-        {
-            List<ParamType> result = new ArrayList<>(list.size());
-            for (C3ParamDecl decl : list)
-            {
-                C3Type type = decl.getParameter().getType();
-                result.add(new ParamType(
-                    decl.getParameter().getLastChild().getText(),
-                    type != null ? ShortType.Companion.toShortType(type) : null
-                ));
-            }
-            return result;
-        }
-
-        public @NotNull List<ParamType> toParamTypeList(@Nullable List<C3ParamDecl> list)
-        {
-            return list != null ? from(list) : List.of();
-        }
-
-        public @NotNull List<ParamType> deserialize(@NotNull StubInputStream dataStream) throws IOException
-        {
-            int count = dataStream.readVarInt();
-            List<ParamType> result = new ArrayList<>(count);
-            for (int i = 0; i < count; i++)
-            {
-                String name = dataStream.readUTFFast();
-                String typeValue = StubStreamExtensions.readNullableUTFFast(dataStream);
-                String typePrefix = StubStreamExtensions.readNullableUTFFast(dataStream);
-                result.add(new ParamType(name, typeValue != null ? new ShortType(typeValue, typePrefix) : null));
-            }
-            return result;
-        }
-
-        public void serialize(@NotNull StubOutputStream dataStream, @NotNull List<ParamType> parameterTypes) throws IOException
-        {
-            dataStream.writeVarInt(parameterTypes.size());
-            for (ParamType parameterType : parameterTypes)
-            {
-                dataStream.writeUTFFast(parameterType.name);
-                StubStreamExtensions.writeNullableUTFFast(dataStream, parameterType.type != null ? parameterType.type.getValue() : null);
-                StubStreamExtensions.writeNullableUTFFast(dataStream, parameterType.type != null ? parameterType.type.getPrefix() : null);
-            }
-        }
-    }
 }

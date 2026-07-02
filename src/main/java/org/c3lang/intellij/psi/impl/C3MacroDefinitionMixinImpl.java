@@ -80,14 +80,14 @@ public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBa
 	public @NotNull FullyQualifiedName getFqName()
 	{
 		C3MacroDefinitionStub s = getGreenStub();
-		return s != null ? s.getFqName() : FullyQualifiedName.Companion.from(getMacroHeader(), getModuleName());
+		return s != null ? s.getFqName() : FullyQualifiedName.from(getMacroHeader(), getModuleName());
 	}
 
 	@Override
 	public @Nullable ModuleName getModuleName()
 	{
 		C3MacroDefinitionStub s = getGreenStub();
-		return s != null ? s.getModule() : ModuleName.Companion.from(this);
+		return s != null ? s.getModule() : ModuleName.from(this);
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBa
 		C3MacroDefinitionStub s = getGreenStub();
 		if (s != null) return s.getType();
 		C3Type t = getMacroHeader().getMacroName().getType();
-		return t != null ? ShortType.Companion.toShortType(t) : null;
+		return t != null ? ShortType.from(t) : null;
 	}
 
 	@Override
@@ -106,8 +106,7 @@ public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBa
 		if (s != null) return s.getReturnType();
 		C3OptionalType optType = getMacroHeader().getOptionalType();
 		if (optType == null) return null;
-		C3Type t = optType.getType();
-		return t != null ? ShortType.Companion.toShortType(t) : null;
+		return ShortType.from(optType.getType());
 	}
 
 	@Override
@@ -117,6 +116,6 @@ public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBa
 		if (s != null) return s.getParameterTypes();
 		C3ParameterList paramList = getMacroParams().getParameterList();
 		List<C3ParamDecl> paramDecls = paramList != null ? paramList.getParamDeclList() : null;
-		return ParamType.Companion.toParamTypeList(paramDecls);
+		return ParamType.toParamTypeList(paramDecls);
 	}
 }

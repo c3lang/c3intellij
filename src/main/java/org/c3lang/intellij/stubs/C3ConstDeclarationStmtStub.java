@@ -31,7 +31,7 @@ public class C3ConstDeclarationStmtStub extends StubBase<C3ConstDeclarationStmt>
 		@NotNull C3ConstDeclarationStmtElementType elementType,
 		@NotNull C3ConstDeclarationStmt psi)
 	{
-		this(parent, elementType, FullyQualifiedName.Companion.from(psi, ModuleName.Companion.from(psi)));
+		this(parent, elementType, FullyQualifiedName.from(psi, ModuleName.from(psi)));
 	}
 
 	public C3ConstDeclarationStmtStub(
@@ -39,7 +39,7 @@ public class C3ConstDeclarationStmtStub extends StubBase<C3ConstDeclarationStmt>
 		@NotNull C3ConstDeclarationStmtElementType elementType,
 		@NotNull StubInputStream dataStream) throws IOException
 	{
-		this(parent, elementType, FullyQualifiedName.Companion.parse(dataStream.readUTFFast()));
+		this(parent, elementType, FullyQualifiedName.parse(dataStream.readUTFFast()));
 	}
 
 	public @NotNull FullyQualifiedName getName()

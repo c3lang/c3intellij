@@ -10,11 +10,36 @@ import java.util.Objects;
 
 public sealed interface ImportPossibility permits ImportPossibility.Noop, ImportPossibility.Possible
 {
-    Companion Companion = new Companion();
-
     static @NotNull ImportPossibility create(@NotNull C3PathIdent psi)
     {
-        return Companion.create(psi);
+        C3Path path = psi.getPath();
+        if (path == null) return Noop.INSTANCE;
+
+        ASTNode node = path.getNode();
+        if (node == null) return Noop.INSTANCE;
+
+        ASTNode[] scopes = node.getChildren(TokenSet.create(C3Types.SCOPE));
+        if (scopes.length <= 1) return Noop.INSTANCE;
+
+        C3ModuleDefinition moduleDefinition = Objects.requireNonNull(
+            PsiTreeUtil.getParentOfType(psi, C3ModuleDefinition.class)
+        );
+        ModuleName importIntention = new ModuleName(dropPostfix(path.getText(), "::"));
+        List<String> importSuffixes = moduleDefinition.getImports().stream()
+            .map(ModuleName::getSuffix)
+            .toList();
+
+        if (importSuffixes.contains(importIntention.getSuffix()))
+        {
+            return Noop.INSTANCE;
+        }
+
+        return new Possible(importIntention);
+    }
+
+    private static @NotNull String dropPostfix(@NotNull String value, @NotNull String postfix)
+    {
+        return value.endsWith(postfix) ? value.substring(0, value.length() - postfix.length()) : value;
     }
 
     final class Noop implements ImportPossibility
@@ -62,42 +87,4 @@ public sealed interface ImportPossibility permits ImportPossibility.Noop, Import
         }
     }
 
-    final class Companion
-    {
-        private Companion()
-        {
-        }
-
-        public @NotNull ImportPossibility create(@NotNull C3PathIdent psi)
-        {
-            C3Path path = psi.getPath();
-            if (path == null) return Noop.INSTANCE;
-
-            ASTNode node = path.getNode();
-            if (node == null) return Noop.INSTANCE;
-
-            ASTNode[] scopes = node.getChildren(TokenSet.create(C3Types.SCOPE));
-            if (scopes.length <= 1) return Noop.INSTANCE;
-
-            C3ModuleDefinition moduleDefinition = Objects.requireNonNull(
-                PsiTreeUtil.getParentOfType(psi, C3ModuleDefinition.class)
-            );
-            ModuleName importIntention = new ModuleName(dropPostfix(path.getText(), "::"));
-            List<String> importSuffixes = moduleDefinition.getImports().stream()
-                .map(ModuleName::getSuffix)
-                .toList();
-
-            if (importSuffixes.contains(importIntention.getSuffix()))
-            {
-                return Noop.INSTANCE;
-            }
-
-            return new Possible(importIntention);
-        }
-
-        private static @NotNull String dropPostfix(@NotNull String value, @NotNull String postfix)
-        {
-            return value.endsWith(postfix) ? value.substring(0, value.length() - postfix.length()) : value;
-        }
-    }
 }

@@ -127,7 +127,7 @@ public final class ConstCompletionContributor extends CompletionProvider<Complet
 
             WriteCommandAction.runWriteCommandAction(context.getProject(), () -> {
                 AddImportQuickFix.ImportAction imported =
-                    AddImportQuickFix.Companion.addImportAsText(element, moduleDefinition);
+                    AddImportQuickFix.addImportAsText(element, moduleDefinition);
 
                 var importedModuleName = imported != null ? imported.getModuleName() : null;
                 String textToInsert = moduleDefinition.textToInsert(importedModuleName, element);

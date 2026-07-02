@@ -62,6 +62,6 @@ public abstract class C3ParameterMixinImpl extends C3PsiNamedElementImpl impleme
 	public @Nullable FullyQualifiedName findTypeName()
 	{
 		C3Type type = getType();
-		return type != null ? FullyQualifiedName.Companion.from(type) : null;
+		return type != null ? FullyQualifiedName.from(type) : null;
 	}
 }

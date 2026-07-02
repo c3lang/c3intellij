@@ -71,14 +71,14 @@ public abstract class C3TypeNameMixinImpl extends C3StubBasedPsiElementBase<C3Ty
 	public @Nullable ModuleName getModuleName()
 	{
 		C3TypeNameStub s = getGreenStub();
-		return s != null ? s.getModuleName() : ModuleName.Companion.from(this);
+		return s != null ? s.getModuleName() : ModuleName.from(this);
 	}
 
 	@Override
 	public @NotNull FullyQualifiedName getFqName()
 	{
 		C3TypeNameStub s = getGreenStub();
-		return s != null ? s.getFqName() : FullyQualifiedName.Companion.from(this, getModuleName());
+		return s != null ? s.getFqName() : FullyQualifiedName.from(this, getModuleName());
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import org.c3lang.intellij.lexer.C3LexerAdapter;
 import org.c3lang.intellij.psi.C3Types;
 import org.jetbrains.annotations.NotNull;
 

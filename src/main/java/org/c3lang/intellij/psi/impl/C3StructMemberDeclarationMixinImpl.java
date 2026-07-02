@@ -185,7 +185,7 @@ public abstract class C3StructMemberDeclarationMixinImpl
 		{
 			C3Type type = getType();
 			if (type == null) return null;
-			return FullyQualifiedName.Companion.from(type);
+			return FullyQualifiedName.from(type);
 		}
 	}
 }

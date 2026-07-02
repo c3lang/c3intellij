@@ -4,6 +4,7 @@ import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
 import com.intellij.util.io.DataInputOutputUtil;
 import org.c3lang.intellij.psi.ModuleName;
+import org.c3lang.intellij.psi.ShortType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +20,12 @@ public final class StubStreamExtensions
 	{
 		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
 		return value != null ? new ModuleName(value) : null;
+	}
+
+	public static @Nullable ShortType readShortType(@NotNull StubInputStream dataStream) throws IOException
+	{
+		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
+		return value != null ? ShortType.parse(value) : null;
 	}
 
 	public static void writeNullableUTFFast(@NotNull StubOutputStream s, @Nullable String arg) throws IOException

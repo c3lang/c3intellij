@@ -281,8 +281,7 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 			while (currentProvider != null)
 			{
 				fieldNames.addAll(currentProvider.findPathName(false));
-				currentProvider = PsiTreeUtil.getParentOfType(
-					(PsiElement) currentProvider, C3PathNameProvider.class);
+				currentProvider = PsiTreeUtil.getParentOfType(currentProvider, C3PathNameProvider.class);
 			}
 			Collections.reverse(fieldNames);
 

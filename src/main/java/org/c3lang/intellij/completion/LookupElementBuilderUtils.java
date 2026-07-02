@@ -15,8 +15,6 @@ import java.util.List;
 
 public final class LookupElementBuilderUtils
 {
-    public static final LookupElementBuilderUtils INSTANCE = new LookupElementBuilderUtils();
-
     private LookupElementBuilderUtils()
     {
     }

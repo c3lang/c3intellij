@@ -58,7 +58,7 @@ public final class CompletionExtensionsKt
 			PsiTreeUtil.getParentOfType(lookupTarget, C3CompoundInitExpr.class);
 		if (compoundInitExpr != null)
 		{
-			return FullyQualifiedName.Companion.from(compoundInitExpr.getType());
+			return FullyQualifiedName.from(compoundInitExpr.getType());
 		}
 
 		C3BinaryExpr binaryExpr = PsiTreeUtil.getParentOfType(lookupTarget, C3BinaryExpr.class);

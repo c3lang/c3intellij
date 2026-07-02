@@ -76,6 +76,6 @@ public abstract class C3ConstDeclarationStmtMixinImpl extends C3StubBasedPsiElem
 	public @NotNull FullyQualifiedName getFqName()
 	{
 		C3ConstDeclarationStmtStub s = getGreenStub();
-		return s != null ? s.getName() : FullyQualifiedName.Companion.from(this, ModuleName.Companion.from(this));
+		return s != null ? s.getName() : FullyQualifiedName.from(this, ModuleName.from(this));
 	}
 }

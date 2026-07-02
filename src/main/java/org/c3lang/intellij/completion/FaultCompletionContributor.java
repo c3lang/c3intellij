@@ -128,7 +128,7 @@ public final class FaultCompletionContributor extends CompletionProvider<Complet
 
             WriteCommandAction.runWriteCommandAction(context.getProject(), () -> {
                 AddImportQuickFix.ImportAction imported =
-                    AddImportQuickFix.Companion.addImportAsText(element, moduleDefinition);
+                    AddImportQuickFix.addImportAsText(element, moduleDefinition);
 
                 ModuleName importedModuleName = imported != null ? imported.getModuleName() : null;
                 String textToInsert = moduleDefinition.textToInsert(importedModuleName, element);

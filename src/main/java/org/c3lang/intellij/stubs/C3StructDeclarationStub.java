@@ -41,7 +41,7 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 		this(
 			parent,
 			elementType,
-			FullyQualifiedName.Companion.from(psi.getTypeName(), psi.getTypeName().getModuleName()),
+			FullyQualifiedName.from(psi.getTypeName(), psi.getTypeName().getModuleName()),
 			collectFields(psi)
 		);
 	}
@@ -54,7 +54,7 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 		this(
 			parent,
 			elementType,
-			FullyQualifiedName.Companion.parse(dataStream.readUTFFast()),
+			FullyQualifiedName.parse(dataStream.readUTFFast()),
 			deserializeStructFields(dataStream)
 		);
 	}
@@ -62,7 +62,7 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 	private static @NotNull List<StructField> collectFields(@NotNull C3StructDeclaration psi)
 	{
 		C3StructBody structBody = psi.getStructBody();
-		return structBody != null ? StructField.Companion.collectFields(structBody, null) : Collections.emptyList();
+		return structBody != null ? StructField.collectFields(structBody, null) : Collections.emptyList();
 	}
 
 	private static @NotNull List<StructField> deserializeStructFields(@NotNull StubInputStream dataStream) throws IOException
@@ -75,7 +75,7 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 			String typeFullName = dataStream.readUTFFast();
 			String name = StubStreamExtensions.readNullableUTFFast(dataStream);
 			if (name == null) throw new IllegalStateException("Struct field name missing");
-			result.add(new StructField(name, FullyQualifiedName.Companion.parse(typeFullName)));
+			result.add(new StructField(name, FullyQualifiedName.parse(typeFullName)));
 		}
 
 		return result;

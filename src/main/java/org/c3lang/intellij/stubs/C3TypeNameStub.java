@@ -40,8 +40,8 @@ public class C3TypeNameStub extends StubBase<C3TypeName>
 		this(
 			parent,
 			elementType,
-			FullyQualifiedName.Companion.parse(dataStream.readUTFFast()),
-			readModuleName(dataStream),
+			FullyQualifiedName.parse(dataStream.readUTFFast()),
+			StubStreamExtensions.readModuleName(dataStream),
 			C3TypeEnum.valueOf(dataStream.readUTFFast())
 		);
 	}
@@ -54,16 +54,10 @@ public class C3TypeNameStub extends StubBase<C3TypeName>
 		this(
 			parent,
 			elementType,
-			FullyQualifiedName.Companion.from(psi, psi.getModuleName()),
-			ModuleName.Companion.from(psi),
+			FullyQualifiedName.from(psi, psi.getModuleName()),
+			ModuleName.from(psi),
 			C3TypeEnum.find(psi)
 		);
-	}
-
-	private static @Nullable ModuleName readModuleName(@NotNull StubInputStream dataStream) throws IOException
-	{
-		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
-		return value != null ? new ModuleName(value) : null;
 	}
 
 	public @NotNull FullyQualifiedName getFqName()

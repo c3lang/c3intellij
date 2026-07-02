@@ -80,14 +80,14 @@ public abstract class C3FuncDefMixinImpl extends C3StubBasedPsiElementBase<C3Fun
 	public @NotNull FullyQualifiedName getFqName()
 	{
 		C3FuncDefStub s = getGreenStub();
-		return s != null ? s.getFqName() : FullyQualifiedName.Companion.from(getFuncHeader(), getModuleName());
+		return s != null ? s.getFqName() : FullyQualifiedName.from(getFuncHeader(), getModuleName());
 	}
 
 	@Override
 	public @Nullable ModuleName getModuleName()
 	{
 		C3FuncDefStub s = getGreenStub();
-		return s != null ? s.getModule() : ModuleName.Companion.from(this);
+		return s != null ? s.getModule() : ModuleName.from(this);
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public abstract class C3FuncDefMixinImpl extends C3StubBasedPsiElementBase<C3Fun
 		C3FuncDefStub s = getGreenStub();
 		if (s != null) return s.getType();
 		C3Type t = getFuncHeader().getFuncName().getType();
-		return t != null ? ShortType.Companion.toShortType(t) : null;
+		return t != null ? ShortType.from(t) : null;
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public abstract class C3FuncDefMixinImpl extends C3StubBasedPsiElementBase<C3Fun
 		C3FuncDefStub s = getGreenStub();
 		if (s != null) return s.getReturnType();
 		C3Type t = getFuncHeader().getOptionalType().getType();
-		return ShortType.Companion.toShortType(t);
+		return ShortType.from(t);
 	}
 
 	@Override
@@ -115,6 +115,6 @@ public abstract class C3FuncDefMixinImpl extends C3StubBasedPsiElementBase<C3Fun
 		if (s != null) return s.getParameterTypes();
 		C3ParameterList paramList = getFnParameterList().getParameterList();
 		List<C3ParamDecl> paramDecls = paramList != null ? paramList.getParamDeclList() : null;
-		return ParamType.Companion.toParamTypeList(paramDecls);
+		return ParamType.toParamTypeList(paramDecls);
 	}
 }

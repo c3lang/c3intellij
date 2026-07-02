@@ -76,6 +76,6 @@ public abstract class C3FaultDefinitionMixinImpl extends C3StubBasedPsiElementBa
 	public @NotNull FullyQualifiedName getFqName()
 	{
 		C3FaultDefinitionStub s = getGreenStub();
-		return s != null ? s.getName() : FullyQualifiedName.Companion.from(this, ModuleName.Companion.from(this));
+		return s != null ? s.getName() : FullyQualifiedName.from(this, ModuleName.from(this));
 	}
 }

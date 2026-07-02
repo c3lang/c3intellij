@@ -37,7 +37,7 @@ public class C3EnumConstantStub extends StubBase<C3EnumConstant>
 		@Nullable IStubElementType<?, ?> elementType,
 		@NotNull C3EnumConstant psi)
 	{
-		this(parent, elementType, ModuleName.Companion.from(psi), psi.getFqName(), psi.getConstIdent());
+		this(parent, elementType, ModuleName.from(psi), psi.getFqName(), psi.getConstIdent());
 	}
 
 	public C3EnumConstantStub(
@@ -48,16 +48,10 @@ public class C3EnumConstantStub extends StubBase<C3EnumConstant>
 		this(
 			parent,
 			elementType,
-			readModuleName(dataStream),
-			FullyQualifiedName.Companion.parse(dataStream.readUTFFast()),
+			StubStreamExtensions.readModuleName(dataStream),
+			FullyQualifiedName.parse(dataStream.readUTFFast()),
 			dataStream.readUTFFast()
 		);
-	}
-
-	private static @Nullable ModuleName readModuleName(@NotNull StubInputStream dataStream) throws IOException
-	{
-		String value = StubStreamExtensions.readNullableUTFFast(dataStream);
-		return value != null ? new ModuleName(value) : null;
 	}
 
 	public @Nullable ModuleName getModule()

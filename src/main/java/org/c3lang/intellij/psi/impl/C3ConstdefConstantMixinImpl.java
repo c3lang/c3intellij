@@ -8,7 +8,6 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.stubs.C3ConstdefConstantStub;
-import org.c3lang.intellij.stubs.C3EnumConstantStub;
 import org.c3lang.intellij.stubs.C3TypeEnum;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

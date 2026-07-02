@@ -151,7 +151,7 @@ public final class FunctionCompletionContributor extends CompletionProvider<Comp
 
             WriteCommandAction.runWriteCommandAction(context.getProject(), () -> {
                 AddImportQuickFix.ImportAction importAction =
-                    AddImportQuickFix.Companion.addImportAsText(element, moduleDefinition);
+                    AddImportQuickFix.addImportAsText(element, moduleDefinition);
 
                 ModuleName importModuleName = importAction != null ? importAction.getModuleName() : null;
                 String textToInsert = moduleDefinition.textToInsert(importModuleName, element);
