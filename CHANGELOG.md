@@ -3,6 +3,8 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+
+## [0.2.4]
 - Find usages / rename / goto declaration works for locals.
 - Find definition of module from import.
 
