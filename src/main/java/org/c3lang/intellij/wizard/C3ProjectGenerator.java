@@ -3,7 +3,9 @@ package org.c3lang.intellij.wizard;
 import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
 import com.intellij.ide.util.projectWizard.WebTemplateNewProjectWizard;
-import com.intellij.ide.wizard.GeneratorNewProjectWizardBuilderAdapter;
+import com.intellij.ide.util.projectWizard.WizardContext;
+import com.intellij.ide.wizard.GeneratorNewProjectWizard;
+import com.intellij.ide.wizard.NewProjectWizardStep;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -86,43 +88,85 @@ public final class C3ProjectGenerator
         C3Util.INSTANCE.writeToFile(moduleName, "templates/manifest.json", basePath.resolve("manifest.json").toFile());
     }
 
-    public static class ProjectModuleBuilder extends GeneratorNewProjectWizardBuilderAdapter
+    public static class ProjectNewProjectWizard implements GeneratorNewProjectWizard
     {
-        public ProjectModuleBuilder()
+        private final GeneratorNewProjectWizard delegate = new WebTemplateNewProjectWizard(new ProjectDirectoryGenerator());
+
+        @Override
+        public @NotNull String getId()
         {
-            super(new WebTemplateNewProjectWizard(new ProjectDirectoryGenerator()));
+            return "C3_PROJECT";
         }
 
         @Override
-        public @NotNull String getGroupName()
+        public @NotNull String getName()
         {
-            return "Other";
+            return "C3 Project";
         }
 
         @Override
-        public @NotNull String getDescription()
+        public @NotNull Icon getIcon()
+        {
+            return C3Icons.LOGO;
+        }
+
+        @Override
+        public String getDescription()
         {
             return "Create a C3 project";
         }
+
+        @Override
+        public int getOrdinal()
+        {
+            return 10;
+        }
+
+        @Override
+        public @NotNull NewProjectWizardStep createStep(@NotNull WizardContext context)
+        {
+            return delegate.createStep(context);
+        }
     }
 
-    public static class LibraryModuleBuilder extends GeneratorNewProjectWizardBuilderAdapter
+    public static class LibraryNewProjectWizard implements GeneratorNewProjectWizard
     {
-        public LibraryModuleBuilder()
+        private final GeneratorNewProjectWizard delegate = new WebTemplateNewProjectWizard(new LibraryDirectoryGenerator());
+
+        @Override
+        public @NotNull String getId()
         {
-            super(new WebTemplateNewProjectWizard(new LibraryDirectoryGenerator()));
+            return "C3_LIBRARY";
         }
 
         @Override
-        public @NotNull String getGroupName()
+        public @NotNull String getName()
         {
-            return "Other";
+            return "C3 Library";
         }
 
         @Override
-        public @NotNull String getDescription()
+        public @NotNull Icon getIcon()
+        {
+            return C3Icons.LIB_FILE;
+        }
+
+        @Override
+        public String getDescription()
         {
             return "Create a C3 library";
+        }
+
+        @Override
+        public int getOrdinal()
+        {
+            return 20;
+        }
+
+        @Override
+        public @NotNull NewProjectWizardStep createStep(@NotNull WizardContext context)
+        {
+            return delegate.createStep(context);
         }
     }
 
