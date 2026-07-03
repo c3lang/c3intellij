@@ -2,10 +2,12 @@
 
 # C3IntelliJ Changelog
 
-## [Unreleased]
+## [0.2.5]
 - Support new `@param` types.
 - Updated create project support.
 - Fix crash in import lookup.
+- IDE could crash when hovering for macro / fn lookup.
+- Improve formatting on parameters.
 
 ## [0.2.4]
 - Find usages / rename / goto declaration works for locals.

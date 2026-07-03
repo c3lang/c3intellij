@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.HtmlBuilder;
 import com.intellij.openapi.util.text.HtmlChunk;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
@@ -31,7 +32,7 @@ final class DocumentationUtils
     {
     }
 
-    static @NotNull String findDocumentationComment(@NotNull PsiElement element)
+	static @NotNull String findDocumentationComment(@NotNull PsiElement element)
     {
         PsiElement prev = element.getParent() != null
             && element.getParent().getParent() instanceof C3DefaultModuleSection
@@ -144,20 +145,12 @@ final class DocumentationUtils
             String name = entry.getKey();
             String description = entry.getValue().description();
             String contract = entry.getValue().contract();
-            String safeDescription = !description.isBlank()
-                ? " - " + dropFirstAndLast(description)
-                : "";
-            String safeContract = !contract.isBlank()
-                ? "<span style=\"color:#ffccff;\"><i>" + contract + "</i></span>"
-                : "";
-            builder.append("<p><code>")
-                .append(safeContract)
-                .append(name)
-                .append("</code>")
-                .append(safeDescription)
-                .append("</p>");
+			HtmlBuilder row = new HtmlBuilder();
+			HtmlChunk contractChunk = contract.isBlank() ? HtmlChunk.empty() : DocumentationMarkup.GRAYED_ELEMENT.child(HtmlChunk.text(contract).italic());
+			row.append(HtmlChunk.tag("code").children(HtmlChunk.fragment(contractChunk, HtmlChunk.text(name))));
+			if (!description.isBlank()) row.append(HtmlChunk.text(" - " + dropFirstAndLast(description)));
+            builder.append(HtmlChunk.p().child(row.toFragment()));
         }
-
         return builder.toString();
     }
 
@@ -197,6 +190,7 @@ final class DocumentationUtils
         }
         return "";
     }
+
 
     static @NotNull String extractDescriptionTextFromDoc(@NotNull String docComment)
     {

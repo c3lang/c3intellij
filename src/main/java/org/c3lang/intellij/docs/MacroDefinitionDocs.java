@@ -5,8 +5,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.presentation.java.SymbolPresentationUtil;
 import org.c3lang.intellij.psi.C3MacroDefinition;
 import org.c3lang.intellij.psi.C3ParamDecl;
+import org.c3lang.intellij.psi.C3ParameterList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,12 +25,17 @@ public final class MacroDefinitionDocs
         String docs = DocumentationUtils.findDocumentationComment(element);
         String file = SymbolPresentationUtil.getFilePathPresentation(element.getContainingFile());
         String argsString = "(" + element.getMacroParams().getText().replaceAll("\\s+", " ").trim() + ")";
-        var parameterList = Objects.requireNonNull(element.getMacroParams().getParameterList());
-        List<String> args = parameterList.getParamDeclList().stream()
-            .map(C3ParamDecl::getParameter)
-            .map(parameter -> Objects.requireNonNull(parameter.getName()))
-            .toList();
+		C3ParameterList parameterList = element.getMacroParams().getParameterList();
 
+        List<String> args = new ArrayList<>();
+		if (parameterList != null)
+		{
+			for (C3ParamDecl decl : parameterList.getParamDeclList())
+			{
+				String s = decl.getParameter().getName();
+				if (s != null && !s.isBlank()) args.add(s);
+			}
+		}
         return renderFullDoc(file, name, type, argsString, args, docs, element.getProject());
     }
 

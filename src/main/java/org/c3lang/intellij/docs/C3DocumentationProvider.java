@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class C3DocumentationProvider extends AbstractDocumentationProvider
 {
+
 	@Override
 	public @Nullable String generateDoc(@Nullable PsiElement element, @Nullable PsiElement originalElement)
 	{
