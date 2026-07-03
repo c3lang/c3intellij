@@ -5,6 +5,7 @@
 ## [Unreleased]
 - Support new `@param` types.
 - Updated create project support.
+- Fix crash in import lookup.
 
 ## [0.2.4]
 - Find usages / rename / goto declaration works for locals.

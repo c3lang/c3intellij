@@ -1,6 +1,5 @@
 package org.c3lang.intellij.psi;
 
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
@@ -12,14 +11,6 @@ public interface C3ModuleNamePsiElement extends C3PsiElement
 	default boolean isSameModule(@NotNull C3FullyQualifiedNamePsiElement other)
 	{
 		return Objects.equals(getModuleName(), other.getModuleName());
-	}
-
-	default boolean isImported(@NotNull C3FullyQualifiedNamePsiElement other)
-	{
-		C3ModuleDefinition moduleDefinition = Objects.requireNonNull(
-			PsiTreeUtil.getParentOfType(this, C3ModuleDefinition.class, true));
-		return other.getModuleDefinition().equals(moduleDefinition)
-			|| moduleDefinition.getVisibleModulePrefix(other.getModuleName()) != null;
 	}
 
 	default @NotNull String textToInsert(@Nullable ModuleName imported, @NotNull C3FullyQualifiedNamePsiElement element)
