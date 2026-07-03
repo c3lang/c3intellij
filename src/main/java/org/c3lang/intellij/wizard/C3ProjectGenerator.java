@@ -32,8 +32,10 @@ public final class C3ProjectGenerator
     {
     }
 
-    static void generateProject(@NotNull Path basePath, @NotNull String projectName) throws IOException
+    static void generateProject(@NotNull Path basePath, @NotNull String projectName, C3ProjectType projectType) throws IOException
     {
+		String moduleName = C3Util.projectNameToModuleName(projectName);
+		String targetName = C3Util.projectNameToTargetName(projectName);
         String[] dirs = new String[]{
             "build",
             "docs",
@@ -51,12 +53,24 @@ public final class C3ProjectGenerator
 
         FileUtil.writeToFile(basePath.resolve("LICENSE").toFile(), "");
         FileUtil.writeToFile(basePath.resolve("README.md").toFile(), "");
-        C3Util.INSTANCE.writeToFile(projectName, "templates/project.json", basePath.resolve("project.json").toFile());
-        C3Util.INSTANCE.writeToFile(projectName, "templates/main", basePath.resolve("src/main.c3").toFile());
+		switch (projectType)
+		{
+			case APPLICATION:
+				C3Util.INSTANCE.writeToFile(targetName, "templates/project.json", basePath.resolve("project.json").toFile());
+				C3Util.INSTANCE.writeToFile(moduleName, "templates/main.c3", basePath.resolve("src/main.c3").toFile());
+				break;
+			case DYNAMIC_LIBRARY:
+				C3Util.INSTANCE.writeToFile(targetName, "templates/project_dynamic.json", basePath.resolve("project.json").toFile());
+				C3Util.INSTANCE.writeToFile(moduleName, "templates/lib.c3", basePath.resolve("src/lib.c3").toFile());
+			case STATIC_LIBRARY:
+				C3Util.INSTANCE.writeToFile(targetName, "templates/project_dynamic.json", basePath.resolve("project.json").toFile());
+				C3Util.INSTANCE.writeToFile(moduleName, "templates/lib.c3", basePath.resolve("src/lib.c3").toFile());
+		}
     }
 
     static void generateLibrary(@NotNull Path basePath, @NotNull String projectName) throws IOException
     {
+		String moduleName = C3Util.projectNameToModuleName(projectName);
         String[] dirs = new String[]{
             "freebsd-x64",
             "linux-aarch64",
@@ -74,8 +88,6 @@ public final class C3ProjectGenerator
             "windows-x64",
             "scripts"
         };
-
-        String moduleName = projectName.replace(" ", "_").toLowerCase();
 
         for (String dir : dirs)
         {
@@ -201,15 +213,17 @@ public final class C3ProjectGenerator
         @Override
         public @NotNull ProjectGeneratorPeer<C3Settings> createPeer()
         {
-            return new Peer();
+            return new ProjectPeer();
         }
 
         @Override
         public void generateProject(@NotNull Project project, @NotNull VirtualFile baseDir, @NotNull C3Settings settings, @NotNull Module module)
         {
+            C3ProjectType projectType = settings.projectType();
+
             try
             {
-                C3ProjectGenerator.generateProject(Path.of(baseDir.getPath()), project.getName());
+                C3ProjectGenerator.generateProject(Path.of(baseDir.getPath()), project.getName(), projectType);
             }
             catch (IOException e)
             {
@@ -249,7 +263,7 @@ public final class C3ProjectGenerator
         @Override
         public @NotNull ProjectGeneratorPeer<C3Settings> createPeer()
         {
-            return new Peer();
+            return new LibraryPeer();
         }
 
         @Override
@@ -266,9 +280,45 @@ public final class C3ProjectGenerator
         }
     }
 
-    private static class Peer extends GeneratorPeerImpl<C3Settings>
+    private static class ProjectPeer extends GeneratorPeerImpl<C3Settings>
     {
-        private final C3SettingsPanel settingsPanel = new C3SettingsPanel();
+        private final C3SettingsPanel settingsPanel = new C3SettingsPanel(true);
+
+        @Override
+        public @NotNull C3Settings getSettings()
+        {
+            return settingsPanel.getSettings();
+        }
+
+        @Override
+        public void buildUI(@NotNull SettingsStep settingsStep)
+        {
+            settingsStep.addSettingsField("Project type:", settingsPanel.getProjectType());
+            settingsStep.addSettingsField("Path to C3 stdlib:", settingsPanel.getStdlibPath());
+        }
+
+        @Override
+        public @NotNull JComponent getComponent(@NotNull TextFieldWithBrowseButton myLocationField, @NotNull Runnable checkValid)
+        {
+            return settingsPanel.getComponent();
+        }
+
+        @Override
+        public ValidationInfo validate()
+        {
+            return null;
+        }
+
+        @Override
+        public boolean isBackgroundJobRunning()
+        {
+            return false;
+        }
+    }
+
+    private static class LibraryPeer extends GeneratorPeerImpl<C3Settings>
+    {
+        private final C3SettingsPanel settingsPanel = new C3SettingsPanel(false);
 
         @Override
         public @NotNull C3Settings getSettings()
@@ -304,10 +354,12 @@ public final class C3ProjectGenerator
     private static class C3SettingsPanel
     {
         private final TextFieldWithBrowseButton stdlibPath = createStdlibPathField();
-        private final JPanel component = createStdlibPathPanel(stdlibPath);
+        private final JComboBox<C3ProjectType> projectType = createProjectTypeField();
+        private final JPanel component;
 
-        private C3SettingsPanel()
+        private C3SettingsPanel(boolean showProjectType)
         {
+            component = createSettingsPanel(stdlibPath, projectType, showProjectType);
         }
 
         private @NotNull JComponent getComponent()
@@ -320,10 +372,22 @@ public final class C3ProjectGenerator
             return stdlibPath;
         }
 
+        private @NotNull JComboBox<C3ProjectType> getProjectType()
+        {
+            return projectType;
+        }
+
         private @NotNull C3Settings getSettings()
         {
-            return new C3Settings(stdlibPath.getText());
+            return new C3Settings(stdlibPath.getText(), getSelectedProjectType(projectType));
         }
+    }
+
+    private static JComboBox<C3ProjectType> createProjectTypeField()
+    {
+        JComboBox<C3ProjectType> field = new JComboBox<>(C3ProjectType.values());
+        field.setSelectedItem(C3ProjectType.APPLICATION);
+        return field;
     }
 
     private static TextFieldWithBrowseButton createStdlibPathField()
@@ -334,26 +398,80 @@ public final class C3ProjectGenerator
         return field;
     }
 
-    private static JPanel createStdlibPathPanel(TextFieldWithBrowseButton stdlibPath)
+    private static JPanel createSettingsPanel(TextFieldWithBrowseButton stdlibPath,
+                                             JComboBox<C3ProjectType> projectType,
+                                             boolean showProjectType)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        if (showProjectType)
+        {
+            panel.add(createLabeledPanel("Project type:", projectType));
+            panel.add(Box.createVerticalStrut(8));
+        }
+
+        panel.add(createLabeledPanel("C3 stdlib path:", stdlibPath));
+        return panel;
+    }
+
+    private static JPanel createLabeledPanel(@NotNull String label, @NotNull JComponent component)
     {
         JPanel panel = new JPanel(new java.awt.BorderLayout(8, 0));
-        panel.add(new JLabel("C3 stdlib path:"), java.awt.BorderLayout.WEST);
-        panel.add(stdlibPath, java.awt.BorderLayout.CENTER);
+        panel.add(new JLabel(label), java.awt.BorderLayout.WEST);
+        panel.add(component, java.awt.BorderLayout.CENTER);
         return panel;
+    }
+
+    private static @NotNull C3ProjectType getSelectedProjectType(@NotNull JComboBox<C3ProjectType> projectType)
+    {
+        Object selected = projectType.getSelectedItem();
+        if (selected instanceof C3ProjectType selectedProjectType)
+        {
+            return selectedProjectType;
+        }
+        return C3ProjectType.APPLICATION;
+    }
+
+    public enum C3ProjectType
+    {
+        APPLICATION("Application"),
+        DYNAMIC_LIBRARY("Dynamic library"),
+        STATIC_LIBRARY("Static library");
+
+        private final @NotNull String displayName;
+
+        C3ProjectType(@NotNull String displayName)
+        {
+            this.displayName = displayName;
+        }
+
+        @Override
+        public @NotNull String toString()
+        {
+            return displayName;
+        }
     }
 
     public static class C3Settings
     {
         private final @NotNull String stdlibPath;
+        private final @NotNull C3ProjectType projectType;
 
-        private C3Settings(@NotNull String stdlibPath)
+        private C3Settings(@NotNull String stdlibPath, @NotNull C3ProjectType projectType)
         {
             this.stdlibPath = stdlibPath;
+            this.projectType = projectType;
         }
 
         public @NotNull String stdlibPath()
         {
             return stdlibPath;
+        }
+
+        public @NotNull C3ProjectType projectType()
+        {
+            return projectType;
         }
     }
 }

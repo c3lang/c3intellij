@@ -10,7 +10,7 @@
   "output": "build",
   "targets": {
     "%s": {
-      "type": "executable"
+      "type": "static-lib"
     }
-  },
+  }
 }

@@ -115,6 +115,7 @@
                          displayName="C3" />
     
     <sdkType implementation="org.c3lang.intellij.C3SdkType"/>
+    <!-- We need both, one ensures compatibility with CLion etc, the other with IntelliJ IDEA -->
     <directoryProjectGenerator implementation="org.c3lang.intellij.wizard.C3ProjectGenerator$ProjectDirectoryGenerator"/>
     <directoryProjectGenerator implementation="org.c3lang.intellij.wizard.C3ProjectGenerator$LibraryDirectoryGenerator"/>
     <newProjectWizard.generator implementation="org.c3lang.intellij.wizard.C3ProjectGenerator$ProjectNewProjectWizard"/>

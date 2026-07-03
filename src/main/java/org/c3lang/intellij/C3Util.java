@@ -45,6 +45,49 @@ public final class C3Util
     {
     }
 
+	public static @NotNull String projectNameToModuleName(@NotNull String projectName)
+	{
+		StringBuilder builder = new StringBuilder();
+		for (char c : projectName.toCharArray())
+		{
+			c = Character.toLowerCase(c);
+			if (Character.isLetter(c))
+			{
+				builder.append(c);
+				continue;
+			}
+			if ((Character.isDigit(c) || c == '_'))
+			{
+				if (builder.isEmpty()) builder.append("project");
+				builder.append(c);
+				continue;
+			}
+			if (builder.isEmpty()) continue;
+			if (builder.charAt(builder.length() - 1) == '_') continue;
+			builder.append('_');
+		}
+		if (builder.isEmpty()) builder.append("project");
+		if (builder.length() > 31) builder.setLength(31);
+		return builder.toString();
+	}
+
+	public static @NotNull String projectNameToTargetName(@NotNull String projectName)
+	{
+		StringBuilder builder = new StringBuilder();
+		for (char c : projectName.toCharArray())
+		{
+			if (Character.isLetterOrDigit(c) || c == '_' || c == '-' || c == '.')
+			{
+				builder.append(c);
+				continue;
+			}
+			if (!builder.isEmpty() && builder.charAt(builder.length() - 1) == '-') continue;
+			builder.append('-');
+		}
+		if (builder.isEmpty()) builder.append("project");
+		return builder.toString();
+	}
+
     public static @NotNull String dropPrefix(@NotNull String value, @NotNull String prefix)
     {
         return value.startsWith(prefix) ? value.substring(prefix.length()) : value;
