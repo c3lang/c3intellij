@@ -115,6 +115,10 @@
                          displayName="C3" />
     
     <sdkType implementation="org.c3lang.intellij.C3SdkType"/>
+    <moduleBuilder builderClass="org.c3lang.intellij.wizard.C3ProjectGenerator$ProjectModuleBuilder"/>
+    <moduleBuilder builderClass="org.c3lang.intellij.wizard.C3ProjectGenerator$LibraryModuleBuilder"/>
+    <directoryProjectGenerator implementation="org.c3lang.intellij.wizard.C3ProjectGenerator$ProjectDirectoryGenerator"/>
+    <directoryProjectGenerator implementation="org.c3lang.intellij.wizard.C3ProjectGenerator$LibraryDirectoryGenerator"/>
     <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewProjectWizard"/>
     <newProjectWizard.languageGenerator implementation="org.c3lang.intellij.wizard.C3NewLibraryWizard"/>
     <!--<projectSdkSetupValidator implementation="" />-->
