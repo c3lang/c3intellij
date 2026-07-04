@@ -1,14 +1,18 @@
 package org.c3lang.intellij.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
+import org.c3lang.intellij.C3Icons;
 import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.stubs.C3MacroDefinitionStub;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 import java.util.List;
 
 public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBase<C3MacroDefinitionStub> implements C3MacroDefinition
@@ -117,5 +121,31 @@ public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBa
 		C3ParameterList paramList = getMacroParams().getParameterList();
 		List<C3ParamDecl> paramDecls = paramList != null ? paramList.getParamDeclList() : null;
 		return ParamType.toParamTypeList(paramDecls);
+	}
+
+	@Override
+	public @NotNull ItemPresentation getPresentation()
+	{
+		return new ItemPresentation()
+		{
+			@Override
+			public @NotNull String getPresentableText()
+			{
+				return getFqName().getName();
+			}
+
+			@Override
+			public @Nullable String getLocationString()
+			{
+				ModuleName moduleName = getModuleName();
+				return moduleName != null ? moduleName.getValue() : null;
+			}
+
+			@Override
+			public @Nullable Icon getIcon(boolean unused)
+			{
+				return C3Icons.Nodes.MACRO;
+			}
+		};
 	}
 }

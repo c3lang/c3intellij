@@ -3,6 +3,7 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Find definitions of `stream.read_byte` when stream isn't typed.
 
 ## [0.2.6]
 - Fixes to `@return` parsing.

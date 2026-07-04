@@ -54,6 +54,21 @@ public final class StructService
         return result;
     }
 
+    @NotNull
+    public List<C3StructMemberDeclaration> findStructMembersByName(@NotNull String name, @NotNull Project project)
+    {
+        List<C3StructMemberDeclaration> result = new ArrayList<>();
+        String suffix = "." + name;
+        for (String key : StubIndex.getInstance().getAllKeys(StructMemberDeclarationIndex.KEY, project))
+        {
+            if (key.endsWith(suffix))
+            {
+                result.addAll(getStructMembers(key, project));
+            }
+        }
+        return result;
+    }
+
     @SuppressWarnings("DuplicatedCode")
     @NotNull
     public List<Pair<AccessPath, String>> getFields(

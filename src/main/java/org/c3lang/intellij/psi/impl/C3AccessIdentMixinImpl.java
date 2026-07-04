@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.c3lang.intellij.index.NameIndexService;
 import org.c3lang.intellij.index.StructService;
 import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.psi.reference.C3ReferenceBase;
@@ -96,11 +97,16 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 		@Override
 		public @NotNull Collection<C3PsiElement> multiResolve()
 		{
-			C3CallExpr call = PsiTreeUtil.getParentOfType(myElement, C3CallExpr.class);
+			C3CallExpr call = findAccessCallExpr();
 			if (call == null) return Collections.emptyList();
 
 			AccessIdentSequence seq = getAccessIdentSequence(call);
-			if (seq == null) return Collections.emptyList();
+			if (seq == null)
+			{
+				return isInvocationCallee()
+					? findMethodsMatchingAccessName()
+					: findFieldsOrMethodsMatchingAccessName();
+			}
 
 			String query = seq.rootType.getFullName();
 			List<C3StructMemberDeclaration> structMembers = Collections.emptyList();
@@ -114,7 +120,56 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 				query = nextType.getFullName();
 			}
 
-			return new ArrayList<>(structMembers);
+			return !structMembers.isEmpty() || isInvocationCallee()
+				? new ArrayList<>(structMembers)
+				: findFieldsOrMethodsMatchingAccessName();
+		}
+
+		private @NotNull Collection<C3PsiElement> findMethodsMatchingAccessName()
+		{
+			String name = myElement.getNameIdent();
+			if (name == null) return Collections.emptyList();
+
+			return new ArrayList<>(NameIndexService.INSTANCE.findMethodsByName(name, myElement.getProject()));
+		}
+
+		private @NotNull Collection<C3PsiElement> findFieldsOrMethodsMatchingAccessName()
+		{
+			String name = myElement.getNameIdent();
+			if (name == null) return Collections.emptyList();
+
+			List<C3StructMemberDeclaration> fields =
+				StructService.INSTANCE.findStructMembersByName(name, myElement.getProject());
+			if (!fields.isEmpty()) return new ArrayList<>(fields);
+
+			return findMethodsMatchingAccessName();
+		}
+
+		private boolean isInvocationCallee()
+		{
+			C3CallExpr accessExpr = findAccessCallExpr();
+			if (accessExpr == null) return false;
+
+			PsiElement parent = accessExpr.getParent();
+			if (!(parent instanceof C3CallExpr invocationExpr)) return false;
+
+			return invocationExpr.getExpr() == accessExpr
+				&& invocationExpr.getCallExprTail().getCallInvocation() != null;
+		}
+
+		private @Nullable C3CallExpr findAccessCallExpr()
+		{
+			PsiElement current = myElement.getParent();
+			while (current != null)
+			{
+				if (current instanceof C3CallExpr callExpr
+					&& callExpr.getCallExprTail().getAccessIdent() == myElement)
+				{
+					return callExpr;
+				}
+				current = current.getParent();
+			}
+			return null;
 		}
 
 		@Override

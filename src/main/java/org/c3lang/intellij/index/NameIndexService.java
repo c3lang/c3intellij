@@ -3,6 +3,7 @@ package org.c3lang.intellij.index;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
+import org.c3lang.intellij.psi.C3CallablePsiElement;
 import org.c3lang.intellij.psi.C3BaseType;
 import org.c3lang.intellij.psi.C3FullyQualifiedNamePsiElement;
 import org.c3lang.intellij.psi.C3PsiElement;
@@ -35,6 +36,22 @@ public final class NameIndexService
                         result.add(named);
                     }
                 }
+            }
+        }
+        return result;
+    }
+
+    @NotNull
+    public Collection<C3CallablePsiElement> findMethodsByName(@NotNull String name, @NotNull Project project)
+    {
+        List<C3CallablePsiElement> result = new ArrayList<>();
+        for (C3FullyQualifiedNamePsiElement element : findByNameEndsWith(name, project))
+        {
+            if (element instanceof C3CallablePsiElement callable
+                && callable.getType() != null
+                && callable.getFqName().getName().endsWith("." + name))
+            {
+                result.add(callable);
             }
         }
         return result;
