@@ -2,6 +2,12 @@
 
 # C3IntelliJ Changelog
 
+## [Unreleased]
+
+## [0.2.6]
+- Fixes to `@return` parsing.
+- Added `@return?`, `@ensure` and `@require` to docs popup.
+
 ## [0.2.5]
 - Support new `@param` types.
 - Updated create project support.

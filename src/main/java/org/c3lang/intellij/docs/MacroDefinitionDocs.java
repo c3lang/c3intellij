@@ -60,6 +60,7 @@ public final class MacroDefinitionDocs
         builder.append(DocumentationMarkup.SECTIONS_START);
         builder.append(DocumentationUtils.extractDescriptionTextFromDoc(docs)).append('\n');
         DocumentationUtils.appendParamsSection(docs, builder, args);
+        DocumentationUtils.appendContractSections(docs, builder);
         DocumentationUtils.appendReturnSection(docs, builder);
         DocumentationUtils.appendFileSection(file, builder);
         builder.append(DocumentationMarkup.SECTIONS_END);
