@@ -19,11 +19,11 @@ public class C3EditorNotificationProvider implements EditorNotificationProvider
 	public Function<? super FileEditor, ? extends JComponent> collectNotificationData(@NotNull Project project, @NotNull VirtualFile file)
 	{
 		C3SettingsState settings = C3SettingsState.getInstance();
-		if (settings.stdlibPath != null && !settings.stdlibPath.isEmpty()) return null;
+		if (settings.hasStdlibEntries()) return null;
 
 		return fileEditor -> {
 			EditorNotificationPanel panel = new EditorNotificationPanel(fileEditor, EditorNotificationPanel.Status.Error);
-			panel.setText("The C3 standard library path is not set.");
+			panel.setText("No C3 standard library paths are configured.");
 			panel.createActionLabel("Setup", () -> ShowSettingsUtil.getInstance().showSettingsDialog(project, C3Configurable.class));
 			return panel;
 		};

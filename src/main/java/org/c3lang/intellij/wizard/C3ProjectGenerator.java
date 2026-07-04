@@ -6,7 +6,6 @@ import com.intellij.ide.util.projectWizard.WebTemplateNewProjectWizard;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.ide.wizard.GeneratorNewProjectWizard;
 import com.intellij.ide.wizard.NewProjectWizardStep;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -25,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public final class C3ProjectGenerator
 {
@@ -294,7 +294,7 @@ public final class C3ProjectGenerator
         public void buildUI(@NotNull SettingsStep settingsStep)
         {
             settingsStep.addSettingsField("Project type:", settingsPanel.getProjectType());
-            settingsStep.addSettingsField("Path to C3 stdlib:", settingsPanel.getStdlibPath());
+            settingsStep.addSettingsField("C3 compiler:", settingsPanel.getCompilerSelector());
         }
 
         @Override
@@ -329,7 +329,7 @@ public final class C3ProjectGenerator
         @Override
         public void buildUI(@NotNull SettingsStep settingsStep)
         {
-            settingsStep.addSettingsField("Path to C3 stdlib:", settingsPanel.getStdlibPath());
+            settingsStep.addSettingsField("C3 compiler:", settingsPanel.getCompilerSelector());
         }
 
         @Override
@@ -353,13 +353,13 @@ public final class C3ProjectGenerator
 
     private static class C3SettingsPanel
     {
-        private final TextFieldWithBrowseButton stdlibPath = createStdlibPathField();
+        private final JComboBox<CompilerOption> compilerSelector = createCompilerSelector();
         private final JComboBox<C3ProjectType> projectType = createProjectTypeField();
         private final JPanel component;
 
         private C3SettingsPanel(boolean showProjectType)
         {
-            component = createSettingsPanel(stdlibPath, projectType, showProjectType);
+            component = createSettingsPanel(compilerSelector, projectType, showProjectType);
         }
 
         private @NotNull JComponent getComponent()
@@ -367,9 +367,9 @@ public final class C3ProjectGenerator
             return component;
         }
 
-        private @NotNull TextFieldWithBrowseButton getStdlibPath()
+        private @NotNull JComboBox<CompilerOption> getCompilerSelector()
         {
-            return stdlibPath;
+            return compilerSelector;
         }
 
         private @NotNull JComboBox<C3ProjectType> getProjectType()
@@ -379,7 +379,13 @@ public final class C3ProjectGenerator
 
         private @NotNull C3Settings getSettings()
         {
-            return new C3Settings(stdlibPath.getText(), getSelectedProjectType(projectType));
+            CompilerOption compilerOption = getSelectedCompilerOption(compilerSelector);
+            return new C3Settings(
+                compilerOption.name(),
+                compilerOption.binaryPath(),
+                compilerOption.stdlibPath(),
+                getSelectedProjectType(projectType)
+            );
         }
     }
 
@@ -390,15 +396,26 @@ public final class C3ProjectGenerator
         return field;
     }
 
-    private static TextFieldWithBrowseButton createStdlibPathField()
+    private static JComboBox<CompilerOption> createCompilerSelector()
     {
-        TextFieldWithBrowseButton field = new TextFieldWithBrowseButton();
-        field.setText(C3SettingsState.getInstance().stdlibPath);
-        field.addBrowseFolderListener(null, new FileChooserDescriptor(false, true, false, false, false, false));
+        JComboBox<CompilerOption> field = new JComboBox<>();
+        List<C3SettingsState.CompilerProfile> compilerProfiles = C3SettingsState.getInstance().getCompilerProfiles();
+        if (compilerProfiles.isEmpty())
+        {
+            field.addItem(CompilerOption.empty());
+            field.setEnabled(false);
+            return field;
+        }
+
+        for (C3SettingsState.CompilerProfile profile : compilerProfiles)
+        {
+            field.addItem(new CompilerOption(profile.name, profile.binaryPath, profile.stdlibPath));
+        }
+        field.setSelectedIndex(0);
         return field;
     }
 
-    private static JPanel createSettingsPanel(TextFieldWithBrowseButton stdlibPath,
+    private static JPanel createSettingsPanel(JComboBox<CompilerOption> compilerSelector,
                                              JComboBox<C3ProjectType> projectType,
                                              boolean showProjectType)
     {
@@ -411,7 +428,7 @@ public final class C3ProjectGenerator
             panel.add(Box.createVerticalStrut(8));
         }
 
-        panel.add(createLabeledPanel("C3 stdlib path:", stdlibPath));
+        panel.add(createLabeledPanel("C3 compiler:", compilerSelector));
         return panel;
     }
 
@@ -431,6 +448,31 @@ public final class C3ProjectGenerator
             return selectedProjectType;
         }
         return C3ProjectType.APPLICATION;
+    }
+
+    private static @NotNull CompilerOption getSelectedCompilerOption(@NotNull JComboBox<CompilerOption> compilerSelector)
+    {
+        Object selected = compilerSelector.getSelectedItem();
+        if (selected instanceof CompilerOption option)
+        {
+            return option;
+        }
+        return CompilerOption.empty();
+    }
+
+    private record CompilerOption(@NotNull String name, @NotNull String binaryPath, @NotNull String stdlibPath)
+    {
+        private static @NotNull CompilerOption empty()
+        {
+            return new CompilerOption("No configured C3 compilers", "", "");
+        }
+
+        @Override
+        public @NotNull String toString()
+        {
+            if (binaryPath.isBlank()) return name;
+            return name + " (" + binaryPath + ")";
+        }
     }
 
     public enum C3ProjectType
@@ -455,13 +497,31 @@ public final class C3ProjectGenerator
 
     public static class C3Settings
     {
+        private final @NotNull String compilerName;
+        private final @NotNull String compilerPath;
         private final @NotNull String stdlibPath;
         private final @NotNull C3ProjectType projectType;
 
-        private C3Settings(@NotNull String stdlibPath, @NotNull C3ProjectType projectType)
+        private C3Settings(
+                @NotNull String compilerName,
+                @NotNull String compilerPath,
+                @NotNull String stdlibPath,
+                @NotNull C3ProjectType projectType)
         {
+            this.compilerName = compilerName;
+            this.compilerPath = compilerPath;
             this.stdlibPath = stdlibPath;
             this.projectType = projectType;
+        }
+
+        public @NotNull String compilerName()
+        {
+            return compilerName;
+        }
+
+        public @NotNull String compilerPath()
+        {
+            return compilerPath;
         }
 
         public @NotNull String stdlibPath()

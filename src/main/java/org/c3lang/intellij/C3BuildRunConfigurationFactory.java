@@ -28,7 +28,7 @@ public class C3BuildRunConfigurationFactory extends ConfigurationFactory
 
     @Override public @NotNull RunConfiguration createTemplateConfiguration(@NotNull Project project)
     {
-        return new C3BuildRunConfiguration(project, this, "C3 Run");
+        return new C3BuildRunConfiguration(project, this, "C3 Build");
     }
 
     @Override public @Nullable Class<? extends BaseState> getOptionsClass()

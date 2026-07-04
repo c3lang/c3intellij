@@ -60,6 +60,36 @@ public class C3CompileRunConfiguration extends RunConfigurationBase<C3CompileRun
         getOptions().setSourceFile(file);
     }
 
+    public boolean isRunAfterCompilation()
+    {
+        return getOptions().isRunAfterCompilation();
+    }
+
+    public void setRunAfterCompilation(boolean runAfterCompilation)
+    {
+        getOptions().setRunAfterCompilation(runAfterCompilation);
+    }
+
+    public String getCompilerName()
+    {
+        return getOptions().getCompilerName();
+    }
+
+    public void setCompilerName(String compilerName)
+    {
+        getOptions().setCompilerName(compilerName);
+    }
+
+    public String getCompilerPath()
+    {
+        return getOptions().getCompilerPath();
+    }
+
+    public void setCompilerPath(String compilerPath)
+    {
+        getOptions().setCompilerPath(compilerPath);
+    }
+
     @Override public void checkConfiguration()
     {
     }
@@ -71,8 +101,11 @@ public class C3CompileRunConfiguration extends RunConfigurationBase<C3CompileRun
         return new CommandLineState(executionEnvironment) {
             @Override protected @NotNull ProcessHandler startProcess() throws ExecutionException
             {
-                String sdk = C3SettingsState.getInstance().sdk;
-                GeneralCommandLine commandLine = new GeneralCommandLine(sdk, "compile-run", getSourceFile());
+                GeneralCommandLine commandLine = new GeneralCommandLine(
+                    C3RunConfigurationUtil.findCompilerBinaryPath(getProject(), getCompilerName(), getCompilerPath()),
+                    isRunAfterCompilation() ? "compile-run" : "compile",
+                    getSourceFile()
+                );
 
                 // I couldn't just add the whole args string here because the GeneralCommandLine class adds quotes
                 // around parameters with spaces (so it would look like this: c3c run "--param value" which isn't valid
@@ -81,7 +114,6 @@ public class C3CompileRunConfiguration extends RunConfigurationBase<C3CompileRun
                 if (getArgs() != null) {
                     commandLine.addParameters(getArgs().split(" "));
                 }
-
                 String workingDirectory = getWorkingDirectory();
                 commandLine.setWorkDirectory(workingDirectory);
 

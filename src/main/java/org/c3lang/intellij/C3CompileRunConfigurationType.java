@@ -14,12 +14,12 @@ public class C3CompileRunConfigurationType implements ConfigurationType, DumbAwa
 
     @Override public @NotNull String getDisplayName()
     {
-        return "C3 Single File";
+        return "C3 Compile";
     }
 
     @Override public String getConfigurationTypeDescription()
     {
-        return "C3 run configuration type";
+        return "C3 compile configuration type";
     }
 
     @Override public Icon getIcon()

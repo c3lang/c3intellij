@@ -3,14 +3,13 @@ package org.c3lang.intellij.annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.c3lang.intellij.C3Language;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.C3CallExpr;
 import org.c3lang.intellij.psi.C3File;
 import org.c3lang.intellij.psi.C3FuncDefinition;
@@ -125,20 +124,13 @@ public final class CallExpr
         }
 
         PsiManager psiManager = PsiManager.getInstance(project);
-        VirtualFile[] contentRoots = ProjectRootManager.getInstance(project).getContentRoots();
-        for (VirtualFile root : contentRoots)
+        for (VirtualFile file : C3ProjectService.getInstance(project).getSourceFiles())
         {
-            VfsUtilCore.iterateChildrenRecursively(root, null, file -> {
-                if (!file.isDirectory())
-                {
-                    PsiFile psiFile = psiManager.findFile(file);
-                    if (psiFile instanceof C3File c3File && psiFile.getLanguage() == C3Language.INSTANCE)
-                    {
-                        addModuleMatches(c3File, module, name, matches);
-                    }
-                }
-                return true;
-            });
+            PsiFile psiFile = psiManager.findFile(file);
+            if (psiFile instanceof C3File c3File && psiFile.getLanguage() == C3Language.INSTANCE)
+            {
+                addModuleMatches(c3File, module, name, matches);
+            }
         }
 
         return matches;

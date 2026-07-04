@@ -1,9 +1,9 @@
 package org.c3lang.intellij.index;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
 import kotlin.Pair;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.AccessPath;
 import org.c3lang.intellij.psi.C3PsiElement;
 import org.c3lang.intellij.psi.C3StructMemberDeclaration;
@@ -29,7 +29,7 @@ public final class StructService
                 StructMemberDeclarationIndex.KEY,
                 query,
                 project,
-                GlobalSearchScope.allScope(project),
+                C3ProjectService.getInstance(project).getSearchScope(),
                 C3PsiElement.class))
         {
             if (element instanceof C3StructMemberDeclaration declaration)

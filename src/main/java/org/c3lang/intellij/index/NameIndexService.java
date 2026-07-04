@@ -1,8 +1,8 @@
 package org.c3lang.intellij.index;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.C3CallablePsiElement;
 import org.c3lang.intellij.psi.C3BaseType;
 import org.c3lang.intellij.psi.C3FullyQualifiedNamePsiElement;
@@ -97,7 +97,7 @@ public final class NameIndexService
             NameIndex.KEY,
             string,
             project,
-            GlobalSearchScope.allScope(project),
+            C3ProjectService.getInstance(project).getSearchScope(),
             C3PsiElement.class
         );
     }

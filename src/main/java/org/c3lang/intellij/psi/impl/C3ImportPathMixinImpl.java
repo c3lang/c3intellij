@@ -3,9 +3,9 @@ package org.c3lang.intellij.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
 import org.c3lang.intellij.index.ModuleIndex;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.psi.reference.C3ReferenceBase;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public abstract class C3ImportPathMixinImpl extends C3PsiElementImpl implements 
 			return StubIndex.getElements(ModuleIndex.KEY,
 			                             myElement.getText(),
 			                             myElement.getProject(),
-			                             GlobalSearchScope.allScope(myElement.getProject()),
+			                             C3ProjectService.getInstance(myElement.getProject()).getSearchScope(),
 			                             C3PsiElement.class)
 			                .stream()
 			                .filter(C3Module.class::isInstance)

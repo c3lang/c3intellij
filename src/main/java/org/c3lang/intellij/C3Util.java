@@ -1,19 +1,15 @@
 package org.c3lang.intellij;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FileTypeIndex;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.C3File;
 import org.c3lang.intellij.psi.C3FuncDefinition;
 import org.c3lang.intellij.psi.C3MacroDefinition;
@@ -30,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -88,31 +83,6 @@ public final class C3Util
 		return builder.toString();
 	}
 
-    public static @NotNull String dropPrefix(@NotNull String value, @NotNull String prefix)
-    {
-        return value.startsWith(prefix) ? value.substring(prefix.length()) : value;
-    }
-
-    public static @NotNull String dropPostfix(@NotNull String value, @NotNull String postfix)
-    {
-        return value.endsWith(postfix) ? value.substring(0, value.length() - postfix.length()) : value;
-    }
-
-    private Collection<VirtualFile> getAllFiles(@NotNull Project project)
-    {
-        Collection<VirtualFile> virtualFilesInterface =
-            FileTypeIndex.getFiles(C3InterfaceFileType.INSTANCE, GlobalSearchScope.allScope(project));
-        Collection<VirtualFile> virtualFiles =
-            FileTypeIndex.getFiles(C3SourceFileType.INSTANCE, GlobalSearchScope.allScope(project));
-        if (virtualFiles.isEmpty()) return virtualFilesInterface;
-        if (virtualFilesInterface.isEmpty()) return virtualFiles;
-
-        List<VirtualFile> all = new ArrayList<>(virtualFiles.size() + virtualFilesInterface.size());
-        all.addAll(virtualFiles);
-        all.addAll(virtualFilesInterface);
-        return all;
-    }
-
     public void writeToFile(@Nullable String moduleName, @Nullable String name, @NotNull File path)
     {
         InputStream inputStream = C3Util.class.getClassLoader().getResourceAsStream(name);
@@ -144,34 +114,33 @@ public final class C3Util
             @NotNull String name)
     {
         PsiManager psiManager = PsiManager.getInstance(project);
-        C3SettingsState settings = C3SettingsState.getInstance();
-        String stdLibPath = settings.stdlibPath;
 
-        for (VirtualFile virtualFile : FilenameIndex.getAllFilesByExt(
-                project,
-                C3SourceFileType.INSTANCE.getDefaultExtension()))
+        for (VirtualFile virtualFile : C3ProjectService.getInstance(project).getSourceFiles())
         {
             if (!virtualFile.isValid()) continue;
-
-            PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-            if (psiFile == null || psiFile.getLanguage() != C3Language.INSTANCE) continue;
-
-            Either<C3MacroDefinition, C3FuncDefinition> match = findDeclarationInPsiFile(psiFile, module, name);
-            if (match != null) return match;
-        }
-
-        for (File file : walkFiles(new File(stdLibPath)))
-        {
-            if (!file.isFile() || !"c3".equals(extension(file))) continue;
-
-            VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file);
-            if (virtualFile == null) continue;
 
             PsiFile psiFile = psiManager.findFile(virtualFile);
             if (psiFile == null || psiFile.getLanguage() != C3Language.INSTANCE) continue;
 
             Either<C3MacroDefinition, C3FuncDefinition> match = findDeclarationInPsiFile(psiFile, module, name);
             if (match != null) return match;
+        }
+
+        for (String stdLibPath : C3ProjectService.getInstance(project).getStdlibPaths())
+        {
+            for (File file : walkFiles(new File(stdLibPath)))
+            {
+                if (!file.isFile() || !"c3".equals(extension(file))) continue;
+
+                VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file);
+                if (virtualFile == null) continue;
+
+                PsiFile psiFile = psiManager.findFile(virtualFile);
+                if (psiFile == null || psiFile.getLanguage() != C3Language.INSTANCE) continue;
+
+                Either<C3MacroDefinition, C3FuncDefinition> match = findDeclarationInPsiFile(psiFile, module, name);
+                if (match != null) return match;
+            }
         }
 
         return null;
@@ -181,30 +150,29 @@ public final class C3Util
     {
         Set<String> modules = new HashSet<>();
         PsiManager psiManager = PsiManager.getInstance(project);
-        C3SettingsState settings = C3SettingsState.getInstance();
-        String stdLibPath = settings.stdlibPath;
 
-        for (VirtualFile virtualFile : FilenameIndex.getAllFilesByExt(
-                project,
-                C3SourceFileType.INSTANCE.getDefaultExtension()))
+        for (VirtualFile virtualFile : C3ProjectService.getInstance(project).getSourceFiles())
         {
             if (!virtualFile.isValid()) continue;
-
-            PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-            if (psiFile == null || psiFile.getLanguage() != C3Language.INSTANCE) continue;
-            addModulesStartingWith(psiFile, prefix, modules);
-        }
-
-        for (File file : walkFiles(new File(stdLibPath)))
-        {
-            if (!file.isFile() || !"c3".equals(extension(file))) continue;
-
-            VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file);
-            if (virtualFile == null) continue;
 
             PsiFile psiFile = psiManager.findFile(virtualFile);
             if (psiFile == null || psiFile.getLanguage() != C3Language.INSTANCE) continue;
             addModulesStartingWith(psiFile, prefix, modules);
+        }
+
+        for (String stdLibPath : C3ProjectService.getInstance(project).getStdlibPaths())
+        {
+            for (File file : walkFiles(new File(stdLibPath)))
+            {
+                if (!file.isFile() || !"c3".equals(extension(file))) continue;
+
+                VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file);
+                if (virtualFile == null) continue;
+
+                PsiFile psiFile = psiManager.findFile(virtualFile);
+                if (psiFile == null || psiFile.getLanguage() != C3Language.INSTANCE) continue;
+                addModulesStartingWith(psiFile, prefix, modules);
+            }
         }
 
         return modules;
@@ -214,37 +182,25 @@ public final class C3Util
             @NotNull Project project,
             @NotNull String module)
     {
-        C3SettingsState settings = C3SettingsState.getInstance();
-        String stdLibPath = settings.stdlibPath;
         ArrayList<Either<C3FuncDefinition, C3MacroDefinition>> matches = new ArrayList<>();
-        if (stdLibPath == null) return matches;
 
-        for (C3File file : walkStdLib(project, new File(stdLibPath)))
+        for (String stdLibPath : C3ProjectService.getInstance(project).getStdlibPaths())
         {
-            addDeclarationsFromModuleSections(file, module, matches);
+            for (C3File file : walkStdLib(project, new File(stdLibPath)))
+            {
+                addDeclarationsFromModuleSections(file, module, matches);
+            }
         }
 
-        List<C3File> projectFiles = new ArrayList<>();
         PsiManager psiManager = PsiManager.getInstance(project);
 
-        for (VirtualFile root : ProjectRootManager.getInstance(project).getContentRoots())
+        for (VirtualFile file : C3ProjectService.getInstance(project).getSourceFiles())
         {
-            VfsUtilCore.iterateChildrenRecursively(root, null, file -> {
-                if (!file.isDirectory())
-                {
-                    PsiFile psiFile = psiManager.findFile(file);
-                    if (psiFile instanceof C3File c3File && psiFile.getLanguage() == C3Language.INSTANCE)
-                    {
-                        projectFiles.add(c3File);
-                    }
-                }
-                return true;
-            });
-        }
-
-        for (C3File file : projectFiles)
-        {
-            addDeclarationsFromModuleSections(file, module, matches);
+            PsiFile psiFile = psiManager.findFile(file);
+            if (psiFile instanceof C3File c3File && psiFile.getLanguage() == C3Language.INSTANCE)
+            {
+                addDeclarationsFromModuleSections(c3File, module, matches);
+            }
         }
 
         return matches;
@@ -354,7 +310,7 @@ public final class C3Util
             @NotNull PsiManager psiManager,
             @NotNull ArrayList<C3File> files)
     {
-        if (virtualFile.isDirectory())
+		if (virtualFile.isDirectory())
         {
             for (VirtualFile child : virtualFile.getChildren())
             {

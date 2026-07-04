@@ -11,12 +11,12 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
 import com.intellij.util.ProcessingContext;
 import org.c3lang.intellij.C3Icons;
 import org.c3lang.intellij.index.NameIndex;
 import org.c3lang.intellij.intention.AddImportQuickFix;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.C3FnParameterList;
 import org.c3lang.intellij.psi.C3ModuleDefinition;
 import org.c3lang.intellij.psi.C3PathIdent;
@@ -87,7 +87,7 @@ public final class TypeCompletionContributor extends CompletionProvider<Completi
                     NameIndex.KEY,
                     key,
                     project,
-                    GlobalSearchScope.allScope(project),
+                    C3ProjectService.getInstance(project).getSearchScope(),
                     C3PsiElement.class))
             {
                 if (!(element instanceof C3TypeFullyQualifiedNamePsiElement typeName)) continue;

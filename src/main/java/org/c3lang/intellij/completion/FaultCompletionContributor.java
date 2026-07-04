@@ -13,12 +13,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
 import com.intellij.util.ProcessingContext;
 import org.c3lang.intellij.C3Icons;
 import org.c3lang.intellij.index.NameIndex;
 import org.c3lang.intellij.intention.AddImportQuickFix;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.C3FaultDefinition;
 import org.c3lang.intellij.psi.C3ModuleDefinition;
 import org.c3lang.intellij.psi.C3PathConst;
@@ -83,7 +83,7 @@ public final class FaultCompletionContributor extends CompletionProvider<Complet
                     NameIndex.KEY,
                     key,
                     project,
-                    GlobalSearchScope.allScope(project),
+                    C3ProjectService.getInstance(project).getSearchScope(),
                     C3PsiElement.class))
             {
                 if (!(element instanceof C3FaultDefinition faultDefinition)) continue;

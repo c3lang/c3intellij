@@ -15,6 +15,7 @@ import com.intellij.psi.PsiFile;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -79,11 +80,6 @@ abstract public class C3NewFileActionBase extends CreateFileFromTemplateAction
 
 	private static boolean isC3Project(@NotNull Project project)
 	{
-		String basePath = Validate.notNull(project.getBasePath(), "Project base path cannot be null");
-		VirtualFile projectDir =
-				Validate.notNull(LocalFileSystem.getInstance().findFileByPath(basePath), "Project root cannot be null");
-
-		VirtualFile markerFile = projectDir.findChild("project.json");
-		return markerFile != null && markerFile.exists();
+		return C3ProjectService.getInstance(project).isC3Project();
 	}
 }

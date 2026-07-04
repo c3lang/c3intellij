@@ -12,6 +12,7 @@ import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * Undocumented Class
@@ -23,6 +24,8 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
     JPanel panel;
     TextFieldWithBrowseButton sourceFileField;
     TextFieldWithBrowseButton workingDirectoryField;
+    JCheckBox runAfterCompilationCheckBox;
+    JComboBox<CompilerOption> compilerComboBox;
     JTextField argsField;
 
     public C3CompileRunEditor()
@@ -33,6 +36,8 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
                            .addLabeledComponent("C3 Source file", sourceFileField)
                            .addLabeledComponent("Working directory", workingDirectoryField)
                            .addTooltip("This is the directory where the output executable will be produced.")
+                           .addComponent(runAfterCompilationCheckBox)
+                           .addLabeledComponent("C3 compiler", compilerComboBox)
                            .addLabeledComponent("Additional arguments", argsField)
                            .getPanel();
     }
@@ -40,7 +45,7 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
     @Override protected void resetEditorFrom(@NotNull C3CompileRunConfiguration configuration)
     {
         // This function is called each time the run configuration form is shown,
-        // i.e. both when its first created and when it's being edited
+        // i.e. both when it's first created and when it's being edited
 
         if (configuration.getWorkingDirectory().isEmpty())
         {
@@ -57,6 +62,8 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
         // Also set argsField and sourceFileField to their stored values
         argsField.setText(configuration.getArgs());
         sourceFileField.setText(configuration.getSourceFile());
+        runAfterCompilationCheckBox.setSelected(configuration.isRunAfterCompilation());
+        resetCompilerSettings(configuration);
     }
 
     @Override protected void applyEditorTo(@NotNull C3CompileRunConfiguration configuration) throws
@@ -75,6 +82,9 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
         configuration.setWorkingDirectory(workingDirectoryField.getText());
         configuration.setArgs(argsField.getText());
         configuration.setSourceFile(sourceFileField.getText());
+        configuration.setRunAfterCompilation(runAfterCompilationCheckBox.isSelected());
+        configuration.setCompilerName(getSelectedCompilerName());
+        configuration.setCompilerPath(getSelectedCompilerPath());
     }
 
     @Override protected @NotNull JComponent createEditor()
@@ -91,6 +101,8 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
         workingDirectoryField.addBrowseFolderListener(listener);
 
         argsField = new JTextField();
+        runAfterCompilationCheckBox = new JCheckBox("Run after compilation");
+        compilerComboBox = C3RunConfigurationUtil.createCompilerComboBox();
 
         sourceFileField = new TextFieldWithBrowseButton();
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false)
@@ -100,4 +112,25 @@ public class C3CompileRunEditor extends SettingsEditor<C3CompileRunConfiguration
         sourceFileField.addBrowseFolderListener(new TextBrowseFolderListener(descriptor.withTitle(
                 "Select C3 Source File")));
     }
+
+    private void resetCompilerSettings(@NotNull C3CompileRunConfiguration configuration)
+    {
+        String compilerName = configuration.getCompilerName().isBlank()
+                ? C3RunConfigurationUtil.findDefaultCompilerName(configuration.getProject())
+                : configuration.getCompilerName();
+		C3RunConfigurationUtil.selectCompiler(compilerComboBox, compilerName, configuration.getCompilerPath());
+    }
+
+    private @NotNull String getSelectedCompilerName()
+    {
+        Object selected = compilerComboBox.getSelectedItem();
+        return selected instanceof CompilerOption option ? option.name() : "";
+    }
+
+    private @NotNull String getSelectedCompilerPath()
+    {
+        Object selected = compilerComboBox.getSelectedItem();
+        return selected instanceof CompilerOption option ? option.binaryPath() : "";
+    }
+
 }

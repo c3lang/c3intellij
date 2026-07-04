@@ -15,12 +15,12 @@ public class C3BuildRunConfigurationType implements ConfigurationType, DumbAware
 
     @Override public @NotNull String getDisplayName()
     {
-        return "C3 Run Project";
+        return "C3 Build Project";
     }
 
     @Override public String getConfigurationTypeDescription()
     {
-        return "C3 run project";
+        return "C3 build project";
     }
 
     @Override public Icon getIcon()

@@ -13,13 +13,13 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.c3lang.intellij.C3Icons;
 import org.c3lang.intellij.index.NameIndex;
 import org.c3lang.intellij.intention.AddImportQuickFix;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.c3lang.intellij.psi.C3CallablePsiElement;
 import org.c3lang.intellij.psi.C3CallExpr;
 import org.c3lang.intellij.psi.C3FnParameterList;
@@ -103,7 +103,7 @@ public final class FunctionCompletionContributor extends CompletionProvider<Comp
                     NameIndex.KEY,
                     key,
                     project,
-                    GlobalSearchScope.allScope(project),
+                    C3ProjectService.getInstance(project).getSearchScope(),
                     C3PsiElement.class))
             {
                 if (!(psiElement instanceof C3CallablePsiElement element)) continue;

@@ -13,67 +13,102 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class C3BuildRunConfiguration extends RunConfigurationBase<C3CompileRunConfigurationOptions>
+public class C3BuildRunConfiguration extends RunConfigurationBase<C3BuildRunConfigurationOptions>
 {
-    protected C3BuildRunConfiguration(Project project, ConfigurationFactory factory, String name)
-    {
-        super(project, factory, name);
-    }
+	protected C3BuildRunConfiguration(Project project, ConfigurationFactory factory, String name)
+	{
+		super(project, factory, name);
+	}
 
-    @Override public @NotNull SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
-    {
-        return new C3BuildRunEditor();
-    }
+	@Override public @NotNull SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
+	{
+		return new C3BuildRunEditor();
+	}
 
-    @Override protected @NotNull C3BuildRunConfigurationOptions getOptions()
-    {
-        return (C3BuildRunConfigurationOptions)super.getOptions();
-    }
+	@Override protected @NotNull C3BuildRunConfigurationOptions getOptions()
+	{
+		return (C3BuildRunConfigurationOptions) super.getOptions();
+	}
 
-    public String getWorkingDirectory()
-    {
-        return getOptions().getWorkingDirectory();
-    }
+	public String getWorkingDirectory()
+	{
+		return getOptions().getWorkingDirectory();
+	}
 
-    public void setWorkingDirectory(String workingDirectory)
-    {
-        getOptions().setWorkingDirectory(workingDirectory);
-    }
+	public void setWorkingDirectory(String workingDirectory)
+	{
+		getOptions().setWorkingDirectory(workingDirectory);
+	}
 
-    public String getArgs()
-    {
-        return getOptions().getArgs();
-    }
+	public String getArgs()
+	{
+		return getOptions().getArgs();
+	}
 
-    public void setArgs(String args)
-    {
-        getOptions().setArgs(args);
-    }
+	public void setArgs(String args)
+	{
+		getOptions().setArgs(args);
+	}
 
-    @Override public void checkConfiguration()
-    {
-    }
+	public boolean isRunAfterBuild()
+	{
+		return getOptions().isRunAfterBuild();
+	}
 
-    @Override public @Nullable RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException
-    {
-        return new CommandLineState(executionEnvironment) {
-            @Override protected @NotNull ProcessHandler startProcess() throws ExecutionException
-            {
-                String sdk = C3SettingsState.getInstance().sdk;
-                GeneralCommandLine commandLine = new GeneralCommandLine(sdk, "run");
+	public void setRunAfterBuild(boolean runAfterBuild)
+	{
+		getOptions().setRunAfterBuild(runAfterBuild);
+	}
 
-                // I couldn't just add the whole args string here because the GeneralCommandLine class adds quotes
-                // around parameters with spaces (so it would look like this: c3c run "--param value" which isn't valid
-                // syntax).
-                // Instead, I'm splitting the args string by spaces and adding that array.
-                if (getArgs() != null) commandLine.addParameters(getArgs().split(" "));
+	public String getCompilerName()
+	{
+		return getOptions().getCompilerName();
+	}
 
-                commandLine.setWorkDirectory(getWorkingDirectory());
+	public void setCompilerName(String compilerName)
+	{
+		getOptions().setCompilerName(compilerName);
+	}
 
-                OSProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine);
-                ProcessTerminatedListener.attach(processHandler);
-                return processHandler;
-            }
-        };
-    }
+	public String getCompilerPath()
+	{
+		return getOptions().getCompilerPath();
+	}
+
+	public void setCompilerPath(String compilerPath)
+	{
+		getOptions().setCompilerPath(compilerPath);
+	}
+
+	@Override public void checkConfiguration()
+	{
+	}
+
+	@Override public @Nullable RunProfileState getState(@NotNull Executor executor,
+	                                                    @NotNull ExecutionEnvironment executionEnvironment) throws
+	                                                                                                        ExecutionException
+	{
+		return new CommandLineState(executionEnvironment)
+		{
+			@Override protected @NotNull ProcessHandler startProcess() throws ExecutionException
+			{
+				GeneralCommandLine commandLine = new GeneralCommandLine(C3RunConfigurationUtil.findCompilerBinaryPath(
+						getProject(),
+						getCompilerName(),
+						getCompilerPath()), isRunAfterBuild() ? "run" : "build");
+
+				// I couldn't just add the whole args string here because the GeneralCommandLine class adds quotes
+				// around parameters with spaces (so it would look like this: c3c run "--param value" which isn't valid
+				// syntax).
+				// Instead, I'm splitting the args string by spaces and adding that array.
+				if (getArgs() != null) commandLine.addParameters(getArgs().split(" "));
+
+				commandLine.setWorkDirectory(getWorkingDirectory());
+
+				OSProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine);
+				ProcessTerminatedListener.attach(processHandler);
+				return processHandler;
+			}
+		};
+	}
 }

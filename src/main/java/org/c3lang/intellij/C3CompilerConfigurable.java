@@ -53,18 +53,27 @@ public class C3CompilerConfigurable implements SearchableConfigurable, Configura
 
     @Override public boolean isModified()
     {
-        String sdk = C3SettingsState.getInstance().sdk;
+        String sdk = C3SettingsState.getInstance().getDefaultCompilerBinaryPath();
         return !pathField.getText().equals(sdk);
     }
 
 
     @Override public void apply()
     {
-        C3SettingsState.getInstance().sdk = pathField.getText();
+        C3SettingsState settings = C3SettingsState.getInstance();
+        C3SettingsState.CompilerProfile profile = settings.getDefaultCompilerProfile();
+        String compilerPath = pathField.getText();
+        profile.binaryPath = compilerPath;
+
+        C3CompilerDetector.DetectionResult result = C3CompilerDetector.detect(compilerPath);
+        profile.version = result.versionOr(profile.version);
+        profile.stdlibPath = result.stdlibPathOr(profile.stdlibPath);
+
+        settings.setCompilerProfiles(java.util.List.of(profile));
     }
 
     @Override public void reset()
     {
-        pathField.setText(C3SettingsState.getInstance().sdk);
+        pathField.setText(C3SettingsState.getInstance().getDefaultCompilerBinaryPath());
     }
 }

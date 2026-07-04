@@ -3,24 +3,27 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
-- Find definitions of `stream.read_byte` when stream isn't typed.
 
-## [0.2.6]
+## [0.2.7] - 2026-07-04
+- Find definitions of `stream.read_byte` when stream isn't typed.
+- Updated project, compiler and build handling.
+
+## [0.2.6] - 2026-07-03
 - Fixes to `@return` parsing.
 - Added `@return?`, `@ensure` and `@require` to docs popup.
 
-## [0.2.5]
+## [0.2.5] - 2026-07-03
 - Support new `@param` types.
 - Updated create project support.
 - Fix crash in import lookup.
 - IDE could crash when hovering for macro / fn lookup.
 - Improve formatting on parameters.
 
-## [0.2.4]
+## [0.2.4] - 2026-07-02
 - Find usages / rename / goto declaration works for locals.
 - Find definition of module from import.
 
-## [0.2.3]
+## [0.2.3] - 2026-06-05
 - Correctly handle `$defined(Random r = random)`
 - Type aliases to function were incorrectly flagged as incorrect.
 - Import suggestion on std::thread::channel even if std::thread was imported.

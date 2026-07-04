@@ -108,6 +108,7 @@
                              parentId="build"
                              instance="org.c3lang.intellij.C3CompilerConfigurable" />
     <applicationService serviceImplementation="org.c3lang.intellij.C3SettingsState"/>
+    <projectService serviceImplementation="org.c3lang.intellij.project.C3ProjectService"/>
 
     <projectConfigurable instance="org.c3lang.intellij.settings.C3Configurable"
                          parentId="language"
@@ -146,6 +147,14 @@
                 text="C3 File">
             <add-to-group group-id="NewGroup"
                           anchor="first"/>
+        </action>
+        <action id="C3ProjectSettingsAction"
+                class="org.c3lang.intellij.actions.C3ProjectSettingsAction"
+                text="C3 Project Structure...">
+            <add-to-group group-id="FileMenu"
+                          anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu"
+                          anchor="last"/>
         </action>
     </actions>
 </idea-plugin>

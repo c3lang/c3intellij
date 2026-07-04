@@ -5,23 +5,30 @@ import com.intellij.openapi.roots.AdditionalLibraryRootsProvider;
 import com.intellij.openapi.roots.SyntheticLibrary;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 public class C3StdLibRootsProvider extends AdditionalLibraryRootsProvider
 {
 	@Override public @NotNull Collection<SyntheticLibrary> getAdditionalProjectLibraries(@NotNull Project project)
 	{
-		var settings = C3SettingsState.getInstance();
-		var stdLibPath = settings.stdlibPath;
+		List<VirtualFile> stdLibRoots = new ArrayList<>();
 
-		VirtualFile stdLibRoot = LocalFileSystem.getInstance().findFileByPath(stdLibPath);
-		if (stdLibRoot != null)
+		for (String stdLibPath : C3ProjectService.getInstance(project).getStdlibPaths())
 		{
-			return Collections.singletonList(SyntheticLibrary.newImmutableLibrary(Collections.singletonList(stdLibRoot)));
+			VirtualFile stdLibRoot = LocalFileSystem.getInstance().findFileByPath(stdLibPath);
+			if (stdLibRoot != null)
+			{
+				stdLibRoots.add(stdLibRoot);
+			}
 		}
-		return Collections.emptyList();
+
+		return stdLibRoots.isEmpty()
+			? List.of()
+			: List.of(SyntheticLibrary.newImmutableLibrary(stdLibRoots));
 	}
 }
