@@ -3,9 +3,7 @@ package org.c3lang.intellij;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.*;
-import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
-import com.intellij.execution.process.ProcessHandlerFactory;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
@@ -103,21 +101,20 @@ public class C3CompileRunConfiguration extends RunConfigurationBase<C3CompileRun
             {
                 GeneralCommandLine commandLine = new GeneralCommandLine(
                     C3RunConfigurationUtil.findCompilerBinaryPath(getProject(), getCompilerName(), getCompilerPath()),
-                    isRunAfterCompilation() ? "compile-run" : "compile",
+                    "compile",
                     getSourceFile()
                 );
+                C3RunConfigurationUtil.addProjectStdlibOverride(commandLine, getProject());
 
-                // I couldn't just add the whole args string here because the GeneralCommandLine class adds quotes
-                // around parameters with spaces (so it would look like this: c3c run "--param value" which isn't valid
-                // syntax).
-                // Instead, I'm splitting the args string by spaces and adding that array.
-                if (getArgs() != null) {
-                    commandLine.addParameters(getArgs().split(" "));
-                }
                 String workingDirectory = getWorkingDirectory();
                 commandLine.setWorkDirectory(workingDirectory);
 
-                OSProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine);
+                ProcessHandler processHandler = new C3LinkedExecutableProcessHandler(
+                    commandLine,
+                    workingDirectory,
+                    getArgs() == null ? "" : getArgs(),
+                    isRunAfterCompilation()
+                );
                 ProcessTerminatedListener.attach(processHandler);
                 return processHandler;
             }

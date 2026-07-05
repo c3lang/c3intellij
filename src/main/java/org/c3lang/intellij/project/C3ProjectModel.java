@@ -16,8 +16,7 @@ public final class C3ProjectModel
 	private final @NotNull List<String> sources;
 	private final @NotNull String version;
 	private final @NotNull List<String> authors;
-	private final @NotNull String compilerName;
-	private final @NotNull String stdlibOverridePath;
+	private final @NotNull List<C3ProjectJsonParser.TargetDefinition> targets;
 
 	C3ProjectModel(
 			@NotNull VirtualFile projectRoot,
@@ -26,8 +25,7 @@ public final class C3ProjectModel
 			@NotNull List<String> sources,
 			@NotNull String version,
 			@NotNull List<String> authors,
-			@NotNull String compilerName,
-			@NotNull String stdlibOverridePath)
+			@NotNull List<C3ProjectJsonParser.TargetDefinition> targets)
 	{
 		this.projectRoot = projectRoot;
 		this.projectJson = projectJson;
@@ -35,8 +33,7 @@ public final class C3ProjectModel
 		this.sources = List.copyOf(sources);
 		this.version = version;
 		this.authors = List.copyOf(authors);
-		this.compilerName = compilerName;
-		this.stdlibOverridePath = stdlibOverridePath;
+		this.targets = List.copyOf(targets);
 	}
 
 	public @NotNull VirtualFile getProjectRoot()
@@ -69,19 +66,14 @@ public final class C3ProjectModel
 		return authors;
 	}
 
-	public @NotNull String getCompilerName()
+	public @NotNull List<String> getTargetNames()
 	{
-		return compilerName;
+		return targets.stream().map(C3ProjectJsonParser.TargetDefinition::name).toList();
 	}
 
-	public @NotNull String getStdlibOverridePath()
+	public @NotNull List<C3ProjectJsonParser.TargetDefinition> getTargets()
 	{
-		return stdlibOverridePath;
-	}
-
-	public boolean hasStdlibOverride()
-	{
-		return !stdlibOverridePath.isBlank();
+		return targets;
 	}
 
 	public boolean isSourceFile(@NotNull VirtualFile file)

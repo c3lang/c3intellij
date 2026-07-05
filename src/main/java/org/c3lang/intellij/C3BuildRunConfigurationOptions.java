@@ -1,13 +1,14 @@
 package org.c3lang.intellij;
 
-import com.intellij.execution.configurations.RunConfigurationOptions;
+import com.intellij.execution.configurations.LocatableRunConfigurationOptions;
 import com.intellij.openapi.components.StoredProperty;
 
 
-public class C3BuildRunConfigurationOptions extends RunConfigurationOptions
+public class C3BuildRunConfigurationOptions extends LocatableRunConfigurationOptions
 {
 	private final StoredProperty<String> myWorkingDirectory = string("").provideDelegate(this, "workingDirectory");
 	private final StoredProperty<String> myArgs = string("").provideDelegate(this, "args");
+	private final StoredProperty<String> myTargetName = string("").provideDelegate(this, "targetName");
 	private final StoredProperty<Boolean> myRunAfterBuild = property(true).provideDelegate(this, "runAfterBuild");
 	private final StoredProperty<String> myCompilerName = string("").provideDelegate(this, "compilerName");
 	private final StoredProperty<String> myCompilerPath = string("").provideDelegate(this, "compilerPath");
@@ -30,6 +31,16 @@ public class C3BuildRunConfigurationOptions extends RunConfigurationOptions
 	public void setArgs(String args)
 	{
 		myArgs.setValue(this, args);
+	}
+
+	public String getTargetName()
+	{
+		return myTargetName.getValue(this);
+	}
+
+	public void setTargetName(String targetName)
+	{
+		myTargetName.setValue(this, targetName);
 	}
 
 	public boolean isRunAfterBuild()

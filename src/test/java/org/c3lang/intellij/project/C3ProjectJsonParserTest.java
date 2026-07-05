@@ -33,7 +33,91 @@ public class C3ProjectJsonParserTest
 				""");
 
 		assertEquals(List.of("src", "lib/**", "vendor/*"), parsed.getSources());
+		assertEquals(List.of("app"), parsed.getTargetNames());
 		assertEquals("https://example.com//kept", parsed.getDocument().get("homepage").asText());
+	}
+
+	@Test
+	public void parsesTargetNames()
+	{
+		C3ProjectJsonParser.ParsedProjectJson parsed = C3ProjectJsonParser.parse("""
+				{
+				  "sources": [ "src/**" ],
+				  "targets": {
+				    "app": {
+				      "type": "executable"
+				    },
+				    "lib": {
+				      "type": "static-lib",
+				      "opt": "Os"
+				    }
+				  }
+				}
+				""");
+
+		assertEquals(List.of("app", "lib"), parsed.getTargetNames());
+		assertEquals("executable", parsed.getTargets().get(0).type());
+		assertEquals("static-lib", parsed.getTargets().get(1).type());
+		assertEquals("", parsed.getTargets().get(0).optimization());
+		assertEquals("Os", parsed.getTargets().get(1).optimization());
+	}
+
+	@Test
+	public void defaultsTargetTypeToExecutable()
+	{
+		C3ProjectJsonParser.ParsedProjectJson parsed = C3ProjectJsonParser.parse("""
+				{
+				  "sources": [ "src/**" ],
+				  "targets": {
+				    "app": {
+				    }
+				  }
+				}
+				""");
+
+		assertEquals("executable", parsed.getTargets().get(0).type());
+	}
+
+	@Test
+	public void requiresTargetsToBeObject()
+	{
+		assertThrows(IllegalArgumentException.class, () -> C3ProjectJsonParser.parse("""
+				{
+				  "sources": [ "src/**" ],
+				  "targets": [ "app" ]
+				}
+				"""));
+	}
+
+	@Test
+	public void rejectsInvalidTargetType()
+	{
+		assertThrows(IllegalArgumentException.class, () -> C3ProjectJsonParser.parse("""
+				{
+				  "sources": [ "src/**" ],
+				  "targets": {
+				    "app": {
+				      "type": "library"
+				    }
+				  }
+				}
+				"""));
+	}
+
+	@Test
+	public void rejectsInvalidTargetOptimization()
+	{
+		assertThrows(IllegalArgumentException.class, () -> C3ProjectJsonParser.parse("""
+				{
+				  "sources": [ "src/**" ],
+				  "targets": {
+				    "app": {
+				      "type": "executable",
+				      "opt": "O9"
+				    }
+				  }
+				}
+				"""));
 	}
 
 	@Test
@@ -196,24 +280,51 @@ public class C3ProjectJsonParserTest
 	}
 
 	@Test
-	public void parsesCompilerSettings()
+	public void writesTargetsPreservingExistingTargetProperties()
 	{
 		C3ProjectJsonParser.ParsedProjectJson parsed = C3ProjectJsonParser.parse("""
 				{
 				  "sources": [ "src/**" ],
-				  "compiler": {
-				    "name": "c3c-0.7",
-				    "stdlib-override": "/opt/c3/lib"
+				  "targets": {
+				    "app": {
+				      "type": "executable",
+				      "opt": "O2",
+				      "sources": [ "app/**" ]
+				    },
+				    "old-lib": {
+				      "type": "static-lib",
+				      "sources": [ "lib/**" ]
+				    }
 				  }
 				}
 				""");
 
-		assertEquals("c3c-0.7", parsed.getCompilerName());
-		assertEquals("/opt/c3/lib", parsed.getStdlibOverridePath());
+		String json = C3ProjectJsonParser.toJson(
+			C3ProjectJsonParser.withTargets(parsed.getDocument(), List.of(
+				new C3ProjectJsonParser.TargetDefinition("tool", "dynamic-lib", "Oz", "app"),
+				new C3ProjectJsonParser.TargetDefinition("new-test", "test", "", "")
+			))
+		);
+
+		assertEquals("""
+				{
+				  "sources" : [ "src/**" ],
+				  "targets" : {
+				    "tool" : {
+				      "type" : "dynamic-lib",
+				      "opt" : "Oz",
+				      "sources" : [ "app/**" ]
+				    },
+				    "new-test" : {
+				      "type" : "test"
+				    }
+				  }
+				}
+				""", json);
 	}
 
 	@Test
-	public void writesCompilerSettings()
+	public void stripsIdeCompilerSettingsWhenWritingProjectJson()
 	{
 		C3ProjectJsonParser.ParsedProjectJson parsed = C3ProjectJsonParser.parse("""
 				{
@@ -226,15 +337,12 @@ public class C3ProjectJsonParserTest
 				""");
 
 		String json = C3ProjectJsonParser.toJson(
-			C3ProjectJsonParser.withCompilerSettings(parsed.getDocument(), "default", "")
+			C3ProjectJsonParser.withSources(parsed.getDocument(), List.of("src/**", "generated"))
 		);
 
 		assertEquals("""
 				{
-				  "sources" : [ "src/**" ],
-				  "compiler" : {
-				    "name" : "default"
-				  }
+				  "sources" : [ "src/**", "generated" ]
 				}
 				""", json);
 	}

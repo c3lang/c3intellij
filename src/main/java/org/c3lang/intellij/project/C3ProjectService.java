@@ -4,6 +4,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -17,11 +20,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class C3ProjectService
+@State(name = "C3ProjectSettings", storages = @Storage("c3.xml"))
+public final class C3ProjectService implements PersistentStateComponent<C3ProjectService.State>
 {
 	private static final Logger LOG = Logger.getInstance(C3ProjectService.class);
 
 	private final @NotNull Project project;
+	private @NotNull State state = new State();
 	private @Nullable C3ProjectModel model;
 	private @Nullable String projectJsonPath;
 	private long projectJsonModificationStamp = -1;
@@ -75,8 +80,7 @@ public final class C3ProjectService
 				parsed.getSources(),
 				parsed.getVersion(),
 				parsed.getAuthors(),
-				parsed.getCompilerName(),
-				parsed.getStdlibOverridePath()
+				parsed.getTargets()
 			);
 			projectJsonPath = path;
 			projectJsonModificationStamp = modificationStamp;
@@ -117,31 +121,63 @@ public final class C3ProjectService
 		writeProjectJson(projectJson, updatedText);
 	}
 
-	public void saveCompilerSettings(@NotNull String compilerName, @NotNull String stdlibOverridePath) throws IOException
+	public @NotNull State getState()
+	{
+		return state;
+	}
+
+	@Override
+	public void loadState(@NotNull State state)
+	{
+		this.state = state;
+	}
+
+	public @NotNull String getCompilerName()
+	{
+		return state.compilerName == null ? "" : state.compilerName.trim();
+	}
+
+	public @NotNull String getStdlibOverridePath()
+	{
+		return state.stdlibOverridePath == null ? "" : state.stdlibOverridePath.trim();
+	}
+
+	public boolean hasStdlibOverride()
+	{
+		return !getStdlibOverridePath().isBlank();
+	}
+
+	public void saveCompilerSettings(@NotNull String compilerName, @NotNull String stdlibOverridePath)
+	{
+		state.compilerName = compilerName.trim();
+		state.stdlibOverridePath = stdlibOverridePath.trim();
+	}
+
+	public void saveTargets(@NotNull List<C3ProjectJsonParser.TargetDefinition> targets) throws IOException
 	{
 		VirtualFile projectJson = findProjectJsonForWrite();
 		String text = new String(projectJson.contentsToByteArray(), StandardCharsets.UTF_8);
 		C3ProjectJsonParser.ParsedProjectJson parsed = C3ProjectJsonParser.parse(text);
 		String updatedText = C3ProjectJsonParser.toJson(
-			C3ProjectJsonParser.withCompilerSettings(parsed.getDocument(), compilerName, stdlibOverridePath)
+			C3ProjectJsonParser.withTargets(parsed.getDocument(), targets)
 		);
 		writeProjectJson(projectJson, updatedText);
 	}
 
 	public @NotNull List<String> getStdlibPaths()
 	{
-		C3ProjectModel projectModel = getProjectModel();
-		if (projectModel != null && projectModel.hasStdlibOverride())
+		if (hasStdlibOverride())
 		{
-			return List.of(projectModel.getStdlibOverridePath());
+			return List.of(getStdlibOverridePath());
 		}
 
 		C3SettingsState settings = C3SettingsState.getInstance();
-		if (projectModel != null && !projectModel.getCompilerName().isBlank())
+		String compilerName = getCompilerName();
+		if (!compilerName.isBlank())
 		{
 			for (C3SettingsState.CompilerProfile profile : settings.getCompilerProfiles())
 			{
-				if (projectModel.getCompilerName().equals(profile.name) && !profile.stdlibPath.isBlank())
+				if (compilerName.equals(profile.name) && !profile.stdlibPath.isBlank())
 				{
 					return List.of(profile.stdlibPath);
 				}
@@ -262,5 +298,11 @@ public final class C3ProjectService
 		model = null;
 		projectJsonPath = null;
 		projectJsonModificationStamp = -1;
+	}
+
+	public static final class State
+	{
+		public String compilerName = "";
+		public String stdlibOverridePath = "";
 	}
 }

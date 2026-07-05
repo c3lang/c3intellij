@@ -3,6 +3,8 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Use target for run configurations, make running a separate step.
+- Add support for changing optimization levels.
 
 ## [0.2.7] - 2026-07-04
 - Find definitions of `stream.read_byte` when stream isn't typed.

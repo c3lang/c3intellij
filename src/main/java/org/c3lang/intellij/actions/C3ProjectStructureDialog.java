@@ -3,6 +3,7 @@ package org.c3lang.intellij.actions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -30,22 +33,38 @@ import java.util.List;
 final class C3ProjectStructureDialog extends DialogWrapper
 {
 	private static final String PROJECT_CARD = "project";
+	private static final String TARGETS_CARD = "targets";
 	private static final String STDLIB_CARD = "stdlib";
 
+	private final @NotNull Project project;
 	private final @NotNull C3ProjectService projectService;
 	private final @NotNull JTextField versionTextField;
 	private final @NotNull JTextField authorsTextField;
+	private final @NotNull DefaultListModel<TargetEditorModel> targetListModel = new DefaultListModel<>();
+	private final @NotNull JList<TargetEditorModel> targetList = new JList<>(targetListModel);
+	private final @NotNull JTextField targetNameTextField = new JTextField();
+	private final @NotNull JComboBox<String> targetTypeComboBox = createTargetTypeComboBox(C3ProjectJsonParser.DEFAULT_TARGET_TYPE);
+	private final @NotNull JComboBox<C3ProjectJsonParser.OptimizationLevel> targetOptimizationComboBox =
+			createOptimizationComboBox("");
 	private final @NotNull JComboBox<CompilerOption> compilerComboBox;
 	private final @NotNull JCheckBox overrideStdlibCheckBox = new JCheckBox("Override stdlib");
 	private final @NotNull TextFieldWithBrowseButton stdlibOverrideField = new TextFieldWithBrowseButton();
 	private final @NotNull CardLayout cardLayout = new CardLayout();
 	private final @NotNull JPanel cards = new JPanel(cardLayout);
+	private boolean updatingTargetFields;
 	private JTree navigationTree;
 
 	C3ProjectStructureDialog(@NotNull Project project, @NotNull C3ProjectModel projectModel)
 	{
 		super(project);
+		this.project = project;
 		projectService = C3ProjectService.getInstance(project);
+		for (C3ProjectJsonParser.TargetDefinition target : projectModel.getTargets())
+		{
+			targetListModel.addElement(new TargetEditorModel(target));
+		}
+		initializeTargetEditor();
+		if (!targetListModel.isEmpty()) targetList.setSelectedIndex(0);
 		versionTextField = new JTextField(projectModel.getVersion());
 		versionTextField.setColumns("1000.1000.10000".length());
 		Dimension versionSize = versionTextField.getPreferredSize();
@@ -61,12 +80,9 @@ final class C3ProjectStructureDialog extends DialogWrapper
 				validateAuthorsOnFocusLost();
 			}
 		});
-		compilerComboBox = createCompilerComboBox(projectModel.getCompilerName());
-		overrideStdlibCheckBox.setSelected(projectModel.hasStdlibOverride());
-		stdlibOverrideField.setText(
-			projectModel.hasStdlibOverride()
-				? projectModel.getStdlibOverridePath()
-				: getSelectedCompilerStdlibPath()
+		compilerComboBox = createCompilerComboBox(projectService.getCompilerName());
+		overrideStdlibCheckBox.setSelected(projectService.hasStdlibOverride());
+		stdlibOverrideField.setText(projectService.hasStdlibOverride() ? projectService.getStdlibOverridePath() : getSelectedCompilerStdlibPath()
 		);
 		stdlibOverrideField.addBrowseFolderListener(new TextBrowseFolderListener(
 			FileChooserDescriptorFactory.createSingleFolderDescriptor()
@@ -95,9 +111,11 @@ final class C3ProjectStructureDialog extends DialogWrapper
 		DefaultMutableTreeNode projectSettings = group("Project Settings");
 		DefaultMutableTreeNode compilerSettings = group("Compiler Settings");
 		DefaultMutableTreeNode project = page("Project", PROJECT_CARD);
+		DefaultMutableTreeNode targets = page("Targets", TARGETS_CARD);
 		DefaultMutableTreeNode stdlib = page("Stdlib", STDLIB_CARD);
 
 		projectSettings.add(project);
+		projectSettings.add(targets);
 		compilerSettings.add(stdlib);
 		root.add(projectSettings);
 		root.add(compilerSettings);
@@ -117,6 +135,7 @@ final class C3ProjectStructureDialog extends DialogWrapper
 	private @NotNull JComponent createPages()
 	{
 		cards.add(createProjectPage(), PROJECT_CARD);
+		cards.add(createTargetsPage(), TARGETS_CARD);
 		cards.add(createStdlibPage(), STDLIB_CARD);
 		cardLayout.show(cards, PROJECT_CARD);
 		return cards;
@@ -156,6 +175,80 @@ final class C3ProjectStructureDialog extends DialogWrapper
 		content.add(authorsTextField, constraints);
 
 		panel.add(content, BorderLayout.NORTH);
+		return panel;
+	}
+
+	private @NotNull JComponent createTargetsPage()
+	{
+		JPanel panel = new JPanel(new BorderLayout(0, 12));
+		panel.setBorder(BorderFactory.createEmptyBorder(14, 18, 14, 18));
+
+		JLabel title = new JLabel("Targets");
+		title.setFont(title.getFont().deriveFont(Font.BOLD, title.getFont().getSize2D() + 2));
+		panel.add(title, BorderLayout.NORTH);
+
+		JBSplitter splitter = new JBSplitter(false, 0.28f);
+		JPanel targetListPanel = new JPanel(new BorderLayout(0, 6));
+		targetListPanel.add(new JScrollPane(targetList), BorderLayout.CENTER);
+
+		JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+		JButton addButton = new JButton("+");
+		addButton.addActionListener(event -> addTarget());
+		JButton removeButton = new JButton("-");
+		removeButton.addActionListener(event -> removeSelectedTarget());
+		toolbar.add(addButton);
+		toolbar.add(removeButton);
+		targetListPanel.add(toolbar, BorderLayout.SOUTH);
+
+		splitter.setFirstComponent(targetListPanel);
+
+		JPanel targetSettings = new JPanel(new GridBagLayout());
+		targetSettings.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 0));
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.insets = new Insets(0, 0, 10, 10);
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.weightx = 0;
+		constraints.fill = GridBagConstraints.NONE;
+		targetSettings.add(new JLabel("Name:"), constraints);
+
+		constraints.gridx = 1;
+		constraints.weightx = 1.0;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		targetSettings.add(targetNameTextField, constraints);
+
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.weightx = 0;
+		constraints.fill = GridBagConstraints.NONE;
+		targetSettings.add(new JLabel("Type:"), constraints);
+
+		constraints.gridx = 1;
+		constraints.weightx = 1.0;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		targetSettings.add(targetTypeComboBox, constraints);
+
+		constraints.gridx = 0;
+		constraints.gridy = 2;
+		constraints.weightx = 0;
+		constraints.weighty = 0;
+		constraints.fill = GridBagConstraints.NONE;
+		targetSettings.add(new JLabel("Optimization:"), constraints);
+
+		constraints.gridx = 1;
+		constraints.weightx = 1.0;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		targetSettings.add(targetOptimizationComboBox, constraints);
+
+		constraints.gridx = 1;
+		constraints.gridy = 3;
+		constraints.weighty = 1.0;
+		constraints.fill = GridBagConstraints.BOTH;
+		targetSettings.add(Box.createVerticalGlue(), constraints);
+		splitter.setSecondComponent(targetSettings);
+
+		panel.add(splitter, BorderLayout.CENTER);
 		return panel;
 	}
 
@@ -251,6 +344,14 @@ final class C3ProjectStructureDialog extends DialogWrapper
 		{
 			return new ValidationInfo("Stdlib override path must not be empty.", stdlibOverrideField);
 		}
+		try
+		{
+			getTargets();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return new ValidationInfo(e.getMessage(), targetNameTextField);
+		}
 		return null;
 	}
 
@@ -261,6 +362,7 @@ final class C3ProjectStructureDialog extends DialogWrapper
 		{
 			projectService.saveProjectSettings(versionTextField.getText(), getAuthors());
 			projectService.saveCompilerSettings(getSelectedCompilerName(), getStdlibOverridePath());
+			projectService.saveTargets(getTargets());
 			super.doOKAction();
 		}
 		catch (IllegalArgumentException e)
@@ -289,6 +391,157 @@ final class C3ProjectStructureDialog extends DialogWrapper
 	private @NotNull List<String> getAuthors()
 	{
 		return C3ProjectJsonParser.parseAuthorsText(authorsTextField.getText());
+	}
+
+	private void initializeTargetEditor()
+	{
+		targetList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		targetList.addListSelectionListener(event -> {
+			if (!event.getValueIsAdjusting())
+			{
+				resetSelectedTargetEditor();
+			}
+		});
+		targetNameTextField.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void insertUpdate(DocumentEvent e)
+			{
+				updateSelectedTargetName();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e)
+			{
+				updateSelectedTargetName();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e)
+			{
+				updateSelectedTargetName();
+			}
+		});
+		targetTypeComboBox.addActionListener(event -> updateSelectedTargetType());
+		targetOptimizationComboBox.addActionListener(event -> updateSelectedTargetOptimization());
+		resetSelectedTargetEditor();
+	}
+
+	private void resetSelectedTargetEditor()
+	{
+		TargetEditorModel selected = targetList.getSelectedValue();
+		updatingTargetFields = true;
+		try
+		{
+			if (selected == null)
+			{
+				targetNameTextField.setText("");
+				targetTypeComboBox.setSelectedItem(C3ProjectJsonParser.DEFAULT_TARGET_TYPE);
+				selectOptimization(targetOptimizationComboBox, "");
+			}
+			else
+			{
+				targetNameTextField.setText(selected.name);
+				targetTypeComboBox.setSelectedItem(selected.type);
+				selectOptimization(targetOptimizationComboBox, selected.optimization);
+			}
+		}
+		finally
+		{
+			updatingTargetFields = false;
+		}
+		boolean hasTarget = selected != null;
+		targetNameTextField.setEnabled(hasTarget);
+		targetTypeComboBox.setEnabled(hasTarget);
+		targetOptimizationComboBox.setEnabled(hasTarget);
+	}
+
+	private void updateSelectedTargetName()
+	{
+		if (updatingTargetFields) return;
+		TargetEditorModel selected = targetList.getSelectedValue();
+		if (selected == null) return;
+		selected.name = targetNameTextField.getText();
+		targetList.repaint();
+	}
+
+	private void updateSelectedTargetType()
+	{
+		if (updatingTargetFields) return;
+		TargetEditorModel selected = targetList.getSelectedValue();
+		Object selectedType = targetTypeComboBox.getSelectedItem();
+		if (selected == null || !(selectedType instanceof String type)) return;
+		selected.type = type;
+	}
+
+	private void updateSelectedTargetOptimization()
+	{
+		if (updatingTargetFields) return;
+		TargetEditorModel selected = targetList.getSelectedValue();
+		Object selectedOptimization = targetOptimizationComboBox.getSelectedItem();
+		if (selected == null || !(selectedOptimization instanceof C3ProjectJsonParser.OptimizationLevel level)) return;
+		selected.optimization = level.key();
+	}
+
+	private void addTarget()
+	{
+		TargetDialog dialog = new TargetDialog(project, collectTargetNames());
+		if (!dialog.showAndGet()) return;
+
+		TargetEditorModel target = new TargetEditorModel(
+			"",
+			dialog.getTargetName(),
+			dialog.getTargetType(),
+			dialog.getOptimization()
+		);
+		targetListModel.addElement(target);
+		targetList.setSelectedIndex(targetListModel.size() - 1);
+	}
+
+	private void removeSelectedTarget()
+	{
+		int selectedIndex = targetList.getSelectedIndex();
+		if (selectedIndex < 0) return;
+
+		TargetEditorModel target = targetListModel.getElementAt(selectedIndex);
+		int result = Messages.showYesNoDialog(
+			project,
+			"Remove target '" + target.name.trim() + "'?",
+			"Remove Target",
+			Messages.getQuestionIcon()
+		);
+		if (result != Messages.YES) return;
+
+		targetListModel.remove(selectedIndex);
+		if (!targetListModel.isEmpty())
+		{
+			targetList.setSelectedIndex(Math.min(selectedIndex, targetListModel.size() - 1));
+		}
+		else
+		{
+			resetSelectedTargetEditor();
+		}
+	}
+
+	private @NotNull List<C3ProjectJsonParser.TargetDefinition> getTargets()
+	{
+		List<C3ProjectJsonParser.TargetDefinition> targets = new java.util.ArrayList<>();
+		for (int i = 0; i < targetListModel.size(); i++)
+		{
+			targets.add(targetListModel.getElementAt(i).toTargetDefinition());
+		}
+		return C3ProjectJsonParser.normalizeTargets(targets);
+	}
+
+	private @NotNull List<String> collectTargetNames()
+	{
+		List<String> names = new java.util.ArrayList<>();
+		for (int i = 0; i < targetListModel.size(); i++)
+		{
+			String name = targetListModel.getElementAt(i).name.trim();
+			if (!name.isEmpty()) names.add(name);
+		}
+		return List.copyOf(names);
 	}
 
 	private @NotNull String getSelectedCompilerName()
@@ -326,6 +579,51 @@ final class C3ProjectStructureDialog extends DialogWrapper
 		stdlibOverrideField.setEnabled(override);
 	}
 
+	private static @NotNull JComboBox<String> createTargetTypeComboBox(@NotNull String selectedType)
+	{
+		JComboBox<String> comboBox = new JComboBox<>();
+		for (String type : C3ProjectJsonParser.TARGET_TYPES)
+		{
+			comboBox.addItem(type);
+		}
+		comboBox.setSelectedItem(
+			C3ProjectJsonParser.isValidTargetType(selectedType)
+				? selectedType.trim()
+				: C3ProjectJsonParser.DEFAULT_TARGET_TYPE
+		);
+		return comboBox;
+	}
+
+	private static @NotNull JComboBox<C3ProjectJsonParser.OptimizationLevel> createOptimizationComboBox(
+			@NotNull String selectedOptimization)
+	{
+		JComboBox<C3ProjectJsonParser.OptimizationLevel> comboBox = new JComboBox<>();
+		for (C3ProjectJsonParser.OptimizationLevel level : C3ProjectJsonParser.OPTIMIZATION_LEVELS)
+		{
+			comboBox.addItem(level);
+		}
+		selectOptimization(comboBox, selectedOptimization);
+		return comboBox;
+	}
+
+	private static void selectOptimization(
+			@NotNull JComboBox<C3ProjectJsonParser.OptimizationLevel> comboBox,
+			@NotNull String selectedOptimization)
+	{
+		String normalizedOptimization = C3ProjectJsonParser.isValidOptimizationLevel(selectedOptimization)
+				? selectedOptimization.trim()
+				: "";
+		for (int i = 0; i < comboBox.getItemCount(); i++)
+		{
+			if (comboBox.getItemAt(i).key().equals(normalizedOptimization))
+			{
+				comboBox.setSelectedIndex(i);
+				return;
+			}
+		}
+		comboBox.setSelectedIndex(0);
+	}
+
 	private static @NotNull JComboBox<CompilerOption> createCompilerComboBox(@NotNull String selectedCompilerName)
 	{
 		JComboBox<CompilerOption> comboBox = new JComboBox<>();
@@ -360,6 +658,142 @@ final class C3ProjectStructureDialog extends DialogWrapper
 		}
 	}
 
+	private static final class TargetEditorModel
+	{
+		private final @NotNull String originalName;
+		private @NotNull String name;
+		private @NotNull String type;
+		private @NotNull String optimization;
+
+		private TargetEditorModel(@NotNull C3ProjectJsonParser.TargetDefinition target)
+		{
+			this(target.originalName(), target.name(), target.type(), target.optimization());
+		}
+
+		private TargetEditorModel(
+				@NotNull String originalName,
+				@NotNull String name,
+				@NotNull String type,
+				@NotNull String optimization)
+		{
+			this.originalName = originalName;
+			this.name = name;
+			this.type = type;
+			this.optimization = optimization;
+		}
+
+		private @NotNull C3ProjectJsonParser.TargetDefinition toTargetDefinition()
+		{
+			return new C3ProjectJsonParser.TargetDefinition(name, type, optimization, originalName);
+		}
+
+		@Override
+		public String toString()
+		{
+			String trimmedName = name.trim();
+			return trimmedName.isEmpty() ? "(unnamed)" : trimmedName;
+		}
+	}
+
+	private static final class TargetDialog extends DialogWrapper
+	{
+		private final @NotNull JTextField nameTextField = new JTextField();
+		private final @NotNull JComboBox<String> typeComboBox =
+				createTargetTypeComboBox(C3ProjectJsonParser.DEFAULT_TARGET_TYPE);
+		private final @NotNull JComboBox<C3ProjectJsonParser.OptimizationLevel> optimizationComboBox =
+				createOptimizationComboBox("");
+		private final @NotNull List<String> existingNames;
+
+		private TargetDialog(@NotNull Project project, @NotNull List<String> existingNames)
+		{
+			super(project);
+			this.existingNames = existingNames;
+			setTitle("Add Target");
+			init();
+		}
+
+		@Override
+		protected @Nullable JComponent createCenterPanel()
+		{
+			JPanel panel = new JPanel(new GridBagLayout());
+			panel.setPreferredSize(new Dimension(420, 130));
+			GridBagConstraints constraints = new GridBagConstraints();
+			constraints.insets = new Insets(0, 0, 10, 10);
+			constraints.anchor = GridBagConstraints.WEST;
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			constraints.weightx = 0;
+			constraints.fill = GridBagConstraints.NONE;
+			panel.add(new JLabel("Name:"), constraints);
+
+			constraints.gridx = 1;
+			constraints.weightx = 1.0;
+			constraints.fill = GridBagConstraints.HORIZONTAL;
+			panel.add(nameTextField, constraints);
+
+			constraints.gridx = 0;
+			constraints.gridy = 1;
+			constraints.weightx = 0;
+			constraints.fill = GridBagConstraints.NONE;
+			panel.add(new JLabel("Type:"), constraints);
+
+			constraints.gridx = 1;
+			constraints.weightx = 1.0;
+			constraints.fill = GridBagConstraints.HORIZONTAL;
+			panel.add(typeComboBox, constraints);
+
+			constraints.gridx = 0;
+			constraints.gridy = 2;
+			constraints.weightx = 0;
+			constraints.fill = GridBagConstraints.NONE;
+			panel.add(new JLabel("Optimization:"), constraints);
+
+			constraints.gridx = 1;
+			constraints.weightx = 1.0;
+			constraints.fill = GridBagConstraints.HORIZONTAL;
+			panel.add(optimizationComboBox, constraints);
+			return panel;
+		}
+
+		@Override
+		public @Nullable JComponent getPreferredFocusedComponent()
+		{
+			return nameTextField;
+		}
+
+		@Override
+		protected @Nullable ValidationInfo doValidate()
+		{
+			String name = getTargetName();
+			if (name.isEmpty())
+			{
+				return new ValidationInfo("Target name must not be empty", nameTextField);
+			}
+			if (existingNames.contains(name))
+			{
+				return new ValidationInfo("Duplicate target name: " + name, nameTextField);
+			}
+			return null;
+		}
+
+		private @NotNull String getTargetName()
+		{
+			return nameTextField.getText().trim();
+		}
+
+		private @NotNull String getTargetType()
+		{
+			Object selected = typeComboBox.getSelectedItem();
+			return selected instanceof String type ? type : C3ProjectJsonParser.DEFAULT_TARGET_TYPE;
+		}
+
+		private @NotNull String getOptimization()
+		{
+			Object selected = optimizationComboBox.getSelectedItem();
+			return selected instanceof C3ProjectJsonParser.OptimizationLevel level ? level.key() : "";
+		}
+	}
+
 	private static @NotNull DefaultMutableTreeNode group(@NotNull String name)
 	{
 		return new DefaultMutableTreeNode(new NavigationNode(name, null, true));
@@ -373,7 +807,7 @@ final class C3ProjectStructureDialog extends DialogWrapper
 	private record NavigationNode(@NotNull String name, @Nullable String card, boolean isGroup)
 	{
 		@Override
-		public String toString()
+		public @NotNull String toString()
 		{
 			return name;
 		}

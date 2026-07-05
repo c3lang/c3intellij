@@ -25,7 +25,7 @@ public class C3BuildRunConfigurationType implements ConfigurationType, DumbAware
 
     @Override public Icon getIcon()
     {
-        return AllIcons.General.Information;
+        return AllIcons.Actions.Compile;
     }
 
     @Override public @NotNull @NonNls String getId()

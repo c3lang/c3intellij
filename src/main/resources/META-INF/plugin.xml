@@ -10,6 +10,7 @@
     ]]></description>
   
   <depends>com.intellij.modules.platform</depends>
+  <depends optional="true" config-file="json.xml">com.intellij.modules.json</depends>
   <!--<depends optional="true" config-file="cidrdebugger.xml">com.intellij.modules.cidr.debugger</depends>-->
 
   <extensions defaultExtensionNs="com.intellij">

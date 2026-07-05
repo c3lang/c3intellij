@@ -1,7 +1,7 @@
 package org.c3lang.intellij;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.project.Project;
-import org.c3lang.intellij.project.C3ProjectModel;
 import org.c3lang.intellij.project.C3ProjectService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,11 +70,9 @@ final class C3RunConfigurationUtil
 		String compilerName = configuredCompilerName.trim();
 		if (compilerName.isEmpty())
 		{
-			C3ProjectModel projectModel =
-					project == null ? null : C3ProjectService.getInstance(project).getProjectModel();
-			if (projectModel != null)
+			if (project != null)
 			{
-				compilerName = projectModel.getCompilerName();
+				compilerName = C3ProjectService.getInstance(project).getCompilerName();
 			}
 		}
 
@@ -94,12 +92,21 @@ final class C3RunConfigurationUtil
 
 	static @NotNull String findDefaultCompilerName(@NotNull Project project)
 	{
-		C3ProjectModel projectModel = C3ProjectService.getInstance(project).getProjectModel();
-		if (projectModel != null && !projectModel.getCompilerName().isBlank())
+		String compilerName = C3ProjectService.getInstance(project).getCompilerName();
+		if (!compilerName.isBlank())
 		{
-			return projectModel.getCompilerName();
+			return compilerName;
 		}
 		return C3SettingsState.getInstance().getDefaultCompilerProfile().name;
+	}
+
+	static void addProjectStdlibOverride(@NotNull GeneralCommandLine commandLine, @NotNull Project project)
+	{
+		C3ProjectService projectService = C3ProjectService.getInstance(project);
+		if (projectService.hasStdlibOverride())
+		{
+			commandLine.addParameters("--stdlib", projectService.getStdlibOverridePath());
+		}
 	}
 
 }

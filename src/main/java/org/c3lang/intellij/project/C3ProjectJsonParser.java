@@ -12,12 +12,35 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public final class C3ProjectJsonParser
 {
+	public static final @NotNull String DEFAULT_TARGET_TYPE = "executable";
+	public static final @NotNull List<String> TARGET_TYPES = List.of(
+		DEFAULT_TARGET_TYPE,
+		"static-lib",
+		"dynamic-lib",
+		"benchmark",
+		"test",
+		"object-files",
+		"prepare"
+	);
+	public static final @NotNull List<OptimizationLevel> OPTIMIZATION_LEVELS = List.of(
+		new OptimizationLevel("", "Project default"),
+		new OptimizationLevel("O0", "No optimizations"),
+		new OptimizationLevel("O1", "Safe, optimized"),
+		new OptimizationLevel("O2", "Unsafe, optimized"),
+		new OptimizationLevel("O3", "O2 + single module"),
+		new OptimizationLevel("O4", "O3 + relaxed math"),
+		new OptimizationLevel("O5", "O4 + unsafe math"),
+		new OptimizationLevel("Os", "O3 + small code"),
+		new OptimizationLevel("Oz", "O3 + tiny code")
+	);
 	private static final String EMAIL_PATTERN = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}";
 	private static final Pattern AUTHOR_PATTERN = Pattern.compile(
 		"([^<>,@]+\\s+<" + EMAIL_PATTERN + ">|<" + EMAIL_PATTERN + ">|[^<>,@]+)"
@@ -65,8 +88,7 @@ public final class C3ProjectJsonParser
 			sources,
 			parseVersion(object),
 			parseAuthors(object),
-			parseCompilerName(object),
-			parseStdlibOverridePath(object)
+			parseTargets(object)
 		);
 	}
 
@@ -117,40 +139,102 @@ public final class C3ProjectJsonParser
 		return normalizeAuthors(authorTexts);
 	}
 
-	private static @NotNull String parseCompilerName(@NotNull ObjectNode object)
+	private static @NotNull List<TargetDefinition> parseTargets(@NotNull ObjectNode object)
 	{
-		JsonNode compiler = object.get("compiler");
-		if (compiler == null) return "";
-		if (!compiler.isObject())
+		JsonNode targets = object.get("targets");
+		if (targets == null) return List.of();
+		if (!targets.isObject())
 		{
-			throw new IllegalArgumentException("project.json compiler field must be an object");
+			throw new IllegalArgumentException("project.json targets field must be an object");
 		}
 
-		JsonNode name = compiler.get("name");
-		if (name == null) return "";
-		if (!name.isTextual())
+		List<TargetDefinition> targetDefinitions = new ArrayList<>();
+		Iterator<String> names = targets.fieldNames();
+		while (names.hasNext())
 		{
-			throw new IllegalArgumentException("project.json compiler name field must be a string");
+			String name = names.next().trim();
+			if (name.isEmpty()) continue;
+
+			JsonNode target = targets.get(name);
+			if (!target.isObject())
+			{
+				throw new IllegalArgumentException("project.json target " + name + " must be an object");
+			}
+			String type = parseTargetType(name, target);
+			String optimization = parseTargetOptimization(name, target);
+			targetDefinitions.add(new TargetDefinition(name, type, optimization, name));
 		}
-		return name.asText().trim();
+		return List.copyOf(targetDefinitions);
 	}
 
-	private static @NotNull String parseStdlibOverridePath(@NotNull ObjectNode object)
+	private static @NotNull String parseTargetType(@NotNull String name, @NotNull JsonNode target)
 	{
-		JsonNode compiler = object.get("compiler");
-		if (compiler == null) return "";
-		if (!compiler.isObject())
+		JsonNode type = target.get("type");
+		if (type == null) return DEFAULT_TARGET_TYPE;
+		if (!type.isTextual())
 		{
-			throw new IllegalArgumentException("project.json compiler field must be an object");
+			throw new IllegalArgumentException("project.json target " + name + " type field must be a string");
 		}
 
-		JsonNode stdlibOverride = compiler.get("stdlib-override");
-		if (stdlibOverride == null) return "";
-		if (!stdlibOverride.isTextual())
+		String typeText = type.asText().trim();
+		if (!isValidTargetType(typeText))
 		{
-			throw new IllegalArgumentException("project.json compiler stdlib-override field must be a string");
+			throw new IllegalArgumentException("Invalid target type for " + name + ": " + typeText);
 		}
-		return stdlibOverride.asText().trim();
+		return typeText;
+	}
+
+	private static @NotNull String parseTargetOptimization(@NotNull String name, @NotNull JsonNode target)
+	{
+		JsonNode optimization = target.get("opt");
+		if (optimization == null) return "";
+		if (!optimization.isTextual())
+		{
+			throw new IllegalArgumentException("project.json target " + name + " opt field must be a string");
+		}
+
+		String optimizationText = optimization.asText().trim();
+		if (!isValidOptimizationLevel(optimizationText))
+		{
+			throw new IllegalArgumentException("Invalid optimization level for " + name + ": " + optimizationText);
+		}
+		return optimizationText;
+	}
+
+	public static boolean isValidTargetType(@NotNull String type)
+	{
+		return TARGET_TYPES.contains(type.trim());
+	}
+
+	public static boolean isValidOptimizationLevel(@NotNull String optimization)
+	{
+		String normalizedOptimization = optimization.trim();
+		for (OptimizationLevel level : OPTIMIZATION_LEVELS)
+		{
+			if (level.key().equals(normalizedOptimization)) return true;
+		}
+		return false;
+	}
+
+	public static @NotNull List<TargetDefinition> normalizeTargets(@NotNull Collection<TargetDefinition> targets)
+	{
+		List<TargetDefinition> normalizedTargets = new ArrayList<>();
+		Set<String> names = new LinkedHashSet<>();
+		for (TargetDefinition target : targets)
+		{
+			String name = target.name().trim();
+			if (name.isEmpty()) throw new IllegalArgumentException("Target name must not be empty");
+			if (!names.add(name)) throw new IllegalArgumentException("Duplicate target name: " + name);
+
+			String type = target.type().trim();
+			if (type.isEmpty()) type = DEFAULT_TARGET_TYPE;
+			if (!isValidTargetType(type)) throw new IllegalArgumentException("Invalid target type for " + name + ": " + type);
+
+			String optimization = target.optimization().trim();
+			if (!isValidOptimizationLevel(optimization)) throw new IllegalArgumentException("Invalid optimization level for " + name + ": " + optimization);
+			normalizedTargets.add(new TargetDefinition(name, type, optimization, target.originalName().trim()));
+		}
+		return List.copyOf(normalizedTargets);
 	}
 
 	public static @NotNull List<String> normalizeSources(@NotNull Collection<String> sourceTexts)
@@ -175,7 +259,7 @@ public final class C3ProjectJsonParser
 
 	public static @NotNull ObjectNode withSources(@NotNull ObjectNode document, @NotNull List<String> sources)
 	{
-		ObjectNode updated = document.deepCopy();
+		ObjectNode updated = withoutIdeSettings(document);
 		ArrayNode sourceArray = updated.putArray("sources");
 		for (String source : normalizeSources(sources))
 		{
@@ -189,7 +273,7 @@ public final class C3ProjectJsonParser
 			@NotNull String version,
 			@NotNull List<String> authors)
 	{
-		ObjectNode updated = document.deepCopy();
+		ObjectNode updated = withoutIdeSettings(document);
 		updated.put("version", version);
 
 		ArrayNode authorArray = updated.putArray("authors");
@@ -200,38 +284,47 @@ public final class C3ProjectJsonParser
 		return updated;
 	}
 
-	public static @NotNull ObjectNode withCompilerSettings(
+	public static @NotNull ObjectNode withTargets(
 			@NotNull ObjectNode document,
-			@NotNull String compilerName,
-			@NotNull String stdlibOverridePath)
+			@NotNull List<TargetDefinition> targets)
+	{
+		ObjectNode updated = withoutIdeSettings(document);
+		JsonNode existingTargets = updated.get("targets");
+		ObjectNode existingTargetObjects = existingTargets instanceof ObjectNode object
+				? object : MAPPER.createObjectNode();
+		ObjectNode targetObject = MAPPER.createObjectNode();
+
+		for (TargetDefinition target : normalizeTargets(targets))
+		{
+			JsonNode existingTarget = null;
+			if (!target.originalName().isBlank())
+			{
+				existingTarget = existingTargetObjects.get(target.originalName());
+			}
+			if (existingTarget == null) existingTarget = existingTargetObjects.get(target.name());
+
+			ObjectNode targetDocument = existingTarget instanceof ObjectNode object
+					? object.deepCopy() : MAPPER.createObjectNode();
+			targetDocument.put("type", target.type());
+			if (target.optimization().isBlank())
+			{
+				targetDocument.remove("opt");
+			}
+			else
+			{
+				targetDocument.put("opt", target.optimization());
+			}
+			targetObject.set(target.name(), targetDocument);
+		}
+
+		updated.set("targets", targetObject);
+		return updated;
+	}
+
+	public static @NotNull ObjectNode withoutIdeSettings(@NotNull ObjectNode document)
 	{
 		ObjectNode updated = document.deepCopy();
-		ObjectNode compiler = updated.withObject("/compiler");
-		String normalizedName = compilerName.trim();
-		String normalizedStdlibOverride = stdlibOverridePath.trim();
-
-		if (normalizedName.isEmpty())
-		{
-			compiler.remove("name");
-		}
-		else
-		{
-			compiler.put("name", normalizedName);
-		}
-
-		if (normalizedStdlibOverride.isEmpty())
-		{
-			compiler.remove("stdlib-override");
-		}
-		else
-		{
-			compiler.put("stdlib-override", normalizedStdlibOverride);
-		}
-
-		if (compiler.isEmpty())
-		{
-			updated.remove("compiler");
-		}
+		updated.remove("compiler");
 		return updated;
 	}
 
@@ -284,23 +377,20 @@ public final class C3ProjectJsonParser
 		private final @NotNull List<String> sources;
 		private final @NotNull String version;
 		private final @NotNull List<String> authors;
-		private final @NotNull String compilerName;
-		private final @NotNull String stdlibOverridePath;
+		private final @NotNull List<TargetDefinition> targets;
 
 		private ParsedProjectJson(
 				@NotNull ObjectNode document,
 				@NotNull List<String> sources,
 				@NotNull String version,
 				@NotNull List<String> authors,
-				@NotNull String compilerName,
-				@NotNull String stdlibOverridePath)
+				@NotNull List<TargetDefinition> targets)
 		{
 			this.document = document;
 			this.sources = List.copyOf(sources);
 			this.version = version;
 			this.authors = List.copyOf(authors);
-			this.compilerName = compilerName;
-			this.stdlibOverridePath = stdlibOverridePath;
+			this.targets = List.copyOf(targets);
 		}
 
 		public @NotNull ObjectNode getDocument()
@@ -323,14 +413,36 @@ public final class C3ProjectJsonParser
 			return authors;
 		}
 
-		public @NotNull String getCompilerName()
+		public @NotNull List<String> getTargetNames()
 		{
-			return compilerName;
+			return targets.stream().map(TargetDefinition::name).toList();
 		}
 
-		public @NotNull String getStdlibOverridePath()
+		public @NotNull List<TargetDefinition> getTargets()
 		{
-			return stdlibOverridePath;
+			return targets;
+		}
+
+	}
+
+	public record TargetDefinition(
+			@NotNull String name,
+			@NotNull String type,
+			@NotNull String optimization,
+			@NotNull String originalName)
+	{
+		public TargetDefinition(@NotNull String name, @NotNull String type, @NotNull String originalName)
+		{
+			this(name, type, "", originalName);
+		}
+	}
+
+	public record OptimizationLevel(@NotNull String key, @NotNull String description)
+	{
+		@Override
+		public String toString()
+		{
+			return key.isBlank() ? description : key + " - " + description;
 		}
 	}
 }

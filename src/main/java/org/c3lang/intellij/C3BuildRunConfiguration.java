@@ -2,18 +2,20 @@ package org.c3lang.intellij;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
+import com.intellij.execution.RunManager;
 import com.intellij.execution.configurations.*;
-import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
-import com.intellij.execution.process.ProcessHandlerFactory;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
+import org.c3lang.intellij.project.C3ProjectJsonParser;
+import org.c3lang.intellij.project.C3ProjectModel;
+import org.c3lang.intellij.project.C3ProjectService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class C3BuildRunConfiguration extends RunConfigurationBase<C3BuildRunConfigurationOptions>
+public class C3BuildRunConfiguration extends LocatableConfigurationBase<C3BuildRunConfigurationOptions>
 {
 	protected C3BuildRunConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
@@ -50,6 +52,16 @@ public class C3BuildRunConfiguration extends RunConfigurationBase<C3BuildRunConf
 		getOptions().setArgs(args);
 	}
 
+	public String getTargetName()
+	{
+		return getOptions().getTargetName();
+	}
+
+	public void setTargetName(String targetName)
+	{
+		getOptions().setTargetName(targetName);
+	}
+
 	public boolean isRunAfterBuild()
 	{
 		return getOptions().isRunAfterBuild();
@@ -84,6 +96,24 @@ public class C3BuildRunConfiguration extends RunConfigurationBase<C3BuildRunConf
 	{
 	}
 
+	@Override
+	public void onNewConfigurationCreated()
+	{
+		super.onNewConfigurationCreated();
+		setGeneratedName();
+	}
+
+	@Override
+	public String suggestedName()
+	{
+		String targetName = getTargetNameForBuild();
+		if (targetName.isBlank())
+		{
+			return RunManager.getInstance(getProject()).suggestUniqueName("C3 Build", getType());
+		}
+		return RunManager.getInstance(getProject()).suggestUniqueName(targetName, getType());
+	}
+
 	@Override public @Nullable RunProfileState getState(@NotNull Executor executor,
 	                                                    @NotNull ExecutionEnvironment executionEnvironment) throws
 	                                                                                                        ExecutionException
@@ -92,23 +122,40 @@ public class C3BuildRunConfiguration extends RunConfigurationBase<C3BuildRunConf
 		{
 			@Override protected @NotNull ProcessHandler startProcess() throws ExecutionException
 			{
+				String targetName = getTargetNameForBuild();
+				if (targetName.isBlank()) throw new ExecutionException("No C3 build target is selected.");
+
 				GeneralCommandLine commandLine = new GeneralCommandLine(C3RunConfigurationUtil.findCompilerBinaryPath(
 						getProject(),
 						getCompilerName(),
-						getCompilerPath()), isRunAfterBuild() ? "run" : "build");
-
-				// I couldn't just add the whole args string here because the GeneralCommandLine class adds quotes
-				// around parameters with spaces (so it would look like this: c3c run "--param value" which isn't valid
-				// syntax).
-				// Instead, I'm splitting the args string by spaces and adding that array.
-				if (getArgs() != null) commandLine.addParameters(getArgs().split(" "));
+						getCompilerPath()), "build");
+				commandLine.addParameter(targetName);
+				C3RunConfigurationUtil.addProjectStdlibOverride(commandLine, getProject());
 
 				commandLine.setWorkDirectory(getWorkingDirectory());
 
-				OSProcessHandler processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine);
+				ProcessHandler processHandler = new C3LinkedExecutableProcessHandler(
+						commandLine,
+						getWorkingDirectory(),
+						getArgs() == null ? "" : getArgs(),
+						isRunAfterBuild());
 				ProcessTerminatedListener.attach(processHandler);
 				return processHandler;
 			}
 		};
+	}
+
+	private @NotNull String getTargetNameForBuild()
+	{
+		String targetName = getTargetName().trim();
+		if (!targetName.isBlank()) return targetName;
+
+		C3ProjectModel model = C3ProjectService.getInstance(getProject()).getProjectModel();
+		if (model == null) return "";
+		for (C3ProjectJsonParser.TargetDefinition target : model.getTargets())
+		{
+			if (!target.name().isBlank()) return target.name();
+		}
+		return "";
 	}
 }
