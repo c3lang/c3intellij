@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3-lang.org/schemas/project.json",
+  "title": "C3 project.json",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "authors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "targets": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "executable",
+              "static-lib",
+              "dynamic-lib",
+              "benchmark",
+              "test",
+              "object-files",
+              "prepare"
+            ],
+            "default": "executable"
+          },
+          "opt": {
+            "type": "string",
+            "enum": [
+              "O0",
+              "O1",
+              "O2",
+              "O3",
+              "O4",
+              "O5",
+              "Os",
+              "Oz"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "sources"
+  ]
+}
