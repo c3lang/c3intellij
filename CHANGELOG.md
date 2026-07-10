@@ -3,6 +3,7 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Fix formatting of `//` at the end of a line.
 
 ## [0.2.8] - 2026-07-10
 - Use target for run configurations, make running a separate step.

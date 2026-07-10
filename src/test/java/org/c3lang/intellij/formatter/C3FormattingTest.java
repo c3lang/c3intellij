@@ -180,6 +180,33 @@ public class C3FormattingTest extends BasePlatformTestCase
                 """, myFixture.getFile().getText());
     }
 
+    public void testFormattingKeepsEndOfLineDocCommentsAfterSemicolon()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                const int VALUE=1;<* Value docs *>
+                const int OTHER=2;// Other docs
+                fn void main(){int local=3;<* Local docs *>
+                int next=4;// Next docs
+                }
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                const int VALUE = 1; <* Value docs *>
+                const int OTHER = 2; // Other docs
+                fn void main()
+                {
+                \tint local = 3; <* Local docs *>
+                \tint next = 4; // Next docs
+                }
+                """, myFixture.getFile().getText());
+    }
+
     private void setBraceStyle(int braceStyle)
     {
         this.braceStyle = braceStyle;

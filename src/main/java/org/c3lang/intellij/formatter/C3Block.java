@@ -12,6 +12,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.tree.IElementType;
+import org.c3lang.intellij.C3ParserDefinition;
 import org.c3lang.intellij.psi.C3Types;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -102,6 +103,7 @@ final class C3Block implements Block
 		}
 		if (right == C3Types.LB && isDeclarationBrace(rightNode, node)) return useNextLineBrace() ? lineBreak(0) : SINGLE_SPACE;
 		if (right == C3Types.LB && findFirstLeafOwner(rightNode, C3Types.INITIALIZER_LIST) != null) return SPACE;
+		if (leftEnd == C3Types.EOS && isEndOfLineComment(right)) return SPACE;
 		if (leftEnd == C3Types.EOS && !isInsideForCondition()) return lineBreak(keepBlankLines(right));
 		if (leftEnd == C3Types.RB && right == C3Types.LP && containsNodeType(leftNode, C3Types.GENERIC_PARAMETERS)) return NO_SPACING;
 		if (leftEnd == C3Types.RB && shouldBreakAfterRightBrace(right)) return lineBreak(keepBlankLines(right));
@@ -177,6 +179,11 @@ final class C3Block implements Block
 		IElementType type = node.getElementType();
 		return type == C3Types.ENUM_DECLARATION || type == C3Types.CONSTDEF_DECLARATION ||
 		       type == C3Types.BITSTRUCT_DECLARATION || type == C3Types.BITSTRUCT_DEF;
+	}
+
+	private static boolean isEndOfLineComment(@Nullable IElementType type)
+	{
+		return type == C3ParserDefinition.DOC_COMMENT || type == C3ParserDefinition.LINE_COMMENT;
 	}
 
 	private static boolean isCompileTimeBody(@Nullable ASTNode node)
