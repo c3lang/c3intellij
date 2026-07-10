@@ -18,24 +18,54 @@ public class C3LanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettin
 
 	private static final String CODE_SAMPLE = """
 			module demo;
-			
-			fn int add(int a, int b)
+
+			struct Point
 			{
-			    return a + b;
+			    int x;
+			    int y;
+			}
+
+			enum Direction : int
+			{
+			    NORTH,
+			    EAST,
+			    SOUTH,
+			    WEST,
+			}
+
+			constdef Foo : int
+			{
+			    OK,
+			    NOT_FOUND = 404,
+			}
+
+			bitstruct Bar : int
+			{
+			    int low : 0..7;
+			    int high : 8..15;
+			}
+
+			faultdef
+			    ALREADY_EXISTS,
+			    BUSY;
+
+			const Point ORIGIN = { .x = 0, .y = 0 };
+
+			macro Point moved(Point p, int dx, int dy)
+			{
+			    return { .x = p.x + dx, .y = p.y + dy };
 			}
 			
 			fn void main()
 			{
-			    if (add(1, 2) > 2)
-			    {
-			        io::printfn("ok");
-			        int x = 0;
-			        for (int i = 0; i < 10; i++)
-			        {
-			            x = (x | i) * 2;
-			            x = x >> 2;
-			        }
-			    }
+			    Point p = { .x = 1, .y = 2 };
+			    Callback cb = fn int(int value) {
+			        return value * 2;
+			    };
+			    int doubled = apply(fn int(int value) => value * 2, p.x);
+			    $if $is_stream:
+			        return readline_impl{$typeof(stream)}(allocator, stream, limit);
+			    $endif
 			}
 			""";
 
@@ -57,11 +87,7 @@ public class C3LanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettin
 	@Override
 	public void customizeSettings(@NotNull CodeStyleSettingsCustomizable consumer, @NotNull SettingsType settingsType)
 	{
-		if (settingsType == SettingsType.SPACING_SETTINGS)
-		{
-			consumer.showStandardOptions();
-		}
-		else if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS)
+		if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS)
 		{
 			consumer.showStandardOptions("KEEP_SIMPLE_BLOCKS_IN_ONE_LINE");
 			consumer.showCustomOption(C3CodeStyleSettings.class,

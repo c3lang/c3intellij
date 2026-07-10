@@ -3,8 +3,11 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+
+## [0.2.8] - 2026-07-10
 - Use target for run configurations, make running a separate step.
 - Add support for changing optimization levels.
+- Formatter beta version.
 
 ## [0.2.7] - 2026-07-04
 - Find definitions of `stream.read_byte` when stream isn't typed.

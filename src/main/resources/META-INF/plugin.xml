@@ -2,7 +2,7 @@
 
 <idea-plugin>
     <id>org.c3lang.c3intellij</id>
-    <name>C3 Language Support</name>
+    <name>C3Lang</name>
     <vendor url="https://www.c3-lang.org">C3 Lang</vendor>
     <description><![CDATA[
             <p>Support for the <a href="https://c3-lang.org/">C3 Language</a> in IntelliJ, CLion and many others.</p>

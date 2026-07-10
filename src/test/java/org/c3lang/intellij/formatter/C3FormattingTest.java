@@ -2,10 +2,12 @@ package org.c3lang.intellij.formatter;
 
 import com.intellij.application.options.CodeStyle;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.c3lang.intellij.C3Language;
 import org.c3lang.intellij.C3SettingsState;
@@ -39,10 +41,10 @@ public class C3FormattingTest extends BasePlatformTestCase
                 module demo;
                 fn int add(int a, int b)
                 {
-                    if (a + b > 0)
-                    {
-                        return a + b;
-                    }
+                \tif (a + b > 0)
+                \t{
+                \t\treturn a + b;
+                \t}
                 }
                 """, myFixture.getFile().getText());
     }
@@ -66,9 +68,9 @@ public class C3FormattingTest extends BasePlatformTestCase
         assertEquals("""
                 module demo;
                 fn int add(int a, int b) {
-                    if (a + b > 0) {
-                        return a + b;
-                    }
+                \tif (a + b > 0) {
+                \t\treturn a + b;
+                \t}
                 }
                 """, myFixture.getFile().getText());
     }
@@ -101,10 +103,79 @@ public class C3FormattingTest extends BasePlatformTestCase
                 module demo;
                 fn int add(int a, int b)
                 {
-                    if (a + b > 0)
-                    {
-                        return a + b;
-                    }
+                \tif (a + b > 0)
+                \t{
+                \t\treturn a + b;
+                \t}
+                }
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingCoversDeclarationsInitializersMacrosAndLambdas()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                struct Point{int x;int y;}
+                enum Direction:int{NORTH,EAST,SOUTH,WEST,}
+                constdef Foo:int{OK,NOT_FOUND=404,}
+                bitstruct Bar:int{int low:0..7;int high:8..15;}
+                faultdef
+                ALREADY_EXISTS,
+                BUSY;
+                const Point ORIGIN={.x=0,.y=0};
+                macro Point moved(Point p,int dx,int dy){return {.x=p.x+dx,.y=p.y+dy};}
+                fn void main(){Point p={.x=1,.y=2};Callback cb=fn int(int value){return value*2;};int doubled=apply(fn int(int value)=>value*2,p.x);$if $is_stream:return readline_impl{$typeof(stream)}(allocator,stream,limit);$endif $foreach $member:MEMBERS:io::printfn($member.name);$endforeach}
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                struct Point
+                {
+                \tint x;
+                \tint y;
+                }
+                enum Direction : int
+                {
+                \tNORTH,
+                \tEAST,
+                \tSOUTH,
+                \tWEST,
+                }
+                constdef Foo : int
+                {
+                \tOK,
+                \tNOT_FOUND = 404,
+                }
+                bitstruct Bar : int
+                {
+                \tint low : 0..7;
+                \tint high : 8..15;
+                }
+                faultdef
+                \tALREADY_EXISTS,
+                \tBUSY;
+                const Point ORIGIN = { .x = 0, .y = 0 };
+                macro Point moved(Point p, int dx, int dy)
+                {
+                \treturn { .x = p.x + dx, .y = p.y + dy };
+                }
+                fn void main()
+                {
+                \tPoint p = { .x = 1, .y = 2 };
+                \tCallback cb = fn int(int value) {
+                \t\treturn value * 2;
+                \t};
+                \tint doubled = apply(fn int(int value) => value * 2, p.x);
+                \t$if $is_stream:
+                \t\treturn readline_impl{$typeof(stream)}(allocator, stream, limit);
+                \t$endif
+                \t$foreach $member : MEMBERS:
+                \t\tio::printfn($member.name);
+                \t$endforeach
                 }
                 """, myFixture.getFile().getText());
     }
@@ -112,6 +183,12 @@ public class C3FormattingTest extends BasePlatformTestCase
     private void setBraceStyle(int braceStyle)
     {
         this.braceStyle = braceStyle;
+    }
+
+    private void assertNoPsiErrors()
+    {
+        PsiErrorElement error = PsiTreeUtil.findChildOfType(myFixture.getFile(), PsiErrorElement.class);
+        assertNull(error == null ? null : error.getErrorDescription() + " at " + error.getText(), error);
     }
 
     private void reformat()

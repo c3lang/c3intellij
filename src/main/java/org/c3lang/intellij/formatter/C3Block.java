@@ -24,7 +24,6 @@ final class C3Block implements Block
 	private static final Spacing NO_SPACING = Spacing.createSpacing(0, 0, 0, true, 0);
 	private static final Spacing SPACE = Spacing.createSpacing(1, 1, 0, true, 0);
 	private static final Spacing SINGLE_SPACE = Spacing.createSpacing(1, 1, 0, false, 0);
-	private static final Spacing LINE_BREAK = Spacing.createSpacing(0, 0, 1, true, 1);
 
 	private final @NotNull ASTNode node;
 	private final @Nullable Wrap wrap;
@@ -91,17 +90,32 @@ final class C3Block implements Block
 		IElementType rightEnd = lastLeafType(rightNode);
 
 		if (leftEnd == C3Types.LB && right == C3Types.RB) return NO_SPACING;
-		if (isStatementBlock(node) && (leftEnd == C3Types.LB || right == C3Types.RB)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
+		if (leftEnd == C3Types.LB && isInitializerList(node)) return SPACE;
+		if (right == C3Types.RB && isInitializerList(node)) return SPACE;
+		if (leftEnd == C3Types.LB && isMultilineBraceContainer(node)) return lineBreak(keepBlankLines(right));
+		if (right == C3Types.RB && isMultilineBraceContainer(node)) return lineBreak(settings.KEEP_BLANK_LINES_BEFORE_RBRACE);
+
 		if (right == C3Types.LB && findFirstLeafOwner(rightNode, C3Types.COMPOUND_STATEMENT) != null)
 		{
 			if (node.getElementType() == C3Types.LAMBDA_DECL_EXPR) return SINGLE_SPACE;
-			return useNextLineBrace() ? LINE_BREAK : SINGLE_SPACE;
+			return useNextLineBrace() ? lineBreak(0) : SINGLE_SPACE;
 		}
-		if (leftEnd == C3Types.EOS && !isInsideForCondition()) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
-		if (leftEnd == C3Types.RB && shouldBreakAfterRightBrace(right)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);;
+		if (right == C3Types.LB && isDeclarationBrace(rightNode, node)) return useNextLineBrace() ? lineBreak(0) : SINGLE_SPACE;
+		if (right == C3Types.LB && findFirstLeafOwner(rightNode, C3Types.INITIALIZER_LIST) != null) return SPACE;
+		if (leftEnd == C3Types.EOS && !isInsideForCondition()) return lineBreak(keepBlankLines(right));
+		if (leftEnd == C3Types.RB && right == C3Types.LP && containsNodeType(leftNode, C3Types.GENERIC_PARAMETERS)) return NO_SPACING;
+		if (leftEnd == C3Types.RB && shouldBreakAfterRightBrace(right)) return lineBreak(keepBlankLines(right));
+		if (leftEnd == C3Types.COLON && isCompileTimeBody(rightNode)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
+		if (leftEnd == C3Types.KW_CT_ELSE && isCompileTimeBody(rightNode)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
+		if (isCompileTimeEndKeyword(leftEnd)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
 		if (right == C3Types.COMMA) return NO_SPACING;
+		if (leftEnd == C3Types.COMMA && isEnumLikeList(node)) return lineBreak(settings.KEEP_BLANK_LINES_IN_DECLARATIONS);
 		if (leftEnd == C3Types.COMMA) return SPACE;
 		if (right == C3Types.EOS) return NO_SPACING;
+		if (right == C3Types.IMPLIES || leftEnd == C3Types.IMPLIES) return SPACE;
+		if ((right == C3Types.COLON || leftEnd == C3Types.COLON) && isSpacedColonContainer(node)) return SPACE;
+		if (right == C3Types.COLON && isForeachColonWithSpaces(rightNode, node)) return SPACE;
+		if (leftEnd == C3Types.COLON && isForeachColonWithSpaces(leftNode, node)) return SPACE;
 		if (isAssignmentOperator(right) || isAssignmentOperator(leftEnd)) return SPACE;
 		if (node.getElementType() == C3Types.BINARY_EXPR && (isBinaryOperator(right) || isBinaryOperator(leftEnd))) return SPACE;
 		if (right == C3Types.LP) return isControlKeyword(leftEnd) ? SPACE : NO_SPACING;
@@ -116,13 +130,85 @@ final class C3Block implements Block
 
 	private @NotNull Spacing lineBreak(int keepBlankLines)
 	{
-	    return Spacing.createSpacing(0, 0, 1, true, keepBlankLines);
+		return Spacing.createSpacing(0, 0, 1, true, keepBlankLines);
 	}
 
-	private static boolean isStatementBlock(@NotNull ASTNode node)
+	/**
+	 * Number of blank lines to preserve at a forced line break, chosen from the "keep lines" settings
+	 * based on the break's context: before a closing brace, inside a declaration container, or in code.
+	 */
+	private int keepBlankLines(@Nullable IElementType right)
+	{
+		if (right == C3Types.RB) return settings.KEEP_BLANK_LINES_BEFORE_RBRACE;
+		return isDeclarationContainer(node) ? settings.KEEP_BLANK_LINES_IN_DECLARATIONS
+		                                    : settings.KEEP_BLANK_LINES_IN_CODE;
+	}
+
+	private static boolean isDeclarationContainer(@NotNull ASTNode node)
 	{
 		IElementType type = node.getElementType();
-		return type == C3Types.COMPOUND_STATEMENT;
+		return type == C3Types.DEFAULT_MODULE_SECTION || type == C3Types.MODULE_SECTION ||
+		       type == C3Types.STRUCT_BODY || type == C3Types.BITSTRUCT_BODY ||
+		       type == C3Types.INTERFACE_BODY || type == C3Types.ENUM_DECLARATION ||
+		       type == C3Types.CONSTDEF_DECLARATION;
+	}
+
+	private static boolean isMultilineBraceContainer(@NotNull ASTNode node)
+	{
+		IElementType type = node.getElementType();
+		return type == C3Types.COMPOUND_STATEMENT || type == C3Types.STRUCT_BODY ||
+		       type == C3Types.BITSTRUCT_BODY || type == C3Types.INTERFACE_BODY ||
+		       type == C3Types.ENUM_DECLARATION || type == C3Types.CONSTDEF_DECLARATION;
+	}
+
+	private static boolean isInitializerList(@NotNull ASTNode node)
+	{
+		return node.getElementType() == C3Types.INITIALIZER_LIST;
+	}
+
+	private static boolean isEnumLikeList(@NotNull ASTNode node)
+	{
+		IElementType type = node.getElementType();
+		return type == C3Types.ENUM_LIST || type == C3Types.CONSTDEF_LIST;
+	}
+
+	private static boolean isSpacedColonContainer(@NotNull ASTNode node)
+	{
+		IElementType type = node.getElementType();
+		return type == C3Types.ENUM_DECLARATION || type == C3Types.CONSTDEF_DECLARATION ||
+		       type == C3Types.BITSTRUCT_DECLARATION || type == C3Types.BITSTRUCT_DEF;
+	}
+
+	private static boolean isCompileTimeBody(@Nullable ASTNode node)
+	{
+		if (node == null) return false;
+		IElementType type = node.getElementType();
+		return type == C3Types.STATEMENT_LIST || type == C3Types.CT_SWITCH_BODY;
+	}
+
+	private static boolean isCompileTimeEndKeyword(@Nullable IElementType type)
+	{
+		return type == C3Types.KW_CT_ENDIF || type == C3Types.KW_CT_ENDFOREACH ||
+		       type == C3Types.KW_CT_ENDFOR || type == C3Types.KW_CT_ENDSWITCH;
+	}
+
+	private static boolean isForeachColonWithSpaces(@Nullable ASTNode colonNode, @NotNull ASTNode parentNode)
+	{
+		if (colonNode == null) return false;
+		IElementType parentType = parentNode.getElementType();
+		if (parentType != C3Types.FOREACH_STMT && parentType != C3Types.CT_FOREACH_STMT) return false;
+		IElementType nextType = nextSiblingType(colonNode);
+		return nextType != C3Types.STATEMENT_LIST && nextType != C3Types.KW_CT_ENDFOREACH;
+	}
+
+	private static boolean isDeclarationBrace(@Nullable ASTNode rightNode, @NotNull ASTNode parentNode)
+	{
+		IElementType parentType = parentNode.getElementType();
+		return findFirstLeafOwner(rightNode, C3Types.STRUCT_BODY) != null ||
+		       findFirstLeafOwner(rightNode, C3Types.BITSTRUCT_BODY) != null ||
+		       findFirstLeafOwner(rightNode, C3Types.INTERFACE_BODY) != null ||
+		       parentType == C3Types.ENUM_DECLARATION ||
+		       parentType == C3Types.CONSTDEF_DECLARATION;
 	}
 
 	@Override public boolean isIncomplete()
@@ -135,10 +221,7 @@ final class C3Block implements Block
 		ASTNode child = node.getFirstChildNode();
 		while (child != null)
 		{
-			if (child.getElementType() != TokenType.WHITE_SPACE)
-			{
-				return false;
-			}
+			if (child.getElementType() != TokenType.WHITE_SPACE) return false;
 			child = child.getTreeNext();
 		}
 		return true;
@@ -171,10 +254,7 @@ final class C3Block implements Block
 		ASTNode child = node.getFirstChildNode();
 		while (child != null)
 		{
-			if (child.getElementType() != TokenType.WHITE_SPACE)
-			{
-				return findFirstLeafOwner(child, targetType);
-			}
+			if (child.getElementType() != TokenType.WHITE_SPACE) return findFirstLeafOwner(child, targetType);
 			child = child.getTreeNext();
 		}
 		return null;
@@ -182,15 +262,85 @@ final class C3Block implements Block
 
 	private @NotNull Indent getChildIndent(@NotNull ASTNode child)
 	{
-		if (node.getTreeParent() == null)
-		{
-			return Indent.getNoneIndent();
-		}
-		if (isBraceContainer(node) && child.getElementType() != C3Types.LB && child.getElementType() != C3Types.RB)
-		{
-			return Indent.getNormalIndent();
-		}
+		if (node.getTreeParent() == null) return Indent.getNoneIndent();
+		if (node.getElementType() == C3Types.FAULTDEF_DECL && child.getElementType() == C3Types.FAULT_DEFINITION) return Indent.getNormalIndent();
+		if (isCompileTimeIndentedChild(node, child)) return Indent.getNormalIndent();
+		if (isBraceContainer(node) && isBetweenDirectBraces(child)) return Indent.getNormalIndent();
 		return Indent.getNoneIndent();
+	}
+
+	private static boolean isCompileTimeIndentedChild(@NotNull ASTNode node, @NotNull ASTNode child)
+	{
+		IElementType parentType = node.getElementType();
+		IElementType childType = child.getElementType();
+		if (childType == C3Types.STATEMENT_LIST)
+		{
+			return parentType == C3Types.CT_IF_STMT || parentType == C3Types.CT_FOREACH_STMT ||
+			       parentType == C3Types.CT_FOR_STMT || parentType == C3Types.CT_CASE_STMT;
+		}
+		return parentType == C3Types.CT_SWITCH_STMT && childType == C3Types.CT_SWITCH_BODY;
+	}
+
+	private static boolean isBetweenDirectBraces(@NotNull ASTNode child)
+	{
+		IElementType type = child.getElementType();
+		if (type == C3Types.LB || type == C3Types.RB)
+		{
+			return false;
+		}
+		return hasPreviousSibling(child, C3Types.LB) && hasNextSibling(child, C3Types.RB);
+	}
+
+	private static boolean hasPreviousSibling(@NotNull ASTNode child, @NotNull IElementType targetType)
+	{
+		ASTNode sibling = child.getTreePrev();
+		while (sibling != null)
+		{
+			if (sibling.getElementType() != TokenType.WHITE_SPACE)
+			{
+				if (sibling.getElementType() == targetType) return true;
+			}
+			sibling = sibling.getTreePrev();
+		}
+		return false;
+	}
+
+	private static boolean hasNextSibling(@NotNull ASTNode child, @NotNull IElementType targetType)
+	{
+		ASTNode sibling = child.getTreeNext();
+		while (sibling != null)
+		{
+			if (sibling.getElementType() != TokenType.WHITE_SPACE)
+			{
+				if (sibling.getElementType() == targetType) return true;
+			}
+			sibling = sibling.getTreeNext();
+		}
+		return false;
+	}
+
+	private static @Nullable IElementType nextSiblingType(@NotNull ASTNode child)
+	{
+		ASTNode sibling = child.getTreeNext();
+		while (sibling != null)
+		{
+			if (sibling.getElementType() != TokenType.WHITE_SPACE) return sibling.getElementType();
+			sibling = sibling.getTreeNext();
+		}
+		return null;
+	}
+
+	private static boolean containsNodeType(@Nullable ASTNode node, @NotNull IElementType targetType)
+	{
+		if (node == null) return false;
+		if (node.getElementType() == targetType) return true;
+		ASTNode child = node.getFirstChildNode();
+		while (child != null)
+		{
+			if (child.getElementType() != TokenType.WHITE_SPACE && containsNodeType(child, targetType)) return true;
+			child = child.getTreeNext();
+		}
+		return false;
 	}
 
 	private static boolean isBraceContainer(@NotNull ASTNode node)
