@@ -3,8 +3,13 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
-- Fix formatting of `//` at the end of a line.
 
+## [0.2.9] - 2026-07-13
+- Fix formatting of `//` at the end of a line.
+- Update formatting of { } multiline initializers.
+- Format pointer types.
+- Additional fixes to formatting.
+ 
 ## [0.2.8] - 2026-07-10
 - Use target for run configurations, make running a separate step.
 - Add support for changing optimization levels.

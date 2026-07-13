@@ -91,7 +91,9 @@ final class C3Block implements Block
 		IElementType rightEnd = lastLeafType(rightNode);
 
 		if (leftEnd == C3Types.LB && right == C3Types.RB) return NO_SPACING;
+		if (leftEnd == C3Types.LB && isMultilineInitializerList(node)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
 		if (leftEnd == C3Types.LB && isInitializerList(node)) return SPACE;
+		if (leftEnd == C3Types.COMMA && right == C3Types.RB && isMultilineInitializerList(node)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
 		if (right == C3Types.RB && isInitializerList(node)) return SPACE;
 		if (leftEnd == C3Types.LB && isMultilineBraceContainer(node)) return lineBreak(keepBlankLines(right));
 		if (right == C3Types.RB && isMultilineBraceContainer(node)) return lineBreak(settings.KEEP_BLANK_LINES_BEFORE_RBRACE);
@@ -103,21 +105,29 @@ final class C3Block implements Block
 		}
 		if (right == C3Types.LB && isDeclarationBrace(rightNode, node)) return useNextLineBrace() ? lineBreak(0) : SINGLE_SPACE;
 		if (right == C3Types.LB && findFirstLeafOwner(rightNode, C3Types.INITIALIZER_LIST) != null) return SPACE;
-		if (leftEnd == C3Types.EOS && isEndOfLineComment(right)) return SPACE;
+		if (isComment(right)) return preserveSpaces(keepBlankLines(right));
 		if (leftEnd == C3Types.EOS && !isInsideForCondition()) return lineBreak(keepBlankLines(right));
 		if (leftEnd == C3Types.RB && right == C3Types.LP && containsNodeType(leftNode, C3Types.GENERIC_PARAMETERS)) return NO_SPACING;
 		if (leftEnd == C3Types.RB && shouldBreakAfterRightBrace(right)) return lineBreak(keepBlankLines(right));
-		if (leftEnd == C3Types.COLON && isCompileTimeBody(rightNode)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
+		if (leftEnd == C3Types.COLON && isCompileTimeCaseBody(node)) return hasLineBreakBetween(leftNode, rightNode) ? lineBreak(keepBlankLines(right)) : SINGLE_SPACE;
+		if (leftEnd == C3Types.COLON && isCompileTimeBodyOwner(node) && isCompileTimeBody(rightNode)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
 		if (leftEnd == C3Types.KW_CT_ELSE && isCompileTimeBody(rightNode)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
 		if (isCompileTimeEndKeyword(leftEnd)) return lineBreak(settings.KEEP_BLANK_LINES_IN_CODE);
+		if (isComment(leftEnd)) return preserveSpaces(keepBlankLines(right));
+		if (isInterfaceImplementationSpacing(node, rightNode)) return SPACE;
 		if (right == C3Types.COMMA) return NO_SPACING;
 		if (leftEnd == C3Types.COMMA && isEnumLikeList(node)) return lineBreak(settings.KEEP_BLANK_LINES_IN_DECLARATIONS);
 		if (leftEnd == C3Types.COMMA) return SPACE;
 		if (right == C3Types.EOS) return NO_SPACING;
+		if (leftEnd == C3Types.KW_RETURN) return SPACE;
 		if (right == C3Types.IMPLIES || leftEnd == C3Types.IMPLIES) return SPACE;
+		if (leftEnd == C3Types.COLON && isCaseBody(node)) return hasLineBreakBetween(leftNode, rightNode) ? lineBreak(keepBlankLines(right)) : SINGLE_SPACE;
 		if ((right == C3Types.COLON || leftEnd == C3Types.COLON) && isSpacedColonContainer(node)) return SPACE;
 		if (right == C3Types.COLON && isForeachColonWithSpaces(rightNode, node)) return SPACE;
 		if (leftEnd == C3Types.COLON && isForeachColonWithSpaces(leftNode, node)) return SPACE;
+		if (isTypedVariadicParameterSpacing(node, leftNode, leftEnd, right)) return right == C3Types.ELLIPSIS ? NO_SPACING : SPACE;
+		if (isTypeDeclarationSpacing(node, leftNode, right)) return SPACE;
+		if (isTypeModifierSpacing(node, leftEnd, right)) return NO_SPACING;
 		if (isAssignmentOperator(right) || isAssignmentOperator(leftEnd)) return SPACE;
 		if (node.getElementType() == C3Types.BINARY_EXPR && (isBinaryOperator(right) || isBinaryOperator(leftEnd))) return SPACE;
 		if (right == C3Types.LP) return isControlKeyword(leftEnd) ? SPACE : NO_SPACING;
@@ -133,6 +143,11 @@ final class C3Block implements Block
 	private @NotNull Spacing lineBreak(int keepBlankLines)
 	{
 		return Spacing.createSpacing(0, 0, 1, true, keepBlankLines);
+	}
+
+	private @NotNull Spacing preserveSpaces(int keepBlankLines)
+	{
+		return Spacing.createSpacing(0, Integer.MAX_VALUE, 0, true, keepBlankLines);
 	}
 
 	/**
@@ -168,6 +183,11 @@ final class C3Block implements Block
 		return node.getElementType() == C3Types.INITIALIZER_LIST;
 	}
 
+	private static boolean isMultilineInitializerList(@NotNull ASTNode node)
+	{
+		return isInitializerList(node) && node.getText().indexOf('\n') >= 0;
+	}
+
 	private static boolean isEnumLikeList(@NotNull ASTNode node)
 	{
 		IElementType type = node.getElementType();
@@ -181,9 +201,11 @@ final class C3Block implements Block
 		       type == C3Types.BITSTRUCT_DECLARATION || type == C3Types.BITSTRUCT_DEF;
 	}
 
-	private static boolean isEndOfLineComment(@Nullable IElementType type)
+	private static boolean isComment(@Nullable IElementType type)
 	{
-		return type == C3ParserDefinition.DOC_COMMENT || type == C3ParserDefinition.LINE_COMMENT;
+		return type == C3ParserDefinition.LINE_COMMENT ||
+		       type == C3ParserDefinition.DOC_COMMENT ||
+		       type == C3ParserDefinition.BLOCK_COMMENT;
 	}
 
 	private static boolean isCompileTimeBody(@Nullable ASTNode node)
@@ -191,6 +213,14 @@ final class C3Block implements Block
 		if (node == null) return false;
 		IElementType type = node.getElementType();
 		return type == C3Types.STATEMENT_LIST || type == C3Types.CT_SWITCH_BODY;
+	}
+
+	private static boolean isCompileTimeBodyOwner(@NotNull ASTNode node)
+	{
+		IElementType type = node.getElementType();
+		return type == C3Types.CT_IF_STMT || type == C3Types.CT_FOREACH_STMT ||
+		       type == C3Types.CT_FOR_STMT || type == C3Types.CT_CASE_STMT ||
+		       type == C3Types.CT_SWITCH_STMT;
 	}
 
 	private static boolean isCompileTimeEndKeyword(@Nullable IElementType type)
@@ -206,6 +236,87 @@ final class C3Block implements Block
 		if (parentType != C3Types.FOREACH_STMT && parentType != C3Types.CT_FOREACH_STMT) return false;
 		IElementType nextType = nextSiblingType(colonNode);
 		return nextType != C3Types.STATEMENT_LIST && nextType != C3Types.KW_CT_ENDFOREACH;
+	}
+
+	private static boolean isCaseBody(@NotNull ASTNode parentNode)
+	{
+		IElementType parentType = parentNode.getElementType();
+		return parentType == C3Types.CASE_STMT || parentType == C3Types.DEFAULT_STMT;
+	}
+
+	private static boolean isCompileTimeCaseBody(@NotNull ASTNode parentNode)
+	{
+		return parentNode.getElementType() == C3Types.CT_CASE_STMT;
+	}
+
+	private static boolean isInterfaceImplementationSpacing(@NotNull ASTNode parentNode, @Nullable ASTNode rightNode)
+	{
+		IElementType parentType = parentNode.getElementType();
+		return isInterfaceImplementationOwner(parentType) &&
+		       findFirstLeafOwner(rightNode, C3Types.INTERFACE_IMPL) != null;
+	}
+
+	private static boolean isInterfaceImplementationOwner(@Nullable IElementType type)
+	{
+		return type == C3Types.STRUCT_DECLARATION ||
+		       type == C3Types.BITSTRUCT_DECLARATION ||
+		       type == C3Types.TYPEDEF_DECL ||
+		       type == C3Types.CONSTDEF_DECLARATION ||
+		       type == C3Types.ENUM_DECLARATION;
+	}
+
+	private static boolean isTypedVariadicParameterSpacing(@NotNull ASTNode parentNode, @Nullable ASTNode leftNode,
+	                                                       @Nullable IElementType leftEnd, @Nullable IElementType right)
+	{
+		if (parentNode.getElementType() != C3Types.PARAMETER) return false;
+		return isTypeNode(leftNode == null ? null : leftNode.getElementType()) && right == C3Types.ELLIPSIS ||
+		       leftEnd == C3Types.ELLIPSIS && (right == C3Types.IDENT || right == C3Types.CT_IDENT);
+	}
+
+	private static boolean isTypeDeclarationSpacing(@NotNull ASTNode parentNode, @Nullable ASTNode leftNode, @Nullable IElementType right)
+	{
+		if (leftNode == null || right == null || !isTypeNode(leftNode.getElementType())) return false;
+		IElementType parentType = parentNode.getElementType();
+		return parentType == C3Types.LOCAL_DECLARATION_STMT ||
+		       parentType == C3Types.DECL_OR_EXPR ||
+		       parentType == C3Types.GLOBAL_DECL ||
+		       parentType == C3Types.PARAMETER ||
+		       parentType == C3Types.ENUM_PARAM_DECL ||
+		       parentType == C3Types.CONST_DECLARATION_STMT ||
+		       parentType == C3Types.FUNC_HEADER ||
+		       parentType == C3Types.MACRO_HEADER ||
+		       parentType == C3Types.FOREACH_VAR ||
+		       parentType == C3Types.TRY_UNWRAP ||
+		       parentType == C3Types.CATCH_UNWRAP;
+	}
+
+	private static boolean isTypeNode(@Nullable IElementType type)
+	{
+		return type == C3Types.TYPE || type == C3Types.OPTIONAL_TYPE;
+	}
+
+	private static boolean isTypeModifierSpacing(@NotNull ASTNode parentNode, @Nullable IElementType leftEnd, @Nullable IElementType right)
+	{
+		IElementType parentType = parentNode.getElementType();
+		if (parentType == C3Types.TYPE)
+		{
+			return isTypeSuffixStart(right);
+		}
+		if (parentType == C3Types.OPTIONAL_TYPE)
+		{
+			return right == C3Types.QUESTION;
+		}
+		if (parentType == C3Types.TYPE_SUFFIX)
+		{
+			return leftEnd == C3Types.LBT || leftEnd == C3Types.LVEC ||
+			       right == C3Types.RBT || right == C3Types.RVEC;
+		}
+		return false;
+	}
+
+	private static boolean isTypeSuffixStart(@Nullable IElementType type)
+	{
+		return type == C3Types.STAR || type == C3Types.LBT || type == C3Types.LVEC;
 	}
 
 	private static boolean isDeclarationBrace(@Nullable ASTNode rightNode, @NotNull ASTNode parentNode)
@@ -280,12 +391,40 @@ final class C3Block implements Block
 	{
 		IElementType parentType = node.getElementType();
 		IElementType childType = child.getElementType();
+		if (isComment(childType) && isCompileTimeBodyOwner(node) && hasLineBreakBefore(child)) return true;
 		if (childType == C3Types.STATEMENT_LIST)
 		{
 			return parentType == C3Types.CT_IF_STMT || parentType == C3Types.CT_FOREACH_STMT ||
-			       parentType == C3Types.CT_FOR_STMT || parentType == C3Types.CT_CASE_STMT;
+			       parentType == C3Types.CT_FOR_STMT ||
+			       (parentType == C3Types.CT_CASE_STMT && hasLineBreakBefore(child)) ||
+			       ((parentType == C3Types.CASE_STMT || parentType == C3Types.DEFAULT_STMT) && hasLineBreakBefore(child));
 		}
 		return parentType == C3Types.CT_SWITCH_STMT && childType == C3Types.CT_SWITCH_BODY;
+	}
+
+	private static boolean hasLineBreakBefore(@NotNull ASTNode child)
+	{
+		ASTNode sibling = child.getTreePrev();
+		while (sibling != null)
+		{
+			IElementType type = sibling.getElementType();
+			if (type == TokenType.WHITE_SPACE) return sibling.getText().indexOf('\n') >= 0;
+			if (type != C3Types.COLON) return false;
+			sibling = sibling.getTreePrev();
+		}
+		return false;
+	}
+
+	private static boolean hasLineBreakBetween(@Nullable ASTNode leftNode, @Nullable ASTNode rightNode)
+	{
+		if (leftNode == null || rightNode == null) return false;
+		ASTNode sibling = leftNode.getTreeNext();
+		while (sibling != null && sibling != rightNode)
+		{
+			if (sibling.getElementType() == TokenType.WHITE_SPACE && sibling.getText().indexOf('\n') >= 0) return true;
+			sibling = sibling.getTreeNext();
+		}
+		return false;
 	}
 
 	private static boolean isBetweenDirectBraces(@NotNull ASTNode child)

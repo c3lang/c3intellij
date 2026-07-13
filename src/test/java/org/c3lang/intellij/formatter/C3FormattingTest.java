@@ -184,10 +184,12 @@ public class C3FormattingTest extends BasePlatformTestCase
     {
         myFixture.configureByText("main.c3", """
                 module demo;
-                const int VALUE=1;<* Value docs *>
-                const int OTHER=2;// Other docs
-                fn void main(){int local=3;<* Local docs *>
-                int next=4;// Next docs
+                const int VALUE=1;   <* Value docs *>
+                const int OTHER=2;    // Other docs
+                const int THIRD=3;     /* Third docs */
+                fn void main(){int local=4;  <* Local docs *>
+                int next=4;      // Next docs
+                int block=5;       /* Block docs */
                 }
                 """);
         assertNoPsiErrors();
@@ -197,12 +199,294 @@ public class C3FormattingTest extends BasePlatformTestCase
         assertNoPsiErrors();
         assertEquals("""
                 module demo;
-                const int VALUE = 1; <* Value docs *>
-                const int OTHER = 2; // Other docs
+                const int VALUE = 1;   <* Value docs *>
+                const int OTHER = 2;    // Other docs
+                const int THIRD = 3;     /* Third docs */
                 fn void main()
                 {
-                \tint local = 3; <* Local docs *>
-                \tint next = 4; // Next docs
+                \tint local = 4;  <* Local docs *>
+                \tint next = 4;      // Next docs
+                \tint block = 5;       /* Block docs */
+                }
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingPreservesBlankLineBeforeStandaloneLineCommentAfterDeclaration()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                struct Foo
+                {
+                int a;
+                }
+
+                // Hello
+
+                <* Docs *>
+
+                /* Block */
+
+
+                fn void test() {}
+                """);
+        assertNoPsiErrors();
+
+        reformat((settings) ->
+                settings.getCommonSettings(C3Language.INSTANCE).KEEP_BLANK_LINES_IN_DECLARATIONS = 1
+        );
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                struct Foo
+                {
+                \tint a;
+                }
+
+                // Hello
+
+                <* Docs *>
+
+                /* Block */
+
+                fn void test()
+                {}
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingMovesClosingBraceAfterTrailingCommaInMultilineInitializer()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                fn void main()
+                {
+                int[2][*] x = { {1,2},
+                {2,3},
+                {4,5},
+                };
+                }
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                fn void main()
+                {
+                \tint[2][*] x = {
+                \t\t{ 1, 2 },
+                \t\t{ 2, 3 },
+                \t\t{ 4, 5 },
+                \t};
+                }
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingKeepsTypeModifiersTight()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                fn void main(){int *a;int ? b;int [2] * ? c;int [< 2 >] * ? d;int value=a * c;}
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                fn void main()
+                {
+                \tint* a;
+                \tint? b;
+                \tint[2]*? c;
+                \tint[<2>]*? d;
+                \tint value = a * c;
+                }
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingSpacesInterfaceImplsAndKeepsTypedVariadicsTight()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                struct MultiWriter(OutStream){}
+                fn void write(int ... x,int * ... y){}
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                struct MultiWriter (OutStream)
+                {}
+                fn void write(int... x, int*... y)
+                {}
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingIndentsStatementsAfterCastsSwitchesAndEarlyReturns()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                fn int seek(int reader, int offset, int seek)
+                {
+                    int new_index;
+                    switch (seek)
+                    {
+                        case SET: new_index = offset;
+                        case CURSOR: new_index = seek + offset;
+                    case END: new_index = reader + offset;
+                    }
+                    if (new_index < 0) return -1;
+                reader = new_index;
+                return(int)new_index;
+                }
+                fn int write_stream(int reader, Writer* writer)
+                {
+                    if (reader >= 10) return 0;
+                int written = writer.write(reader)!;
+                reader += written;
+                    assert(reader <= 10);
+                return written;
+                }
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                fn int seek(int reader, int offset, int seek)
+                {
+                \tint new_index;
+                \tswitch (seek)
+                \t{
+                \t\tcase SET: new_index = offset;
+                \t\tcase CURSOR: new_index = seek + offset;
+                \t\tcase END: new_index = reader + offset;
+                \t}
+                \tif (new_index < 0) return -1;
+                \treader = new_index;
+                \treturn (int)new_index;
+                }
+                fn int write_stream(int reader, Writer* writer)
+                {
+                \tif (reader >= 10) return 0;
+                \tint written = writer.write(reader)!;
+                \treader += written;
+                \tassert(reader <= 10);
+                \treturn written;
+                }
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingIndentsMultilineCaseBodies()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                fn void main()
+                {
+                int a = 0;
+                switch (a)
+                {
+                case FOO:
+                a = a + 1;
+                case BAR:
+                a = a + 2;
+                default:
+                a = 0;
+                }
+                }
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                fn void main()
+                {
+                \tint a = 0;
+                \tswitch (a)
+                \t{
+                \t\tcase FOO:
+                \t\t\ta = a + 1;
+                \t\tcase BAR:
+                \t\t\ta = a + 2;
+                \t\tdefault:
+                \t\t\ta = 0;
+                \t}
+                }
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingKeepsCompileTimeIfCommentBodyIndented()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                fn void main()
+                {
+                $if env::TESTING:
+                    // HACK: this is used for the purpose of unit test output hijacking
+                    File* stdout = io::stdout();
+                    assert(stdout.file);
+                    libc::fputc(c, stdout.file);
+                $endif
+                }
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                fn void main()
+                {
+                \t$if env::TESTING:
+                \t\t// HACK: this is used for the purpose of unit test output hijacking
+                \t\tFile* stdout = io::stdout();
+                \t\tassert(stdout.file);
+                \t\tlibc::fputc(c, stdout.file);
+                \t$endif
+                }
+                """, myFixture.getFile().getText());
+    }
+
+    public void testFormattingKeepsCompileTimeCaseSingleLineBodies()
+    {
+        myFixture.configureByText("main.c3", """
+                module demo;
+                fn void main()
+                {
+                $switch $Type:
+                        $case String: return out.write(x);
+                        $case ZString: return out.write(x.str_view());
+                        $case DString: return out.write(x.str_view());
+                $endswitch
+                }
+                """);
+        assertNoPsiErrors();
+
+        reformat();
+
+        assertNoPsiErrors();
+        assertEquals("""
+                module demo;
+                fn void main()
+                {
+                \t$switch $Type:
+                \t\t$case String: return out.write(x);
+                \t\t$case ZString: return out.write(x.str_view());
+                \t\t$case DString: return out.write(x.str_view());
+                \t$endswitch
                 }
                 """, myFixture.getFile().getText());
     }
