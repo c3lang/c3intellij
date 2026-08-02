@@ -48,7 +48,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   };
 
   /* ********************************************************** */
-  // IDENT | AT_IDENT | HASH_IDENT | KW_CT_EVAL '(' expr ')' | KW_TYPEID
+  // IDENT | AT_IDENT | HASH_IDENT | KW_CT_EVAL '(' expr ')' | KW_TYPEID | CT_IDENT
   public static boolean access_ident(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "access_ident")) return false;
     boolean r;
@@ -58,6 +58,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, HASH_IDENT);
     if (!r) r = access_ident_3(b, l + 1);
     if (!r) r = consumeToken(b, KW_TYPEID);
+    if (!r) r = consumeToken(b, CT_IDENT);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1458,7 +1459,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // call_invocation compound_statement?
+  // call_invocation (compound_statement | (IMPLIES expr))?
   //     | DOT? LBT (range_exp | range_loc) RBT
   //     | generic_parameters
   //     | dot_access_ident
@@ -1484,7 +1485,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // call_invocation compound_statement?
+  // call_invocation (compound_statement | (IMPLIES expr))?
   private static boolean call_expr_tail_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "call_expr_tail_0")) return false;
     boolean r;
@@ -1495,11 +1496,33 @@ public class C3Parser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // compound_statement?
+  // (compound_statement | (IMPLIES expr))?
   private static boolean call_expr_tail_0_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "call_expr_tail_0_1")) return false;
-    compound_statement(b, l + 1);
+    call_expr_tail_0_1_0(b, l + 1);
     return true;
+  }
+
+  // compound_statement | (IMPLIES expr)
+  private static boolean call_expr_tail_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "call_expr_tail_0_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = compound_statement(b, l + 1);
+    if (!r) r = call_expr_tail_0_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // IMPLIES expr
+  private static boolean call_expr_tail_0_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "call_expr_tail_0_1_0_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, IMPLIES);
+    r = r && expr(b, l + 1, -1);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   // DOT? LBT (range_exp | range_loc) RBT
@@ -4222,7 +4245,7 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IMPLIES AT_IDENT call_invocation compound_statement
+  // IMPLIES AT_IDENT call_invocation (compound_statement | IMPLIES expr EOS)
   public static boolean macro_implies_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "macro_implies_body")) return false;
     if (!nextTokenIs(b, IMPLIES)) return false;
@@ -4230,8 +4253,31 @@ public class C3Parser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, IMPLIES, AT_IDENT);
     r = r && call_invocation(b, l + 1);
-    r = r && compound_statement(b, l + 1);
+    r = r && macro_implies_body_3(b, l + 1);
     exit_section_(b, m, MACRO_IMPLIES_BODY, r);
+    return r;
+  }
+
+  // compound_statement | IMPLIES expr EOS
+  private static boolean macro_implies_body_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "macro_implies_body_3")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = compound_statement(b, l + 1);
+    if (!r) r = macro_implies_body_3_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // IMPLIES expr EOS
+  private static boolean macro_implies_body_3_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "macro_implies_body_3_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, IMPLIES);
+    r = r && expr(b, l + 1, -1);
+    r = r && consumeToken(b, EOS);
+    exit_section_(b, m, null, r);
     return r;
   }
 

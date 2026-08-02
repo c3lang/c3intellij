@@ -228,7 +228,7 @@ global_decl ::= KW_TLOCAL? optional_type IDENT ((COMMA IDENT)+ generic_decl? att
 
 // -- CALL & ARGUMENT HELPERS --
 
-access_ident ::= IDENT | AT_IDENT | HASH_IDENT | KW_CT_EVAL '(' expr ')' | KW_TYPEID
+access_ident ::= IDENT | AT_IDENT | HASH_IDENT | KW_CT_EVAL '(' expr ')' | KW_TYPEID | CT_IDENT
 
 arg_list ::= arg (COMMA arg)* COMMA?
 named_ident ::= CT_IDENT | HASH_IDENT | IDENT | CT_TYPE_IDENT
@@ -236,7 +236,7 @@ arg ::= (named_ident COLON (ELLIPSIS? expr)) | param_path (EQ (expr))? | expr | 
 call_arg_list ::= arg_list? (EOS parameter_list?)?
 call_invocation ::= LP call_arg_list RP AT_IDENT*
 private dot_access_ident ::= DOT access_ident { pin=1 }
-call_expr_tail ::= call_invocation compound_statement?
+call_expr_tail ::= call_invocation (compound_statement | (IMPLIES expr))?
     | DOT? LBT (range_exp | range_loc) RBT
     | generic_parameters
     | dot_access_ident
@@ -512,7 +512,7 @@ func_definition ::= func_def (macro_func_body | EOS) { pin=1 }
 
 macro_func_body ::= macro_implies_body | IMPLIES expr EOS | compound_statement
 
-macro_implies_body ::= IMPLIES AT_IDENT call_invocation compound_statement
+macro_implies_body ::= IMPLIES AT_IDENT call_invocation (compound_statement | IMPLIES expr EOS)
 
 interface_impl ::= LP type_name (COMMA type)* RP
 

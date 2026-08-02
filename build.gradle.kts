@@ -1,8 +1,18 @@
+import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("org.jetbrains.intellij.platform")
     id("org.jetbrains.changelog")
+    id("org.jetbrains.grammarkit") version "2022.3.2"
+}
+
+repositories {
+    mavenCentral()
+
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 idea {
@@ -29,5 +39,20 @@ dependencies {
         intellijIdea("2025.2.6.2")
         bundledPlugin("com.intellij.modules.json")
         testFramework(TestFrameworkType.Platform)
+    }
+}
+
+tasks {
+    val generateC3Lexer = register("generateC3Lexer", GenerateLexerTask::class) {
+        sourceFile.set(file("src/main/java/org/c3lang/intellij/C3.flex"))
+        targetDir.set("src/main/gen/org/c3lang/intellij/lexer")
+        targetClass.set("C3Lexer")
+        purgeOldFiles.set(true)
+    }
+
+    compileJava {
+
+        
+        dependsOn(generateC3Lexer)
     }
 }

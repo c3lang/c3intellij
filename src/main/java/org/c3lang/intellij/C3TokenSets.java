@@ -145,6 +145,7 @@ public interface C3TokenSets
                                         C3Types.KW_CASE,
                                         C3Types.KW_CATCH,
                                         C3Types.KW_CONST,
+										C3Types.KW_CONSTDEF,
                                         C3Types.KW_CONTINUE,
                                         C3Types.KW_DEFAULT,
                                         C3Types.KW_DEFER,

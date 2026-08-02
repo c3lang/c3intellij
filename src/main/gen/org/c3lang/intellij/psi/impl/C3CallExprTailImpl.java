@@ -46,6 +46,12 @@ public class C3CallExprTailImpl extends C3PsiElementImpl implements C3CallExprTa
 
   @Override
   @Nullable
+  public C3Expr getExpr() {
+    return findChildByClass(C3Expr.class);
+  }
+
+  @Override
+  @Nullable
   public C3GenericParameters getGenericParameters() {
     return findChildByClass(C3GenericParameters.class);
   }

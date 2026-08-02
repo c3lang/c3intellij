@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.2.10] - 2026-08-01
+- Support $feat.
+- Fix issue with foo.$bar not being accepted.
+- Support experimental new syntax for constdef etc.
+
 ## [0.2.9] - 2026-07-13
 - Fix formatting of `//` at the end of a line.
 - Update formatting of { } multiline initializers.

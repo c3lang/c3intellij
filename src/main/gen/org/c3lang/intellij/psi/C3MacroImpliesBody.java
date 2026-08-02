@@ -10,7 +10,10 @@ public interface C3MacroImpliesBody extends C3PsiElement {
   @NotNull
   C3CallInvocation getCallInvocation();
 
-  @NotNull
+  @Nullable
   C3CompoundStatement getCompoundStatement();
+
+  @Nullable
+  C3Expr getExpr();
 
 }

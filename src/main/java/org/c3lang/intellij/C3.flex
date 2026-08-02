@@ -85,15 +85,20 @@ SHEBANG_COMMENT = "#!" .*
     "asm" { return C3Types.KW_ASM; }
     "assert" { return C3Types.KW_ASSERT; }
     "attrdef" { return C3Types.KW_ATTRDEF; }
+    "attrgroup" { return C3Types.KW_ATTRDEF; }
+    "attrmacro" { return C3Types.KW_ATTRDEF; }
     "bitstruct" { return C3Types.KW_BITSTRUCT; }
     "break" { return C3Types.KW_BREAK; }
     "case" { return C3Types.KW_CASE; }
     "catch" { return C3Types.KW_CATCH; }
+    "cenum" { return C3Types.KW_CONSTDEF; }
+    "constset" { return C3Types.KW_CONSTDEF; }
     "constdef" { return C3Types.KW_CONSTDEF; }
     "const" { return C3Types.KW_CONST; }
     "continue" { return C3Types.KW_CONTINUE; }
     "default" { return C3Types.KW_DEFAULT; }
     "defer" { return C3Types.KW_DEFER; }
+    "distinct" { return C3Types.KW_TYPEDEF; }
     "typedef" { return C3Types.KW_TYPEDEF; }
     "do" { return C3Types.KW_DO; }
     "else" { return C3Types.KW_ELSE; }
@@ -104,6 +109,9 @@ SHEBANG_COMMENT = "#!" .*
     "false" { return C3Types.KW_FALSE; }
     "fault" { return C3Types.KW_FAULT; }
     "faultdef" { return C3Types.KW_FAULTDEF; }
+    "excuse" { return C3Types.KW_FAULTDEF; }
+    "faultset" { return C3Types.KW_FAULTDEF; }
+    "faultconst" { return C3Types.KW_FAULTDEF; }
     "for" { return C3Types.KW_FOR; }
     "fn" { return C3Types.KW_FN; }
     "if" { return C3Types.KW_IF; }
@@ -140,6 +148,7 @@ SHEBANG_COMMENT = "#!" .*
     "$exec" { return C3Types.KW_CT_EXEC; }
     "$expand" { return C3Types.KW_CT_EXPAND; }
     "$feature" { return C3Types.KW_CT_FEATURE; }
+    "$feat" {return C3Types.KW_CT_FEATURE; }
     "$for" { return C3Types.KW_CT_FOR; }
     "$foreach" { return C3Types.KW_CT_FOREACH; }
     "$if" { return C3Types.KW_CT_IF; }

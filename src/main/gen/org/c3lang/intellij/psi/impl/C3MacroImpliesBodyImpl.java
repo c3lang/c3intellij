@@ -33,9 +33,15 @@ public class C3MacroImpliesBodyImpl extends C3PsiElementImpl implements C3MacroI
   }
 
   @Override
-  @NotNull
+  @Nullable
   public C3CompoundStatement getCompoundStatement() {
-    return findNotNullChildByClass(C3CompoundStatement.class);
+    return findChildByClass(C3CompoundStatement.class);
+  }
+
+  @Override
+  @Nullable
+  public C3Expr getExpr() {
+    return findChildByClass(C3Expr.class);
   }
 
 }

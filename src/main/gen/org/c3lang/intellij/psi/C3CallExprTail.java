@@ -17,6 +17,9 @@ public interface C3CallExprTail extends C3PsiElement {
   C3CompoundStatement getCompoundStatement();
 
   @Nullable
+  C3Expr getExpr();
+
+  @Nullable
   C3GenericParameters getGenericParameters();
 
   @Nullable
