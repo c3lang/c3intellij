@@ -15,6 +15,12 @@ public class C3ParserUtil extends GeneratedParserUtilBase
 	{
 		PsiBuilder.Marker marker = b.mark();
 
+		if (consumeToken(b, C3Types.CT_IDENT) || consumeToken(b, C3Types.HASH_IDENT))
+		{
+			marker.drop();
+			return true;
+		}
+
 		if (!consumeToken(b, C3Types.IDENT))
 		{
 			marker.rollbackTo();

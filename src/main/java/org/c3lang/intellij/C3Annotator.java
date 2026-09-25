@@ -91,6 +91,18 @@ public class C3Annotator implements Annotator
         }
     }
 
+    private void annotate(@NotNull C3ImportPath element, @NotNull AnnotationHolder annotationHolder)
+    {
+        if (element.hasValidImportAttributes()) return;
+
+        C3Attributes attributes = element.getAttributes();
+        if (attributes == null) return;
+
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Only @public is valid on imports.")
+                        .range(attributes)
+                        .create();
+    }
+
     private static boolean is_valid_hex(char c)
     {
         return c >= '0' && c <= 'f' && (c <= '9' || c >= 'A') && (c <= 'F' || c >= 'a');
@@ -281,6 +293,10 @@ public class C3Annotator implements Annotator
             annotateString(expr, annotationHolder);
         }
         else if (psiElement instanceof C3AliasDecl element)
+        {
+            annotate(element, annotationHolder);
+        }
+        else if (psiElement instanceof C3ImportPath element)
         {
             annotate(element, annotationHolder);
         }

@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface C3ImportPath extends C3ImportPathMixin {
 
+  @Nullable
+  C3Attributes getAttributes();
+
 }

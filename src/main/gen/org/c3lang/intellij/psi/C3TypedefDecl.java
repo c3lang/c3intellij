@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement;
 
 public interface C3TypedefDecl extends C3PsiElement {
 
-  @Nullable
-  C3Attributes getAttributes();
+  @NotNull
+  List<C3Attributes> getAttributesList();
 
   @Nullable
   C3GenericDecl getGenericDecl();

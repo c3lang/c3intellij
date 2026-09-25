@@ -204,20 +204,38 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 		@Override
 		public @NotNull Collection<C3PsiElement> multiResolve()
 		{
-			C3FuncDefinition funcDef =
-				PsiTreeUtil.getParentOfType(myElement, C3FuncDefinition.class);
-			if (funcDef == null) return Collections.emptyList();
+			C3ParameterList parameterList = findParameterList();
+			if (parameterList == null) return Collections.emptyList();
 
-			Collection<C3Parameter> params =
-				PsiTreeUtil.collectElementsOfType(funcDef, C3Parameter.class);
-			for (C3Parameter param : params)
+			for (C3ParamDecl paramDecl : parameterList.getParamDeclList())
 			{
+				C3Parameter param = paramDecl.getParameter();
 				if (param.getNameIdent() != null && param.getNameIdent().equals(myElement.getNameIdent()))
 				{
 					return Collections.singleton(param);
 				}
 			}
 			return Collections.emptyList();
+		}
+
+		private @Nullable C3ParameterList findParameterList()
+		{
+			PsiElement owner = PsiTreeUtil.getParentOfType(
+				myElement,
+				false,
+				C3FuncDefinition.class,
+				C3MacroDefinition.class
+			);
+
+			if (owner instanceof C3FuncDefinition funcDef)
+			{
+				return funcDef.getFuncDef().getFnParameterList().getParameterList();
+			}
+			if (owner instanceof C3MacroDefinition macroDefinition)
+			{
+				return macroDefinition.getMacroParams().getParameterList();
+			}
+			return null;
 		}
 	}
 

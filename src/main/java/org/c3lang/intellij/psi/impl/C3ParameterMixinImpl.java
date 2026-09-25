@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import org.c3lang.intellij.psi.C3Parameter;
 import org.c3lang.intellij.psi.C3Type;
+import org.c3lang.intellij.psi.C3Types;
 import org.c3lang.intellij.psi.FullyQualifiedName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,8 +55,17 @@ public abstract class C3ParameterMixinImpl extends C3PsiNamedElementImpl impleme
 	@Override
 	public @Nullable LeafPsiElement getNameIdentElement()
 	{
-		PsiElement last = getLastChild();
-		return last instanceof LeafPsiElement ? (LeafPsiElement) last : null;
+		for (PsiElement child = getLastChild(); child != null; child = child.getPrevSibling())
+		{
+			if (child instanceof LeafPsiElement leaf
+				&& (leaf.getElementType() == C3Types.IDENT
+					|| leaf.getElementType() == C3Types.CT_IDENT
+					|| leaf.getElementType() == C3Types.HASH_IDENT))
+			{
+				return leaf;
+			}
+		}
+		return null;
 	}
 
 	@Override

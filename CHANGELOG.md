@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-08-28
+- Support braces for excuse.
+- Add 'excuse', 'constset', 'attrmacro'.
+- Various improvments to parsing.
+
 ## [0.2.10] - 2026-08-01
 - Support $feat.
 - Fix issue with foo.$bar not being accepted.

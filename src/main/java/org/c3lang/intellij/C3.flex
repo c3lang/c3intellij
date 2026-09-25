@@ -85,13 +85,11 @@ SHEBANG_COMMENT = "#!" .*
     "asm" { return C3Types.KW_ASM; }
     "assert" { return C3Types.KW_ASSERT; }
     "attrdef" { return C3Types.KW_ATTRDEF; }
-    "attrgroup" { return C3Types.KW_ATTRDEF; }
     "attrmacro" { return C3Types.KW_ATTRDEF; }
     "bitstruct" { return C3Types.KW_BITSTRUCT; }
     "break" { return C3Types.KW_BREAK; }
     "case" { return C3Types.KW_CASE; }
     "catch" { return C3Types.KW_CATCH; }
-    "cenum" { return C3Types.KW_CONSTDEF; }
     "constset" { return C3Types.KW_CONSTDEF; }
     "constdef" { return C3Types.KW_CONSTDEF; }
     "const" { return C3Types.KW_CONST; }
@@ -110,8 +108,6 @@ SHEBANG_COMMENT = "#!" .*
     "fault" { return C3Types.KW_FAULT; }
     "faultdef" { return C3Types.KW_FAULTDEF; }
     "excuse" { return C3Types.KW_FAULTDEF; }
-    "faultset" { return C3Types.KW_FAULTDEF; }
-    "faultconst" { return C3Types.KW_FAULTDEF; }
     "for" { return C3Types.KW_FOR; }
     "fn" { return C3Types.KW_FN; }
     "if" { return C3Types.KW_IF; }
@@ -252,8 +248,9 @@ SHEBANG_COMMENT = "#!" .*
     "*" { return C3Types.STAR; }
 
 
-    {INTEGER} { return C3Types.INT_LITERAL; }
     {REAL} { return C3Types.FLOAT_LITERAL; }
+    {INT} "." {REALTYPE}? / [^.] { return C3Types.FLOAT_LITERAL; }
+    {INTEGER} { return C3Types.INT_LITERAL; }
 
     {HASH_CONST_IDENT} { return TokenType.BAD_CHARACTER; }
     {AT_CONST_IDENT} { return TokenType.BAD_CHARACTER; }
@@ -352,6 +349,4 @@ SHEBANG_COMMENT = "#!" .*
 }
 
 [^]  { return TokenType.BAD_CHARACTER; }
-
-
 

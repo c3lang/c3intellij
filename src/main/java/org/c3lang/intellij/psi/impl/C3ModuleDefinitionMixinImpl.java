@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public abstract class C3ModuleDefinitionMixinImpl extends C3PsiElementImpl implements C3ModuleDefinition
 {
@@ -58,12 +57,7 @@ public abstract class C3ModuleDefinitionMixinImpl extends C3PsiElementImpl imple
 	@Override
 	public boolean containsImportOrSameModule(@NotNull C3FullyQualifiedNamePsiElement callable)
 	{
-		if (Objects.equals(callable.getModuleName(), getModuleName()))
-		{
-			return true;
-		}
-		return ModuleName.autoImportedPrefix(callable.getModuleName()) != null
-			|| getImportedModuleCovering(callable.getModuleName()) != null;
+		return isVisible(callable);
 	}
 
 	@Override

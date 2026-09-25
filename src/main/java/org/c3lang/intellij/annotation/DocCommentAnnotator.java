@@ -107,26 +107,17 @@ public final class DocCommentAnnotator
 
 	private static void annotateParamTags(PsiComment element, AnnotationHolder holder)
 	{
-		PsiElement next = element.getNextSibling();
-
-		while (next instanceof PsiWhiteSpace || next instanceof PsiComment)
-		{
-			next = next.getNextSibling();
-		}
-
-		if (next instanceof C3DefaultModuleSection) next = next.getFirstChild();
-
 		ArrayList<String> args = new ArrayList<>();
 		boolean is_function = false;
-		if (next != null)
+		PsiElement declaration = findDocumentedDeclaration(element);
+		if (declaration != null)
 		{
-			next = next.getFirstChild();
-			if (next instanceof C3FuncDefinition d)
+			if (declaration instanceof C3FuncDefinition d)
 			{
 				is_function = true;
 				addParameters(args, d.getFuncDef().getFnParameterList().getParameterList());
 			}
-			else if (next instanceof C3MacroDefinition d)
+			else if (declaration instanceof C3MacroDefinition d)
 			{
 				addParameters(args, d.getMacroParams().getParameterList());
 			}
@@ -166,6 +157,49 @@ public final class DocCommentAnnotator
 			}
 		}
 	}
+
+	private static @Nullable PsiElement findDocumentedDeclaration(PsiComment comment)
+	{
+		PsiElement declaration = unwrapDeclaration(nextSignificantSibling(comment));
+		if (declaration != null) return declaration;
+
+		PsiElement parent = comment.getParent();
+		if (parent != null)
+		{
+			return unwrapDeclaration(nextSignificantSibling(parent));
+		}
+		return null;
+	}
+
+	private static @Nullable PsiElement nextSignificantSibling(@Nullable PsiElement element)
+	{
+		PsiElement next = element != null ? element.getNextSibling() : null;
+		while (next instanceof PsiWhiteSpace || next instanceof PsiComment)
+		{
+			next = next.getNextSibling();
+		}
+		return next;
+	}
+
+	private static @Nullable PsiElement unwrapDeclaration(@Nullable PsiElement element)
+	{
+		if (element instanceof C3TopLevel)
+		{
+			return element.getFirstChild();
+		}
+		if (element instanceof C3DefaultModuleSection || element instanceof C3ModuleSection)
+		{
+			for (PsiElement child = element.getFirstChild(); child != null; child = child.getNextSibling())
+			{
+				if (child instanceof C3TopLevel)
+				{
+					return child.getFirstChild();
+				}
+			}
+		}
+		return element;
+	}
+
 	private static void mark(AnnotationHolder holder, int start, int end, TextAttributesKey highlight)
 	{
 		TextRange nameRange = TextRange.create(start, end);

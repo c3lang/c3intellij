@@ -49,7 +49,7 @@ public final class ModuleName
 
     public static @Nullable ModuleName from(@NotNull C3PsiElement psi)
     {
-        C3ModuleSection moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleSection.class, true);
+        C3ModuleSection moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleSection.class, false);
         if (moduleSection == null) return null;
         return new ModuleName(moduleSection.getModule().getModulePath().getText());
     }
@@ -77,16 +77,17 @@ public final class ModuleName
         }
         if (moduleSection == null) return List.of();
 
-        List<ModuleName> imports = new ArrayList<>();
-        for (C3ImportDecl importDecl : moduleSection.getImportDeclarations())
-        {
-            for (C3ImportPath importPath : importDecl.getImportPaths().getImportPathList())
-            {
-                imports.add(new ModuleName(importPath.getText()));
-            }
-        }
-        return imports;
-    }
+		List<ModuleName> imports = new ArrayList<>();
+		for (C3ImportDecl importDecl : moduleSection.getImportDeclarations())
+		{
+			for (C3ImportPath importPath : importDecl.getImportPaths().getImportPathList())
+			{
+				ModuleName moduleName = importPath.getModuleName();
+				if (moduleName != null) imports.add(moduleName);
+			}
+		}
+		return imports;
+	}
 
     @Override
     public boolean equals(Object o)

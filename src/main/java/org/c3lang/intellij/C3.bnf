@@ -139,8 +139,8 @@ module_param ::= TYPE_IDENT | CONST_IDENT
 
 module_params ::= module_param (COMMA module_param)*
 
-import_decl ::= KW_IMPORT import_paths attributes? EOS
-import_path ::= IDENT (SCOPE IDENT)*  { pin(".*") = 1 }
+import_decl ::= KW_IMPORT import_paths EOS
+import_path ::= IDENT (SCOPE IDENT)* attributes? { pin(".*") = 1 }
 import_paths ::= import_path (COMMA import_path)*
 
 ct_include_stmt ::= KW_CT_INCLUDE string_expr attributes? EOS
@@ -182,16 +182,16 @@ type_name ::= TYPE_IDENT
 struct_declaration ::= (KW_STRUCT | KW_UNION) type_name interface_impl? generic_decl? attributes? struct_body
 bitstruct_declaration ::= KW_BITSTRUCT type_name interface_impl? COLON type generic_decl? attributes? bitstruct_body
 
-typedef_type ::= KW_FN optional_type fn_parameter_list | type generic_parameters? | expr
+typedef_type ::= KW_FN optional_type fn_parameter_list | expr | type generic_parameters?
 generic_parameter ::= expr | type
 generic_parameters ::= LB generic_parameter (COMMA generic_parameter)* RB
 
 def_attr_values ::= attribute (COMMA attribute)* COMMA?
 alias_declaration_source ::= (path_const | path_ident | path_at_ident) generic_parameters?
 attrdef_decl ::= KW_ATTRDEF attribute_user_name (LP parameter_list RP)? generic_decl? attributes? (EQ def_attr_values)? EOS
-typedef_decl ::= KW_TYPEDEF type_name interface_impl? generic_decl? attributes? EQ KW_INLINE? typedef_type EOS
+typedef_decl ::= KW_TYPEDEF type_name interface_impl? generic_decl? attributes? EQ KW_INLINE? typedef_type attributes? EOS
 alias_type_decl ::= KW_ALIAS type_name generic_decl? attributes? EQ typedef_type EOS
-faultdef_decl ::= KW_FAULTDEF fault_definition (COMMA fault_definition)* COMMA? EOS
+faultdef_decl ::= KW_FAULTDEF ((fault_definition (COMMA fault_definition)* COMMA? EOS) | (LB fault_definition (COMMA fault_definition)* COMMA? RB))
 alias_name ::= CONST_IDENT | AT_IDENT | IDENT
 alias_decl ::= KW_ALIAS alias_name generic_decl? attributes? EQ ((KW_MODULE module_path) | alias_declaration_source) EOS
 fault_definition ::= CONST_IDENT attributes?
@@ -215,13 +215,13 @@ bitstruct_def ::= base_type IDENT COLON constant_expr (DOTDOT constant_expr)? EO
 bitstruct_simple_def ::= base_type IDENT EOS
 
 constdef_declaration ::= KW_CONSTDEF type_name interface_impl? (COLON KW_INLINE? type?)? attributes? LB constdef_list RB
-constdef_list ::= constdef_constant (COMMA constdef_constant ?)* COMMA?
+constdef_list ::= (constdef_constant COMMA?)+
 constdef_constant ::= CONST_IDENT attributes? [eq_expr_pin]
 
 enum_declaration ::= KW_ENUM type_name interface_impl? (COLON KW_INLINE? type? enum_param_list?)? generic_decl? attributes? LB enum_list RB
 enum_param_list ::=  LP enum_param_decl (COMMA enum_param_decl)* RP
 enum_param_decl ::= type IDENT
-enum_list ::= enum_constant (COMMA enum_constant ?)* COMMA?
+enum_list ::= (enum_constant COMMA?)+
 enum_constant ::= CONST_IDENT attributes? initializer_list?
 
 global_decl ::= KW_TLOCAL? optional_type IDENT ((COMMA IDENT)+ generic_decl? attributes? | generic_decl? attributes? eq_expr_pin?) EOS
@@ -361,7 +361,7 @@ expression_list ::= decl_or_expr (COMMA decl_or_expr)*
 
 catch_unwrap_list ::= expr (COMMA expr)*
 catch_unwrap ::= KW_CATCH (type? IDENT EQ)? catch_unwrap_list
-try_unwrap ::= KW_TRY (type? IDENT EQ)? expr
+try_unwrap ::= KW_TRY (type? IDENT EQ)? <<expr 4>>
 try_unwrap_chain ::= try_unwrap (AND (try_unwrap | expr))*
 cond ::= cond_repeat (COMMA (try_unwrap_chain | catch_unwrap))? | try_unwrap_chain | catch_unwrap
 cond_repeat ::= decl_or_expr (COMMA decl_or_expr)*
@@ -407,6 +407,7 @@ rel_bin_op ::= LT_OP !LBT | GT_OP | LE_OP | GE_OP | EQ_OP | NE_OP { name = "oper
 constant_expr ::= expr
 
 assign_bin_op ::= EQ
+    | CT_PLUS EQ
     | MULT_ASSIGN
     | MOD_ASSIGN
     | DIV_ASSIGN
@@ -510,7 +511,7 @@ interface_body ::= LB (func_def EOS)* RB
 func_def ::= KW_FN func_header fn_parameter_list generic_decl? attributes?
 func_definition ::= func_def (macro_func_body | EOS) { pin=1 }
 
-macro_func_body ::= macro_implies_body | IMPLIES expr EOS | compound_statement
+macro_func_body ::= macro_implies_body | IMPLIES expr EOS? | compound_statement
 
 macro_implies_body ::= IMPLIES AT_IDENT call_invocation (compound_statement | IMPLIES expr EOS)
 
