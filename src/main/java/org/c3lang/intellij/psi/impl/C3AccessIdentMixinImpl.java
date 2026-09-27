@@ -11,6 +11,8 @@ import org.c3lang.intellij.index.NameIndexService;
 import org.c3lang.intellij.index.StructService;
 import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.psi.reference.C3ReferenceBase;
+import org.c3lang.intellij.types.BitstructSupport;
+import org.c3lang.intellij.types.TypeCanonicalizer;
 import org.c3lang.intellij.types.TypeChecker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -118,12 +120,12 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 			{
 				String ident = seq.idents.get(i);
 				boolean last = i == seq.idents.size() - 1;
-				if (TypeChecker.isBitstruct(currentType.getFullName(), myElement.getProject(), ModuleName.from(myElement)))
+				if (BitstructSupport.isBitstruct(currentType.getFullName(), myElement.getProject(), ModuleName.from(myElement)))
 				{
 					// Bitstruct fields live outside the struct-member index:
 					// an unknown name is simply unknown, never a foreign
 					// struct's same-named field.
-					C3PsiElement bitField = TypeChecker.findBitstructField(
+					C3PsiElement bitField = BitstructSupport.findBitstructField(
 						currentType.getFullName(), ident, myElement.getProject(), ModuleName.from(myElement));
 					return bitField != null && last ? List.of(bitField) : Collections.emptyList();
 				}
@@ -368,7 +370,7 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 			C3PathIdentExpr rootExpr = last instanceof C3PathIdentExpr pathIdentExpr ? pathIdentExpr : null;
 			FullyQualifiedName rootType = rootExpr != null
 				? rootExpr.getPathIdent().findTypeName()
-				: TypeChecker.constRootType((C3PathConstExpr) last);
+				: TypeCanonicalizer.constRootType((C3PathConstExpr) last);
 			if (rootType == null) return null;
 
 			List<String> idents = new ArrayList<>();

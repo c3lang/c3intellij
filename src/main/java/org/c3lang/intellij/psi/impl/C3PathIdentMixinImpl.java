@@ -1070,10 +1070,10 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 					current = FullyQualifiedName.parse(element);
 					continue;
 				}
-				if (org.c3lang.intellij.types.TypeChecker.isBitstruct(
+				if (org.c3lang.intellij.types.BitstructSupport.isBitstruct(
 					current.getFullName(), myElement.getProject(), ModuleName.from(myElement)))
 				{
-					C3PsiElement bitField = org.c3lang.intellij.types.TypeChecker.findBitstructField(
+					C3PsiElement bitField = org.c3lang.intellij.types.BitstructSupport.findBitstructField(
 						current.getFullName(), segment, myElement.getProject(), ModuleName.from(myElement));
 					return bitField != null && last ? List.of(bitField) : Collections.emptyList();
 				}

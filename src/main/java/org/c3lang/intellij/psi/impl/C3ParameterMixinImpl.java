@@ -77,7 +77,7 @@ public abstract class C3ParameterMixinImpl extends C3PsiNamedElementImpl impleme
 		// from the expected function-pointer type at the call or variable.
 		try
 		{
-			String expected = org.c3lang.intellij.types.TypeChecker.lambdaParamType(this);
+			String expected = org.c3lang.intellij.types.FunctionSupport.lambdaParamType(this);
 			if (expected != null) return FullyQualifiedName.parse(expected);
 		}
 		catch (Exception ignored)

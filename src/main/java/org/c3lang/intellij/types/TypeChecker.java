@@ -121,9 +121,9 @@ public final class TypeChecker
     /**
      * Integer type name to [bits, signed(1/0)]. Pointer-sized types assume a 64-bit target.
      */
-    private static final Map<String, int[]> INT_TYPES = new HashMap<>();
+    static final Map<String, int[]> INT_TYPES = new HashMap<>();
 
-    private static final Map<String, Integer> FLOAT_TYPES = new HashMap<>();
+    static final Map<String, Integer> FLOAT_TYPES = new HashMap<>();
 
     static
     {
@@ -313,7 +313,7 @@ public final class TypeChecker
     {
         if (source == null) return null;
         // Compile-time type parameters are opaque until instantiation.
-        if (isComptimeParam(targetText) || isComptimeParam(source.getName())) return null;
+        if (TypeCanonicalizer.isComptimeParam(targetText) || TypeCanonicalizer.isComptimeParam(source.getName())) return null;
         String target = stripOptional(normalize(targetText));
         if (target.isEmpty()) return null;
         String sourceName = normalize(source.getName());
@@ -334,8 +334,8 @@ public final class TypeChecker
 
         // Resolve alias/typedef chains on both sides first (§2.5): after
         // resolution the names may simply match.
-        String resolvedTarget = resolveCastType(target, project, contextModule);
-        String resolvedSource = resolveCastType(sourceName, project, contextModule);
+        String resolvedTarget = TypeCanonicalizer.resolveCastType(target, project, contextModule);
+        String resolvedSource = TypeCanonicalizer.resolveCastType(sourceName, project, contextModule);
         InferredType effectiveSource = source.getName().equals(resolvedSource) ? source : kindOf(resolvedSource);
 
         if (namesEqual(resolvedTarget, resolvedSource)) return null;
@@ -345,8 +345,8 @@ public final class TypeChecker
         // (`(float)s` is `You cannot cast 'Sb' to 'float'.`); a bitstruct is
         // built back only from its exact backing type (`(Sb)char` is fine,
         // `(Sb)uint` is not). Literals stay lenient (c3c checks the value).
-        String targetBitBacking = bitstructBacking(resolvedTarget, project, contextModule);
-        String sourceBitBacking = bitstructBacking(resolvedSource, project, contextModule);
+        String targetBitBacking = BitstructSupport.bitstructBacking(resolvedTarget, project, contextModule);
+        String sourceBitBacking = BitstructSupport.bitstructBacking(resolvedSource, project, contextModule);
         if (sourceBitBacking != null && targetBitBacking == null)
         {
             if (isIntegerName(resolvedTarget) || shortName(resolvedTarget).equals("bool")) return null;
@@ -445,7 +445,7 @@ public final class TypeChecker
 
         boolean targetEnum = isEnumName(resolvedTarget, project);
         boolean sourceEnum = isEnumName(resolvedSource, project);
-        boolean sourceConstdef = !sourceEnum && isConstdefName(resolvedSource, project);
+        boolean sourceConstdef = !sourceEnum && TypeCanonicalizer.isConstdefName(resolvedSource, project);
         if (targetEnum || sourceEnum || sourceConstdef)
         {
             if (targetEnum && sourceEnum) return CastDiagnostic.error("Cannot cast enum '" + sourceName
@@ -457,13 +457,13 @@ public final class TypeChecker
             return CastDiagnostic.error("Cannot cast '" + sourceName + "' to '" + shortName(target) + "'.");
         }
 
-        if (isStructName(resolvedTarget, project) && isStructName(resolvedSource, project))
+        if (StructSupport.isStructName(resolvedTarget, project) && StructSupport.isStructName(resolvedSource, project))
         {
-            if (isSubstructOf(resolvedSource, resolvedTarget, project)) return null;
+            if (StructSupport.isSubstructOf(resolvedSource, resolvedTarget, project)) return null;
             return CastDiagnostic.error("Cannot cast struct '" + sourceName + "' to struct '"
                 + shortName(target) + "': no substruct relation, use an explicit conversion instead.");
         }
-        if (arraySubstructCast(resolvedTarget, resolvedSource, project))
+        if (StructSupport.arraySubstructCast(resolvedTarget, resolvedSource, project))
         {
             return CastDiagnostic.error("Cannot cast array of substruct '" + sourceName + "' to array of '"
                 + shortName(target) + "': substruct arrays never convert, not even with an explicit cast.");
@@ -600,120 +600,22 @@ public final class TypeChecker
             || targetArray.sizeText.equals(sourceArray.sizeText);
     }
 
-    private static @Nullable String resolveTypedefChain(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        String current = typeName;
-        for (int depth = 0; depth < 4; depth++)
-        {
-            String next = resolveTypedef(current, project, contextModule, 0);
-            if (next == null) next = resolveInlineTypedef(current, project, contextModule, 0);
-            if (next == null) return depth == 0 ? null : current;
-            current = next;
-        }
-        return current;
-    }
-
-    /**
-     * Full chain resolution for explicit casts: unlike implicit conversions,
-     * a cast may cross any mixture of {@code alias} and (inline or distinct)
-     * {@code typedef} links (spec §2.5), e.g.
-     * {@code Errno -> inline CInt -> $typefrom(...) -> int}.
-     * Bounded and cycle-safe; returns the input when nothing resolves.
-     */
-    private static @NotNull String resolveCastType(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        String current = typeName;
-        for (int depth = 0; depth < 6; depth++)
-        {
-            String next = resolveAlias(current, project, contextModule, 0);
-            if (next == null) next = resolveTypedef(current, project, contextModule, 0);
-            if (next == null) next = resolveInlineTypedef(current, project, contextModule, 0);
-            if (next == null || namesEqual(next, current)) return current;
-            current = next;
-        }
-        return current;
-    }
-
     private static boolean isInterfaceName(@NotNull String typeName, @NotNull Project project)
     {
-        return findTypeParent(typeName, project) instanceof C3InterfaceDefinition;
+        return TypeCanonicalizer.findTypeParent(typeName, project) instanceof C3InterfaceDefinition;
     }
 
     private static boolean isEnumName(@NotNull String typeName, @NotNull Project project)
     {
-        return findTypeParent(typeName, project) instanceof C3EnumDeclaration;
-    }
-
-    private static boolean isStructName(@NotNull String typeName, @NotNull Project project)
-    {
-        PsiElement parent = findTypeParent(typeName, project);
-        return parent instanceof C3StructDeclaration || parent instanceof C3BitstructDeclaration;
+        return TypeCanonicalizer.findTypeParent(typeName, project) instanceof C3EnumDeclaration;
     }
 
     private static boolean isUnresolvableName(@NotNull String typeName, @NotNull Project project)
     {
         String clean = normalize(typeName);
-        if (!isUserTypeName(clean)) return false;
+        if (!TypeCanonicalizer.isUserTypeName(clean)) return false;
         if (DumbService.isDumb(project)) return true;
-        return findTypeParent(clean, project) == null;
-    }
-
-    private static @Nullable PsiElement findTypeParent(@NotNull String typeName, @NotNull Project project)
-    {
-        String clean = normalize(typeName);
-        if (!isUserTypeName(clean)) return null;
-        String wanted = shortName(clean);
-        for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
-        {
-            if (!key.equals(wanted) && !key.endsWith("::" + wanted)) continue;
-            for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
-            {
-                if (!(element instanceof C3TypeName typeNameElement)) continue;
-                if (!typeNameElement.getText().strip().equals(wanted)) continue;
-                PsiElement parent = typeNameElement.getParent();
-                if (parent instanceof C3StructDeclaration
-                    || parent instanceof C3BitstructDeclaration
-                    || parent instanceof C3EnumDeclaration
-                    || parent instanceof C3InterfaceDefinition
-                    || parent instanceof C3TypedefDecl
-                    || parent instanceof C3AliasTypeDecl)
-                {
-                    return parent;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Index lookup that tolerates stale entries for files without a stub
-     * tree (e.g. indexed as plain text before C3 association): degrades to
-     * empty instead of throwing into highlighting.
-     */
-    static @NotNull Collection<C3PsiElement> safeElements(
-            @NotNull com.intellij.psi.stubs.StubIndexKey<String, C3PsiElement> key,
-            @NotNull String indexKey,
-            @NotNull Project project)
-    {
-        try
-        {
-            return StubIndex.getElements(
-                key,
-                indexKey,
-                project,
-                C3ProjectService.getInstance(project).getSearchScope(),
-                C3PsiElement.class);
-        }
-        catch (Exception ignored)
-        {
-            return List.of();
-        }
+        return TypeCanonicalizer.findTypeParent(clean, project) == null;
     }
 
     private static boolean staticallyImplements(
@@ -739,21 +641,6 @@ public final class TypeChecker
     }
 
     /**
-     * Compile-time type parameters ({@code $Type}, {@code $Foo}): abstract
-     * types provided at macro instantiation. Unknowable without expanding
-     * the call, so any conversion involving them is allowed: it is checked
-     * by the compiler per instantiation. Member access like
-     * {@code $Type.min} stays unknown (and silent) through normal inference.
-     */
-    public static boolean isComptimeParam(@NotNull String typeName)
-    {
-        return COMPTIME_PARAM_PATTERN.matcher(normalize(typeName)).find();
-    }
-
-    private static final java.util.regex.Pattern COMPTIME_PARAM_PATTERN =
-        java.util.regex.Pattern.compile("\\$[A-Z]");
-
-    /**
      * Whether the text is a {@code $typeof(...)} type (either letter case).
      */
     static boolean isTypeofTarget(@NotNull String typeText)
@@ -776,9 +663,9 @@ public final class TypeChecker
         if (DumbService.isDumb(project)) return false;
         String cleanTarget = stripOptional(normalize(targetText));
         String sourceName = normalize(source.getName());
-        if (!isUserTypeName(cleanTarget) && !isUserTypeName(sourceName)) return false;
-        String resolvedTarget = resolveCastType(cleanTarget, project, contextModule);
-        String resolvedSource = resolveCastType(sourceName, project, contextModule);
+        if (!TypeCanonicalizer.isUserTypeName(cleanTarget) && !TypeCanonicalizer.isUserTypeName(sourceName)) return false;
+        String resolvedTarget = TypeCanonicalizer.resolveCastType(cleanTarget, project, contextModule);
+        String resolvedSource = TypeCanonicalizer.resolveCastType(sourceName, project, contextModule);
         boolean targetIsVoid = resolvedTarget.equals("void*");
         boolean sourceIsVoid = resolvedSource.equals("void*");
         if (!targetIsVoid && !sourceIsVoid) return false;
@@ -802,78 +689,19 @@ public final class TypeChecker
     {
         if (DumbService.isDumb(project)) return false;
         String cleanTarget = stripOptional(normalize(targetText));
-        if (!isUserTypeName(cleanTarget)) return false;
-        String resolvedIface = resolveAlias(cleanTarget, project, contextModule, 0);
+        if (!TypeCanonicalizer.isUserTypeName(cleanTarget)) return false;
+        String resolvedIface = TypeCanonicalizer.resolveAlias(cleanTarget, project, contextModule, 0);
         if (resolvedIface != null) cleanTarget = stripOptional(normalize(resolvedIface));
         if (!isInterfaceName(cleanTarget, project)) return false;
-        String structName = interfaceSourceStruct(source);
+        String structName = StructSupport.interfaceSourceStruct(source);
         if (structName == null) return false;
         // The contract may sit on the named type itself (a typedef like
         // `DString`), not only on the resolved underlying struct: check the
         // original name first, then the alias-resolved one.
         if (staticallyImplements(structName, cleanTarget, project)) return true;
-        String resolved = resolveAlias(structName, project, contextModule, 0);
+        String resolved = TypeCanonicalizer.resolveAlias(structName, project, contextModule, 0);
         if (resolved != null) structName = resolved;
         return staticallyImplements(structName, cleanTarget, project);
-    }
-
-    /**
-     * Struct behind a pointer source for interface conversion, e.g.
-     * {@code File} for {@code File*}. Only pointers convert implicitly: a
-     * struct value would need an explicit address-of (an rvalue would
-     * otherwise dangle behind the interface reference).
-     */
-    private static @Nullable String interfaceSourceStruct(@NotNull InferredType source)
-    {
-        if (source.getKind() != InferredType.Kind.POINTER) return null;
-        String pointee = normalize(source.getName());
-        while (pointee.endsWith("*")) pointee = pointee.substring(0, pointee.length() - 1).strip();
-        if (!isUserTypeName(pointee)) return null;
-        return pointee;
-    }
-
-    private static boolean isSubstructOf(
-            @NotNull String childName, @NotNull String parentName, @NotNull Project project)
-    {
-        if (DumbService.isDumb(project)) return false;
-        try
-        {
-            FullyQualifiedName child = FullyQualifiedName.parse(childName);
-            List<C3StructDeclaration> declarations =
-                org.c3lang.intellij.index.InterfaceService.INSTANCE.findStructDeclarations(child, project);
-            String wanted = shortName(parentName);
-            for (C3StructDeclaration declaration : declarations)
-            {
-                C3StructBody body = declaration.getStructBody();
-                if (body == null) continue;
-                for (C3StructMemberDeclaration member : body.getStructMemberDeclarationList())
-                {
-                    // An inline substruct member is written as a bare type (`inline Foo;`).
-                    if (member.getIdentifierList() != null) continue;
-                    if (member.getStructBody() != null || member.getBitstructBody() != null) continue;
-                    C3Type memberType = member.getType();
-                    if (memberType == null) continue;
-                    if (shortName(normalize(memberType.getText())).equals(wanted)) return true;
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    private static boolean arraySubstructCast(
-            @NotNull String resolvedTarget, @NotNull String resolvedSource, @NotNull Project project)
-    {
-        String targetElement = arrayElementType(resolvedTarget);
-        String sourceElement = arrayElementType(resolvedSource);
-        if (targetElement == null || sourceElement == null) return false;
-        if (namesEqual(targetElement, sourceElement)) return false;
-        return isStructName(targetElement, project) && isStructName(sourceElement, project)
-            && (isSubstructOf(sourceElement, targetElement, project)
-                || isSubstructOf(targetElement, sourceElement, project));
     }
 
     /**
@@ -957,7 +785,7 @@ public final class TypeChecker
         Mismatch mismatch = check(project, contextModule, paramTypeText, arg);
         if (mismatch == null) return null;
         // Undeclared (e.g. generic) parameter types are not checked.
-        if (!isDeclaredType(paramTypeText, project, contextModule)) return null;
+        if (!TypeCanonicalizer.isDeclaredType(paramTypeText, project, contextModule)) return null;
         String implicitBitstruct = bitstructImplicitCastError(project, contextModule, paramTypeText, arg);
         if (implicitBitstruct != null) return implicitBitstruct;
         if (mismatch.intValue != null)
@@ -975,68 +803,6 @@ public final class TypeChecker
         }
         return "Cannot pass '" + mismatch.sourceName + "' for parameter '" + paramName
             + "' of type '" + mismatch.targetName + "'." + unwrapHint(mismatch.sourceName);
-    }
-
-    /**
-     * Whether a written type is a known type: a primitive/keyword, a compound
-     * type, or a bare identifier declared as a type somewhere.
-     */
-    static boolean isDeclaredType(
-            @NotNull String typeText,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        String clean = normalize(typeText);
-        while (true)
-        {
-            if (clean.endsWith("*") || clean.endsWith("?") || clean.endsWith("!"))
-            {
-                clean = clean.substring(0, clean.length() - 1);
-                continue;
-            }
-            VectorInfo vector = parseVector(clean);
-            if (vector != null)
-            {
-                clean = vector.element;
-                continue;
-            }
-            VectorInfo array = parseArray(clean);
-            if (array != null)
-            {
-                clean = array.element;
-                continue;
-            }
-            break;
-        }
-        String shortName = shortName(clean);
-        if (INT_TYPES.containsKey(shortName) || FLOAT_TYPES.containsKey(shortName)) return true;
-        switch (shortName)
-        {
-            case "void", "bool", "char", "String", "ZString", "any", "typeid", "fault" -> { return true; }
-            default -> {}
-        }
-        if (!shortName.matches("[A-Za-z_][A-Za-z_0-9]*")) return true;
-        if (DumbService.isDumb(project)) return true;
-        for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
-        {
-            if (!key.equals(shortName) && !key.endsWith("::" + shortName)) continue;
-            for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
-            {
-                if (!(element instanceof C3TypeName typeName)) continue;
-                if (!typeName.getText().strip().equals(shortName)) continue;
-                PsiElement parent = typeName.getParent();
-                if (parent instanceof C3StructDeclaration
-                    || parent instanceof C3EnumDeclaration
-                    || parent instanceof C3InterfaceDefinition
-                    || parent instanceof C3TypedefDecl
-                    || parent instanceof C3BitstructDeclaration
-                    || parent instanceof C3AliasTypeDecl)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public static boolean isVoidType(@NotNull String typeText)
@@ -1066,7 +832,7 @@ public final class TypeChecker
         return separator >= 0 ? clean.substring(separator + 2) : clean;
     }
 
-    private static boolean namesEqual(@NotNull String a, @NotNull String b)
+    static boolean namesEqual(@NotNull String a, @NotNull String b)
     {
         if (a.equals(b)) return true;
         String shortA = shortName(a);
@@ -1088,13 +854,13 @@ public final class TypeChecker
 
         if (source.getKind() == InferredType.Kind.INIT_LIST)
         {
-            String resolvedTarget = resolveAlias(target, project, contextModule, 0);
+            String resolvedTarget = TypeCanonicalizer.resolveAlias(target, project, contextModule, 0);
             return checkInitList(project, contextModule, resolvedTarget != null ? resolvedTarget : target, source);
         }
 
         Mismatch direct = checkOnce(target, source);
         if (direct == null) return null;
-        if (isComptimeParam(target) || isComptimeParam(source.getName())) return null;
+        if (TypeCanonicalizer.isComptimeParam(target) || TypeCanonicalizer.isComptimeParam(source.getName())) return null;
         if (voidStarTransparent(project, contextModule, target, source)) return null;
         if (interfaceAssignable(project, contextModule, target, source)) return null;
         if (isComptimeNumericLenient(target, source, project, contextModule)) return null;
@@ -1104,15 +870,15 @@ public final class TypeChecker
         if (arrayTypesEqualSize(target, source.getName(), project, contextModule)) return null;
 
         // Resolve type aliases (and typedefs for literals / inline typedef sources).
-        TargetInfo resolvedTarget = resolveTargetType(project, contextModule, target);
+        TypeCanonicalizer.TargetInfo resolvedTarget = TypeCanonicalizer.resolveTargetType(project, contextModule, target);
         InferredType resolvedSource = source;
-        String resolvedSourceName = resolveSourceType(project, contextModule, source.getName());
+        String resolvedSourceName = TypeCanonicalizer.resolveSourceType(project, contextModule, source.getName());
         if (resolvedSourceName != null) resolvedSource = kindOf(resolvedSourceName);
         if (resolvedSource == source)
         {
             // Values of an `inline` constdef convert through the backing
             // type, e.g. `Blake3Flags` through `char`.
-            String backing = inlineConstdefBacking(source.getName(), project, contextModule);
+            String backing = TypeCanonicalizer.inlineConstdefBacking(source.getName(), project, contextModule);
             if (backing != null) resolvedSource = kindOf(backing);
         }
 
@@ -1143,7 +909,7 @@ public final class TypeChecker
         // still flow into `typeid?` through the Optional rule below.
         if (!isOptionalName(target) && (isTypeidName(source.getName()) || isTypeidName(base)))
         {
-            return new Mismatch(source.getName(), targetName, null, null, -1, -1);
+            return Mismatch.mismatch(source.getName(), targetName);
         }
         // `any` accepts any value (but void is not a value).
         if (base.equals("any") && source.getKind() != InferredType.Kind.VOID) return null;
@@ -1156,7 +922,7 @@ public final class TypeChecker
             // `T?` accepts `U?` when the unwrapped result types are compatible.
             Mismatch inner = checkOnce(stripOptional(target), kindOf(stripOptional(source.getName())));
             if (inner == null) return null;
-            return new Mismatch(source.getName(), targetName, null, null, -1, -1);
+            return Mismatch.mismatch(source.getName(), targetName);
         }
         if (targetOptional)
         {
@@ -1167,7 +933,7 @@ public final class TypeChecker
         {
             // An Optional never converts to a plain type implicitly: use `!`
             // (rethrow), `!!` (force unwrap) or `?? default` to unwrap it.
-            return new Mismatch(source.getName(), targetName, null, null, -1, -1);
+            return Mismatch.mismatch(source.getName(), targetName);
         }
 
         // `void*` is a wildcard matching any pointer-like source: pointers,
@@ -1176,13 +942,13 @@ public final class TypeChecker
         if (base.equals("void*"))
         {
             if (isVoidPointerCompatible(source)) return null;
-            return new Mismatch(source.getName(), targetName, null, null, -1, -1);
+            return Mismatch.mismatch(source.getName(), targetName);
         }
 
         if (source.getKind() == InferredType.Kind.INIT_LIST)
         {
             // Unreachable via check(); deny in the pure path.
-            return new Mismatch(source.getName(), targetName, null, null, -1, -1);
+            return Mismatch.mismatch(source.getName(), targetName);
         }
 
         if (arrayPointerCompatible(base, source)) return null;
@@ -1194,12 +960,12 @@ public final class TypeChecker
             {
                 return namesEqual(base, source.getName())
                     ? null
-                    : new Mismatch(source.getName(), targetName, null, null, -1, -1);
+                    : Mismatch.mismatch(source.getName(), targetName);
             }
             // A scalar widens elementwise into the vector.
             Mismatch element = checkOnce(targetVector.element, source);
             if (element == null) return null;
-            return new Mismatch(element.sourceName, targetName, element.intValue, element.floatValue, -1, -1);
+            return Mismatch.retargeted(element, targetName);
         }
 
         switch (source.getKind())
@@ -1221,14 +987,14 @@ public final class TypeChecker
                 if (intAssignable(base, source)) return null;
                 if (source.isLiteral() && source.getIntValue() != null && intWidth(shortName(base)) >= 0)
                 {
-                    return new Mismatch(source.getName(), targetName, source.getIntValue(), null, -1, -1);
+                    return Mismatch.intMismatch(source.getName(), targetName, source.getIntValue());
                 }
                 break;
             case FLOAT:
                 if (floatAssignable(base, source)) return null;
                 if (source.isLiteral() && source.getFloatValue() != null && FLOAT_TYPES.get(shortName(base)) != null)
                 {
-                    return new Mismatch(source.getName(), targetName, null, source.getFloatValue(), -1, -1);
+                    return Mismatch.floatMismatch(source.getName(), targetName, source.getFloatValue());
                 }
                 break;
             case POINTER:
@@ -1241,7 +1007,7 @@ public final class TypeChecker
                 if (isVoidPointerName(source.getName()) && isPlainPointerName(base)) return null;
                 break;
         }
-        return new Mismatch(source.getName(), targetName, null, null, -1, -1);
+        return Mismatch.mismatch(source.getName(), targetName);
     }
 
     /**
@@ -1308,432 +1074,35 @@ public final class TypeChecker
             this.count = count;
             this.actual = actual;
         }
-    }
 
-    // ------------------------------------------------------------------
-    // Aliases and typedefs
-    // ------------------------------------------------------------------
-
-    private static final class TargetInfo
-    {
-        final @NotNull String text;
-        final boolean typedefOnly;
-
-        TargetInfo(@NotNull String text, boolean typedefOnly)
+        static @NotNull Mismatch mismatch(@NotNull String sourceName, @NotNull String targetName)
         {
-            this.text = text;
-            this.typedefOnly = typedefOnly;
+            return new Mismatch(sourceName, targetName, null, null, -1, -1);
         }
-    }
 
-    private static final class NamedTypeDecl
-    {
-        final @NotNull C3TypeName nameElement;
-        final @NotNull String underlying;
-        final boolean isTypedef;
-        final boolean inlineTypedef;
-        final @Nullable ModuleName module;
-
-        NamedTypeDecl(
-                @NotNull C3TypeName nameElement,
-                @NotNull String underlying,
-                boolean isTypedef,
-                boolean inlineTypedef,
-                @Nullable ModuleName module)
+        static @NotNull Mismatch intMismatch(
+                @NotNull String sourceName, @NotNull String targetName, @Nullable BigInteger intValue)
         {
-            this.nameElement = nameElement;
-            this.underlying = underlying;
-            this.isTypedef = isTypedef;
-            this.inlineTypedef = inlineTypedef;
-            this.module = module;
+            return new Mismatch(sourceName, targetName, intValue, null, -1, -1);
         }
-    }
 
-    private static @Nullable TargetInfo resolveTargetType(
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            @NotNull String target)
-    {
-        String underlying = resolveAlias(target, project, contextModule, 0);
-        if (underlying != null) return new TargetInfo(underlying, false);
-        // Inline typedef targets stay opaque for values (the reverse needs
-        // an explicit cast) but accept fitting literals, like distinct
-        // typedefs (both verified against c3c).
-        String inlineUnderlying = transparentUnderlying(target, project, contextModule);
-        if (inlineUnderlying != null) return new TargetInfo(inlineUnderlying, true);
-        String typedefTarget = resolveTypedef(target, project, contextModule, 0);
-        if (typedefTarget != null) return new TargetInfo(typedefTarget, true);
-        // Optional-wrapped alias (`FloatType?`): resolve the inner type and
-        // re-wrap, so `return *(int*)arg` sees `double?`, not a dead end.
-        if (isOptionalName(target))
+        static @NotNull Mismatch floatMismatch(
+                @NotNull String sourceName, @NotNull String targetName, @Nullable Double floatValue)
         {
-            String inner = stripOptional(normalize(target));
-            String suffix = normalize(target).endsWith("!") ? "!" : "?";
-            String innerAlias = resolveAlias(inner, project, contextModule, 0);
-            if (innerAlias != null) return new TargetInfo(innerAlias + suffix, false);
-            String innerTypedef = resolveTypedef(inner, project, contextModule, 0);
-            if (innerTypedef != null) return new TargetInfo(innerTypedef + suffix, true);
+            return new Mismatch(sourceName, targetName, null, floatValue, -1, -1);
         }
-        return null;
-    }
 
-    private static @Nullable String resolveSourceType(
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            @NotNull String sourceName)
-    {
-        String transparent = transparentUnderlying(sourceName, project, contextModule);
-        if (transparent != null) return transparent;
-        // Same re-wrap for Optional-wrapped sources (`Alias?` -> `double?`).
-        if (isOptionalName(sourceName))
+        static @NotNull Mismatch countMismatch(
+                @NotNull String sourceName, @NotNull String targetName, long expected, long actual)
         {
-            String inner = stripOptional(normalize(sourceName));
-            String suffix = normalize(sourceName).endsWith("!") ? "!" : "?";
-            String innerTransparent = transparentUnderlying(inner, project, contextModule);
-            if (innerTransparent != null) return innerTransparent + suffix;
+            return new Mismatch(sourceName, targetName, null, null, expected, actual);
         }
-        return null;
-    }
 
-    /**
-     * Fully transparent spelling of a type: follows alias and
-     * {@code inline} typedef links to a fixpoint
-     * ({@code MutexFlags -> CUInt -> uint}). Stops at distinct typedefs,
-     * structs and builtins (those are conversion barriers), returning
-     * {@code null} when the input itself is already opaque. Bounded and
-     * cycle-safe.
-     */
-    private static @Nullable String transparentUnderlying(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        String current = typeName;
-        for (int depth = 0; depth < 6; depth++)
+        static @NotNull Mismatch retargeted(@NotNull Mismatch element, @NotNull String targetName)
         {
-            String next = resolveAlias(current, project, contextModule, 0);
-            if (next == null) next = resolveInlineTypedef(current, project, contextModule, 0);
-            if (next == null) return depth == 0 ? null : current;
-            if (namesEqual(next, current)) return depth == 0 ? null : current;
-            current = next;
+            return new Mismatch(
+                element.sourceName, targetName, element.intValue, element.floatValue, -1, -1);
         }
-        return current;
-    }
-
-    /**
-     * Underlying text of a type alias like {@code alias CharPtr = char*;}, or {@code null}.
-     * Composite spellings resolve through their base: {@code CInt*} via
-     * {@code CInt}, {@code Alias[4]} via {@code Alias} (c3c accepts
-     * {@code &nm} for a {@code CInt*} parameter, so the check must see
-     * through the alias).
-     */
-    static @Nullable String resolveAlias(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            int depth)
-    {
-        if (depth > 4 || DumbService.isDumb(project)) return null;
-        String composite = resolveCompositeBase(typeName, project, contextModule, depth, false);
-        if (composite != null) return composite;
-        if (!isUserTypeName(typeName)) return null;
-        String simpleName = shortName(normalize(typeName));
-        NamedTypeDecl match = pickDeclaration(findNamedTypeDecls(simpleName, project), typeName, contextModule);
-        if (match == null || match.isTypedef) return null;
-        String chained = resolveAlias(match.underlying, project, contextModule, depth + 1);
-        return chained != null ? chained : match.underlying;
-    }
-
-    /**
-     * Underlying text of a plain (non-inline) typedef, used for literals only.
-     */
-    private static @Nullable String resolveTypedef(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            int depth)
-    {
-        if (depth > 4 || DumbService.isDumb(project)) return null;
-        String composite = resolveCompositeBase(typeName, project, contextModule, depth, true);
-        if (composite != null) return composite;
-        if (!isUserTypeName(typeName)) return null;
-        NamedTypeDecl match = pickDeclaration(
-            findNamedTypeDecls(shortName(normalize(typeName)), project), typeName, contextModule);
-        if (match == null || !match.isTypedef || match.inlineTypedef) return null;
-        String chained = resolveTypedef(match.underlying, project, contextModule, depth + 1);
-        return chained != null ? chained : match.underlying;
-    }
-
-    /**
-     * Underlying text of an {@code inline} typedef, convertible both ways.
-     */
-    private static @Nullable String resolveInlineTypedef(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            int depth)
-    {
-        if (depth > 4 || DumbService.isDumb(project)) return null;
-        String composite = resolveCompositeBase(typeName, project, contextModule, depth, true);
-        if (composite != null) return composite;
-        if (!isUserTypeName(typeName)) return null;
-        NamedTypeDecl match = pickDeclaration(
-            findNamedTypeDecls(shortName(normalize(typeName)), project), typeName, contextModule);
-        if (match == null || !match.isTypedef || !match.inlineTypedef) return null;
-        String chained = resolveInlineTypedef(match.underlying, project, contextModule, depth + 1);
-        return chained != null ? chained : match.underlying;
-    }
-
-    private static boolean isUserTypeName(@NotNull String typeName)
-    {
-        String clean = normalize(typeName);
-        if (clean.contains("{") || clean.contains("}") || clean.contains("[")
-            || clean.contains("]") || clean.contains("*") || clean.contains("?")
-            || clean.contains("!") || clean.contains("(") || clean.contains(" ")) return false;
-        String simpleName = shortName(clean);
-        if (INT_TYPES.containsKey(simpleName) || FLOAT_TYPES.containsKey(simpleName)) return false;
-        return switch (simpleName)
-        {
-            case "void", "bool", "char", "String", "ZString", "any", "typeid", "fault" -> false;
-            default -> simpleName.matches("[A-Za-z_][A-Za-z_0-9]*");
-        };
-    }
-
-    /**
-     * Alias/typedef resolution for composite spellings: strip one outer
-     * suffix (`*`, `[]`, `[N]`, `[<N>]`), resolve the base, re-attach.
-     * Only the alias path applies to every composite; typedefs resolve
-     * through the base as well (their conversions are one-directional but
-     * spelled through the same sugar). Returns {@code null} when the base
-     * is not a resolvable user type, so plain callers keep their behavior.
-     */
-    private static @Nullable String resolveCompositeBase(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            int depth,
-            boolean includeTypedefs)
-    {
-        String clean = normalize(typeName);
-        String base;
-        String suffix;
-        if (clean.endsWith("*") && !clean.endsWith("**"))
-        {
-            base = clean.substring(0, clean.length() - 1).strip();
-            suffix = "*";
-        }
-        else if (clean.endsWith("[]"))
-        {
-            base = clean.substring(0, clean.length() - 2).strip();
-            suffix = "[]";
-        }
-        else
-        {
-            VectorInfo array = parseArray(clean);
-            VectorInfo vector = array == null ? parseVector(clean) : null;
-            if (array == null && vector == null) return null;
-            base = array != null ? array.element : vector.element;
-            suffix = clean.substring(base.length());
-        }
-        if (!isUserTypeName(base)) return null;
-        String resolved = resolveAlias(base, project, contextModule, depth + 1);
-        if (resolved == null && includeTypedefs)
-        {
-            resolved = resolveInlineTypedef(base, project, contextModule, depth + 1);
-        }
-        if (resolved == null) return null;
-        return resolved + suffix;
-    }
-
-    private static @Nullable NamedTypeDecl pickDeclaration(
-            @NotNull List<NamedTypeDecl> candidates,
-            @NotNull String requestedText,
-            @Nullable ModuleName contextModule)
-    {
-        if (candidates.isEmpty()) return null;
-        String full = normalize(requestedText);
-        for (NamedTypeDecl candidate : candidates)
-        {
-            if (candidate.module != null && full.equals(candidate.module.getValue() + "::" + candidate.nameElement.getText().strip()))
-            {
-                return candidate;
-            }
-        }
-        if (contextModule != null)
-        {
-            for (NamedTypeDecl candidate : candidates)
-            {
-                if (contextModule.equals(candidate.module)) return candidate;
-            }
-        }
-        return candidates.get(0);
-    }
-
-    private static @NotNull List<NamedTypeDecl> findNamedTypeDecls(@NotNull String shortName, @NotNull Project project)
-    {
-        List<NamedTypeDecl> result = new ArrayList<>();
-        if (DumbService.isDumb(project)) return result;
-        for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
-        {
-            if (!key.equals(shortName) && !key.endsWith("::" + shortName)) continue;
-            for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
-            {
-                if (!(element instanceof C3TypeName typeName)) continue;
-                PsiElement parent = typeName.getParent();
-                boolean isTypedef = parent instanceof C3TypedefDecl;
-                if (!(parent instanceof C3AliasTypeDecl) && !isTypedef) continue;
-                if (!typeName.getText().strip().equals(shortName)) continue;
-                String underlying = underlyingTypeText(parent);
-                if (underlying == null) continue;
-                boolean inline = isTypedef && hasInlineModifier(parent);
-                ModuleName module = ModuleName.from(typeName);
-                result.add(new NamedTypeDecl(typeName, underlying, isTypedef, inline, module));
-                if (result.size() > 25) return result;
-            }
-        }
-        return result;
-    }
-
-    private static @Nullable String underlyingTypeText(@NotNull PsiElement declaration)
-    {
-        C3TypedefType typedefType = null;
-        if (declaration instanceof C3AliasTypeDecl aliasDecl)
-        {
-            if (aliasDecl.getGenericDecl() != null) return null;
-            typedefType = aliasDecl.getTypedefType();
-        }
-        else if (declaration instanceof C3TypedefDecl typedefDecl)
-        {
-            if (typedefDecl.getGenericDecl() != null) return null;
-            typedefType = typedefDecl.getTypedefType();
-        }
-        if (typedefType == null) return null;
-        if (typedefType.getGenericParameters() != null) return null;
-        C3Type type = typedefType.getType();
-        if (type == null && typedefType.getExpr() instanceof C3TypeExpr typeExpr)
-        {
-            // Since 0.2.11 `typedef_type` prefers `expr`: a plain type RHS
-            // parses as `type_expr` wrapping the type (`alias CharPtr = char*`).
-            try
-            {
-                type = typeExpr.getType();
-            }
-            catch (Exception ignored)
-            {
-                type = null;
-            }
-        }
-        if (type == null)
-        {
-            // `alias F = fn int(int);`: the right-hand side is a function
-            // type, not an expression — expose it raw so fn-type aliases
-            // resolve (used by lambda inference and, elsewhere, as a name
-            // that is at least declared).
-            String raw = typedefType.getText();
-            if (raw != null && raw.strip().startsWith("fn ")) return raw.strip();
-            // Compile-time computed right-hand side, e.g.
-            // `alias CInt = $typefrom(signed_int_from_bitsize($$C_INT_SIZE));`.
-            return evaluateComptimeAlias(typedefType.getExpr());
-        }
-        String text = type.getText();
-        if (text == null || text.isBlank()) return null;
-        String clean = text.strip();
-        // Since `$typefrom` became a keyword, `$typefrom(...)` parses as a
-        // type rather than a call: an evaluatable form resolves to the
-        // builtin, anything else stays unresolved (lenient downstream).
-        if (clean.startsWith("$typefrom(") || clean.startsWith("$Typefrom("))
-        {
-            return evaluateComptimeAliasText(clean);
-        }
-        return clean;
-    }
-
-    /**
-     * Evaluates a compile-time alias right-hand side to a concrete builtin
-     * type name. Handles the standard {@code std::core::cinterop} pattern
-     * {@code $typefrom(signed_int_from_bitsize($$C_X_SIZE))} (and the
-     * unsigned/legacy-capitalized variants), {@code $typefrom(X.typeid)}
-     * and {@code $typefrom("name")}. Anything else returns {@code null}.
-     * Pure text matching on the already-located declaration: no index access.
-     */
-    private static @Nullable String evaluateComptimeAlias(@Nullable C3Expr expr)
-    {
-        if (!(expr instanceof C3CallExpr call)) return null;
-        C3CallExprTail tail = call.getCallExprTail();
-        if (tail == null || tail.getCallInvocation() == null) return null;
-        String callee = call.getExpr().getText().strip();
-        if (!callee.equals("$typefrom") && !callee.equals("$Typefrom")) return null;
-        C3CallArgList callArgs = tail.getCallInvocation().getCallArgList();
-        C3ArgList args = callArgs != null ? callArgs.getArgList() : null;
-        if (args == null || args.getArgList().size() != 1) return null;
-        C3Expr arg = args.getArgList().get(0).getExpr();
-        if (arg == null) return null;
-        return evaluateTypefromInner(normalize(arg.getText()));
-    }
-
-    /**
-     * Text form of the above, for the post-keyword parse where
-     * {@code $typefrom(...)} is a type node rather than a call.
-     */
-    private static @Nullable String evaluateComptimeAliasText(@NotNull String text)
-    {
-        String clean = normalize(text);
-        if ((!clean.startsWith("$typefrom(") && !clean.startsWith("$Typefrom(")) || !clean.endsWith(")")) return null;
-        int open = clean.indexOf('(');
-        return evaluateTypefromInner(clean.substring(open + 1, clean.length() - 1));
-    }
-
-    private static @Nullable String evaluateTypefromInner(@NotNull String inner)
-    {
-        java.util.regex.Matcher bitsize = BITSIZE_PATTERN.matcher(inner);
-        if (bitsize.matches())
-        {
-            boolean signed = bitsize.group(1).equals("signed");
-            int bits = cAbiBitsize(bitsize.group(2));
-            if (bits < 0) return null;
-            return signed ? SIGNED_BY_BITS.get(bits) : UNSIGNED_BY_BITS.get(bits);
-        }
-        java.util.regex.Matcher typeidAccess = TYPEID_PATTERN.matcher(inner);
-        if (typeidAccess.matches()) return typeidAccess.group(1);
-        java.util.regex.Matcher stringName = QUOTED_NAME_PATTERN.matcher(inner);
-        if (stringName.matches()) return stringName.group(1);
-        return null;
-    }
-
-    private static final java.util.regex.Pattern BITSIZE_PATTERN =
-        java.util.regex.Pattern.compile("(?:[A-Za-z_][A-Za-z_0-9]*::)*(signed|unsigned)_int_from_bitsize\\(\\$\\$C_([A-Z_]+)_SIZE\\)");
-    private static final java.util.regex.Pattern TYPEID_PATTERN =
-        java.util.regex.Pattern.compile("([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\\.typeid");
-    private static final java.util.regex.Pattern QUOTED_NAME_PATTERN =
-        java.util.regex.Pattern.compile("\"([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\"");
-
-    private static final java.util.Map<Integer, String> SIGNED_BY_BITS = java.util.Map.of(
-        8, "ichar", 16, "short", 32, "int", 64, "long", 128, "int128");
-    private static final java.util.Map<Integer, String> UNSIGNED_BY_BITS = java.util.Map.of(
-        8, "char", 16, "ushort", 32, "uint", 64, "ulong", 128, "uint128");
-
-    /**
-     * Bit width of a C ABI type for the compilation target. Only
-     * {@code long} differs between the data models (LP64 vs LLP64); without
-     * a project target setting the host OS decides, which matches the
-     * build host in the common case.
-     */
-    private static int cAbiBitsize(@NotNull String name)
-    {
-        return switch (name)
-        {
-            case "SHORT" -> 16;
-            case "INT" -> 32;
-            case "LONG_LONG" -> 64;
-            case "LONG" -> isWindowsHost() ? 32 : 64;
-            default -> -1;
-        };
-    }
-
-    private static boolean isWindowsHost()
-    {
-        String os = System.getProperty("os.name", "");
-        return os.toLowerCase(java.util.Locale.ROOT).contains("win");
     }
 
     /**
@@ -1750,152 +1119,13 @@ public final class TypeChecker
     {
         String cleanTarget = normalize(target);
         String cleanSource = normalize(source.getName());
-        boolean targetOpaque = isUnresolvedComptimeAlias(cleanTarget, project, contextModule);
-        boolean sourceOpaque = isUnresolvedComptimeAlias(cleanSource, project, contextModule);
+        boolean targetOpaque = TypeCanonicalizer.isUnresolvedComptimeAlias(cleanTarget, project, contextModule);
+        boolean sourceOpaque = TypeCanonicalizer.isUnresolvedComptimeAlias(cleanSource, project, contextModule);
         if (!targetOpaque && !sourceOpaque) return false;
         boolean targetNumeric = isIntegerName(cleanTarget) || isFloatType(cleanTarget);
         boolean sourceNumeric = isNumericKind(source)
             || isIntegerName(cleanSource) || isFloatType(cleanSource);
         return (targetOpaque && sourceNumeric) || (sourceOpaque && targetNumeric);
-    }
-
-    private static boolean isUnresolvedComptimeAlias(
-            @NotNull String name,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        if (!isUserTypeName(name)) return false;
-        if (resolveAlias(name, project, contextModule, 0) != null) return false;
-        return hasComptimeAliasRhs(shortName(normalize(name)), project);
-    }
-
-    /**
-     * Whether an alias/typedef with this short name has a call-expression
-     * right-hand side that looks typeid-producing ({@code $typefrom},
-     * {@code typeid}, {@code bitsize}). Pure index scan, no resolution.
-     */
-    private static boolean hasComptimeAliasRhs(@NotNull String shortName, @NotNull Project project)
-    {
-        if (DumbService.isDumb(project)) return false;
-        try
-        {
-            for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
-            {
-                if (!key.equals(shortName) && !key.endsWith("::" + shortName)) continue;
-                for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
-                {
-                    if (!(element instanceof C3TypeName typeName)) continue;
-                    if (!typeName.getText().strip().equals(shortName)) continue;
-                    PsiElement parent = typeName.getParent();
-                    C3TypedefType typedefType = null;
-                    if (parent instanceof C3AliasTypeDecl aliasDecl)
-                    {
-                        if (aliasDecl.getGenericDecl() != null) continue;
-                        typedefType = aliasDecl.getTypedefType();
-                    }
-                    else if (parent instanceof C3TypedefDecl typedefDecl)
-                    {
-                        if (typedefDecl.getGenericDecl() != null) continue;
-                        typedefType = typedefDecl.getTypedefType();
-                    }
-                    if (typedefType == null || typedefType.getGenericParameters() != null) continue;
-                    String rhsText = typedefType.getType() != null
-                        ? typedefType.getType().getText()
-                        : (typedefType.getExpr() != null ? typedefType.getExpr().getText() : null);
-                    if (rhsText == null) continue;
-                    String callText = rhsText.toLowerCase(java.util.Locale.ROOT);
-                    if (callText.contains("typefrom") || callText.contains("typeid") || callText.contains("bitsize"))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        catch (Exception ignored)
-        {
-        }
-        return false;
-    }
-
-    private static boolean hasInlineModifier(@NotNull PsiElement declaration)
-    {
-        ASTNode inline = declaration.getNode().findChildByType(C3Types.KW_INLINE);
-        return inline != null;
-    }
-
-    /**
-     * Backing type of an {@code inline} constdef, e.g. {@code char} for
-     * {@code constdef Blake3Flags : inline char}. Values of an inline
-     * constdef convert to the backing type implicitly (verified against
-     * {@code c3c}); without {@code inline} (or without a backing type) the
-     * constdef is distinct and needs an explicit cast.
-     * Pure index scan with same-module preference, no resolution.
-     */
-    private static @Nullable String inlineConstdefBacking(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        String clean = normalize(typeName);
-        if (!isUserTypeName(clean) || DumbService.isDumb(project)) return null;
-        String wanted = shortName(clean);
-        C3ConstdefDeclaration best = null;
-        try
-        {
-            for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
-            {
-                if (!key.equals(wanted) && !key.endsWith("::" + wanted)) continue;
-                for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
-                {
-                    if (!(element instanceof C3TypeName typeNameElement)) continue;
-                    if (!typeNameElement.getText().strip().equals(wanted)) continue;
-                    if (!(typeNameElement.getParent() instanceof C3ConstdefDeclaration constdef)) continue;
-                    if (best == null) best = constdef;
-                    if (contextModule != null && contextModule.equals(ModuleName.from(constdef))) best = constdef;
-                }
-            }
-        }
-        catch (Exception ignored)
-        {
-            return null;
-        }
-        if (best == null || !hasInlineModifier(best)) return null;
-        C3Type backing;
-        try
-        {
-            backing = best.getType();
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-        if (backing == null) return null;
-        String text = backing.getText();
-        return text == null || text.isBlank() ? null : text.strip();
-    }
-
-    private static boolean isConstdefName(@NotNull String typeName, @NotNull Project project)
-    {
-        String clean = normalize(typeName);
-        if (!isUserTypeName(clean) || DumbService.isDumb(project)) return false;
-        String wanted = shortName(clean);
-        try
-        {
-            for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
-            {
-                if (!key.equals(wanted) && !key.endsWith("::" + wanted)) continue;
-                for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
-                {
-                    if (!(element instanceof C3TypeName typeNameElement)) continue;
-                    if (!typeNameElement.getText().strip().equals(wanted)) continue;
-                    if (typeNameElement.getParent() instanceof C3ConstdefDeclaration) return true;
-                }
-            }
-        }
-        catch (Exception ignored)
-        {
-        }
-        return false;
     }
 
     /**
@@ -2093,7 +1323,7 @@ public final class TypeChecker
      * arithmetic with parentheses. Anything else (unknown names, method
      * calls, overflow) yields {@code null}. Depth-bounded and dumb-safe.
      */
-    private static @Nullable Long evalSize(
+    static @Nullable Long evalSize(
             @NotNull String text,
             @NotNull Project project,
             @Nullable ModuleName contextModule,
@@ -2246,30 +1476,16 @@ public final class TypeChecker
             @Nullable ModuleName contextModule,
             int depth)
     {
-        String wanted = shortName(normalize(name));
-        boolean qualified = normalize(name).contains("::");
-        C3ConstDeclarationStmt best = null;
+        List<C3ConstDeclarationStmt> decls;
         try
         {
-            for (String key : StubIndex.getInstance().getAllKeys(NameIndex.KEY, project))
-            {
-                if (qualified)
-                {
-                    if (!key.equals(normalize(name))) continue;
-                }
-                else if (!key.equals(wanted) && !key.endsWith("::" + wanted)) continue;
-                for (C3PsiElement element : safeElements(NameIndex.KEY, key, project))
-                {
-                    if (!(element instanceof C3ConstDeclarationStmt constDecl)) continue;
-                    if (best == null) best = constDecl;
-                    if (contextModule != null && contextModule.equals(ModuleName.from(constDecl))) best = constDecl;
-                }
-            }
+            decls = TypeCanonicalizer.findIndexElements(NameIndex.KEY, C3ConstDeclarationStmt.class, name, project, constDecl -> true);
         }
         catch (Exception ignored)
         {
             return null;
         }
+        C3ConstDeclarationStmt best = TypeCanonicalizer.preferSameModule(decls, contextModule);
         if (best == null) return null;
         C3Expr init;
         try
@@ -2366,7 +1582,7 @@ public final class TypeChecker
         List<InferredType> elements = source.getElements();
         if (!source.hasNamedArguments() && vector != null && expected >= 0 && elements.size() != expected)
         {
-            return new Mismatch(source.getName(), targetName, null, null, expected, elements.size());
+            return Mismatch.countMismatch(source.getName(), targetName, expected, elements.size());
         }
         if (source.hasNamedArguments()) return null;
         for (InferredType elementType : elements)
@@ -2375,18 +1591,13 @@ public final class TypeChecker
             Mismatch elementMismatch = check(project, contextModule, element, elementType);
             if (elementMismatch != null)
             {
-                return new Mismatch(
-                    elementMismatch.sourceName,
-                    targetName,
-                    elementMismatch.intValue,
-                    elementMismatch.floatValue,
-                    -1, -1);
+                return Mismatch.retargeted(elementMismatch, targetName);
             }
         }
         return null;
     }
 
-    private static @NotNull String stripOptional(@NotNull String target)
+    static @NotNull String stripOptional(@NotNull String target)
     {
         if ((target.endsWith("?") || target.endsWith("!")) && !target.endsWith("*")) return target.substring(0, target.length() - 1);
         return target;
@@ -3395,7 +2606,7 @@ public final class TypeChecker
         if ((op.equals("&") || op.equals("|") || op.equals("^"))
             && leftType.getKind() == InferredType.Kind.NAMED
             && namesEqual(leftType.getName(), rightType.getName())
-            && isBitstruct(leftType.getName(), binary.getProject(), ModuleName.from(binary)))
+            && BitstructSupport.isBitstruct(leftType.getName(), binary.getProject(), ModuleName.from(binary)))
         {
             // Bitwise ops on the same bitstruct stay in the bitstruct
             // (`BitMask c = a & b`, verified against the language docs).
@@ -3699,246 +2910,6 @@ public final class TypeChecker
         return InferredType.of(InferredType.Kind.NAMED, declaration.getTypeName().getText().strip());
     }
 
-    /**
-     * Expected type of an untyped lambda parameter from the surrounding
-     * function-pointer type, e.g. {@code int} for {@code i} in
-     * {@code apply(x, fn (i) => i * i)} with
-     * {@code fn void apply(int[] arr, IntTransform t)} where
-     * {@code alias IntTransform = fn int(int)}. Pure PSI walk plus alias
-     * resolution; anything unrecognized yields {@code null} (unchecked).
-     */
-    public static @Nullable String lambdaParamType(@NotNull C3Parameter param)
-    {
-        if (param.getType() != null) return null;
-        C3LambdaDecl lambdaDecl = PsiTreeUtil.getParentOfType(param, C3LambdaDecl.class);
-        if (lambdaDecl == null) return null;
-        C3ParameterList lambdaParams = lambdaDecl.getFnParameterList() != null
-            ? lambdaDecl.getFnParameterList().getParameterList()
-            : null;
-        if (lambdaParams == null) return null;
-        int paramIndex = -1;
-        List<C3ParamDecl> lambdaDecls = lambdaParams.getParamDeclList();
-        for (int i = 0; i < lambdaDecls.size(); i++)
-        {
-            if (lambdaDecls.get(i).getParameter() == param)
-            {
-                paramIndex = i;
-                break;
-            }
-        }
-        if (paramIndex < 0) return null;
-        PsiElement lambdaExpr = lambdaDecl.getParent();
-        if (lambdaExpr == null) return null;
-        PsiElement context = lambdaExpr.getParent();
-        String expectedFn = null;
-        if (context instanceof C3Arg arg)
-        {
-            expectedFn = callArgFnType(arg, paramIndex);
-        }
-        else if (context instanceof C3LocalDeclAfterType declarator)
-        {
-            C3LocalDeclarationStmt stmt = PsiTreeUtil.getParentOfType(declarator, C3LocalDeclarationStmt.class);
-            if (stmt != null && stmt.getOptionalType() != null && stmt.getOptionalType().getType() != null)
-            {
-                expectedFn = stmt.getOptionalType().getType().getText();
-            }
-        }
-        else if (context instanceof C3ConstDeclarationStmt constDecl && constDecl.getType() != null)
-        {
-            expectedFn = constDecl.getType().getText();
-        }
-        if (expectedFn == null) return null;
-        String fnText = underlyingFnType(expectedFn, param);
-        if (fnText == null) return null;
-        FnType fnType = parseFnType(fnText);
-        if (fnType == null || paramIndex >= fnType.params.size()) return null;
-        String typeText = fnType.params.get(paramIndex);
-        return typeText.isBlank() ? null : typeText.strip();
-    }
-
-    record FnType(@NotNull String returns, @NotNull List<String> params)
-    {
-    }
-
-    /**
-     * Declared type text of the call parameter receiving the lambda's
-     * argument (positional by order, named by name), or {@code null}.
-     */
-    private static @Nullable String callArgFnType(@NotNull C3Arg arg, int lambdaParamIndex)
-    {
-        C3CallExpr call = PsiTreeUtil.getParentOfType(arg, C3CallExpr.class);
-        if (call == null) return null;
-        C3CallablePsiElement callee;
-        try
-        {
-            callee = CallChecker.resolveTarget(call);
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-        if (callee == null)
-        {
-            return null;
-        }
-        CallChecker.Signature signature;
-        try
-        {
-            signature = CallChecker.buildSignature(callee);
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-        List<CallChecker.ParamInfo> params = signature.params;
-        String ownerText = callee instanceof C3FuncDef funcDef
-            ? InterfaceService.methodOwnerTypeName(funcDef)
-            : (callee instanceof C3MacroDefinition macro
-                ? InterfaceService.methodOwnerTypeName(macro)
-                : null);
-        int startIndex = 0;
-        if (ownerText != null && !params.isEmpty())
-        {
-            C3Expr receiver = call.getExpr() instanceof C3CallExpr inner ? inner.getExpr() : call.getExpr();
-            boolean staticReceiver = receiver instanceof C3TypeExpr;
-            if (!staticReceiver && InterfaceService.firstParameterMatchesOwner(
-                signature.paramTypes, signature.parameterList, ownerText))
-            {
-                startIndex = 1;
-            }
-        }
-        String named = arg.getNamedIdent() != null ? arg.getNamedIdent().getText() : null;
-        if (named != null)
-        {
-            for (int i = startIndex; i < params.size(); i++)
-            {
-                if (named.equals(params.get(i).name)) return params.get(i).typeText;
-            }
-            return null;
-        }
-        List<C3Arg> siblings = callArgList(call);
-        int positional = 0;
-        for (C3Arg sibling : siblings)
-        {
-            if (sibling == arg) break;
-            if (sibling.getNamedIdent() == null) positional++;
-        }
-        boolean ownNamed = false;
-        for (C3Arg sibling : siblings)
-        {
-            if (sibling != arg && sibling.getNamedIdent() != null) ownNamed = true;
-        }
-        // Positional-after-named is rejected by the compiler; bail out.
-        if (ownNamed) return null;
-        int slot = startIndex + positional;
-        if (slot >= params.size())
-        {
-            for (int i = params.size() - 1; i >= startIndex; i--)
-            {
-                if (params.get(i).vaarg) return params.get(i).vaargElement;
-            }
-            return null;
-        }
-        return params.get(slot).typeText;
-    }
-
-    private static @NotNull List<C3Arg> callArgList(@NotNull C3CallExpr call)
-    {
-        try
-        {
-            C3CallExprTail tail = call.getCallExprTail();
-            C3CallInvocation invocation = tail != null ? tail.getCallInvocation() : null;
-            C3CallArgList callArgs = invocation != null ? invocation.getCallArgList() : null;
-            C3ArgList args = callArgs != null ? callArgs.getArgList() : null;
-            if (args != null) return args.getArgList();
-        }
-        catch (Exception ignored)
-        {
-        }
-        return List.of();
-    }
-
-    private static @Nullable String underlyingFnType(@NotNull String expectedFn, @NotNull C3Parameter param)
-    {
-        return underlyingFnType(expectedFn, param.getProject(), ModuleName.from(param));
-    }
-
-    static @Nullable String underlyingFnTypeForCheck(
-            @NotNull String expectedFn, @NotNull C3PsiElement context)
-    {
-        return underlyingFnType(expectedFn, context.getProject(), ModuleName.from(context));
-    }
-
-    private static @Nullable String underlyingFnType(
-            @NotNull String expectedFn, @NotNull Project project, @Nullable ModuleName contextModule)
-    {
-        if (parseFnType(expectedFn) != null) return expectedFn;
-        try
-        {
-            String resolved = resolveAlias(expectedFn, project, contextModule, 0);
-            if (resolved != null && parseFnType(resolved) != null) return resolved;
-        }
-        catch (Exception ignored)
-        {
-        }
-        return null;
-    }
-
-    /**
-     * Parses a function-pointer type (`fn int(int)`, `fn void()`) into its
-     * return and parameter type texts. Anything else yields {@code null}.
-     * Note: {@link #normalize} must not run before the prefix check, it
-     * strips the space in `fn `.
-     */
-    static @Nullable FnType parseFnType(@NotNull String text)
-    {
-        String clean = text.strip();
-        if (!clean.startsWith("fn ")) return null;
-        String rest = clean.substring(3).strip();
-        int open = rest.indexOf('(');
-        int close = rest.lastIndexOf(')');
-        if (open <= 0 || close <= open) return null;
-        String returns = normalize(rest.substring(0, open).strip());
-        if (returns.isEmpty()) return null;
-        List<String> params = splitTopLevel(rest.substring(open + 1, close), ',');
-        List<String> types = new ArrayList<>();
-        for (String entry : params)
-        {
-            String item = entry.strip();
-            if (item.isEmpty()) continue;
-            // `type name` form degrades to the leading type.
-            int space = item.indexOf(' ');
-            if (space > 0 && item.substring(0, space).matches("[A-Za-z_][A-Za-z_0-9.:*\\[\\]]*")) item = item.substring(0, space);
-            types.add(normalize(item));
-        }
-        return new FnType(returns, types);
-    }
-
-    private static @NotNull List<String> splitTopLevel(@NotNull String text, char separator)
-    {
-        List<String> parts = new ArrayList<>();
-        int depthRound = 0;
-        int depthSquare = 0;
-        int depthAngle = 0;
-        int start = 0;
-        for (int i = 0; i < text.length(); i++)
-        {
-            char c = text.charAt(i);
-            if (c == '(') depthRound++;
-            else if (c == ')') depthRound--;
-            else if (c == '[') depthSquare++;
-            else if (c == ']') depthSquare--;
-            else if (c == '<') depthAngle++;
-            else if (c == '>') depthAngle--;
-            else if (c == separator && depthRound == 0 && depthSquare == 0 && depthAngle == 0)
-            {
-                parts.add(text.substring(start, i));
-                start = i + 1;
-            }
-        }
-        parts.add(text.substring(start));
-        return parts;
-    }
     public static @Nullable String declaredTypeText(@NotNull PsiElement resolved)
     {
         if (resolved instanceof C3LocalDeclAfterType)
@@ -3953,7 +2924,7 @@ public final class TypeChecker
             if (parameter.getType() != null) return parameter.getType().getText();
             try
             {
-                return lambdaParamType(parameter);
+                return FunctionSupport.lambdaParamType(parameter);
             }
             catch (Exception ignored)
             {
@@ -4039,7 +3010,7 @@ public final class TypeChecker
             {
                 return kindOf(member.getStructPathType().getFullName());
             }
-            String bitFieldType = bitstructFieldTypeText(resolved);
+            String bitFieldType = BitstructSupport.bitstructFieldTypeText(resolved);
             if (bitFieldType != null) return kindOf(bitFieldType);
             return null;
         }
@@ -4057,8 +3028,8 @@ public final class TypeChecker
             {
                 return null;
             }
-            if (target instanceof C3FuncDef funcDef) return cascadeOptional(call, returnTypeOf(funcDef), depth);
-            if (target instanceof C3MacroDefinition macro) return cascadeOptional(call, returnTypeOf(macro), depth);
+            if (target instanceof C3FuncDef funcDef) return cascadeOptional(call, FunctionSupport.returnTypeOf(funcDef), depth);
+            if (target instanceof C3MacroDefinition macro) return cascadeOptional(call, FunctionSupport.returnTypeOf(macro), depth);
             return null;
         }
         if (callee instanceof C3PathAtIdentExpr pathAtIdentExpr)
@@ -4075,7 +3046,7 @@ public final class TypeChecker
                 {
                     continue;
                 }
-                if (resolved instanceof C3CallablePsiElement callable) return cascadeOptional(call, returnTypeOf(callable), depth);
+                if (resolved instanceof C3CallablePsiElement callable) return cascadeOptional(call, FunctionSupport.returnTypeOf(callable), depth);
             }
             return null;
         }
@@ -4087,7 +3058,7 @@ public final class TypeChecker
             if (outerIdent == null || innerType == null) return null;
             if (innerType.getKind() != InferredType.Kind.NAMED) return null;
             PsiElement resolved = outerIdent.getReference().resolve();
-            if (resolved instanceof C3FuncDef funcDef) return returnTypeOf(funcDef);
+            if (resolved instanceof C3FuncDef funcDef) return FunctionSupport.returnTypeOf(funcDef);
             if (resolved instanceof C3StructMemberDeclaration member && member.getStructPathType() != null)
             {
                 return kindOf(member.getStructPathType().getFullName());
@@ -4141,13 +3112,6 @@ public final class TypeChecker
             // type but unmodelled here: unknown, not an error.
             default -> null;
         };
-    }
-
-    private static @Nullable InferredType returnTypeOf(@NotNull C3CallablePsiElement callable)
-    {
-        ShortType returnType = callable.getReturnType();
-        if (returnType == null || returnType.getValue() == null) return null;
-        return kindOf(returnType.getValue());
     }
 
     /**
@@ -4226,7 +3190,7 @@ public final class TypeChecker
         return null;
     }
 
-    private record Layout(long size, long align)
+    record Layout(long size, long align)
     {
     }
 
@@ -4238,7 +3202,7 @@ public final class TypeChecker
      * statically modellable here (exotic attributes, unresolvable names)
      * yields {@code null}. Depth-bounded with cycle protection.
      */
-    private static @Nullable Layout layoutOf(
+    static @Nullable Layout layoutOf(
             @NotNull String typeText,
             @NotNull Project project,
             @Nullable ModuleName contextModule,
@@ -4283,7 +3247,7 @@ public final class TypeChecker
             return new Layout(count * element.size(), element.align());
         }
         // Aliases, typedefs and distinct types: walk the underlying spelling.
-        String underlying = resolveCastType(clean, project, contextModule);
+        String underlying = TypeCanonicalizer.resolveCastType(clean, project, contextModule);
         if (underlying != null && !namesEqual(underlying, clean))
         {
             return layoutOf(underlying, project, contextModule, depth + 1, visiting);
@@ -4292,159 +3256,9 @@ public final class TypeChecker
         String backing = constdefOrEnumBacking(clean, project, contextModule);
         if (backing != null) return layoutOf(backing, project, contextModule, depth + 1, visiting);
         // A bitstruct occupies its backing type (`bitstruct Sb : char` is 1 byte).
-        String bitBacking = bitstructBacking(clean, project, contextModule);
+        String bitBacking = BitstructSupport.bitstructBacking(clean, project, contextModule);
         if (bitBacking != null) return layoutOf(bitBacking, project, contextModule, depth + 1, visiting);
-        return structLayout(clean, project, contextModule, depth, visiting);
-    }
-
-    private static @Nullable Layout structLayout(
-            @NotNull String typeText,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            int depth,
-            @NotNull Set<String> visiting)
-    {
-        FullyQualifiedName name = FullyQualifiedName.parse(typeText);
-        List<C3StructDeclaration> declarations;
-        try
-        {
-            declarations =
-                org.c3lang.intellij.index.InterfaceService.INSTANCE.findStructDeclarations(name, project);
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-        C3StructDeclaration declaration = preferModule(declarations, contextModule);
-        if (declaration == null || declaration.getStructBody() == null) return null;
-        if (hasAnyAttribute(declaration, "compact", "overlap", "structlike")) return null;
-        String key = declaration.getTypeName().getText().strip() + "@"
-            + (ModuleName.from(declaration) != null ? ModuleName.from(declaration).getValue() : "");
-        if (!visiting.add(key)) return null;
-        try
-        {
-            return membersLayout(declaration.getStructBody(), isUnion(declaration), project, contextModule, depth, visiting);
-        }
-        finally
-        {
-            visiting.remove(key);
-        }
-    }
-
-    private static @Nullable Layout membersLayout(
-            @NotNull C3StructBody body,
-            boolean union,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule,
-            int depth,
-            @NotNull Set<String> visiting)
-    {
-        boolean packed = false;
-        try
-        {
-            PsiElement owner = body.getParent();
-            if (owner instanceof C3StructDeclaration structDecl && structDecl.getAttributes() != null)
-            {
-                packed = AttributeSpecs.hasAttribute(structDecl.getAttributes(), "packed");
-            }
-        }
-        catch (Exception ignored)
-        {
-        }
-        long offset = 0;
-        long maxAlign = 1;
-        long maxSize = 0;
-        for (C3StructMemberDeclaration member : body.getStructMemberDeclarationList())
-        {
-            Layout memberLayout;
-            try
-            {
-                if (member.getStructBody() != null)
-                {
-                    // Anonymous nested struct/union: expanded inline.
-                    memberLayout = membersLayout(member.getStructBody(), isUnion(member),
-                        project, contextModule, depth + 1, visiting);
-                }
-                else if (member.getBitstructBody() != null)
-                {
-                    return null;
-                }
-                else
-                {
-                    FullyQualifiedName memberType = member.getStructPathType();
-                    if (memberType == null) return null;
-                    memberLayout = layoutOf(memberType.getFullName(), project, contextModule, depth + 1, visiting);
-                }
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-            if (memberLayout == null) return null;
-            if (union)
-            {
-                maxSize = Math.max(maxSize, memberLayout.size());
-                maxAlign = Math.max(maxAlign, packed ? 1 : memberLayout.align());
-            }
-            else
-            {
-                long align = packed ? 1 : memberLayout.align();
-                offset = alignUp(offset, align);
-                offset += memberLayout.size();
-                maxAlign = Math.max(maxAlign, align);
-            }
-        }
-        if (union) return new Layout(maxSize, maxAlign);
-        return new Layout(alignUp(offset, packed ? 1 : maxAlign), packed ? 1 : maxAlign);
-    }
-
-    private static long alignUp(long offset, long align)
-    {
-        if (align <= 1) return offset;
-        return (offset + align - 1) / align * align;
-    }
-
-    private static boolean isUnion(@NotNull PsiElement element)
-    {
-        try
-        {
-            return element.getNode() != null && element.getNode().findChildByType(C3Types.KW_UNION) != null;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-    }
-
-    private static boolean hasAnyAttribute(@NotNull C3StructDeclaration declaration, @NotNull String... names)
-    {
-        try
-        {
-            if (declaration.getAttributes() == null) return false;
-            for (String name : names)
-            {
-                if (AttributeSpecs.hasAttribute(declaration.getAttributes(), name)) return true;
-            }
-        }
-        catch (Exception ignored)
-        {
-        }
-        return false;
-    }
-
-    private static @Nullable C3StructDeclaration preferModule(
-            @NotNull List<C3StructDeclaration> declarations,
-            @Nullable ModuleName contextModule)
-    {
-        if (declarations.isEmpty()) return null;
-        if (contextModule != null)
-        {
-            for (C3StructDeclaration declaration : declarations)
-            {
-                if (contextModule.equals(ModuleName.from(declaration))) return declaration;
-            }
-        }
-        return declarations.get(0);
+        return StructSupport.structLayout(clean, project, contextModule, depth, visiting);
     }
 
     private static @Nullable String constdefOrEnumBacking(
@@ -4467,7 +3281,7 @@ public final class TypeChecker
                     if (!key.equals(clean)) continue;
                 }
                 else if (!key.equals(wanted) && !key.endsWith("::" + wanted)) continue;
-                for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
+                for (C3PsiElement element : TypeCanonicalizer.safeElements(TypeIndex.KEY, key, project))
                 {
                     if (!(element instanceof C3TypeName typeName)) continue;
                     if (!typeName.getText().strip().equals(wanted)) continue;
@@ -4529,221 +3343,6 @@ public final class TypeChecker
     }
 
     /**
-     * Bitstruct declaration by (possibly qualified) name, or {@code null}.
-     * Pure index scan; same-module declarations win on name clashes.
-     */
-    private static @Nullable C3BitstructDeclaration findBitstructDecl(
-            @NotNull String structName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        if (DumbService.isDumb(project)) return null;
-        String clean = normalize(structName).strip();
-        if (!clean.matches("[A-Za-z_][A-Za-z_0-9.:]*")) return null;
-        String wanted = shortName(clean);
-        boolean qualified = clean.contains("::");
-        C3BitstructDeclaration match = null;
-        try
-        {
-            for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
-            {
-                if (qualified)
-                {
-                    if (!key.equals(clean)) continue;
-                }
-                else if (!key.equals(wanted) && !key.endsWith("::" + wanted)) continue;
-                for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
-                {
-                    if (!(element instanceof C3TypeName typeName)) continue;
-                    if (!typeName.getText().strip().equals(wanted)) continue;
-                    if (!(typeName.getParent() instanceof C3BitstructDeclaration bitstruct)) continue;
-                    if (match == null) match = bitstruct;
-                    if (contextModule != null && contextModule.equals(ModuleName.from(bitstruct)))
-                    {
-                        match = bitstruct;
-                    }
-                }
-            }
-        }
-        catch (Exception ignored)
-        {
-            return null;
-        }
-        return match;
-    }
-
-    /**
-     * Whether the name denotes a bitstruct (verified against the type
-     * index, dumb-safe).
-     */
-    public static boolean isBitstruct(
-            @NotNull String typeName,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        return findBitstructDecl(typeName, project, contextModule) != null;
-    }
-
-    /**
-     * Backing type of a bitstruct ({@code char} for
-     * {@code bitstruct Sb : char}), or {@code null} when the name is not a
-     * bitstruct. Pure index scan plus a guarded PSI read of the
-     * declaration's type.
-     */
-    public static @Nullable String bitstructBacking(
-            @NotNull String typeText,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        C3BitstructDeclaration match = findBitstructDecl(typeText, project, contextModule);
-        if (match == null) return null;
-        try
-        {
-            C3Type backing = match.getType();
-            if (backing != null && backing.getText() != null && !backing.getText().isBlank())
-            {
-                return backing.getText().strip();
-            }
-        }
-        catch (Exception ignored)
-        {
-        }
-        return null;
-    }
-
-    /**
-     * Bitstruct field declaration ({@code C3BitstructDef} or
-     * {@code C3BitstructSimpleDef}) by struct and field name, or
-     * {@code null}. Index scan plus a guarded PSI read of the body.
-     */
-    public static @Nullable C3PsiElement findBitstructField(
-            @NotNull String structName,
-            @NotNull String field,
-            @NotNull Project project,
-            @Nullable ModuleName contextModule)
-    {
-        C3BitstructDeclaration match = findBitstructDecl(structName, project, contextModule);
-        if (match == null) return null;
-        try
-        {
-            C3BitstructBody body = match.getBitstructBody();
-            if (body == null) return null;
-            for (C3BitstructDef def : body.getBitstructDefList())
-            {
-                if (field.equals(bitFieldName(def))) return def;
-            }
-            for (C3BitstructSimpleDef def : body.getBitstructSimpleDefList())
-            {
-                if (field.equals(bitFieldName(def))) return def;
-            }
-        }
-        catch (Exception ignored)
-        {
-        }
-        return null;
-    }
-
-    private static @Nullable String bitFieldName(@NotNull C3PsiElement def)
-    {
-        try
-        {
-            ASTNode ident = def.getNode().findChildByType(C3Types.IDENT);
-            return ident != null ? ident.getText() : null;
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-    }
-
-    /**
-     * Element type of a top-level {@code const} used as a member-access
-     * root ({@code ASCII_LOOKUP} in {@code ASCII_LOOKUP[c].lower}):
-     * ALL_CAPS globals parse as path consts, not path idents, so they
-     * never reach {@code C3PathIdent.findTypeName}. Only the base type is
-     * resolved (array suffixes are dropped), so subscripted uses chain
-     * onto the element type.
-     */
-    public static @Nullable FullyQualifiedName constRootType(@NotNull C3PathConstExpr rootConstExpr)
-    {
-        try
-        {
-            PsiElement resolved = rootConstExpr.getPathConst().getReference().resolve();
-            if (!(resolved instanceof C3ConstDeclarationStmt constDecl) || constDecl.getType() == null) return null;
-            return FullyQualifiedName.from(constDecl.getType());
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-    }
-
-    /**
-     * Declared type text of a bitstruct field ({@code int} for
-     * {@code int a : 0..2}), or {@code null} for anything else.
-     */
-    public static @Nullable String bitstructFieldTypeText(@Nullable PsiElement field)
-    {
-        try
-        {
-            if (field instanceof C3BitstructDef def && def.getBaseType() != null)
-            {
-                return def.getBaseType().getText().strip();
-            }
-            if (field instanceof C3BitstructSimpleDef simple && simple.getBaseType() != null)
-            {
-                return simple.getBaseType().getText().strip();
-            }
-        }
-        catch (Exception ignored)
-        {
-        }
-        return null;
-    }
-
-    /**
-     * Error when a constant assigned to a bitstruct field does not fit the
-     * field's bit range ({@code int a : 0..2} holds 0..3): c3c rejects it as
-     * {@code This constant would be truncated if stored in the bitstruct...}.
-     * Non-constant expressions stay unchecked (the compiler truncates them).
-     */
-    public static @Nullable String bitstructTruncationError(@Nullable PsiElement field, @Nullable InferredType source)
-    {
-        if (field == null || source == null || !source.isLiteral() || source.getIntValue() == null) return null;
-        if (!(field instanceof C3BitstructDef def)) return null;
-        int bits;
-        try
-        {
-            List<C3Expr> bounds = def.getExprList();
-            if (bounds.isEmpty()) return null;
-            if (bounds.size() < 2)
-            {
-                // Single position (`bool b : 3`): exactly one bit.
-                bits = 1;
-            }
-            else
-            {
-                ModuleName module = ModuleName.from(def);
-                Long start = evalSize(bounds.get(0).getText(), def.getProject(), module, 0);
-                Long end = evalSize(bounds.get(1).getText(), def.getProject(), module, 0);
-                if (start == null || end == null || end <= start) return null;
-                bits = (int) Math.min(end - start, 62);
-            }
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-        BigInteger value = source.getIntValue();
-        if (value.signum() < 0) return null;
-        if (value.bitLength() > bits)
-        {
-            return "This constant would be truncated if stored in the bitstruct, do you need a wider bit range?";
-        }
-        return null;
-    }
-
-    /**
      * c3c rejects every implicit conversion between a bitstruct and another
      * type in either direction ({@code int i = s} and {@code Sb s = 5} are
      * both `Implicitly casting ... is not permitted...`); only the explicit
@@ -4761,8 +3360,8 @@ public final class TypeChecker
         if (isOptionalName(targetText) || isOptionalName(sourceName)) return null;
         String target = stripOptional(normalize(targetText));
         if (target.isEmpty() || namesEqual(target, sourceName)) return null;
-        boolean targetBit = bitstructBacking(target, project, contextModule) != null;
-        boolean sourceBit = bitstructBacking(sourceName, project, contextModule) != null;
+        boolean targetBit = BitstructSupport.bitstructBacking(target, project, contextModule) != null;
+        boolean sourceBit = BitstructSupport.bitstructBacking(sourceName, project, contextModule) != null;
         if (targetBit == sourceBit) return null;
         return "Implicitly casting '" + shortName(sourceName) + "' to '" + shortName(target)
             + "' is not permitted, but you may do an explicit cast by placing '(" + shortName(target)

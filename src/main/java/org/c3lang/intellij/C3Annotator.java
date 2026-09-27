@@ -24,6 +24,8 @@ import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.types.CallChecker;
 import org.c3lang.intellij.types.DuplicateChecker;
 import org.c3lang.intellij.types.InferredType;
+import org.c3lang.intellij.types.TypeCanonicalizer;
+import org.c3lang.intellij.types.BitstructSupport;
 import org.c3lang.intellij.types.TypeChecker;
 
 import java.util.ArrayList;
@@ -604,7 +606,7 @@ public class C3Annotator implements Annotator
             return;
         }
         if (inferred == null || TypeChecker.isOptionalName(inferred.getName())) return;
-        if (TypeChecker.isComptimeParam(inferred.getName())) return;
+        if (TypeCanonicalizer.isComptimeParam(inferred.getName())) return;
         String message = isTry
             ? "Expected an optional expression to 'try' here. If it isn't an optional, remove 'try'."
             : "This expression is not optional, did you add it by mistake?";
@@ -1020,7 +1022,7 @@ public class C3Annotator implements Annotator
             C3PsiElement bitField = bitstructFieldTarget(binary.getLeft());
             if (bitField != null)
             {
-                String truncation = TypeChecker.bitstructTruncationError(bitField, TypeChecker.infer(rhs));
+                String truncation = BitstructSupport.bitstructTruncationError(bitField, TypeChecker.infer(rhs));
                 if (truncation != null) holder.newAnnotation(HighlightSeverity.ERROR, truncation).range(rhs).create();
             }
             annotateBitstructInit(binary.getProject(), ModuleName.from(binary), lhsType, rhs, holder);
@@ -1041,7 +1043,7 @@ public class C3Annotator implements Annotator
             @NotNull AnnotationHolder holder)
     {
         if (DumbService.isDumb(project)) return;
-        if (TypeChecker.bitstructBacking(targetText, project, contextModule) == null) return;
+        if (BitstructSupport.bitstructBacking(targetText, project, contextModule) == null) return;
         if (!(init instanceof C3InitListExpr initList)
             || initList.getInitializerList() == null
             || initList.getInitializerList().getArgList() == null) return;
@@ -1050,7 +1052,7 @@ public class C3Annotator implements Annotator
         {
             String name = designatedInitName(arg);
             if (name == null) continue;
-            C3PsiElement field = TypeChecker.findBitstructField(targetText, name, project, contextModule);
+            C3PsiElement field = BitstructSupport.findBitstructField(targetText, name, project, contextModule);
             if (field == null)
             {
                 holder.newAnnotation(HighlightSeverity.ERROR,
@@ -1062,13 +1064,13 @@ public class C3Annotator implements Annotator
             C3Expr value = arg.getExpr();
             if (value == null) continue;
             InferredType inferred = TypeChecker.infer(value);
-            String fieldType = TypeChecker.bitstructFieldTypeText(field);
+            String fieldType = BitstructSupport.bitstructFieldTypeText(field);
             if (fieldType != null)
             {
                 String error = TypeChecker.assignmentError(project, contextModule, fieldType, inferred, value);
                 if (error != null) holder.newAnnotation(HighlightSeverity.ERROR, error).range(value).create();
             }
-            String truncation = TypeChecker.bitstructTruncationError(field, inferred);
+            String truncation = BitstructSupport.bitstructTruncationError(field, inferred);
             if (truncation != null) holder.newAnnotation(HighlightSeverity.ERROR, truncation).range(value).create();
         }
     }
@@ -1148,7 +1150,7 @@ public class C3Annotator implements Annotator
             {
                 return member.getStructPathType().getFullName();
             }
-            String bitFieldType = TypeChecker.bitstructFieldTypeText(resolved);
+            String bitFieldType = BitstructSupport.bitstructFieldTypeText(resolved);
             if (bitFieldType != null) return bitFieldType;
         }
         return null;
@@ -1446,7 +1448,7 @@ public class C3Annotator implements Annotator
         if (resolved != null) return;
         FullyQualifiedName receiverType = bitstructReceiverType(accessIdent);
         if (receiverType == null) return;
-        if (TypeChecker.bitstructBacking(receiverType.getFullName(), accessIdent.getProject(), ModuleName.from(accessIdent)) == null)
+        if (BitstructSupport.bitstructBacking(receiverType.getFullName(), accessIdent.getProject(), ModuleName.from(accessIdent)) == null)
         {
             return;
         }
@@ -1476,7 +1478,7 @@ public class C3Annotator implements Annotator
                 receiver = inner.getExpr();
             }
             if (receiver instanceof C3PathIdentExpr pathExpr) return pathExpr.getPathIdent().findTypeName();
-            if (receiver instanceof C3PathConstExpr constExpr) return TypeChecker.constRootType(constExpr);
+            if (receiver instanceof C3PathConstExpr constExpr) return TypeCanonicalizer.constRootType(constExpr);
             return null;
         }
         catch (Exception e)
