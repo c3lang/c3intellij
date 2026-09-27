@@ -22,7 +22,10 @@ import org.c3lang.intellij.psi.C3ArgList;
 import org.c3lang.intellij.psi.C3BaseType;
 import org.c3lang.intellij.psi.C3BinaryExpr;
 import org.c3lang.intellij.psi.C3BinaryOp;
+import org.c3lang.intellij.psi.C3BitstructBody;
 import org.c3lang.intellij.psi.C3BitstructDeclaration;
+import org.c3lang.intellij.psi.C3BitstructDef;
+import org.c3lang.intellij.psi.C3BitstructSimpleDef;
 import org.c3lang.intellij.psi.C3CallArgList;
 import org.c3lang.intellij.psi.C3CallExpr;
 import org.c3lang.intellij.psi.C3CallExprTail;
@@ -198,6 +201,8 @@ public final class TypeChecker
         if (("+=".equals(assignOp) || "-=".equals(assignOp)) && isPointerArithmetic(targetText, source)) return null;
         Mismatch mismatch = check(project, contextModule, targetText, source);
         if (mismatch == null) return null;
+        String implicitBitstruct = bitstructImplicitCastError(project, contextModule, targetText, source);
+        if (implicitBitstruct != null) return implicitBitstruct;
         if (mismatch.intValue != null)
         {
             return "Integer value " + mismatch.intValue + " does not fit in type '" + mismatch.targetName + "'.";
@@ -254,6 +259,8 @@ public final class TypeChecker
         source = narrowedSource(useSite, source);
         Mismatch mismatch = check(project, contextModule, returnTypeText, source);
         if (mismatch == null) return null;
+        String implicitBitstruct = bitstructImplicitCastError(project, contextModule, returnTypeText, source);
+        if (implicitBitstruct != null) return implicitBitstruct;
         if (mismatch.intValue != null)
         {
             return "Integer value " + mismatch.intValue + " does not fit in type '" + mismatch.targetName + "'.";
@@ -332,6 +339,25 @@ public final class TypeChecker
         InferredType effectiveSource = source.getName().equals(resolvedSource) ? source : kindOf(resolvedSource);
 
         if (namesEqual(resolvedTarget, resolvedSource)) return null;
+
+        // Bitstruct casts (verified against c3c): a bitstruct converts
+        // explicitly to any integer/bool, but to nothing else
+        // (`(float)s` is `You cannot cast 'Sb' to 'float'.`); a bitstruct is
+        // built back only from its exact backing type (`(Sb)char` is fine,
+        // `(Sb)uint` is not). Literals stay lenient (c3c checks the value).
+        String targetBitBacking = bitstructBacking(resolvedTarget, project, contextModule);
+        String sourceBitBacking = bitstructBacking(resolvedSource, project, contextModule);
+        if (sourceBitBacking != null && targetBitBacking == null)
+        {
+            if (isIntegerName(resolvedTarget) || shortName(resolvedTarget).equals("bool")) return null;
+            return CastDiagnostic.error("You cannot cast '" + sourceName + "' to '" + shortName(target) + "'.");
+        }
+        if (targetBitBacking != null && sourceBitBacking == null)
+        {
+            if (namesEqual(resolvedSource, targetBitBacking)) return null;
+            if (effectiveSource.isLiteral()) return null;
+            return CastDiagnostic.error("It is not possible to cast '" + sourceName + "' to '" + shortName(target) + "'.");
+        }
 
         boolean targetNumeric = isNumericName(resolvedTarget);
         boolean sourceNumeric = isNumericKind(effectiveSource) || isNumericName(resolvedSource);
@@ -932,6 +958,8 @@ public final class TypeChecker
         if (mismatch == null) return null;
         // Undeclared (e.g. generic) parameter types are not checked.
         if (!isDeclaredType(paramTypeText, project, contextModule)) return null;
+        String implicitBitstruct = bitstructImplicitCastError(project, contextModule, paramTypeText, arg);
+        if (implicitBitstruct != null) return implicitBitstruct;
         if (mismatch.intValue != null)
         {
             return "Integer value " + mismatch.intValue + " does not fit in type '" + mismatch.targetName + "'.";
@@ -1328,6 +1356,11 @@ public final class TypeChecker
     {
         String underlying = resolveAlias(target, project, contextModule, 0);
         if (underlying != null) return new TargetInfo(underlying, false);
+        // Inline typedef targets stay opaque for values (the reverse needs
+        // an explicit cast) but accept fitting literals, like distinct
+        // typedefs (both verified against c3c).
+        String inlineUnderlying = transparentUnderlying(target, project, contextModule);
+        if (inlineUnderlying != null) return new TargetInfo(inlineUnderlying, true);
         String typedefTarget = resolveTypedef(target, project, contextModule, 0);
         if (typedefTarget != null) return new TargetInfo(typedefTarget, true);
         // Optional-wrapped alias (`FloatType?`): resolve the inner type and
@@ -1349,21 +1382,42 @@ public final class TypeChecker
             @Nullable ModuleName contextModule,
             @NotNull String sourceName)
     {
-        String underlying = resolveAlias(sourceName, project, contextModule, 0);
-        if (underlying != null) return underlying;
-        String inlineTypedef = resolveInlineTypedef(sourceName, project, contextModule, 0);
-        if (inlineTypedef != null) return inlineTypedef;
+        String transparent = transparentUnderlying(sourceName, project, contextModule);
+        if (transparent != null) return transparent;
         // Same re-wrap for Optional-wrapped sources (`Alias?` -> `double?`).
         if (isOptionalName(sourceName))
         {
             String inner = stripOptional(normalize(sourceName));
             String suffix = normalize(sourceName).endsWith("!") ? "!" : "?";
-            String innerAlias = resolveAlias(inner, project, contextModule, 0);
-            if (innerAlias != null) return innerAlias + suffix;
-            String innerInline = resolveInlineTypedef(inner, project, contextModule, 0);
-            if (innerInline != null) return innerInline + suffix;
+            String innerTransparent = transparentUnderlying(inner, project, contextModule);
+            if (innerTransparent != null) return innerTransparent + suffix;
         }
         return null;
+    }
+
+    /**
+     * Fully transparent spelling of a type: follows alias and
+     * {@code inline} typedef links to a fixpoint
+     * ({@code MutexFlags -> CUInt -> uint}). Stops at distinct typedefs,
+     * structs and builtins (those are conversion barriers), returning
+     * {@code null} when the input itself is already opaque. Bounded and
+     * cycle-safe.
+     */
+    private static @Nullable String transparentUnderlying(
+            @NotNull String typeName,
+            @NotNull Project project,
+            @Nullable ModuleName contextModule)
+    {
+        String current = typeName;
+        for (int depth = 0; depth < 6; depth++)
+        {
+            String next = resolveAlias(current, project, contextModule, 0);
+            if (next == null) next = resolveInlineTypedef(current, project, contextModule, 0);
+            if (next == null) return depth == 0 ? null : current;
+            if (namesEqual(next, current)) return depth == 0 ? null : current;
+            current = next;
+        }
+        return current;
     }
 
     /**
@@ -3338,6 +3392,15 @@ public final class TypeChecker
         InferredType leftType = infer(left, depth + 1);
         InferredType rightType = infer(right, depth + 1);
         if (leftType == null || rightType == null) return null;
+        if ((op.equals("&") || op.equals("|") || op.equals("^"))
+            && leftType.getKind() == InferredType.Kind.NAMED
+            && namesEqual(leftType.getName(), rightType.getName())
+            && isBitstruct(leftType.getName(), binary.getProject(), ModuleName.from(binary)))
+        {
+            // Bitwise ops on the same bitstruct stay in the bitstruct
+            // (`BitMask c = a & b`, verified against the language docs).
+            return InferredType.of(InferredType.Kind.NAMED, leftType.getName());
+        }
         return arithmetic(leftType, rightType, op);
     }
 
@@ -3976,6 +4039,8 @@ public final class TypeChecker
             {
                 return kindOf(member.getStructPathType().getFullName());
             }
+            String bitFieldType = bitstructFieldTypeText(resolved);
+            if (bitFieldType != null) return kindOf(bitFieldType);
             return null;
         }
         C3Expr callee = call.getExpr();
@@ -4169,9 +4234,9 @@ public final class TypeChecker
      * Compile-time layout of a type with C layout rules (verified
      * against {@code c3c}: sequential members at aligned offsets padded to
      * the max alignment, unions take the max member, {@code @packed} drops
-     * padding). Anything not statically modellable here (bitstructs, exotic
-     * attributes, unresolvable names) yields {@code null}. Depth-bounded
-     * with cycle protection.
+     * padding, bitstructs occupy their backing type). Anything not
+     * statically modellable here (exotic attributes, unresolvable names)
+     * yields {@code null}. Depth-bounded with cycle protection.
      */
     private static @Nullable Layout layoutOf(
             @NotNull String typeText,
@@ -4226,6 +4291,9 @@ public final class TypeChecker
         // Constdefs and enums occupy their backing type.
         String backing = constdefOrEnumBacking(clean, project, contextModule);
         if (backing != null) return layoutOf(backing, project, contextModule, depth + 1, visiting);
+        // A bitstruct occupies its backing type (`bitstruct Sb : char` is 1 byte).
+        String bitBacking = bitstructBacking(clean, project, contextModule);
+        if (bitBacking != null) return layoutOf(bitBacking, project, contextModule, depth + 1, visiting);
         return structLayout(clean, project, contextModule, depth, visiting);
     }
 
@@ -4458,6 +4526,247 @@ public final class TypeChecker
             return "int";
         }
         return null;
+    }
+
+    /**
+     * Bitstruct declaration by (possibly qualified) name, or {@code null}.
+     * Pure index scan; same-module declarations win on name clashes.
+     */
+    private static @Nullable C3BitstructDeclaration findBitstructDecl(
+            @NotNull String structName,
+            @NotNull Project project,
+            @Nullable ModuleName contextModule)
+    {
+        if (DumbService.isDumb(project)) return null;
+        String clean = normalize(structName).strip();
+        if (!clean.matches("[A-Za-z_][A-Za-z_0-9.:]*")) return null;
+        String wanted = shortName(clean);
+        boolean qualified = clean.contains("::");
+        C3BitstructDeclaration match = null;
+        try
+        {
+            for (String key : StubIndex.getInstance().getAllKeys(TypeIndex.KEY, project))
+            {
+                if (qualified)
+                {
+                    if (!key.equals(clean)) continue;
+                }
+                else if (!key.equals(wanted) && !key.endsWith("::" + wanted)) continue;
+                for (C3PsiElement element : safeElements(TypeIndex.KEY, key, project))
+                {
+                    if (!(element instanceof C3TypeName typeName)) continue;
+                    if (!typeName.getText().strip().equals(wanted)) continue;
+                    if (!(typeName.getParent() instanceof C3BitstructDeclaration bitstruct)) continue;
+                    if (match == null) match = bitstruct;
+                    if (contextModule != null && contextModule.equals(ModuleName.from(bitstruct)))
+                    {
+                        match = bitstruct;
+                    }
+                }
+            }
+        }
+        catch (Exception ignored)
+        {
+            return null;
+        }
+        return match;
+    }
+
+    /**
+     * Whether the name denotes a bitstruct (verified against the type
+     * index, dumb-safe).
+     */
+    public static boolean isBitstruct(
+            @NotNull String typeName,
+            @NotNull Project project,
+            @Nullable ModuleName contextModule)
+    {
+        return findBitstructDecl(typeName, project, contextModule) != null;
+    }
+
+    /**
+     * Backing type of a bitstruct ({@code char} for
+     * {@code bitstruct Sb : char}), or {@code null} when the name is not a
+     * bitstruct. Pure index scan plus a guarded PSI read of the
+     * declaration's type.
+     */
+    public static @Nullable String bitstructBacking(
+            @NotNull String typeText,
+            @NotNull Project project,
+            @Nullable ModuleName contextModule)
+    {
+        C3BitstructDeclaration match = findBitstructDecl(typeText, project, contextModule);
+        if (match == null) return null;
+        try
+        {
+            C3Type backing = match.getType();
+            if (backing != null && backing.getText() != null && !backing.getText().isBlank())
+            {
+                return backing.getText().strip();
+            }
+        }
+        catch (Exception ignored)
+        {
+        }
+        return null;
+    }
+
+    /**
+     * Bitstruct field declaration ({@code C3BitstructDef} or
+     * {@code C3BitstructSimpleDef}) by struct and field name, or
+     * {@code null}. Index scan plus a guarded PSI read of the body.
+     */
+    public static @Nullable C3PsiElement findBitstructField(
+            @NotNull String structName,
+            @NotNull String field,
+            @NotNull Project project,
+            @Nullable ModuleName contextModule)
+    {
+        C3BitstructDeclaration match = findBitstructDecl(structName, project, contextModule);
+        if (match == null) return null;
+        try
+        {
+            C3BitstructBody body = match.getBitstructBody();
+            if (body == null) return null;
+            for (C3BitstructDef def : body.getBitstructDefList())
+            {
+                if (field.equals(bitFieldName(def))) return def;
+            }
+            for (C3BitstructSimpleDef def : body.getBitstructSimpleDefList())
+            {
+                if (field.equals(bitFieldName(def))) return def;
+            }
+        }
+        catch (Exception ignored)
+        {
+        }
+        return null;
+    }
+
+    private static @Nullable String bitFieldName(@NotNull C3PsiElement def)
+    {
+        try
+        {
+            ASTNode ident = def.getNode().findChildByType(C3Types.IDENT);
+            return ident != null ? ident.getText() : null;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Element type of a top-level {@code const} used as a member-access
+     * root ({@code ASCII_LOOKUP} in {@code ASCII_LOOKUP[c].lower}):
+     * ALL_CAPS globals parse as path consts, not path idents, so they
+     * never reach {@code C3PathIdent.findTypeName}. Only the base type is
+     * resolved (array suffixes are dropped), so subscripted uses chain
+     * onto the element type.
+     */
+    public static @Nullable FullyQualifiedName constRootType(@NotNull C3PathConstExpr rootConstExpr)
+    {
+        try
+        {
+            PsiElement resolved = rootConstExpr.getPathConst().getReference().resolve();
+            if (!(resolved instanceof C3ConstDeclarationStmt constDecl) || constDecl.getType() == null) return null;
+            return FullyQualifiedName.from(constDecl.getType());
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Declared type text of a bitstruct field ({@code int} for
+     * {@code int a : 0..2}), or {@code null} for anything else.
+     */
+    public static @Nullable String bitstructFieldTypeText(@Nullable PsiElement field)
+    {
+        try
+        {
+            if (field instanceof C3BitstructDef def && def.getBaseType() != null)
+            {
+                return def.getBaseType().getText().strip();
+            }
+            if (field instanceof C3BitstructSimpleDef simple && simple.getBaseType() != null)
+            {
+                return simple.getBaseType().getText().strip();
+            }
+        }
+        catch (Exception ignored)
+        {
+        }
+        return null;
+    }
+
+    /**
+     * Error when a constant assigned to a bitstruct field does not fit the
+     * field's bit range ({@code int a : 0..2} holds 0..3): c3c rejects it as
+     * {@code This constant would be truncated if stored in the bitstruct...}.
+     * Non-constant expressions stay unchecked (the compiler truncates them).
+     */
+    public static @Nullable String bitstructTruncationError(@Nullable PsiElement field, @Nullable InferredType source)
+    {
+        if (field == null || source == null || !source.isLiteral() || source.getIntValue() == null) return null;
+        if (!(field instanceof C3BitstructDef def)) return null;
+        int bits;
+        try
+        {
+            List<C3Expr> bounds = def.getExprList();
+            if (bounds.isEmpty()) return null;
+            if (bounds.size() < 2)
+            {
+                // Single position (`bool b : 3`): exactly one bit.
+                bits = 1;
+            }
+            else
+            {
+                ModuleName module = ModuleName.from(def);
+                Long start = evalSize(bounds.get(0).getText(), def.getProject(), module, 0);
+                Long end = evalSize(bounds.get(1).getText(), def.getProject(), module, 0);
+                if (start == null || end == null || end <= start) return null;
+                bits = (int) Math.min(end - start, 62);
+            }
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+        BigInteger value = source.getIntValue();
+        if (value.signum() < 0) return null;
+        if (value.bitLength() > bits)
+        {
+            return "This constant would be truncated if stored in the bitstruct, do you need a wider bit range?";
+        }
+        return null;
+    }
+
+    /**
+     * c3c rejects every implicit conversion between a bitstruct and another
+     * type in either direction ({@code int i = s} and {@code Sb s = 5} are
+     * both `Implicitly casting ... is not permitted...`); only the explicit
+     * cast (see {@link #checkCast}) converts. Initializer lists are not
+     * conversions and bypass this.
+     */
+    static @Nullable String bitstructImplicitCastError(
+            @NotNull Project project,
+            @Nullable ModuleName contextModule,
+            @NotNull String targetText,
+            @NotNull InferredType source)
+    {
+        if (source.getKind() == InferredType.Kind.INIT_LIST) return null;
+        String sourceName = normalize(source.getName());
+        if (isOptionalName(targetText) || isOptionalName(sourceName)) return null;
+        String target = stripOptional(normalize(targetText));
+        if (target.isEmpty() || namesEqual(target, sourceName)) return null;
+        boolean targetBit = bitstructBacking(target, project, contextModule) != null;
+        boolean sourceBit = bitstructBacking(sourceName, project, contextModule) != null;
+        if (targetBit == sourceBit) return null;
+        return "Implicitly casting '" + shortName(sourceName) + "' to '" + shortName(target)
+            + "' is not permitted, but you may do an explicit cast by placing '(" + shortName(target)
+            + ")' before the expression.";
     }
 
     /**

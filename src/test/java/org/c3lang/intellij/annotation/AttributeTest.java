@@ -65,6 +65,42 @@ public class AttributeTest extends BasePlatformTestCase
         assertEquals("Expected one placement error, got: " + errors, 1, errors.size());
     }
 
+    public void testConstOnMacroMethodIsOk()
+    {
+        assertNoAttributeErrors("""
+            module test;
+            struct AsciiCharset
+            {
+                char x;
+            }
+            macro bool AsciiCharset.@contains($set, char $c) @const => true;
+            """);
+    }
+
+    public void testConstOnPlainMacroIsOk()
+    {
+        assertNoAttributeErrors("""
+            module test;
+            macro bool is_alpha(char c) @const => true;
+            """);
+    }
+
+    public void testConstOnFnMethodIsError()
+    {
+        List<HighlightInfo> errors = errorsWithText(check("""
+            module test;
+            struct AsciiCharset
+            {
+                char x;
+            }
+            fn bool AsciiCharset.contains(AsciiCharset* self) @const
+            {
+                return true;
+            }
+            """), "'@const' cannot be used on method.");
+        assertEquals("Expected one placement error, got: " + errors, 1, errors.size());
+    }
+
     public void testInitSignatureIsError()
     {
         List<HighlightInfo> errors = errorsWithText(check("""

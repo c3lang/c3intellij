@@ -11,6 +11,7 @@ import org.c3lang.intellij.index.NameIndexService;
 import org.c3lang.intellij.index.StructService;
 import org.c3lang.intellij.psi.*;
 import org.c3lang.intellij.psi.reference.C3ReferenceBase;
+import org.c3lang.intellij.types.TypeChecker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,6 +118,15 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 			{
 				String ident = seq.idents.get(i);
 				boolean last = i == seq.idents.size() - 1;
+				if (TypeChecker.isBitstruct(currentType.getFullName(), myElement.getProject(), ModuleName.from(myElement)))
+				{
+					// Bitstruct fields live outside the struct-member index:
+					// an unknown name is simply unknown, never a foreign
+					// struct's same-named field.
+					C3PsiElement bitField = TypeChecker.findBitstructField(
+						currentType.getFullName(), ident, myElement.getProject(), ModuleName.from(myElement));
+					return bitField != null && last ? List.of(bitField) : Collections.emptyList();
+				}
 				structMembers = StructService.INSTANCE.getStructMembers(query + "." + ident, myElement.getProject());
 				C3StructMemberDeclaration member = structMembers.size() == 1 ? structMembers.get(0) : null;
 				if (member != null)
@@ -261,9 +271,42 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 
 			List<C3StructMemberDeclaration> fields =
 				StructService.INSTANCE.findStructMembersByName(name, myElement.getProject());
-			if (!fields.isEmpty()) return new ArrayList<>(fields);
+			if (!fields.isEmpty()) return new ArrayList<>(visibleFields(fields));
 
 			return findMethodsMatchingAccessName();
+		}
+
+		/**
+		 * The by-name fallback fires when the receiver type is unknown, so a
+		 * bare name could match an unrelated module (e.g. {@code alpha} in
+		 * {@code qoi::OpRGBA} for a use in {@code ascii}). Keep only fields
+		 * from visible modules; without a module context keep everything
+		 * (previous behavior).
+		 */
+		private @NotNull List<C3StructMemberDeclaration> visibleFields(
+				@NotNull List<C3StructMemberDeclaration> fields)
+		{
+			C3ModuleDefinition moduleDefinition =
+				PsiTreeUtil.getParentOfType(myElement, C3ModuleDefinition.class);
+			if (moduleDefinition == null) return fields;
+			List<C3StructMemberDeclaration> visible = new ArrayList<>();
+			for (C3StructMemberDeclaration field : fields)
+			{
+				ModuleName fieldModule = null;
+				try
+				{
+					FullyQualifiedName structType = field.getStructType();
+					fieldModule = structType != null ? structType.getModule() : null;
+				}
+				catch (Exception ignored)
+				{
+					// Stale index entry: keep the field rather than drop it.
+					visible.add(field);
+					continue;
+				}
+				if (moduleDefinition.containsImportOrSameModule(fieldModule)) visible.add(field);
+			}
+			return visible;
 		}
 
 		private boolean isInvocationCallee()
@@ -320,10 +363,12 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 			}
 
 			C3PsiElement last = accessSequence.removeLast();
-			if (!(last instanceof C3PathIdentExpr)) return null;
+			if (!(last instanceof C3PathIdentExpr) && !(last instanceof C3PathConstExpr)) return null;
 
-			C3PathIdentExpr rootExpr = (C3PathIdentExpr) last;
-			FullyQualifiedName rootType = rootExpr.getPathIdent().findTypeName();
+			C3PathIdentExpr rootExpr = last instanceof C3PathIdentExpr pathIdentExpr ? pathIdentExpr : null;
+			FullyQualifiedName rootType = rootExpr != null
+				? rootExpr.getPathIdent().findTypeName()
+				: TypeChecker.constRootType((C3PathConstExpr) last);
 			if (rootType == null) return null;
 
 			List<String> idents = new ArrayList<>();
@@ -341,6 +386,10 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 							continue;
 						}
 					}
+					// A subscript (`LOOKUP[i]`) indexes into the receiver
+					// instead of naming a member: it contributes no segment
+					// (the root type is already the element type).
+					if (tail != null && isSubscriptTail(tail)) continue;
 					String text = elem.getText();
 					String[] parts = text.split("\\.");
 					idents.add(parts[parts.length - 1]);
@@ -349,6 +398,23 @@ public abstract class C3AccessIdentMixinImpl extends C3PsiNamedElementImpl imple
 			Collections.reverse(idents);
 
 			return new AccessIdentSequence(rootType, idents);
+		}
+
+		/**
+		 * Whether a call tail is a subscript ({@code [i]}, {@code [a..b]}):
+		 * the only tail kind starting with {@code [} in this position.
+		 */
+		private static boolean isSubscriptTail(@NotNull C3CallExprTail tail)
+		{
+			try
+			{
+				String text = tail.getText();
+				return text != null && text.strip().startsWith("[");
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
 		}
 	}
 

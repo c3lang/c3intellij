@@ -454,6 +454,24 @@ public class C3Annotator implements Annotator
                 }
             }
         }
+        else if (psiElement instanceof C3BitstructDef bitDef)
+        {
+            PsiElement nameElement = bitDef.getNameIdentElement();
+            if (nameElement != null)
+            {
+                annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                    .textAttributes(C3SyntaxHighlighter.FIELD_KEY).range(nameElement).create();
+            }
+        }
+        else if (psiElement instanceof C3BitstructSimpleDef bitSimpleDef)
+        {
+            PsiElement nameElement = bitSimpleDef.getNameIdentElement();
+            if (nameElement != null)
+            {
+                annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
+                    .textAttributes(C3SyntaxHighlighter.FIELD_KEY).range(nameElement).create();
+            }
+        }
         else if (psiElement instanceof C3AccessIdent accessIdent)
         {
             annotateAccessIdent(accessIdent, annotationHolder);
@@ -507,6 +525,7 @@ public class C3Annotator implements Annotator
         else if (psiElement instanceof C3UnaryExpr unaryExpr)
         {
             annotateCast(unaryExpr, annotationHolder);
+            annotateBitstructAddress(unaryExpr, annotationHolder);
         }
         else if (psiElement instanceof C3Attribute attribute)
         {
@@ -858,6 +877,36 @@ public class C3Annotator implements Annotator
         holder.newAnnotation(severity, diagnostic.message).range(op).create();
     }
 
+    /**
+     * Taking the address of a bitstruct field is forbidden: the field has no
+     * address of its own (verified against {@code c3c}).
+     */
+    private void annotateBitstructAddress(@NotNull C3UnaryExpr unary, @NotNull AnnotationHolder holder)
+    {
+        C3UnaryOp op = unary.getUnaryOp();
+        if (op.getType() != null || op.getText() == null || !op.getText().strip().equals("&")) return;
+        if (DumbService.isDumb(unary.getProject())) return;
+        C3Expr operand = unary.getExpr();
+        if (!(operand instanceof C3CallExpr call)
+            || call.getCallExprTail() == null
+            || call.getCallExprTail().getAccessIdent() == null) return;
+        PsiElement resolved;
+        try
+        {
+            resolved = call.getCallExprTail().getAccessIdent().getReference().resolve();
+        }
+        catch (Exception e)
+        {
+            return;
+        }
+        if (resolved instanceof C3BitstructDef || resolved instanceof C3BitstructSimpleDef)
+        {
+            holder.newAnnotation(HighlightSeverity.ERROR, "You cannot take the address of a bitstruct member.")
+                .range(unary)
+                .create();
+        }
+    }
+
     private void annotateInterfaceImpl(@NotNull C3InterfaceImpl impl, @NotNull AnnotationHolder holder)
     {
         Project project = impl.getProject();
@@ -946,6 +995,7 @@ public class C3Annotator implements Annotator
             if (nullableTarget && source != null && source.getKind() == InferredType.Kind.NULL) continue;
             String error = TypeChecker.assignmentError(decl.getProject(), ModuleName.from(decl), targetText, source, init);
             if (error != null) holder.newAnnotation(HighlightSeverity.ERROR, error).range(init).create();
+            annotateBitstructInit(decl.getProject(), ModuleName.from(decl), targetText, init, holder);
         }
     }
 
@@ -965,6 +1015,81 @@ public class C3Annotator implements Annotator
         if (lhsType == null) return;
         String error = TypeChecker.assignmentError(binary.getProject(), ModuleName.from(binary), lhsType, TypeChecker.infer(rhs), rhs, assignOp);
         if (error != null) holder.newAnnotation(HighlightSeverity.ERROR, error).range(rhs).create();
+        if ("=".equals(assignOp))
+        {
+            C3PsiElement bitField = bitstructFieldTarget(binary.getLeft());
+            if (bitField != null)
+            {
+                String truncation = TypeChecker.bitstructTruncationError(bitField, TypeChecker.infer(rhs));
+                if (truncation != null) holder.newAnnotation(HighlightSeverity.ERROR, truncation).range(rhs).create();
+            }
+            annotateBitstructInit(binary.getProject(), ModuleName.from(binary), lhsType, rhs, holder);
+        }
+    }
+
+    /**
+     * Designated bitstruct initializers ({@code Sb t = { .a = 2, .b }}):
+     * unknown members and over-wide constants are rejected like c3c
+     * (`This is not a valid member of 'Sb'.`, truncation); a valueless
+     * bool shorthand ({@code .b}) stays unchecked.
+     */
+    private void annotateBitstructInit(
+            @NotNull Project project,
+            @Nullable ModuleName contextModule,
+            @NotNull String targetText,
+            @NotNull C3Expr init,
+            @NotNull AnnotationHolder holder)
+    {
+        if (DumbService.isDumb(project)) return;
+        if (TypeChecker.bitstructBacking(targetText, project, contextModule) == null) return;
+        if (!(init instanceof C3InitListExpr initList)
+            || initList.getInitializerList() == null
+            || initList.getInitializerList().getArgList() == null) return;
+        String shortTarget = TypeChecker.shortName(targetText);
+        for (C3Arg arg : initList.getInitializerList().getArgList().getArgList())
+        {
+            String name = designatedInitName(arg);
+            if (name == null) continue;
+            C3PsiElement field = TypeChecker.findBitstructField(targetText, name, project, contextModule);
+            if (field == null)
+            {
+                holder.newAnnotation(HighlightSeverity.ERROR,
+                        "This is not a valid member of '" + shortTarget + "'.")
+                    .range(arg)
+                    .create();
+                continue;
+            }
+            C3Expr value = arg.getExpr();
+            if (value == null) continue;
+            InferredType inferred = TypeChecker.infer(value);
+            String fieldType = TypeChecker.bitstructFieldTypeText(field);
+            if (fieldType != null)
+            {
+                String error = TypeChecker.assignmentError(project, contextModule, fieldType, inferred, value);
+                if (error != null) holder.newAnnotation(HighlightSeverity.ERROR, error).range(value).create();
+            }
+            String truncation = TypeChecker.bitstructTruncationError(field, inferred);
+            if (truncation != null) holder.newAnnotation(HighlightSeverity.ERROR, truncation).range(value).create();
+        }
+    }
+
+    private static @Nullable String designatedInitName(@NotNull C3Arg arg)
+    {
+        C3ParamPath path;
+        try
+        {
+            path = arg.getParamPath();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+        if (path == null || path.getText() == null) return null;
+        String text = path.getText().strip();
+        if (!text.startsWith(".")) return null;
+        text = text.substring(1);
+        if (!text.matches("[A-Za-z_][A-Za-z_0-9]*")) return null;
+        return text;
     }
 
     /**
@@ -1023,6 +1148,34 @@ public class C3Annotator implements Annotator
             {
                 return member.getStructPathType().getFullName();
             }
+            String bitFieldType = TypeChecker.bitstructFieldTypeText(resolved);
+            if (bitFieldType != null) return bitFieldType;
+        }
+        return null;
+    }
+
+    /**
+     * Bitstruct field declaration assigned to ({@code s.a = ...}), or
+     * {@code null} for anything else. Used for truncation checking.
+     */
+    private static @Nullable C3PsiElement bitstructFieldTarget(@NotNull C3Expr lhs)
+    {
+        if (!(lhs instanceof C3CallExpr call)
+            || call.getCallExprTail() == null
+            || call.getCallExprTail().getCallInvocation() != null
+            || call.getCallExprTail().getAccessIdent() == null) return null;
+        PsiElement resolved;
+        try
+        {
+            resolved = call.getCallExprTail().getAccessIdent().getReference().resolve();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+        if (resolved instanceof C3BitstructDef || resolved instanceof C3BitstructSimpleDef)
+        {
+            return (C3PsiElement) resolved;
         }
         return null;
     }
@@ -1266,6 +1419,70 @@ public class C3Annotator implements Annotator
         TextAttributesKey key = isCall ? C3SyntaxHighlighter.METHOD_CALL_KEY : C3SyntaxHighlighter.FIELD_KEY;
         annotationHolder.newSilentAnnotation(HighlightSeverity.TEXT_ATTRIBUTES)
             .textAttributes(key).range(nameElement).create();
+        if (!isCall) annotateMissingBitstructField(accessIdent, nameElement, annotationHolder);
+    }
+
+    /**
+     * {@code s.zzz} where {@code s} is a bitstruct with no such field. Only
+     * fires for a resolved bitstruct receiver, so unknown types stay silent.
+     */
+    private void annotateMissingBitstructField(
+            @NotNull C3AccessIdent accessIdent,
+            @NotNull PsiElement nameElement,
+            @NotNull AnnotationHolder holder)
+    {
+        if (DumbService.isDumb(accessIdent.getProject())) return;
+        String field = accessIdent.getNameIdent();
+        if (field == null || field.isEmpty()) return;
+        PsiElement resolved;
+        try
+        {
+            resolved = accessIdent.getReference().resolve();
+        }
+        catch (Exception e)
+        {
+            return;
+        }
+        if (resolved != null) return;
+        FullyQualifiedName receiverType = bitstructReceiverType(accessIdent);
+        if (receiverType == null) return;
+        if (TypeChecker.bitstructBacking(receiverType.getFullName(), accessIdent.getProject(), ModuleName.from(accessIdent)) == null)
+        {
+            return;
+        }
+        holder.newAnnotation(HighlightSeverity.ERROR,
+                "There is no field or method '" + receiverType.getName() + "." + field + "'.")
+            .range(nameElement)
+            .create();
+    }
+
+    /**
+     * Receiver type of a member access, walking down nested call tails to
+     * the root path identifier ({@code LOOKUP[i].field} resolves through
+     * the lookup's element type).
+     */
+    private static @Nullable FullyQualifiedName bitstructReceiverType(@NotNull C3AccessIdent accessIdent)
+    {
+        try
+        {
+            PsiElement parent = accessIdent.getParent();
+            if (!(parent instanceof C3CallExprTail tail)) return null;
+            if (!(parent.getParent() instanceof C3CallExpr access)) return null;
+            if (access.getCallExprTail() != tail || tail.getCallInvocation() != null) return null;
+            C3Expr receiver = access.getExpr();
+            while (receiver instanceof C3CallExpr inner)
+            {
+                if (inner.getExpr() == null) return null;
+                receiver = inner.getExpr();
+            }
+            if (receiver instanceof C3PathIdentExpr pathExpr) return pathExpr.getPathIdent().findTypeName();
+            if (receiver instanceof C3PathConstExpr constExpr) return TypeChecker.constRootType(constExpr);
+            return null;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     private void annotatePathIdent(@NotNull C3PathIdent pathIdent, @NotNull AnnotationHolder annotationHolder)
@@ -1322,8 +1539,15 @@ public class C3Annotator implements Annotator
             }
             else if (matchesOuterParamOrBinding(pathIdent, name, lambda))
             {
-                annotateCapture(pathIdent, nameElement, name, annotationHolder);
-                return;
+                // A `#`-macro-parameter in a lambda signature type (e.g.
+                // `$typeof(#array[0])` in a parameter type) is folded in the
+                // macro's context before lambda analysis: c3c accepts it,
+                // so it is not a capture. Elsewhere it still is.
+                if (!isComptimeSignatureUse(pathIdent, lambda))
+                {
+                    annotateCapture(pathIdent, nameElement, name, annotationHolder);
+                    return;
+                }
             }
         }
 
@@ -1566,6 +1790,32 @@ public class C3Annotator implements Annotator
             return PsiTreeUtil.isAncestor(ifStmt.getCompoundStatement(), element, false);
         }
         return ifStmt.getStatement() != null && PsiTreeUtil.isAncestor(ifStmt.getStatement(), element, false);
+    }
+
+    /**
+     * Whether the use sits in a lambda signature type (parameter or return
+     * type) and names a `#`-macro-parameter: folded in the macro's context
+     * before lambda analysis (verified against {@code c3c}, which accepts
+     * `$typeof(#array[0])` in a parameter type but rejects any body use).
+     * Default values are runtime expressions, so only declared types count.
+     */
+    private static boolean isComptimeSignatureUse(@NotNull C3PathIdent pathIdent, @NotNull PsiElement lambda)
+    {
+        String name = pathIdent.getNameIdent();
+        if (name == null || !name.startsWith("#")) return false;
+        C3LambdaDecl decl = null;
+        if (lambda instanceof C3LambdaDeclExpr full) decl = full.getLambdaDecl();
+        else if (lambda instanceof C3LambdaDeclShortExpr shortExpr) decl = shortExpr.getLambdaDecl();
+        if (decl == null) return false;
+        C3OptionalType returnType = decl.getOptionalType();
+        if (returnType != null && PsiTreeUtil.isAncestor(returnType, pathIdent, false)) return true;
+        C3FnParameterList paramList = decl.getFnParameterList();
+        if (paramList == null || !PsiTreeUtil.isAncestor(paramList, pathIdent, false)) return false;
+        C3ParamDecl paramDecl = PsiTreeUtil.getParentOfType(pathIdent, C3ParamDecl.class);
+        if (paramDecl == null || !PsiTreeUtil.isAncestor(paramList, paramDecl, false)) return false;
+        C3Parameter parameter = paramDecl.getParameter();
+        return parameter != null && parameter.getType() != null
+            && PsiTreeUtil.isAncestor(parameter.getType(), pathIdent, false);
     }
 
     private static boolean lambdaParamMatches(@NotNull PsiElement lambdaExpr, @NotNull String name)

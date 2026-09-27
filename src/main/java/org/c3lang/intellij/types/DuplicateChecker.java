@@ -220,6 +220,10 @@ public final class DuplicateChecker
             if (!hasBody(other) || isConditionallyCompiled(other)) continue;
             if (!sameCondition(callable, other)) continue;
             if (!implName.equals(other.getName())) continue;
+            // `@local` callables are file-confined (like C statics): the
+            // same name in another file is a separate declaration, never a
+            // duplicate (verified against c3c on math_nolibc acos/asin).
+            if (!isSameFile(other, callable) && (isLocal(callable) || isLocal(other))) continue;
             if (ownerText != null)
             {
                 String otherOwner = ownerOf(other);
@@ -281,6 +285,29 @@ public final class DuplicateChecker
             {
                 return AttributeSpecs.hasAttribute(macro.getAttributes(), "weak")
                     || AttributeSpecs.hasAttribute(macro.getAttributes(), "weaklink");
+            }
+        }
+        catch (Exception ignored)
+        {
+        }
+        return false;
+    }
+
+    /**
+     * Whether the callable is file-confined (`@local`, like a C static):
+     * unreadable attributes degrade to non-local (flag, don't miss).
+     */
+    private static boolean isLocal(@NotNull C3CallablePsiElement callable)
+    {
+        try
+        {
+            if (callable instanceof C3FuncDef funcDef)
+            {
+                return AttributeSpecs.hasAttribute(funcDef.getAttributes(), "local");
+            }
+            if (callable instanceof C3MacroDefinition macro)
+            {
+                return AttributeSpecs.hasAttribute(macro.getAttributes(), "local");
             }
         }
         catch (Exception ignored)

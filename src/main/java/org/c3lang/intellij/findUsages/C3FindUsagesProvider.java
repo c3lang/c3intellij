@@ -38,7 +38,9 @@ public class C3FindUsagesProvider implements FindUsagesProvider
 	public @Nullable String getHelpId(@NotNull PsiElement psiElement)
 	{
 		if (psiElement instanceof C3LocalDeclAfterType
-			|| psiElement instanceof C3StructMemberDeclaration)
+			|| psiElement instanceof C3StructMemberDeclaration
+			|| psiElement instanceof C3BitstructDef
+			|| psiElement instanceof C3BitstructSimpleDef)
 		{
 			return "declaration";
 		}
@@ -57,6 +59,8 @@ public class C3FindUsagesProvider implements FindUsagesProvider
 			case C3FuncDef ignored: return "function";
 			case C3MacroDefinition ignored: return "macro";
 			case C3StructMemberDeclaration ignored: return "field";
+			case C3BitstructDef ignored: return "field";
+			case C3BitstructSimpleDef ignored: return "field";
 			case C3AccessIdent ignored: return "field";
 			case C3Arg ignored: return "argument";
 			case C3Parameter ignored: return "parameter";

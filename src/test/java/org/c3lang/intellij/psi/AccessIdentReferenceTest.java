@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
 
@@ -313,6 +314,181 @@ public class AccessIdentReferenceTest extends BasePlatformTestCase
 
 		assertTrue("Missing member must not resolve to an unrelated struct field, got: " + describe(resolved),
 			resolved.isEmpty());
+	}
+
+	public void testSubscriptedGlobalConstFieldResolvesOwnStruct()
+	{
+		myFixture.addFileToProject("qoi.c3", """
+			module qoi;
+
+			struct OpRGBA
+			{
+				char alpha;
+			}
+			""");
+		List<PsiElement> resolved = resolveAccessIdent("""
+			module ascii;
+
+			bitstruct GlyphInfo : char
+			{
+				bool alpha : 0;
+			}
+
+			const GlyphInfo[4] ASCII_LOOKUP;
+
+			macro bool is_alpha(char c) => ASCII_LOOKUP[c].alp<caret>ha;
+			""");
+
+		assertEquals("Field through a subscripted global const must resolve, got: " + describe(resolved),
+			1, resolved.size());
+		assertTrue("Expected a bitstruct field, got: " + describe(resolved),
+			resolved.get(0) instanceof C3BitstructDef);
+	}
+
+	public void testBitstructFieldNavigatesFromAtMacroBody()
+	{
+		myFixture.configureByText("main.c3", """
+			module ascii;
+
+			bitstruct AsciiProps : char
+			{
+				bool lower : 0;
+				bool upper : 1;
+			}
+
+			const AsciiProps[4] ASCII_LOOKUP;
+
+			macro bool @is_lower(c) => ASCII_LOOKUP[c].low<caret>er;
+			""");
+
+		PsiReference reference = myFixture.getReferenceAtCaretPositionWithAssertion();
+		PsiElement target = reference.resolve();
+		assertTrue("Member access must navigate to the bitstruct field, got: " + target,
+			target instanceof C3BitstructDef);
+		assertEquals("lower", target.getText().contains("lower") ? "lower" : target.getText());
+	}
+
+	public void testBitstructFieldNavigatesAcrossFiles()
+	{
+		myFixture.addFileToProject("props.c3", """
+			module ascii;
+
+			bitstruct AsciiProps : char
+			{
+				bool lower : 0;
+			}
+			""");
+		myFixture.configureByText("main.c3", """
+			module ascii;
+
+			const AsciiProps[4] ASCII_LOOKUP;
+
+			fn bool is_lower(char c)
+			{
+				return ASCII_LOOKUP[c].low<caret>er;
+			}
+			""");
+
+		PsiReference reference = myFixture.getReferenceAtCaretPositionWithAssertion();
+		PsiElement target = reference.resolve();
+		assertTrue("Member access must navigate to the bitstruct field in another file, got: " + target,
+			target instanceof C3BitstructDef);
+	}
+
+	public void testBitstructFieldHasFindUsages()
+	{
+		myFixture.configureByText("main.c3", """
+			module ascii;
+
+			bitstruct AsciiProps : char
+			{
+				bool lower : 0;
+			}
+
+			const AsciiProps[4] ASCII_LOOKUP;
+
+			fn bool is_lower(char c)
+			{
+				return ASCII_LOOKUP[c].lower;
+			}
+			""");
+
+		C3BitstructDef field = PsiTreeUtil.findChildOfType(myFixture.getFile(), C3BitstructDef.class);
+		assertNotNull(field);
+		assertTrue("Find Usages must be available on bitstruct fields",
+			new org.c3lang.intellij.findUsages.C3FindUsagesProvider().canFindUsagesFor(field));
+		java.util.Collection<?> usages = myFixture.findUsages(field);
+		assertEquals("Expected one usage, got: " + usages, 1, usages.size());
+	}
+
+	public void testBitstructFieldUsagesIncludeRangeInit()
+	{
+		myFixture.configureByText("main.c3", """
+			module ascii;
+
+			bitstruct CharType : char
+			{
+				bool control : 0;
+				bool space : 1;
+			}
+
+			const CharType[256] ASCII_LOOKUP @private = {
+				[0..31] = { .control },
+				[9..13] = { .control, .space },
+			};
+			""");
+
+		C3BitstructDef field = PsiTreeUtil.findChildOfType(myFixture.getFile(), C3BitstructDef.class);
+		assertNotNull(field);
+		assertEquals("control", field.getName());
+		java.util.Collection<?> usages = myFixture.findUsages(field);
+		assertEquals("Expected two usages, got: " + usages, 2, usages.size());
+	}
+
+	public void testBitstructFieldNavigatesFromRangeInit()
+	{
+		myFixture.configureByText("main.c3", """
+			module ascii;
+
+			bitstruct CharType : char
+			{
+				bool control : 0;
+				bool space : 1;
+			}
+
+			const CharType[256] ASCII_LOOKUP @private = {
+				[0..31] = { .cont<caret>rol },
+				[9..13] = { .control, .space },
+			};
+			""");
+
+		PsiReference reference = myFixture.getReferenceAtCaretPositionWithAssertion();
+		PsiElement target = reference.resolve();
+		assertTrue("Designated init must navigate to the bitstruct field, got: " + target,
+			target instanceof C3BitstructDef);
+	}
+
+	public void testStructFieldNavigatesFromInit()
+	{
+		myFixture.configureByText("main.c3", """
+			module test;
+
+			struct Point
+			{
+				int x;
+				int y;
+			}
+
+			fn void foo()
+			{
+				Point p = { .<caret>x = 1 };
+			}
+			""");
+
+		PsiReference reference = myFixture.getReferenceAtCaretPositionWithAssertion();
+		PsiElement target = reference.resolve();
+		assertTrue("Designated init must navigate to the struct field, got: " + target,
+			target instanceof C3StructMemberDeclaration);
 	}
 
 	private @NotNull List<PsiElement> resolveAccessIdent(@NotNull String code)

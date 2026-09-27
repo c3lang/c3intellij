@@ -73,6 +73,59 @@ public class CallCheckTest extends BasePlatformTestCase
             errorsWithText(highlights, "already defined").isEmpty());
     }
 
+    public void testLocalFunctionsAcrossFilesOk()
+    {
+        // Mirrors math_nolibc acos/asin: `@local` helpers with the same
+        // name in different files of one module are file-confined, never
+        // duplicates (verified against c3c).
+        myFixture.addFileToProject("asin.c3", """
+            module test;
+            fn double _r(double z) @local
+            {
+                return z * 2;
+            }
+            fn double asin(double x)
+            {
+                return _r(x);
+            }
+            """);
+        myFixture.configureByText("main.c3", """
+            module test;
+            fn double _r(double z) @local
+            {
+                return z;
+            }
+            fn double acos(double x)
+            {
+                return _r(x);
+            }
+            """);
+
+        List<HighlightInfo> highlights = myFixture.doHighlighting();
+        assertTrue("Unexpected duplicate error, got: " + highlights,
+            errorsWithText(highlights, "already defined").isEmpty());
+    }
+
+    public void testLocalFunctionsSameFileIsError()
+    {
+        // Same file, same `@local` name: still a conflict (c3c reports
+        // a shadowing error).
+        myFixture.configureByText("main.c3", """
+            module test;
+            fn double _r(double z) @local
+            {
+                return z;
+            }
+            fn double _r(double w) @local
+            {
+                return w;
+            }
+            """);
+
+        List<HighlightInfo> errors = errorsWithText(myFixture.doHighlighting(), "already defined");
+        assertEquals("Expected one duplicate error, got: " + errors, 1, errors.size());
+    }
+
     public void testUnknownNamedArgIsError()
     {
         myFixture.configureByText("main.c3", """
@@ -767,6 +820,74 @@ public class CallCheckTest extends BasePlatformTestCase
 
         List<HighlightInfo> highlights = myFixture.doHighlighting();
         assertTrue("Unexpected call errors, got: " + highlights, callErrors(highlights).isEmpty());
+    }
+
+    public void testInlineTypedefThroughAliasArgOk()
+    {
+        // Mirrors std::core::sanitizer::tsan: `typedef MutexFlags = inline
+        // CUInt` passed where the underlying builtin is expected. Mixed
+        // alias/inline chains canonicalize fully (verified against c3c).
+        myFixture.configureByText("main.c3", """
+            module test;
+            alias CUInt = uint;
+            typedef MutexFlags = inline CUInt;
+            extern fn void __tsan_mutex_post_signal(void* addr, CUInt flags);
+            macro void mutex_post_signal(void* addr, MutexFlags flags)
+            {
+                __tsan_mutex_post_signal(addr, flags);
+            }
+            fn void foo()
+            {
+                mutex_post_signal(null, 1);
+            }
+            """);
+
+        List<HighlightInfo> highlights = myFixture.doHighlighting();
+        assertTrue("Unexpected call errors, got: " + highlights, callErrors(highlights).isEmpty());
+    }
+
+    public void testInlineTypedefTargetRejectsUnderlyingArg()
+    {
+        // The reverse direction needs an explicit cast: an `inline`
+        // typedef target stays opaque (verified against c3c, which says
+        // `Implicitly casting 'uint' to 'Flags' is not permitted...`).
+        myFixture.configureByText("main.c3", """
+            module test;
+            alias CUInt = uint;
+            typedef MutexFlags = inline CUInt;
+            fn void takes_flags(MutexFlags flags)
+            {
+            }
+            fn void foo(CUInt u)
+            {
+                takes_flags(u);
+            }
+            """);
+
+        List<HighlightInfo> highlights = myFixture.doHighlighting();
+        assertEquals("Expected one error, got: " + highlights,
+            1, errorsWithText(highlights, "Cannot pass").size());
+    }
+
+    public void testDistinctTypedefArgStillRejected()
+    {
+        // A distinct typedef is a conversion barrier: the underlying
+        // builtin does not pass where it is expected (verified vs c3c).
+        myFixture.configureByText("main.c3", """
+            module test;
+            typedef Distinct = uint;
+            fn void takes_distinct(Distinct x)
+            {
+            }
+            fn void foo(uint u)
+            {
+                takes_distinct(u);
+            }
+            """);
+
+        List<HighlightInfo> highlights = myFixture.doHighlighting();
+        assertEquals("Expected one error, got: " + highlights,
+            1, errorsWithText(highlights, "Cannot pass").size());
     }
 
     private static @NotNull List<HighlightInfo> callErrors(@NotNull List<HighlightInfo> highlights)

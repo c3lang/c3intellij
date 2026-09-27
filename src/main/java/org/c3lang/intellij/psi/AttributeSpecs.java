@@ -312,6 +312,20 @@ public final class AttributeSpecs
         return target == Target.METHOD && spec.targets().contains(Target.FUNCTION);
     }
 
+    /**
+     * Owner-aware variant: a macro method ({@code Type.@macro}) is still a
+     * macro, so it additionally accepts macro-level attributes
+     * ({@code @const} on a macro method is legal, on an fn method it is
+     * not — both verified against {@code c3c}).
+     */
+    public static boolean allows(@NotNull Spec spec, @NotNull Target target, @NotNull PsiElement owner)
+    {
+        if (allows(spec, target)) return true;
+        return target == Target.METHOD
+            && owner instanceof C3MacroDefinition
+            && spec.targets().contains(Target.MACRO);
+    }
+
     public static @NotNull String displayName(@NotNull Target target)
     {
         return switch (target)

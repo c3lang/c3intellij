@@ -421,6 +421,52 @@ public class C3AnnotatorTest extends BasePlatformTestCase
 		assertTrue(((IntentionPreviewInfo.CustomDiff) preview).modifiedText().contains("@dynamic"));
 	}
 
+	public void testSubscriptedGlobalConstFieldHasOwnStructType()
+	{
+		myFixture.addFileToProject("qoi.c3", """
+			module qoi;
+
+			struct OpRGBA
+			{
+				char alpha;
+			}
+			""");
+		myFixture.configureByText("main.c3", """
+			module ascii;
+
+			struct GlyphInfo
+			{
+				bool alpha;
+			}
+
+			const GlyphInfo[4] ASCII_LOOKUP;
+
+			macro bool is_alpha(char c) => ASCII_LOOKUP[c].alpha;
+			""");
+
+		List<HighlightInfo> highlights = myFixture.doHighlighting();
+		assertTrue("Field through a subscripted global const must keep its own struct type, got: "
+				+ errorsWithText(highlights, "Cannot return"),
+			errorsWithText(highlights, "Cannot return").isEmpty());
+	}
+
+	public void testBitstructFieldDeclarationHighlighting()
+	{
+		myFixture.configureByText("main.c3", """
+			module test;
+
+			bitstruct Sb : char
+			{
+				int alpha : 0..2;
+				bool beta : 3;
+			}
+			""");
+
+		List<HighlightInfo> highlights = myFixture.doHighlighting();
+		assertHasHighlight(highlights, "alpha", C3SyntaxHighlighter.FIELD_KEY);
+		assertHasHighlight(highlights, "beta", C3SyntaxHighlighter.FIELD_KEY);
+	}
+
 	private static @NotNull List<HighlightInfo> errorsWithText(@NotNull List<HighlightInfo> highlights, @NotNull String textPart)
 	{
 		List<HighlightInfo> result = new ArrayList<>();

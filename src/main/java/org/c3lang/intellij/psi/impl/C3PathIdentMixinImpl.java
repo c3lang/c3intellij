@@ -3,6 +3,7 @@ package org.c3lang.intellij.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -229,7 +230,71 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 			}
 		}
 
+		return findTopLevelConstType(myName);
+	}
+
+	/**
+	 * Type of a top-level {@code const} or {@code global} declared in the
+	 * same file, e.g. {@code ascii::GlyphInfo} for
+	 * {@code const GlyphInfo[4] ASCII_LOOKUP}. Only the base type is
+	 * resolved (array suffixes are dropped), so a subscripted use
+	 * ({@code ASCII_LOOKUP[c].alpha}) chains onto the element type.
+	 * Same-file PSI only: cross-file declarations stay unknown here rather
+	 * than forcing AST loads of unrelated files from a resolver.
+	 */
+	private @Nullable FullyQualifiedName findTopLevelConstType(@NotNull String name)
+	{
+		PsiFile file = getContainingFile();
+		if (file == null) return null;
+		try
+		{
+			for (C3ConstDeclarationStmt constDecl : PsiTreeUtil.findChildrenOfType(file, C3ConstDeclarationStmt.class))
+			{
+				if (name.equals(constDecl.getName()))
+				{
+					FullyQualifiedName type = declaredTopLevelType(constDecl.getType());
+					if (type != null) return type;
+				}
+			}
+			for (C3GlobalDecl globalDecl : PsiTreeUtil.findChildrenOfType(file, C3GlobalDecl.class))
+			{
+				if (name.equals(globalDeclName(globalDecl)))
+				{
+					FullyQualifiedName type = declaredTopLevelType(globalDecl.getOptionalType().getType());
+					if (type != null) return type;
+				}
+			}
+		}
+		catch (Exception ignored)
+		{
+		}
 		return null;
+	}
+
+	private static @Nullable String globalDeclName(@NotNull C3GlobalDecl decl)
+	{
+		try
+		{
+			ASTNode ident = decl.getNode().findChildByType(C3Types.IDENT);
+			return ident != null ? ident.getText() : null;
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	private static @Nullable FullyQualifiedName declaredTopLevelType(@Nullable C3Type type)
+	{
+		if (type == null) return null;
+		try
+		{
+			return FullyQualifiedName.from(type);
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
 	}
 
 	private static @Nullable FullyQualifiedName resolveBaseTypeFqn(@NotNull C3Type type, @NotNull C3FuncDef funcDef)
@@ -973,8 +1038,61 @@ public abstract class C3PathIdentMixinImpl extends C3PsiNamedElementImpl impleme
 			paths.addAll(path);
 			paths.add(myElement.getText());
 
-			return new ArrayList<>(
+			List<C3StructMemberDeclaration> structResult = new ArrayList<>(
 				StructService.INSTANCE.getStructMemberDeclaration(rootType, paths, myElement.getProject()));
+			if (!structResult.isEmpty()) return new ArrayList<>(structResult);
+			// Bitstruct segments resolve outside the struct-member index.
+			return bitstructPathResolve(rootType, paths);
+		}
+
+		/**
+		 * Member walk for paths passing through a bitstruct or a range
+		 * designator: struct-typed segments resolve through the struct
+		 * index, a bitstruct segment resolves its field directly (it must
+		 * be last: fields are scalars), and a {@code [...] } segment
+		 * unwraps one array level (range inits like
+		 * {@code { [0..31] = { .control } } }). Anything else stays
+		 * unresolved.
+		 */
+		private @NotNull List<C3PsiElement> bitstructPathResolve(
+				@NotNull FullyQualifiedName rootType,
+				@NotNull List<String> paths)
+		{
+			FullyQualifiedName current = rootType;
+			for (int i = 0; i < paths.size(); i++)
+			{
+				String segment = paths.get(i);
+				boolean last = i == paths.size() - 1;
+				if (segment.strip().startsWith("["))
+				{
+					String element = org.c3lang.intellij.types.TypeChecker.arrayElementType(current.getFullName());
+					if (element == null) return Collections.emptyList();
+					current = FullyQualifiedName.parse(element);
+					continue;
+				}
+				if (org.c3lang.intellij.types.TypeChecker.isBitstruct(
+					current.getFullName(), myElement.getProject(), ModuleName.from(myElement)))
+				{
+					C3PsiElement bitField = org.c3lang.intellij.types.TypeChecker.findBitstructField(
+						current.getFullName(), segment, myElement.getProject(), ModuleName.from(myElement));
+					return bitField != null && last ? List.of(bitField) : Collections.emptyList();
+				}
+				List<C3StructMemberDeclaration> members;
+				try
+				{
+					members = StructService.INSTANCE.getStructMembers(
+						current.getFullName() + "." + segment, myElement.getProject());
+				}
+				catch (Exception e)
+				{
+					return Collections.emptyList();
+				}
+				if (members.size() != 1) return Collections.emptyList();
+				FullyQualifiedName next = members.get(0).getStructPathType();
+				if (next == null) return Collections.emptyList();
+				current = next;
+			}
+			return Collections.emptyList();
 		}
 	}
 }

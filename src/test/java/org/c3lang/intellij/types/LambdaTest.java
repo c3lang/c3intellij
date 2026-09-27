@@ -200,6 +200,55 @@ public class LambdaTest extends BasePlatformTestCase
             """);
     }
 
+    public void testLambdaHashParamInParamTypeOk()
+    {
+        // A `#`-macro-parameter inside a lambda parameter type
+        // (`$typeof(#array[0])`) is folded before lambda analysis: c3c
+        // accepts it, so it must not be flagged as a capture.
+        assertNoErrors("""
+            module test;
+            macro typeid @predicate_fn(#array) @const
+            {
+                return $typeof(fn bool ($typeof(#array[0]) a, usz index = 0) => true).typeid;
+            }
+            fn void test()
+            {
+                int[4] arr = { 1, 2, 3, 4 };
+                typeid t = @predicate_fn(arr);
+            }
+            """);
+    }
+
+    public void testLambdaComptimeTypeParamInParamTypeOk()
+    {
+        // Same for `$`-type-parameters (verified against c3c).
+        assertNoErrors("""
+            module test;
+            macro typeid @pred3($Type) @const
+            {
+                return $typeof(fn bool ($Type a) => true).typeid;
+            }
+            fn void test()
+            {
+                typeid t = @pred3(int);
+            }
+            """);
+    }
+
+    public void testLambdaHashParamInBodyIsError()
+    {
+        // In the lambda body a `#`-parameter is still unresolvable
+        // (c3c reports it as not found), so the capture error stays.
+        List<HighlightInfo> errors = errorsWithText(check("""
+            module test;
+            macro typeid @predicate_fn(#array) @const
+            {
+                return $typeof(fn bool (int a) => a == #array[0]).typeid;
+            }
+            """), "Cannot capture '#array'");
+        assertEquals("Expected one error, got: " + errors, 1, errors.size());
+    }
+
     private @NotNull List<HighlightInfo> check(@NotNull String code)
     {
         myFixture.configureByText("main.c3", code);

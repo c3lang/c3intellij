@@ -64,30 +64,6 @@ public abstract class C3ModuleDefinitionMixinImpl extends C3PsiElementImpl imple
 		return isInModuleFamily(callable.getModuleName());
 	}
 
-	/**
-	 * Symbols from parent and sibling modules (e.g. {@code encoding::X} from
-	 * {@code encoding::base32}) are visible through the qualified path
-	 * without an import: C3 resolves them against the module hierarchy.
-	 */
-	private boolean isInModuleFamily(@Nullable ModuleName other)
-	{
-		ModuleName here = getModuleName();
-		if (here == null || other == null) return false;
-		String hereValue = here.getValue();
-		String otherValue = other.getValue();
-		int separator = hereValue.lastIndexOf("::");
-		// Parent module: encoding::base32 sees encoding.
-		if (separator >= 0 && otherValue.equals(hereValue.substring(0, separator))) return true;
-		// Sibling modules share the parent: encoding::base32 sees encoding::base64.
-		if (separator >= 0)
-		{
-			String hereParent = hereValue.substring(0, separator);
-			int otherSeparator = otherValue.lastIndexOf("::");
-			if (otherSeparator >= 0 && otherValue.substring(0, otherSeparator).equals(hereParent)) return true;
-		}
-		return false;
-	}
-
 	@Override
 	public boolean contains(@NotNull C3PathIdent pathIdent)
 	{

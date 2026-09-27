@@ -10,10 +10,16 @@ import org.c3lang.intellij.psi.C3BinaryExpr;
 import org.c3lang.intellij.psi.C3CallExpr;
 import org.c3lang.intellij.psi.C3CallExprTail;
 import org.c3lang.intellij.psi.C3CompoundInitExpr;
+import org.c3lang.intellij.psi.C3ConstDeclarationStmt;
 import org.c3lang.intellij.psi.C3FullyQualifiedTypeNameProvider;
+import org.c3lang.intellij.psi.C3GlobalDecl;
+import org.c3lang.intellij.psi.C3InitListExpr;
+import org.c3lang.intellij.psi.C3Arg;
 import org.c3lang.intellij.psi.C3LocalDeclAfterType;
 import org.c3lang.intellij.psi.C3ModuleDefinition;
 import org.c3lang.intellij.psi.C3PathIdent;
+import org.c3lang.intellij.psi.C3Type;
+import org.c3lang.intellij.psi.C3TypeSuffix;
 import org.c3lang.intellij.psi.FullyQualifiedName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -101,7 +107,80 @@ public final class CompletionExtensionsKt
 			if (fqn != null) return fqn;
 		}
 
+		return initListTargetType(lookupTarget);
+	}
+
+	/**
+	 * Target type of a designated initializer list, e.g.
+	 * {@code ascii::CharType[256]} for the outer list in
+	 * {@code const CharType[256] ASCII_LOOKUP = { [0..31] = { .control } }}.
+	 * Array suffixes are preserved textually so member walks can unwrap
+	 * one level per subscript-nested list. Locals are already covered by
+	 * the provider branch above; consts and globals are not (their type
+	 * is a sibling, not an ancestor, of the list).
+	 */
+	private static @Nullable FullyQualifiedName initListTargetType(@NotNull PsiElement lookupTarget)
+	{
+		try
+		{
+			C3InitListExpr outer = outermostInitList(lookupTarget);
+			if (outer == null) return null;
+			C3ConstDeclarationStmt constDecl = PsiTreeUtil.getParentOfType(outer, C3ConstDeclarationStmt.class);
+			if (constDecl != null && constDecl.getType() != null)
+			{
+				return qualifiedTargetText(constDecl.getType());
+			}
+			C3GlobalDecl globalDecl = PsiTreeUtil.getParentOfType(outer, C3GlobalDecl.class);
+			if (globalDecl != null && globalDecl.getOptionalType() != null
+				&& globalDecl.getOptionalType().getType() != null)
+			{
+				return qualifiedTargetText(globalDecl.getOptionalType().getType());
+			}
+		}
+		catch (Exception ignored)
+		{
+		}
 		return null;
+	}
+
+	private static @Nullable C3InitListExpr outermostInitList(@NotNull PsiElement lookupTarget)
+	{
+		C3InitListExpr inner = PsiTreeUtil.getParentOfType(lookupTarget, C3InitListExpr.class);
+		if (inner == null) return null;
+		C3InitListExpr outer = inner;
+		int guard = 0;
+		while (guard++ < 8)
+		{
+			C3Arg arg = PsiTreeUtil.getParentOfType(outer, C3Arg.class);
+			C3InitListExpr parent = arg != null ? PsiTreeUtil.getParentOfType(arg, C3InitListExpr.class) : null;
+			if (parent == null) return outer;
+			outer = parent;
+		}
+		return outer;
+	}
+
+	/**
+	 * Base-type module plus the written suffixes
+	 * ({@code CharType[256]} in {@code ascii} becomes
+	 * {@code ascii::CharType[256]}).
+	 */
+	private static @Nullable FullyQualifiedName qualifiedTargetText(@NotNull C3Type type)
+	{
+		try
+		{
+			FullyQualifiedName base = FullyQualifiedName.from(type);
+			if (base == null) return null;
+			StringBuilder qualified = new StringBuilder(base.getFullName());
+			for (C3TypeSuffix suffix : type.getTypeSuffixList())
+			{
+				if (suffix.getText() != null) qualified.append(suffix.getText());
+			}
+			return FullyQualifiedName.parse(qualified.toString());
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
 	}
 
 	public static @NotNull MinusculeMatcher getMatcher(@NotNull String lookupString)

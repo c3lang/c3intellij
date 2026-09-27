@@ -109,6 +109,12 @@
     mixin("try_unwrap") = "org.c3lang.intellij.psi.impl.C3TryUnwrapMixinImpl"
     implements("try_unwrap") = "org.c3lang.intellij.psi.C3TryUnwrapMixin"
 
+    mixin("bitstruct_def") = "org.c3lang.intellij.psi.impl.C3BitstructDefMixinImpl"
+    implements("bitstruct_def") = "org.c3lang.intellij.psi.C3BitstructDefMixin"
+
+    mixin("bitstruct_simple_def") = "org.c3lang.intellij.psi.impl.C3BitstructSimpleDefMixinImpl"
+    implements("bitstruct_simple_def") = "org.c3lang.intellij.psi.C3BitstructSimpleDefMixin"
+
     methods("path") = [ getImportIntention ]
 
     // for exception: java.lang.ClassCastException: Not a stub type: C3TokenType.CONST_DECLARATION_STMT in class org.c3lang.intellij.psi.impl.C3ConstDeclarationStmtImpl

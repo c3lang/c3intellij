@@ -92,7 +92,7 @@ public final class AttributeChecks
         if (owner == null) return;
         AttributeSpecs.Target target = AttributeSpecs.classifyOwner(owner);
         if (target == null) return;
-        if (!AttributeSpecs.allows(spec, target))
+        if (!AttributeSpecs.allows(spec, target, owner))
         {
             holder.newAnnotation(
                     HighlightSeverity.ERROR,
