@@ -4,7 +4,10 @@
 
 ## [Unreleased]
 
-## [0.2.11] - 2026-08-28
+## [0.2.12] - 2026-11-25
+- Fix `extern const int FOO;`
+
+## [0.2.11] - 2026-11-25
 - Support braces for excuse.
 - Add 'excuse', 'constset', 'attrmacro'.
 - Various improvments to parsing.

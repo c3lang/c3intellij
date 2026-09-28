@@ -340,7 +340,7 @@ ct_switch_stmt ::= KW_CT_SWITCH constant_expr? COLON ct_switch_body KW_CT_ENDSWI
 ct_foreach_stmt ::= KW_CT_FOREACH CT_IDENT (COMMA CT_IDENT)? COLON expr COLON statement_list? KW_CT_ENDFOREACH
 ct_for_stmt ::= KW_CT_FOR for_cond COLON statement_list? KW_CT_ENDFOR
 
-const_declaration_stmt ::= KW_CONST type? CONST_IDENT attributes? eq_expr_pin EOS { pin=3 }
+const_declaration_stmt ::= KW_CONST ((type CONST_IDENT attributes? [eq_expr_pin]) | (CONST_IDENT attributes? eq_expr_pin)) EOS { pin=3 }
 local_declaration_stmt ::= local_decl_storage? optional_type decl_stmt_after_type EOS { pin=2 }
 
 assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS

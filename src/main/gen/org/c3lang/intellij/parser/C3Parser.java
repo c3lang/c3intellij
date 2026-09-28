@@ -1809,34 +1809,45 @@ public class C3Parser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // KW_CONST type? CONST_IDENT attributes? eq_expr_pin EOS
+  // KW_CONST ((type CONST_IDENT attributes? [eq_expr_pin]) | (CONST_IDENT attributes? eq_expr_pin)) EOS
   public static boolean const_declaration_stmt(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "const_declaration_stmt")) return false;
     if (!nextTokenIs(builder_, KW_CONST)) return false;
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, CONST_DECLARATION_STMT, null);
     result_ = consumeToken(builder_, KW_CONST);
-    result_ = result_ && const_declaration_stmt_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, CONST_IDENT);
+    boolean hasType_ = result_ && !nextTokenIs(builder_, CONST_IDENT);
+    if (hasType_) {
+      result_ = type(builder_, level_ + 1);
+      result_ = result_ && consumeToken(builder_, CONST_IDENT);
+    }
+    else {
+      result_ = result_ && consumeToken(builder_, CONST_IDENT);
+    }
     pinned_ = result_; // pin = 3
-    result_ = result_ && report_error_(builder_, const_declaration_stmt_3(builder_, level_ + 1));
-    result_ = pinned_ && report_error_(builder_, eq_expr_pin(builder_, level_ + 1)) && result_;
+    result_ = result_ && report_error_(builder_, const_declaration_stmt_2(builder_, level_ + 1));
+    if (hasType_) {
+      result_ = pinned_ && report_error_(builder_, const_declaration_stmt_3(builder_, level_ + 1)) && result_;
+    }
+    else {
+      result_ = pinned_ && report_error_(builder_, eq_expr_pin(builder_, level_ + 1)) && result_;
+    }
     result_ = pinned_ && consumeToken(builder_, EOS) && result_;
     exit_section_(builder_, level_, marker_, result_, pinned_, null);
     return result_ || pinned_;
   }
 
-  // type?
-  private static boolean const_declaration_stmt_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "const_declaration_stmt_1")) return false;
-    type(builder_, level_ + 1);
+  // attributes?
+  private static boolean const_declaration_stmt_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "const_declaration_stmt_2")) return false;
+    attributes(builder_, level_ + 1);
     return true;
   }
 
-  // attributes?
+  // [eq_expr_pin]
   private static boolean const_declaration_stmt_3(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "const_declaration_stmt_3")) return false;
-    attributes(builder_, level_ + 1);
+    eq_expr_pin(builder_, level_ + 1);
     return true;
   }
 
