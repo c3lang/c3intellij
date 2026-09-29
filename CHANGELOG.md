@@ -6,6 +6,8 @@
 
 ## [0.2.12] - 2026-11-25
 - Fix `extern const int FOO;`
+- Fix `constset` with initializers.
+- Update `$feat` to support same syntax as `@feat`
 
 ## [0.2.11] - 2026-11-25
 - Support braces for excuse.

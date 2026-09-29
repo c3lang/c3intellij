@@ -143,7 +143,6 @@ SHEBANG_COMMENT = "#!" .*
     "$eval" { return C3Types.KW_CT_EVAL; }
     "$exec" { return C3Types.KW_CT_EXEC; }
     "$expand" { return C3Types.KW_CT_EXPAND; }
-    "$feature" { return C3Types.KW_CT_FEATURE; }
     "$feat" {return C3Types.KW_CT_FEATURE; }
     "$for" { return C3Types.KW_CT_FOR; }
     "$foreach" { return C3Types.KW_CT_FOREACH; }
