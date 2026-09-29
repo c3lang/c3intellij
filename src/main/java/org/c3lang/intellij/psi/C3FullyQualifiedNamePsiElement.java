@@ -10,6 +10,7 @@ public interface C3FullyQualifiedNamePsiElement extends C3ModuleNamePsiElement
 	@Override
 	default @Nullable ModuleName getModuleName()
 	{
-		return getModuleDefinition().getModuleName();
+		C3ModuleDefinition moduleDefinition = getModuleDefinition();
+		return moduleDefinition != null ? moduleDefinition.getModuleName() : null;
 	}
 }

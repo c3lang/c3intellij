@@ -56,6 +56,9 @@ public class C3StructMemberDeclarationElementType extends C3StubElementType<C3St
 	public void indexStub(@NotNull C3StructMemberDeclarationStub stub, @NotNull IndexSink sink)
 	{
 		String fullPath = stub.getFullPath();
-		if (fullPath != null) sink.occurrence(StructMemberDeclarationIndex.KEY, fullPath);
+		if (fullPath != null)
+		{
+			sink.occurrence(StructMemberDeclarationIndex.KEY, fullPath);
+		}
 	}
 }

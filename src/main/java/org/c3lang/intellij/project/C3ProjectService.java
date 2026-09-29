@@ -30,6 +30,7 @@ public final class C3ProjectService implements PersistentStateComponent<C3Projec
 	private @Nullable C3ProjectModel model;
 	private @Nullable String projectJsonPath;
 	private long projectJsonModificationStamp = -1;
+	private volatile @Nullable List<String> fallbackStdlibPaths;
 
 	public C3ProjectService(@NotNull Project project)
 	{
@@ -166,9 +167,69 @@ public final class C3ProjectService implements PersistentStateComponent<C3Projec
 
 	public @NotNull List<String> getStdlibPaths()
 	{
+		try
+		{
+			List<String> paths = collectStdlibPaths(true);
+			if (!paths.isEmpty()) return paths;
+		}
+		catch (Exception e)
+		{
+			// This getter is called from stub building and reference resolution,
+			// which run on indexing threads: it must never throw.
+			LOG.debug("Unable to resolve C3 stdlib paths", e);
+		}
+		return getFallbackStdlibPaths();
+	}
+
+	/**
+	 * Last-resort stdlib detection that does not touch (possibly broken) settings:
+	 * locates the compiler on PATH/well-known paths and asks it for the stdlib.
+	 * Cached in memory; never throws. Without this, broken settings would leave
+	 * the stdlib unindexed and module completion (e.g. {@code std::}) empty.
+	 */
+	private @NotNull List<String> getFallbackStdlibPaths()
+	{
+		List<String> cached = fallbackStdlibPaths;
+		if (cached != null) return cached;
+		try
+		{
+			String detected = org.c3lang.intellij.C3CompilerDetector.detectStdlibPath(
+				org.c3lang.intellij.C3CompilerDetector.findCompilerExecutable(""));
+			String clean = org.c3lang.intellij.C3StdLibRootsProvider.normalizePath(detected);
+			cached = clean != null ? List.of(clean) : Collections.emptyList();
+		}
+		catch (Exception ignored)
+		{
+			cached = Collections.emptyList();
+		}
+		fallbackStdlibPaths = cached;
+		return cached;
+	}
+
+	/**
+	 * Stdlib paths that are already known (project override or configured
+	 * compiler profiles). No compiler detection, no settings writes, never throws.
+	 * Safe to call from stub building and reference resolution.
+	 */
+	public @NotNull List<String> getKnownStdlibPaths()
+	{
+		try
+		{
+			return collectStdlibPaths(false);
+		}
+		catch (Exception e)
+		{
+			LOG.debug("Unable to resolve known C3 stdlib paths", e);
+			return Collections.emptyList();
+		}
+	}
+
+	private @NotNull List<String> collectStdlibPaths(boolean allowDetection)
+	{
 		if (hasStdlibOverride())
 		{
-			return List.of(getStdlibOverridePath());
+			String clean = org.c3lang.intellij.C3StdLibRootsProvider.normalizePath(getStdlibOverridePath());
+			return clean != null ? List.of(clean) : Collections.emptyList();
 		}
 
 		C3SettingsState settings = C3SettingsState.getInstance();
@@ -179,7 +240,8 @@ public final class C3ProjectService implements PersistentStateComponent<C3Projec
 			{
 				if (compilerName.equals(profile.name) && !profile.stdlibPath.isBlank())
 				{
-					return List.of(profile.stdlibPath);
+					String clean = org.c3lang.intellij.C3StdLibRootsProvider.normalizePath(profile.stdlibPath);
+					if (clean != null) return List.of(clean);
 				}
 			}
 		}
@@ -187,14 +249,36 @@ public final class C3ProjectService implements PersistentStateComponent<C3Projec
 		String defaultStdlibPath = settings.getDefaultStdlibPath();
 		if (!defaultStdlibPath.isBlank())
 		{
-			return List.of(defaultStdlibPath);
+			String clean = org.c3lang.intellij.C3StdLibRootsProvider.normalizePath(defaultStdlibPath);
+			if (clean != null) return List.of(clean);
 		}
 
 		ArrayList<String> paths = new ArrayList<>();
 		for (String path : settings.getStdlibPaths())
 		{
-			if (!path.isBlank()) paths.add(path);
+			String clean = org.c3lang.intellij.C3StdLibRootsProvider.normalizePath(path);
+			if (clean != null && !paths.contains(clean)) paths.add(clean);
 		}
+
+		if (allowDetection && paths.isEmpty() && !com.intellij.openapi.project.DumbService.isDumb(project))
+		{
+			try
+			{
+				String detected = org.c3lang.intellij.C3CompilerDetector.detectStdlibPath(settings.getDefaultCompilerBinaryPath());
+				String clean = org.c3lang.intellij.C3StdLibRootsProvider.normalizePath(detected);
+				if (clean != null)
+				{
+					C3SettingsState.CompilerProfile profile = settings.getDefaultCompilerProfile();
+					profile.stdlibPath = clean;
+					settings.setCompilerProfiles(List.of(profile));
+					return List.of(clean);
+				}
+			}
+			catch (Exception ignored)
+			{
+			}
+		}
+
 		return List.copyOf(paths);
 	}
 
@@ -254,6 +338,16 @@ public final class C3ProjectService implements PersistentStateComponent<C3Projec
 		return projectModel == null || !projectModel.isUnderProjectRoot(file) || projectModel.isSourceFile(file);
 	}
 
+	public boolean isStdlibFile(@NotNull VirtualFile file)
+	{
+		String filePath = file.getPath();
+		for (String stdlibPath : getStdlibPaths())
+		{
+			if (filePath.startsWith(stdlibPath)) return true;
+		}
+		return false;
+	}
+
 	public @NotNull GlobalSearchScope getSearchScope()
 	{
 		GlobalSearchScope allScope = GlobalSearchScope.allScope(project);
@@ -262,6 +356,7 @@ public final class C3ProjectService implements PersistentStateComponent<C3Projec
 			@Override
 			public boolean contains(@NotNull VirtualFile file)
 			{
+				if (isStdlibFile(file)) return true;
 				return allScope.contains(file) && acceptsIndexedFile(file);
 			}
 
@@ -274,7 +369,7 @@ public final class C3ProjectService implements PersistentStateComponent<C3Projec
 			@Override
 			public boolean isSearchInLibraries()
 			{
-				return allScope.isSearchInLibraries();
+				return true;
 			}
 		};
 	}

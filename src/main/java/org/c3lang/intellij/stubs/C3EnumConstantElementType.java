@@ -5,6 +5,7 @@ import com.intellij.psi.stubs.IndexSink;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
+import org.c3lang.intellij.index.NameIndex;
 import org.c3lang.intellij.psi.C3EnumConstant;
 import org.c3lang.intellij.psi.C3StubElementType;
 import org.c3lang.intellij.psi.C3StubElementTypeFactory;
@@ -54,6 +55,6 @@ public class C3EnumConstantElementType extends C3StubElementType<C3EnumConstantS
 	@Override
 	public void indexStub(@NotNull C3EnumConstantStub stub, @NotNull IndexSink sink)
 	{
-		// Intentionally not indexed yet.
+		sink.occurrence(NameIndex.KEY, stub.getFqName().getFullName());
 	}
 }

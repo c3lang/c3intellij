@@ -1,6 +1,7 @@
 package org.c3lang.intellij.intention;
 
 import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement;
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -45,6 +46,17 @@ public class AddImportQuickFix extends LocalQuickFixAndIntentionActionOnPsiEleme
     public @NotNull String getText()
     {
         return "Add import " + importIntention.getValue();
+    }
+
+    @Override
+    public @NotNull IntentionPreviewInfo generatePreview(
+            @NotNull Project project,
+            @NotNull Editor editor,
+            @NotNull PsiFile file)
+    {
+        // invoke() performs multi-step PSI surgery inside a write action, which is
+        // forbidden on the background read-action thread used for intention previews.
+        return IntentionPreviewInfo.EMPTY;
     }
 
     @Override

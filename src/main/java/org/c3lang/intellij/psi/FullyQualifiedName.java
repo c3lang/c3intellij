@@ -98,13 +98,17 @@ public final class FullyQualifiedName
 
     public static @Nullable FullyQualifiedName from(@NotNull C3OptionalType psi)
     {
-        List<FullyQualifiedName> resolved = psi.getModuleDefinition().resolve(psi.getType());
+        C3ModuleDefinition moduleDefinition = psi.getModuleDefinition();
+        if (moduleDefinition == null) return null;
+        List<FullyQualifiedName> resolved = moduleDefinition.resolve(psi.getType());
         return resolved.size() == 1 ? resolved.get(0) : null;
     }
 
     public static @Nullable FullyQualifiedName from(@NotNull C3Type psi)
     {
-        List<FullyQualifiedName> resolved = psi.getModuleDefinition().resolve(psi);
+        C3ModuleDefinition moduleDefinition = psi.getModuleDefinition();
+        if (moduleDefinition == null) return null;
+        List<FullyQualifiedName> resolved = moduleDefinition.resolve(psi);
         return resolved.size() == 1 ? resolved.get(0) : null;
     }
 

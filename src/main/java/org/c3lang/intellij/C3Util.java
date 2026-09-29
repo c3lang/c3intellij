@@ -149,6 +149,22 @@ public final class C3Util
     public @NotNull Set<String> findC3ModulesStartingWith(@NotNull Project project, @NotNull String prefix)
     {
         Set<String> modules = new HashSet<>();
+        if (com.intellij.openapi.project.DumbService.isDumb(project)) return modules;
+
+        try
+        {
+            for (String key : com.intellij.psi.stubs.StubIndex.getInstance().getAllKeys(org.c3lang.intellij.index.ModuleIndex.KEY, project))
+            {
+                if (key.startsWith(prefix))
+                {
+                    modules.add(key);
+                }
+            }
+        }
+        catch (Exception ignored)
+        {
+        }
+
         PsiManager psiManager = PsiManager.getInstance(project);
 
         for (VirtualFile virtualFile : C3ProjectService.getInstance(project).getSourceFiles())

@@ -49,9 +49,17 @@ public final class ModuleName
 
     public static @Nullable ModuleName from(@NotNull C3PsiElement psi)
     {
-        C3ModuleSection moduleSection = PsiTreeUtil.getParentOfType(psi, C3ModuleSection.class, false);
-        if (moduleSection == null) return null;
-        return new ModuleName(moduleSection.getModule().getModulePath().getText());
+        if (psi instanceof C3Module module)
+        {
+            C3ModulePath path = module.getModulePath();
+            return path != null ? new ModuleName(path.getText()) : null;
+        }
+        C3ModuleSection moduleSection = psi instanceof C3ModuleSection
+            ? (C3ModuleSection) psi
+            : PsiTreeUtil.getParentOfType(psi, C3ModuleSection.class, false);
+        if (moduleSection == null || moduleSection.getModule() == null) return null;
+        C3ModulePath path = moduleSection.getModule().getModulePath();
+        return path != null ? new ModuleName(path.getText()) : null;
     }
 
     public static @NotNull ModuleName deserialize(@NotNull String string)

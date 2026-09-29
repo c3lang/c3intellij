@@ -16,14 +16,17 @@ import java.io.IOException;
 public class C3FaultDefinitionStub extends StubBase<C3FaultDefinition>
 {
 	private final @NotNull FullyQualifiedName name;
+	private final boolean isPrivate;
 
 	public C3FaultDefinitionStub(
 		@Nullable StubElement<?> parent,
 		@Nullable IStubElementType<?, ?> elementType,
-		@NotNull FullyQualifiedName name)
+		@NotNull FullyQualifiedName name,
+		boolean isPrivate)
 	{
 		super(parent, elementType);
 		this.name = name;
+		this.isPrivate = isPrivate;
 	}
 
 	public C3FaultDefinitionStub(
@@ -31,7 +34,7 @@ public class C3FaultDefinitionStub extends StubBase<C3FaultDefinition>
 		@NotNull C3FaultDefinitionElementType elementType,
 		@NotNull C3FaultDefinition psi)
 	{
-		this(parent, elementType, FullyQualifiedName.from(psi, ModuleName.from(psi)));
+		this(parent, elementType, FullyQualifiedName.from(psi, ModuleName.from(psi)), StubPrivacy.computeFlag(psi));
 	}
 
 	public C3FaultDefinitionStub(
@@ -39,7 +42,7 @@ public class C3FaultDefinitionStub extends StubBase<C3FaultDefinition>
 		@NotNull C3FaultDefinitionElementType elementType,
 		@NotNull StubInputStream dataStream) throws IOException
 	{
-		this(parent, elementType, FullyQualifiedName.parse(dataStream.readUTFFast()));
+		this(parent, elementType, FullyQualifiedName.parse(dataStream.readUTFFast()), dataStream.readBoolean());
 	}
 
 	public @NotNull FullyQualifiedName getName()
@@ -47,8 +50,14 @@ public class C3FaultDefinitionStub extends StubBase<C3FaultDefinition>
 		return name;
 	}
 
+	public boolean isPrivate()
+	{
+		return isPrivate;
+	}
+
 	public void serialize(@NotNull StubOutputStream dataStream) throws IOException
 	{
 		dataStream.writeUTFFast(name.getFullName());
+		dataStream.writeBoolean(isPrivate);
 	}
 }

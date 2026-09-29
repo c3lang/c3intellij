@@ -12,21 +12,34 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.execution.ExecutionException;
+import org.c3lang.intellij.psi.C3FuncDef;
 import org.c3lang.intellij.psi.C3FuncDefinition;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class C3LineMarkerProvider implements LineMarkerProvider
 {
 	@Override
-	public @Nullable LineMarkerInfo<?> getLineMarkerInfo(PsiElement element)
+	public @Nullable LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element)
 	{
-		if (!(element instanceof C3FuncDefinition function)) return null;
+		// Line markers must be registered for leaf elements only (see LineMarkerProvider docs).
+		if (!(element instanceof LeafPsiElement leaf)) return null;
+		if (leaf.getElementType() != org.c3lang.intellij.psi.C3Types.IDENT) return null;
+		if (!(element.getParent() instanceof org.c3lang.intellij.psi.C3FuncName)) return null;
+		if (!leaf.getText().equals("main")) return null;
+
+		C3FuncDefinition function = PsiTreeUtil.getParentOfType(element, C3FuncDefinition.class, false);
+		if (function == null) return null;
+		C3FuncDef funcDef = function.getFuncDef();
+		if (funcDef.getFuncHeader().getFuncName().getType() != null) return null;
 
 		String type = function.getFuncDef().getFuncHeader().getOptionalType().getType().getText();
 		String name = function.getFuncDef().getFqName().getName();
 
-		if (!name.equals("main")) return null;
+		if (!name.equals("main") || !leaf.getText().equals("main")) return null;
 		if (!type.equals("int") && !type.equals("void")) return null;
 
 		return new LineMarkerInfo<>(

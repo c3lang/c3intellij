@@ -42,7 +42,8 @@ public final class CallExpr
 
         String fullName = text.substring(0, callStart);
         String module = "";
-        ModuleName moduleName = element.getModuleDefinition().getModuleName();
+        C3ModuleDefinition moduleDefinition = element.getModuleDefinition();
+        ModuleName moduleName = moduleDefinition != null ? moduleDefinition.getModuleName() : null;
         if (moduleName != null)
         {
             module = moduleName.getValue();
@@ -81,14 +82,17 @@ public final class CallExpr
 
         PsiElement firstMatch = declarations.get(0);
         C3ModuleDefinition moduleDefinition = element.getModuleDefinition();
+        if (moduleDefinition == null) return firstMatch;
         ModuleName matchModule = null;
         if (firstMatch instanceof C3FuncDefinition definition)
         {
-            matchModule = definition.getModuleDefinition().getModuleName();
+            C3ModuleDefinition matchDefinition = definition.getModuleDefinition();
+            matchModule = matchDefinition != null ? matchDefinition.getModuleName() : null;
         }
         else if (firstMatch instanceof C3MacroDefinition definition)
         {
-            matchModule = definition.getModuleDefinition().getModuleName();
+            C3ModuleDefinition matchDefinition = definition.getModuleDefinition();
+            matchModule = matchDefinition != null ? matchDefinition.getModuleName() : null;
         }
 
         boolean hasValidImport = false;

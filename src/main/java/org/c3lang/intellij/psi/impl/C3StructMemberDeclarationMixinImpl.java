@@ -167,7 +167,8 @@ public abstract class C3StructMemberDeclarationMixinImpl
 			PsiTreeUtil.getParentOfType(this, C3StructDeclaration.class);
 		if (structDecl == null) return null;
 		String structName = structDecl.getTypeName().getText();
-		return new FullyQualifiedName(getModuleDefinition().getModuleName(), structName);
+		C3ModuleDefinition moduleDefinition = PsiTreeUtil.getParentOfType(this, C3ModuleDefinition.class);
+		return new FullyQualifiedName(moduleDefinition != null ? moduleDefinition.getModuleName() : null, structName);
 	}
 
 	private @Nullable FullyQualifiedName collectStructPathType()
@@ -185,7 +186,11 @@ public abstract class C3StructMemberDeclarationMixinImpl
 		{
 			C3Type type = getType();
 			if (type == null) return null;
-			return FullyQualifiedName.from(type);
+			// Must stay index-free: runs during stub creation, where the file
+			// being indexed may itself be mapped in the stub index.
+			return StructField.syntacticTypeName(
+				PsiTreeUtil.getParentOfType(this, C3ModuleDefinition.class),
+				type);
 		}
 	}
 }

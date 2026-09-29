@@ -48,6 +48,31 @@ public final class ShortType
 		return new ShortType(psi.getText());
     }
 
+    /**
+     * Return type of a function/macro header, preserving the Optional suffix:
+     * {@code fn int? foo()} gives {@code "int?"}, not {@code "int"}.
+     * Never fails: stub building must not break on malformed headers,
+     * otherwise the whole file ends up without a stub tree.
+     */
+    public static @NotNull ShortType fromOptionalType(@NotNull C3OptionalType psi)
+    {
+        C3Type inner = null;
+        try
+        {
+            inner = psi.getType();
+        }
+        catch (Exception ignored)
+        {
+        }
+        String text = inner != null && inner.getText() != null ? inner.getText().strip() : psi.getText().strip();
+        String full = psi.getText() != null ? psi.getText().strip() : text;
+        if ((full.endsWith("?") || full.endsWith("!")) && !text.endsWith("?") && !text.endsWith("!"))
+        {
+            text = text + full.substring(full.length() - 1);
+        }
+		return new ShortType(text);
+    }
+
     public static @NotNull ShortType toShortType(@NotNull C3Type psi)
     {
         return from(psi);

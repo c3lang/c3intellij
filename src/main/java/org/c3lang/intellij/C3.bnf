@@ -100,6 +100,21 @@
     mixin("attrdef_decl") = "org.c3lang.intellij.psi.impl.C3AttrdefDeclMixinImpl"
     implements("attrdef_decl") = "org.c3lang.intellij.psi.C3AttrdefDeclMixin"
 
+    mixin("foreach_var") = "org.c3lang.intellij.psi.impl.C3ForeachVarMixinImpl"
+    implements("foreach_var") = "org.c3lang.intellij.psi.C3ForeachVarMixin"
+
+    mixin("catch_unwrap") = "org.c3lang.intellij.psi.impl.C3CatchUnwrapMixinImpl"
+    implements("catch_unwrap") = "org.c3lang.intellij.psi.C3CatchUnwrapMixin"
+
+    mixin("try_unwrap") = "org.c3lang.intellij.psi.impl.C3TryUnwrapMixinImpl"
+    implements("try_unwrap") = "org.c3lang.intellij.psi.C3TryUnwrapMixin"
+
+    mixin("bitstruct_def") = "org.c3lang.intellij.psi.impl.C3BitstructDefMixinImpl"
+    implements("bitstruct_def") = "org.c3lang.intellij.psi.C3BitstructDefMixin"
+
+    mixin("bitstruct_simple_def") = "org.c3lang.intellij.psi.impl.C3BitstructSimpleDefMixinImpl"
+    implements("bitstruct_simple_def") = "org.c3lang.intellij.psi.C3BitstructSimpleDefMixin"
+
     methods("path") = [ getImportIntention ]
 
     // for exception: java.lang.ClassCastException: Not a stub type: C3TokenType.CONST_DECLARATION_STMT in class org.c3lang.intellij.psi.impl.C3ConstDeclarationStmtImpl
@@ -172,7 +187,7 @@ attribute_user_name ::= AT_TYPE_IDENT
 attribute_name ::= AT_IDENT | path? AT_TYPE_IDENT
 attribute_param_list ::= attr_param (COMMA attr_param)*
 attr_param ::= attribute_operator_expr | constant_expr
-attribute_operator_expr ::= BIT_AND_ASSIGN | BIT_OR_ASSIGN | BIT_XOR_ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | SHL_ASSIGN | SHR_ASSIGN | &RP | PLUS &RP | MINUS &RP | DIV | LT_OP | STAR &RP | MOD | EQ_OP | BIT_XOR | BIT_NOT | BIT_OR | AMP &RP | SHL | SHR | LBT RBT EQ | AMP? LBT RBT
+attribute_operator_expr ::= BIT_AND_ASSIGN | BIT_OR_ASSIGN | BIT_XOR_ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | SHL_ASSIGN | SHR_ASSIGN | &RP | PLUS &RP | MINUS &RP | DIV | LT_OP | STAR &RP | MOD | EQ_OP | BIT_XOR | BIT_NOT | BIT_OR | AMP &RP | SHL | SHR | LBT RBT EQ | AMP? LBT RBT | NE_OP | GT_OP | LE_OP | GE_OP
 
 
 // -- TYPE DECLARATIONS --
@@ -279,6 +294,7 @@ private non_generic_base_type_content ::= KW_VOID
     | KW_IPTR
     | KW_UPTR
     | KW_SZ
+    | KW_ISZ
     | KW_UNTYPEDLIST
     | KW_USZ
     | KW_FAULT
@@ -551,5 +567,5 @@ private keyword_list ::= KW_ALIAS | KW_ANY | KW_ATTRDEF | KW_ASM | KW_ASSERT
     | KW_CT_VAARG | KW_VOID | KW_BOOL
     | KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG
     | KW_ULONG | KW_UINT128 | KW_INT128 | KW_BFLOAT16 | KW_DOUBLE | KW_FLOAT | KW_FLOAT16
-    | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_SZ | KW_UNTYPEDLIST
+    | KW_FLOAT128 | KW_UPTR | KW_IPTR | KW_USZ | KW_SZ | KW_ISZ | KW_UNTYPEDLIST
 private ident_list ::= IDENT | TYPE_IDENT | CT_TYPE_IDENT | CT_IDENT | CONST_IDENT | AT_IDENT

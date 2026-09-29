@@ -19,6 +19,11 @@ public final class C3CompletionContributor extends CompletionContributor
 		extend(CompletionType.BASIC, pattern, FaultCompletionContributor.INSTANCE);
 		extend(CompletionType.BASIC, pattern, TailExprCompletionContributor.INSTANCE);
 		extend(CompletionType.BASIC, pattern, InitializerListCompletionContributor.INSTANCE);
+		extend(CompletionType.BASIC, pattern, C3StatementCompletionContributor.INSTANCE);
+		extend(CompletionType.BASIC, pattern, C3VariableCompletionContributor.INSTANCE);
+		extend(CompletionType.BASIC, pattern, C3AttributeCompletionContributor.INSTANCE);
+		extend(CompletionType.BASIC, pattern, C3CompileTimeCompletionContributor.INSTANCE);
+		extend(CompletionType.BASIC, pattern, C3KeywordCompletionContributor.INSTANCE);
 		//extend(CompletionType.BASIC, pattern, DocCommentCompletionContributor) TODO
 		extend(CompletionType.BASIC, pattern, TopLevelCompletionContributor.INSTANCE);
 	}

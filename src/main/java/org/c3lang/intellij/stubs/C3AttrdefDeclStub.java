@@ -13,16 +13,19 @@ public class C3AttrdefDeclStub extends StubBase<C3AttrdefDecl>
 {
 	private final @NotNull FullyQualifiedName fqName;
 	private final @Nullable ModuleName moduleName;
+	private final boolean isPrivate;
 
 	public C3AttrdefDeclStub(
 		@Nullable StubElement<?> parent,
 		@Nullable IStubElementType<?, ?> elementType,
 		@NotNull FullyQualifiedName name,
-		@Nullable ModuleName moduleName)
+		@Nullable ModuleName moduleName,
+		boolean isPrivate)
 	{
 		super(parent, elementType);
 		this.fqName = name;
 		this.moduleName = moduleName;
+		this.isPrivate = isPrivate;
 	}
 
 	public C3AttrdefDeclStub(
@@ -32,7 +35,8 @@ public class C3AttrdefDeclStub extends StubBase<C3AttrdefDecl>
 	{
 		this(parent, elementType,
 			 new FullyQualifiedName(ModuleName.from(psi), psi.getAttributeUserName().getText()),
-			 ModuleName.from(psi)
+			 ModuleName.from(psi),
+			 StubPrivacy.computeFlag(psi)
 		);
 	}
 
@@ -41,7 +45,7 @@ public class C3AttrdefDeclStub extends StubBase<C3AttrdefDecl>
 		@NotNull C3AttrdefDeclElementType elementType,
 		@NotNull StubInputStream dataStream) throws IOException
 	{
-		this(parent, elementType, FullyQualifiedName.parse(dataStream.readUTFFast()), StubStreamExtensions.readModuleName(dataStream));
+		this(parent, elementType, FullyQualifiedName.parse(dataStream.readUTFFast()), StubStreamExtensions.readModuleName(dataStream), dataStream.readBoolean());
 	}
 
 	public @NotNull FullyQualifiedName getFqName()
@@ -57,9 +61,15 @@ public class C3AttrdefDeclStub extends StubBase<C3AttrdefDecl>
 		return fqName.getName();
 	}
 
+	public boolean isPrivate()
+	{
+		return isPrivate;
+	}
+
 	public void serialize(@NotNull StubOutputStream dataStream) throws IOException
 	{
 		dataStream.writeUTFFast(fqName.getFullName());
 		StubStreamExtensions.writeNullableUTFFast(dataStream, moduleName != null ? moduleName.getValue() : null);
+		dataStream.writeBoolean(isPrivate);
 	}
 }

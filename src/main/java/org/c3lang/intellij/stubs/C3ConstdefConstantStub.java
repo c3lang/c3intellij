@@ -18,18 +18,21 @@ public class C3ConstdefConstantStub extends StubBase<C3ConstdefConstant>
 	private final @Nullable ModuleName module;
 	private final @NotNull FullyQualifiedName fqName;
 	private final @NotNull String constIdent;
+	private final boolean isPrivate;
 
 	public C3ConstdefConstantStub(
 		@Nullable StubElement<?> parent,
 		@Nullable IStubElementType<?, ?> elementType,
 		@Nullable ModuleName module,
 		@NotNull FullyQualifiedName fqName,
-		@NotNull String constIdent)
+		@NotNull String constIdent,
+		boolean isPrivate)
 	{
 		super(parent, elementType);
 		this.module = module;
 		this.fqName = fqName;
 		this.constIdent = constIdent;
+		this.isPrivate = isPrivate;
 	}
 
 	public C3ConstdefConstantStub(
@@ -37,7 +40,7 @@ public class C3ConstdefConstantStub extends StubBase<C3ConstdefConstant>
 		@Nullable IStubElementType<?, ?> elementType,
 		@NotNull C3ConstdefConstant psi)
 	{
-		this(parent, elementType, ModuleName.from(psi), psi.getFqName(), psi.getConstIdent());
+		this(parent, elementType, ModuleName.from(psi), psi.getFqName(), psi.getConstIdent(), StubPrivacy.computeFlag(psi));
 	}
 
 	public C3ConstdefConstantStub(
@@ -50,7 +53,8 @@ public class C3ConstdefConstantStub extends StubBase<C3ConstdefConstant>
 			elementType,
 			StubStreamExtensions.readModuleName(dataStream),
 			FullyQualifiedName.parse(dataStream.readUTFFast()),
-			dataStream.readUTFFast()
+			dataStream.readUTFFast(),
+			dataStream.readBoolean()
 		);
 	}
 
@@ -69,10 +73,16 @@ public class C3ConstdefConstantStub extends StubBase<C3ConstdefConstant>
 		return constIdent;
 	}
 
+	public boolean isPrivate()
+	{
+		return isPrivate;
+	}
+
 	public void serialize(@NotNull StubOutputStream dataStream) throws IOException
 	{
 		StubStreamExtensions.writeNullableUTFFast(dataStream, module != null ? module.getValue() : null);
 		dataStream.writeUTFFast(fqName.getFullName());
 		dataStream.writeUTFFast(constIdent);
+		dataStream.writeBoolean(isPrivate);
 	}
 }

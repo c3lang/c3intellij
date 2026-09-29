@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3ForeachVar extends C3PsiElement {
+public interface C3ForeachVar extends C3ForeachVarMixin {
 
   @Nullable
   C3OptionalType getOptionalType();

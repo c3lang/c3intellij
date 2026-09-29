@@ -108,8 +108,7 @@ public abstract class C3FuncDefMixinImpl extends C3StubBasedPsiElementBase<C3Fun
 	{
 		C3FuncDefStub s = getGreenStub();
 		if (s != null) return s.getReturnType();
-		C3Type t = getFuncHeader().getOptionalType().getType();
-		return ShortType.from(t);
+		return ShortType.fromOptionalType(getFuncHeader().getOptionalType());
 	}
 
 	@Override
@@ -120,6 +119,14 @@ public abstract class C3FuncDefMixinImpl extends C3StubBasedPsiElementBase<C3Fun
 		C3ParameterList paramList = getFnParameterList().getParameterList();
 		List<C3ParamDecl> paramDecls = paramList != null ? paramList.getParamDeclList() : null;
 		return ParamType.toParamTypeList(paramDecls);
+	}
+
+	@Override
+	public @Nullable String getConditionKey()
+	{
+		C3FuncDefStub s = getGreenStub();
+		if (s != null) return s.getConditionKey();
+		return ConditionalGating.conditionKey(this);
 	}
 
 	@Override

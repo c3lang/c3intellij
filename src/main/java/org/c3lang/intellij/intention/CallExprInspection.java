@@ -41,8 +41,10 @@ public class CallExprInspection extends LocalInspectionTool
             @Override
             public void visitCallExpr(@NotNull C3CallExpr element)
             {
+                C3ModuleDefinition elementModule = element.getModuleDefinition();
+                if (elementModule == null) return;
                 List<String> imports = new ArrayList<>();
-                for (C3ImportDecl importDecl : element.getModuleDefinition().getImportDeclarations())
+                for (C3ImportDecl importDecl : elementModule.getImportDeclarations())
                 {
                     for (C3ImportPath importPath : importDecl.getImportPaths().getImportPathList())
                     {
@@ -88,6 +90,7 @@ public class CallExprInspection extends LocalInspectionTool
                 else
                 {
                     C3ModuleDefinition moduleDefinition = element.getModuleDefinition();
+                    if (moduleDefinition == null) return;
                     List<C3FuncDefinition> functions = new ArrayList<>();
                     List<C3MacroDefinition> macros = new ArrayList<>();
 

@@ -110,7 +110,7 @@ public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBa
 		if (s != null) return s.getReturnType();
 		C3OptionalType optType = getMacroHeader().getOptionalType();
 		if (optType == null) return null;
-		return ShortType.from(optType.getType());
+		return ShortType.fromOptionalType(optType);
 	}
 
 	@Override
@@ -121,6 +121,14 @@ public abstract class C3MacroDefinitionMixinImpl extends C3StubBasedPsiElementBa
 		C3ParameterList paramList = getMacroParams().getParameterList();
 		List<C3ParamDecl> paramDecls = paramList != null ? paramList.getParamDeclList() : null;
 		return ParamType.toParamTypeList(paramDecls);
+	}
+
+	@Override
+	public @Nullable String getConditionKey()
+	{
+		C3MacroDefinitionStub s = getGreenStub();
+		if (s != null) return s.getConditionKey();
+		return ConditionalGating.conditionKey(this);
 	}
 
 	@Override

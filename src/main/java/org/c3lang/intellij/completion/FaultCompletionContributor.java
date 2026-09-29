@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.stubs.StubIndex;
 import com.intellij.util.ProcessingContext;
 import org.c3lang.intellij.C3Icons;
@@ -56,6 +57,7 @@ public final class FaultCompletionContributor extends CompletionProvider<Complet
             @NotNull ProcessingContext context,
             @NotNull CompletionResultSet result)
     {
+        if (com.intellij.openapi.project.DumbService.isDumb(parameters.getPosition().getProject())) return;
         if (!PATTERN.accepts(parameters.getPosition()) && !PATTERN.accepts(parameters.getOriginalPosition()))
         {
             return;
@@ -73,7 +75,7 @@ public final class FaultCompletionContributor extends CompletionProvider<Complet
         ModuleName moduleName = moduleDefinition.getModuleName();
         TextRange elementRange = lookupTarget.getTextRange();
         Project project = parameters.getPosition().getProject();
-        InsertHandler<LookupElement> insertHandler = new FaultInsertHandler(moduleDefinition, elementRange);
+        InsertHandler<LookupElement> insertHandler = FaultInsertHandler.INSTANCE;
 
         for (String key : StubIndex.getInstance().getAllKeys(NameIndex.KEY, project))
         {
@@ -111,14 +113,7 @@ public final class FaultCompletionContributor extends CompletionProvider<Complet
     @SuppressWarnings("DuplicatedCode")
     private static final class FaultInsertHandler implements InsertHandler<LookupElement>
     {
-        private final C3ModuleDefinition moduleDefinition;
-        private final TextRange range;
-
-        private FaultInsertHandler(@NotNull C3ModuleDefinition moduleDefinition, @NotNull TextRange range)
-        {
-            this.moduleDefinition = moduleDefinition;
-            this.range = range;
-        }
+        public static final FaultInsertHandler INSTANCE = new FaultInsertHandler();
 
         @Override
         public void handleInsert(@NotNull InsertionContext context, @NotNull LookupElement item)
@@ -126,26 +121,27 @@ public final class FaultCompletionContributor extends CompletionProvider<Complet
             PsiElement psiElement = item.getPsiElement();
             if (!(psiElement instanceof C3FaultDefinition element)) return;
 
-            WriteCommandAction.runWriteCommandAction(context.getProject(), () -> {
-                AddImportQuickFix.ImportAction imported =
-                    AddImportQuickFix.addImportAsText(element, moduleDefinition);
+            ModuleName faultModule = element.getModuleName();
+            if (faultModule == null) return;
 
-                ModuleName importedModuleName = imported != null ? imported.getModuleName() : null;
-                String textToInsert = moduleDefinition.textToInsert(importedModuleName, element);
-                int endOffset = context.getEditor().getCaretModel().getOffset();
+            PsiFile file = context.getFile();
+            PsiElement atOffset = file.findElementAt(context.getStartOffset());
+            C3ModuleDefinition moduleDef = atOffset != null
+                ? com.intellij.psi.util.PsiTreeUtil.getParentOfType(atOffset, C3ModuleDefinition.class)
+                : com.intellij.psi.util.PsiTreeUtil.findChildOfType(file, C3ModuleDefinition.class);
 
-                context.getDocument().replaceString(
-                    range.getStartOffset(),
-                    endOffset,
-                    textToInsert
-                );
-                context.getEditor().getCaretModel().moveToOffset(range.getStartOffset() + textToInsert.length());
+            if (moduleDef == null) return;
+            if (moduleDef.isSameModule(element)) return;
+            if (moduleDef.getVisibleModulePrefix(faultModule) != null) return;
 
-                if (imported != null)
-                {
-                    imported.write(context.getDocument());
-                }
-            });
+            AddImportQuickFix.ImportAction imported =
+                AddImportQuickFix.addImportAsText(faultModule, moduleDef);
+
+            if (imported != null && !(imported instanceof AddImportQuickFix.ImportAction.Imported))
+            {
+                imported.write(context.getDocument());
+                com.intellij.psi.PsiDocumentManager.getInstance(context.getProject()).commitDocument(context.getDocument());
+            }
         }
     }
 }

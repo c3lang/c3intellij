@@ -72,6 +72,7 @@ public interface C3TokenSets
                                      C3Types.KW_INT128,
                                      C3Types.KW_IPTR,
                                      C3Types.KW_SZ,
+                                     C3Types.KW_ISZ,
                                      C3Types.KW_UNTYPEDLIST,
                                      C3Types.KW_LONG,
                                      C3Types.KW_SHORT,

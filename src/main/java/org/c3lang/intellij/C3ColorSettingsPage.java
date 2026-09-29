@@ -48,6 +48,12 @@ public class C3ColorSettingsPage implements ColorSettingsPage
         new AttributesDescriptor("Type definition//Fault", C3SyntaxHighlighter.FAULT_NAME_KEY),
         new AttributesDescriptor("Type definition//Bitstruct", C3SyntaxHighlighter.BITSTRUCT_NAME_KEY),
         new AttributesDescriptor("Type definition//Typedef", C3SyntaxHighlighter.TYPEDEF_NAME_KEY),
+        new AttributesDescriptor("Modules//Module name", C3SyntaxHighlighter.MODULE_KEY),
+        new AttributesDescriptor("Variables//Parameter", C3SyntaxHighlighter.PARAMETER_KEY),
+        new AttributesDescriptor("Variables//Local variable", C3SyntaxHighlighter.LOCAL_VARIABLE_KEY),
+        new AttributesDescriptor("Variables//Field", C3SyntaxHighlighter.FIELD_KEY),
+        new AttributesDescriptor("Function and method calls//Function call", C3SyntaxHighlighter.FUNCTION_CALL_KEY),
+        new AttributesDescriptor("Function and method calls//Method call", C3SyntaxHighlighter.METHOD_CALL_KEY),
     };
 
 

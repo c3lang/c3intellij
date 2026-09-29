@@ -21,16 +21,19 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 {
 	private final @NotNull FullyQualifiedName typeName;
 	private final @NotNull List<StructField> fields;
+	private final boolean isPrivate;
 
 	public C3StructDeclarationStub(
 		@Nullable StubElement<?> parent,
 		@Nullable IStubElementType<?, ?> elementType,
 		@NotNull FullyQualifiedName typeName,
-		@NotNull List<StructField> fields)
+		@NotNull List<StructField> fields,
+		boolean isPrivate)
 	{
 		super(parent, elementType);
 		this.typeName = typeName;
 		this.fields = fields;
+		this.isPrivate = isPrivate;
 	}
 
 	public C3StructDeclarationStub(
@@ -42,7 +45,8 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 			parent,
 			elementType,
 			FullyQualifiedName.from(psi.getTypeName(), psi.getTypeName().getModuleName()),
-			collectFields(psi)
+			collectFields(psi),
+			StubPrivacy.computeFlag(psi)
 		);
 	}
 
@@ -55,7 +59,8 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 			parent,
 			elementType,
 			FullyQualifiedName.parse(dataStream.readUTFFast()),
-			deserializeStructFields(dataStream)
+			deserializeStructFields(dataStream),
+			dataStream.readBoolean()
 		);
 	}
 
@@ -91,6 +96,11 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 		return fields;
 	}
 
+	public boolean isPrivate()
+	{
+		return isPrivate;
+	}
+
 	public void serialize(@NotNull StubOutputStream stream) throws IOException
 	{
 		stream.writeUTFFast(typeName.getFullName());
@@ -100,5 +110,6 @@ public class C3StructDeclarationStub extends StubBase<C3StructDeclaration>
 			stream.writeUTFFast(field.getType().getFullName());
 			StubStreamExtensions.writeNullableUTFFast(stream, field.getName());
 		}
+		stream.writeBoolean(isPrivate);
 	}
 }

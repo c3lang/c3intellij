@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface C3CatchUnwrap extends C3PsiElement {
+public interface C3CatchUnwrap extends C3PsiElement, C3CatchUnwrapMixin {
 
   @NotNull
   C3CatchUnwrapList getCatchUnwrapList();

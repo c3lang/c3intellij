@@ -1,4 +1,5 @@
 // This is a generated file. Not intended for manual editing.
+// MANUAL PATCH: named-element mixin superclass (see C3BitstructSimpleDefMixinImpl).
 package org.c3lang.intellij.psi.impl;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static org.c3lang.intellij.psi.C3Types.*;
 import org.c3lang.intellij.psi.*;
 
-public class C3BitstructSimpleDefImpl extends C3PsiElementImpl implements C3BitstructSimpleDef {
+public class C3BitstructSimpleDefImpl extends C3BitstructSimpleDefMixinImpl implements C3BitstructSimpleDef {
 
   public C3BitstructSimpleDefImpl(@NotNull ASTNode node) {
     super(node);

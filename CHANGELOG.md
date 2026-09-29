@@ -3,6 +3,13 @@
 # C3IntelliJ Changelog
 
 ## [Unreleased]
+- Semantic type checker: alias/typedef chain resolution, vectors, `any`, `typeid`, Optional narrowing, casts, `usz`/`isz`, pointers incl. `void*` arithmetic, arrays/slices, `$typeof`/`$typefrom` and opaque comptime parameters.
+- Call and macro verification: arity, named arguments, typed parameters, trailing `@body` blocks, `@deprecated`/`@nodiscard` warnings and duplicate detection.
+- Attribute validation against a canonical registry (placement, arguments, values) with quick-fixes.
+- Code completion: builtin members for `any`/slices/vectors/scalars, `.len`/`.ptr`, vector methods, attributes, `$`-directives, keywords, locals, params and types.
+- Navigation and resolution: interface-aware method lookup, scope-correct locals with shadowing, `catch`/`try` bindings, `foreach` variables, lambda capture checks, same-module overload preference, enum > const > fault priority, composite alias spellings and stdlib source navigation.
+- Bitstruct support: field type inference, assignment/truncation checks, member navigation with goto, Find Usages and rename.
+- Grammar: `usz`/`isz`, lowercase `$typeof`/`$typefrom`, `@operator` comparison operators, `@builtin` on faultdef/alias and extended attribute operators.
 
 ## [0.2.12] - 2026-11-25
 - Fix `extern const int FOO;`

@@ -33,6 +33,7 @@ public final class ImportCompletionContributor extends CompletionProvider<Comple
             @NotNull ProcessingContext context,
             @NotNull CompletionResultSet result)
     {
+        if (com.intellij.openapi.project.DumbService.isDumb(parameters.getPosition().getProject())) return;
         if (!PATTERN.accepts(parameters.getPosition()))
         {
             return;

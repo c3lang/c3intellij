@@ -20,6 +20,8 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 	private final @NotNull FullyQualifiedName fqName;
 	private final @Nullable ShortType returnType;
 	private final @NotNull List<ParamType> parameterTypes;
+	private final @Nullable String conditionKey;
+	private final boolean isPrivate;
 
 	public C3FuncDefStub(
 		@Nullable StubElement<?> parent,
@@ -29,7 +31,9 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 		@Nullable ShortType type,
 		@NotNull FullyQualifiedName fqName,
 		@Nullable ShortType returnType,
-		@NotNull List<ParamType> parameterTypes)
+		@NotNull List<ParamType> parameterTypes,
+		@Nullable String conditionKey,
+		boolean isPrivate)
 	{
 		super(parent, elementType);
 		this.sourceFileName = sourceFileName;
@@ -38,6 +42,8 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 		this.fqName = fqName;
 		this.returnType = returnType;
 		this.parameterTypes = parameterTypes;
+		this.conditionKey = conditionKey;
+		this.isPrivate = isPrivate;
 	}
 
 	public C3FuncDefStub(
@@ -54,11 +60,13 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 				? ShortType.from(psi.getFuncHeader().getFuncName().getType())
 				: null,
 			FullyQualifiedName.from(psi.getFuncHeader(), ModuleName.from(psi)),
-			ShortType.from(psi.getFuncHeader().getOptionalType().getType()),
+			ShortType.fromOptionalType(psi.getFuncHeader().getOptionalType()),
 			ParamType.toParamTypeList(
 				psi.getFnParameterList().getParameterList() != null
 					? psi.getFnParameterList().getParameterList().getParamDeclList()
-					: null)
+					: null),
+			ConditionalGating.conditionKey(psi),
+			StubPrivacy.computeFlag(psi)
 		);
 	}
 
@@ -75,7 +83,9 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 			readShortType(dataStream),
 			FullyQualifiedName.parse(dataStream.readUTFFast()),
 			readShortType(dataStream),
-			ParamType.deserialize(dataStream)
+			ParamType.deserialize(dataStream),
+			StubStreamExtensions.readNullableUTFFast(dataStream),
+			dataStream.readBoolean()
 		);
 	}
 
@@ -115,6 +125,16 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 		return parameterTypes;
 	}
 
+	public @Nullable String getConditionKey()
+	{
+		return conditionKey;
+	}
+
+	public boolean isPrivate()
+	{
+		return isPrivate;
+	}
+
 	public void serialize(@NotNull StubOutputStream dataStream) throws IOException
 	{
 		dataStream.writeUTFFast(sourceFileName);
@@ -123,5 +143,7 @@ public class C3FuncDefStub extends StubBase<C3FuncDef>
 		dataStream.writeUTFFast(fqName.getFullName());
 		StubStreamExtensions.writeNullableUTFFast(dataStream, returnType != null ? returnType.getFullName() : null);
 		ParamType.serialize(dataStream, parameterTypes);
+		StubStreamExtensions.writeNullableUTFFast(dataStream, conditionKey);
+		dataStream.writeBoolean(isPrivate);
 	}
 }

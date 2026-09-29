@@ -2,6 +2,7 @@ package org.c3lang.intellij.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +35,7 @@ public final class StructField
 
     public static @NotNull List<StructField> collectFields(@NotNull C3StructBody body, @Nullable String parentName)
     {
-        C3ModuleDefinition module = body.getModuleDefinition();
+        C3ModuleDefinition module = PsiTreeUtil.getParentOfType(body, C3ModuleDefinition.class);
         List<StructField> result = new ArrayList<>();
 
         for (C3StructMemberDeclaration declaration : body.getStructMemberDeclarationList())
@@ -64,10 +65,11 @@ public final class StructField
                 C3Type type = declaration.getType();
                 if (type == null) return List.of();
 
-                List<FullyQualifiedName> resolved = module.resolve(type);
-                FullyQualifiedName typeFqn = resolved.size() == 1
-                    ? resolved.get(0)
-                    : new FullyQualifiedName(null, type.getText());
+                // Stub creation must never touch references or stub indices
+                // (the file being indexed may itself be mapped in the index),
+                // so resolve purely syntactically. Downstream lookups match by
+                // suffix, so module imprecision here is harmless.
+                FullyQualifiedName typeFqn = syntacticTypeName(module, type);
 
                 if (memberName != null)
                 {
@@ -86,6 +88,22 @@ public final class StructField
 
         ASTNode[] children = declaration.getNode().getChildren(TokenSet.create(C3Types.IDENT));
         return children.length > 0 ? children[0].getText() : null;
+    }
+
+    public static @NotNull FullyQualifiedName syntacticTypeName(
+            @Nullable C3ModuleDefinition module,
+            @NotNull C3Type type)
+    {
+        // The full text keeps array/slice/pointer suffixes: a field
+        // `int[] a` is `int[]`, not `int`.
+        String fullText = type.getText().strip();
+        C3BaseType baseType = type.getBaseType();
+        if (baseType != null && baseType.getPath() == null)
+        {
+            ModuleName moduleName = module != null ? module.getModuleName() : null;
+            return new FullyQualifiedName(moduleName, fullText);
+        }
+        return new FullyQualifiedName(null, fullText);
     }
 
     private static @Nullable String joinDot(@Nullable String parentName, @Nullable String fieldName)

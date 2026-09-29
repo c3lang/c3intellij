@@ -4,7 +4,6 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.impl.source.resolve.reference.impl.PsiMultiReference;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import org.c3lang.intellij.index.NameIndexService;
 import org.c3lang.intellij.psi.*;
@@ -69,18 +68,17 @@ public abstract class C3PathConstMixinImpl extends C3PsiNamedElementImpl impleme
 	@Override
 	public @Nullable PsiReference getReference()
 	{
-		return new PsiMultiReference(
-			new PsiReference[]{
-				new C3ConstDeclarationStmtReference(this),
-				new C3FaultDeclarationReference(this),
-			},
-			this
-		);
+		// One reference with an explicit priority: a bare `INFO` resolves
+		// to the enum member even when a same-named const exists (verified
+		// against c3c, where `INFO + 1` infers as the enum's backing `int`,
+		// not the const's `char`). A plain `PsiMultiReference` cannot
+		// express this: its `resolve()` does not take the first hit.
+		return new C3PathConstReference(this);
 	}
 
-	private static class C3ConstDeclarationStmtReference extends C3ReferenceBase<C3PathConst>
+	private static class C3PathConstReference extends C3ReferenceBase<C3PathConst>
 	{
-		C3ConstDeclarationStmtReference(@NotNull C3PathConst element)
+		C3PathConstReference(@NotNull C3PathConst element)
 		{
 			super(element);
 		}
@@ -90,16 +88,20 @@ public abstract class C3PathConstMixinImpl extends C3PsiNamedElementImpl impleme
 		{
 			C3ModuleDefinition moduleDefinition = myElement.getModuleDefinition();
 			java.util.List<C3PsiElement> result = new java.util.ArrayList<>();
+			if (moduleDefinition == null) return result;
+			java.util.List<C3PsiElement> consts = new java.util.ArrayList<>();
+			java.util.List<C3PsiElement> faults = new java.util.ArrayList<>();
 			for (C3FullyQualifiedNamePsiElement el :
 				NameIndexService.INSTANCE.findByNameEndsWith(myElement.getText(), myElement.getProject()))
 			{
-				if (el instanceof C3ConstDeclarationStmt
-					&& moduleDefinition.containsImportOrSameModule(el))
-				{
-					result.add(el);
-				}
+				if (!moduleDefinition.containsImportOrSameModule(el)) continue;
+				if (el instanceof C3EnumConstant) result.add(el);
+				else if (el instanceof C3ConstDeclarationStmt) consts.add(el);
+				else if (el instanceof C3FaultDefinition) faults.add(el);
 			}
-			return result;
+			if (!result.isEmpty()) return result;
+			if (!consts.isEmpty()) return consts;
+			return faults;
 		}
 
 		@Override
@@ -107,38 +109,6 @@ public abstract class C3PathConstMixinImpl extends C3PsiNamedElementImpl impleme
 		{
 			C3Path path = myElement.getPath();
 			return TextRange.create(path != null ? path.getTextLength() : 0, myElement.getTextLength());
-		}
-	}
-
-	private static class C3FaultDeclarationReference extends C3ReferenceBase<C3PathConst>
-	{
-		C3FaultDeclarationReference(@NotNull C3PathConst element)
-		{
-			super(element);
-		}
-
-		@Override
-		public @NotNull Collection<C3PsiElement> multiResolve()
-		{
-			C3ModuleDefinition moduleDefinition = myElement.getModuleDefinition();
-			java.util.List<C3PsiElement> result = new java.util.ArrayList<>();
-			for (C3FullyQualifiedNamePsiElement el :
-				NameIndexService.INSTANCE.findByNameEndsWith(myElement.getText(), myElement.getProject()))
-			{
-				if (el instanceof C3FaultDefinition
-					&& moduleDefinition.containsImportOrSameModule(el))
-				{
-					result.add(el);
-				}
-			}
-			return result;
-		}
-
-		@Override
-		public @NotNull TextRange getRangeInElement()
-		{
-			C3Path path = myElement.getPath();
-			return TextRange.create(path != null ? path.getTextLength() : 0, myElement.getTextLength() + 1);
 		}
 	}
 }

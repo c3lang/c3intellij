@@ -13,6 +13,45 @@ public interface C3ModuleDefinition extends C3ModuleNamePsiElement
 	@NotNull List<C3ImportPath> getImportPaths();
 
 	boolean containsImportOrSameModule(@NotNull C3FullyQualifiedNamePsiElement callable);
+
+	/**
+	 * Module-name variant of {@link #containsImportOrSameModule}: same
+	 * module, imported modules and the module family, without touching the
+	 * target's stubs or attributes. Used to filter index-wide fallbacks
+	 * (e.g. struct fields matched by bare name) down to visible modules. A
+	 * {@code null} module is treated as visible (nothing to judge by).
+	 */
+	default boolean containsImportOrSameModule(@Nullable ModuleName module)
+	{
+		if (module == null) return true;
+		if (isSameModule(module)) return true;
+		if (getVisibleModulePrefix(module) != null) return true;
+		return isInModuleFamily(module);
+	}
+
+	/**
+	 * Symbols from parent and sibling modules (e.g. {@code encoding::X}
+	 * from {@code encoding::base32}) are visible through the qualified path
+	 * without an import: C3 resolves them against the module hierarchy.
+	 */
+	default boolean isInModuleFamily(@Nullable ModuleName other)
+	{
+		ModuleName here = getModuleName();
+		if (here == null || other == null) return false;
+		String hereValue = here.getValue();
+		String otherValue = other.getValue();
+		int separator = hereValue.lastIndexOf("::");
+		// Parent module: encoding::base32 sees encoding.
+		if (separator >= 0 && otherValue.equals(hereValue.substring(0, separator))) return true;
+		// Sibling modules share the parent: encoding::base32 sees encoding::base64.
+		if (separator >= 0)
+		{
+			String hereParent = hereValue.substring(0, separator);
+			int otherSeparator = otherValue.lastIndexOf("::");
+			if (otherSeparator >= 0 && otherValue.substring(0, otherSeparator).equals(hereParent)) return true;
+		}
+		return false;
+	}
 	boolean contains(@NotNull C3PathIdent pathIdent);
 	boolean contains(@NotNull C3Path path);
 	@NotNull List<C3ImportPath> getImportOf(@NotNull C3PathIdent pathIdent);
@@ -83,63 +122,14 @@ public interface C3ModuleDefinition extends C3ModuleNamePsiElement
 		ModuleName moduleName = element.getModuleName();
 		if (isSameModule(moduleName)) return true;
 
-		if (!isPrivate(element)) return getVisibleModulePrefix(moduleName) != null;
+		// Stub-first `@private` check: reading attributes off index-backed
+		// PSI would force AST loads during index reads
+		// (UpToDateStubIndexMismatch).
+		if (!org.c3lang.intellij.stubs.StubPrivacy.isPrivate(element))
+		{
+			return getVisibleModulePrefix(moduleName) != null;
+		}
 
 		return getPublicImportedModuleCovering(moduleName) != null;
-	}
-
-	private static boolean isPrivate(@NotNull C3FullyQualifiedNamePsiElement element)
-	{
-		if (element instanceof C3FuncDef funcDef)
-		{
-			return hasPrivateAttribute(funcDef.getAttributes());
-		}
-		if (element instanceof C3MacroDefinition macroDefinition)
-		{
-			return hasPrivateAttribute(macroDefinition.getAttributes());
-		}
-		if (element instanceof C3ConstDeclarationStmt constDeclaration)
-		{
-			return hasPrivateAttribute(constDeclaration.getAttributes());
-		}
-		if (element instanceof C3StructDeclaration structDeclaration)
-		{
-			return hasPrivateAttribute(structDeclaration.getAttributes());
-		}
-		if (element instanceof C3TypeName typeName)
-		{
-			PsiElement parent = typeName.getParent();
-			if (parent instanceof C3StructDeclaration structDeclaration)
-			{
-				return hasPrivateAttribute(structDeclaration.getAttributes());
-			}
-		}
-		if (element instanceof C3FaultDefinition faultDefinition)
-		{
-			return hasPrivateAttribute(faultDefinition.getAttributes());
-		}
-		if (element instanceof C3EnumConstant enumConstant)
-		{
-			return hasPrivateAttribute(enumConstant.getAttributes());
-		}
-		if (element instanceof C3ConstdefConstant constdefConstant)
-		{
-			return hasPrivateAttribute(constdefConstant.getAttributes());
-		}
-		if (element instanceof C3AttrdefDecl attrdefDecl)
-		{
-			return hasPrivateAttribute(attrdefDecl.getAttributes());
-		}
-		return false;
-	}
-
-	private static boolean hasPrivateAttribute(@Nullable C3Attributes attributes)
-	{
-		if (attributes == null) return false;
-		for (C3Attribute attribute : attributes.getAttributeList())
-		{
-			if ("@private".equals(attribute.getAttributeName().getText())) return true;
-		}
-		return false;
 	}
 }

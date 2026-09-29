@@ -1,6 +1,8 @@
 package org.c3lang.intellij.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import org.c3lang.intellij.psi.*;
@@ -25,6 +27,43 @@ public abstract class C3StructDeclarationMixinImpl extends C3StubBasedPsiElement
 	public C3StructDeclarationMixinImpl(@NotNull C3StructDeclarationStub stub, @Nullable IElementType nodeType, @Nullable ASTNode node)
 	{
 		super(stub, nodeType, node);
+	}
+
+	@Override
+	public @Nullable String getName()
+	{
+		return getTypeName().getName();
+	}
+
+	@Override
+	public @NotNull PsiElement setName(@NotNull String name)
+	{
+		getTypeName().setName(name);
+		return this;
+	}
+
+	@Override
+	public @Nullable PsiElement getNameIdentifier()
+	{
+		return getTypeName().getNameIdentifier();
+	}
+
+	@Override
+	public @Nullable String getNameIdent()
+	{
+		return getTypeName().getNameIdent();
+	}
+
+	@Override
+	public @Nullable LeafPsiElement getNameIdentElement()
+	{
+		return getTypeName().getNameIdentElement();
+	}
+
+	@Override
+	public int getTextOffset()
+	{
+		return getTypeName().getTextOffset();
 	}
 
 	@Override

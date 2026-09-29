@@ -363,7 +363,7 @@ public final class C3ProjectJsonParser
 	{
 		try
 		{
-			return PRETTY_WRITER.writeValueAsString(document) + "\n";
+			return PRETTY_WRITER.writeValueAsString(document).replace("\r\n", "\n") + "\n";
 		}
 		catch (JsonProcessingException e)
 		{

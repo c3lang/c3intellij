@@ -5,7 +5,7 @@ import org.c3lang.intellij.stubs.C3StructDeclarationStub;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
-public interface C3StructDeclarationMixin extends C3PsiElement, C3DeclaredInProvider, StubBasedPsiElement<C3StructDeclarationStub>
+public interface C3StructDeclarationMixin extends C3PsiNamedElement, C3NameIdentProvider, C3DeclaredInProvider, StubBasedPsiElement<C3StructDeclarationStub>
 {
 	@NotNull List<StructField> getFields();
 }

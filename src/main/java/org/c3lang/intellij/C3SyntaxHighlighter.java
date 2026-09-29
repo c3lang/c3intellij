@@ -73,6 +73,13 @@ public class C3SyntaxHighlighter extends SyntaxHighlighterBase
     public final static TextAttributesKey BLOCK_COMMENT_KEY = createTextAttributesKey("C3_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
     public final static TextAttributesKey DOC_COMMENT_KEY = createTextAttributesKey("C3_DOC_COMMENT", DefaultLanguageHighlighterColors.DOC_COMMENT);
 
+    public final static TextAttributesKey MODULE_KEY = createTextAttributesKey("C3_MODULE", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
+    public final static TextAttributesKey PARAMETER_KEY = createTextAttributesKey("C3_PARAMETER", DefaultLanguageHighlighterColors.PARAMETER);
+    public final static TextAttributesKey LOCAL_VARIABLE_KEY = createTextAttributesKey("C3_LOCAL_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE);
+    public final static TextAttributesKey FIELD_KEY = createTextAttributesKey("C3_FIELD", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
+    public final static TextAttributesKey FUNCTION_CALL_KEY = createTextAttributesKey("C3_FUNCTION_CALL", DefaultLanguageHighlighterColors.FUNCTION_CALL);
+    public final static TextAttributesKey METHOD_CALL_KEY = createTextAttributesKey("C3_METHOD_CALL", DefaultLanguageHighlighterColors.FUNCTION_CALL);
+
     private static void addMapping(String name, TextAttributesKey fallbackAttributeKey, IElementType... mapped)
     {
         TextAttributesKey key = createTextAttributesKey(name, fallbackAttributeKey);

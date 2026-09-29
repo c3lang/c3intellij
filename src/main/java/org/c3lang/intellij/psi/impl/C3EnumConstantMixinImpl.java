@@ -86,7 +86,9 @@ public abstract class C3EnumConstantMixinImpl extends C3StubBasedPsiElementBase<
 	public @Nullable ModuleName getModuleName()
 	{
 		C3EnumConstantStub s = getGreenStub();
-		return s != null ? s.getModule() : getModuleDefinition().getModuleName();
+		if (s != null) return s.getModule();
+		C3ModuleDefinition moduleDefinition = getModuleDefinition();
+		return moduleDefinition != null ? moduleDefinition.getModuleName() : null;
 	}
 
 	@Override
@@ -99,6 +101,7 @@ public abstract class C3EnumConstantMixinImpl extends C3StubBasedPsiElementBase<
 	{
 		C3EnumDeclaration enumDeclaration = PsiTreeUtil.getParentOfType(this, C3EnumDeclaration.class);
 		if (enumDeclaration == null) throw new IllegalStateException("No C3EnumDeclaration parent for " + getText());
-		return enumDeclaration.getTypeName().getFqName();
+		FullyQualifiedName enumName = enumDeclaration.getTypeName().getFqName();
+		return new FullyQualifiedName(enumName.getModule(), enumName.getName() + "." + getNameIdent());
 	}
 }

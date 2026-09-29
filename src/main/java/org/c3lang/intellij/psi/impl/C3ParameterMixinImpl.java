@@ -72,6 +72,17 @@ public abstract class C3ParameterMixinImpl extends C3PsiNamedElementImpl impleme
 	public @Nullable FullyQualifiedName findTypeName()
 	{
 		C3Type type = getType();
-		return type != null ? FullyQualifiedName.from(type) : null;
+		if (type != null) return FullyQualifiedName.from(type);
+		// Untyped lambda parameter (`i` in `fn (i) => i * i`): the type comes
+		// from the expected function-pointer type at the call or variable.
+		try
+		{
+			String expected = org.c3lang.intellij.types.FunctionSupport.lambdaParamType(this);
+			if (expected != null) return FullyQualifiedName.parse(expected);
+		}
+		catch (Exception ignored)
+		{
+		}
+		return null;
 	}
 }

@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.c3lang.intellij.psi.C3DeclOrExpr;
 import org.c3lang.intellij.psi.C3LocalDeclAfterType;
 import org.c3lang.intellij.psi.C3LocalDeclarationStmt;
 import org.c3lang.intellij.psi.FullyQualifiedName;
@@ -62,6 +63,21 @@ public abstract class C3LocalDeclAfterTypeMixinImpl extends C3PsiNamedElementImp
 	public @Nullable FullyQualifiedName findTypeName()
 	{
 		C3LocalDeclarationStmt parent = PsiTreeUtil.getParentOfType(this, C3LocalDeclarationStmt.class);
-		return parent != null ? parent.findTypeName() : null;
+		if (parent != null) return parent.findTypeName();
+		// Declaration inside a condition (`while (T x = ..., x)`,
+		// `if (T x = ...)`): the type sits in the sibling optional_type of
+		// the enclosing decl_or_expr.
+		C3DeclOrExpr condDecl = PsiTreeUtil.getParentOfType(this, C3DeclOrExpr.class);
+		if (condDecl != null && condDecl.getOptionalType() != null)
+		{
+			try
+			{
+				return FullyQualifiedName.from(condDecl.getOptionalType());
+			}
+			catch (Exception ignored)
+			{
+			}
+		}
+		return null;
 	}
 }

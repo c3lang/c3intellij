@@ -310,6 +310,7 @@ public interface C3Types {
   IElementType KW_STRUCT = new C3TokenType("KW_STRUCT");
   IElementType KW_SWITCH = new C3TokenType("KW_SWITCH");
   IElementType KW_SZ = new C3TokenType("KW_SZ");
+  IElementType KW_ISZ = new C3TokenType("KW_ISZ");
   IElementType KW_TLOCAL = new C3TokenType("KW_TLOCAL");
   IElementType KW_TRUE = new C3TokenType("KW_TRUE");
   IElementType KW_TRY = new C3TokenType("KW_TRY");

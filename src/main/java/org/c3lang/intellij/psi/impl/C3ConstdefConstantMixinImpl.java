@@ -86,7 +86,9 @@ public abstract class C3ConstdefConstantMixinImpl extends C3StubBasedPsiElementB
 	public @Nullable ModuleName getModuleName()
 	{
 		C3ConstdefConstantStub s = getGreenStub();
-		return s != null ? s.getModule() : getModuleDefinition().getModuleName();
+		if (s != null) return s.getModule();
+		C3ModuleDefinition moduleDefinition = getModuleDefinition();
+		return moduleDefinition != null ? moduleDefinition.getModuleName() : null;
 	}
 
 	@Override

@@ -32,4 +32,14 @@ public class C3PathAtIdentImpl extends C3PsiElementImpl implements C3PathAtIdent
     return findChildByClass(C3Path.class);
   }
 
+  // MANUAL PATCH (not generated): references for `@macro` names in calls.
+  // A PsiReferenceContributor was attempted first, but the platform never
+  // invokes it for this element; getReference() follows the pattern used by
+  // all other C3 references. Guarded by InterfaceContractTest navigation tests.
+  @Override
+  @NotNull
+  public com.intellij.psi.PsiReference getReference() {
+    return new org.c3lang.intellij.psi.reference.C3AtMacroReference(this);
+  }
+
 }

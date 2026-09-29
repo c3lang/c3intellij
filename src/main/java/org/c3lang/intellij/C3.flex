@@ -152,7 +152,9 @@ SHEBANG_COMMENT = "#!" .*
     "$switch" { return C3Types.KW_CT_SWITCH; }
     "$reflect" { return C3Types.KW_CT_REFLECT; }
     "$Typeof" { return C3Types.KW_CT_TYPEOF; }
+    "$typeof" { return C3Types.KW_CT_TYPEOF; }
     "$Typefrom" { return C3Types.KW_CT_TYPEFROM; }
+    "$typefrom" { return C3Types.KW_CT_TYPEFROM; }
     "$vaarg" { return C3Types.KW_CT_VAARG; }
 
     "void" { return C3Types.KW_VOID; }
@@ -179,6 +181,7 @@ SHEBANG_COMMENT = "#!" .*
     "iptr" { return C3Types.KW_IPTR; }
     "usz" { return C3Types.KW_USZ; }
     "sz" { return C3Types.KW_SZ; }
+    "isz" { return C3Types.KW_ISZ; }
     "untypedlist" { return C3Types.KW_UNTYPEDLIST; }
 
     "&&&" { return C3Types.CT_AND; }
