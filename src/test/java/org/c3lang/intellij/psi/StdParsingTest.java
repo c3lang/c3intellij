@@ -15,7 +15,7 @@ public class StdParsingTest extends BasePlatformTestCase
 {
 	public void testStdLibraryParsesWithoutSyntaxErrors() throws IOException
 	{
-		Path stdRoot = Path.of(System.getProperty("user.dir")).resolve("std");
+		Path stdRoot = stdRoot();
 		assertTrue("Missing std testbed: " + stdRoot, Files.isDirectory(stdRoot));
 
 		List<Path> files;
@@ -61,6 +61,13 @@ public class StdParsingTest extends BasePlatformTestCase
 		}
 
 		assertTrue(failures.toString(), failures.isEmpty());
+	}
+
+	private static Path stdRoot()
+	{
+		String configured = System.getProperty("c3.std.root");
+		if (configured != null && !configured.isBlank()) return Path.of(configured);
+		return Path.of(System.getProperty("user.dir")).resolve("std");
 	}
 
 	private static boolean matchesRequestedFile(Path stdRoot, Path path)
