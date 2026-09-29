@@ -229,11 +229,11 @@ bitstruct_body ::= LB (bitstruct_def+ | bitstruct_simple_def+)? RB
 bitstruct_def ::= base_type IDENT COLON constant_expr (DOTDOT constant_expr)? EOS
 bitstruct_simple_def ::= base_type IDENT EOS
 
-constdef_declaration ::= KW_CONSTDEF type_name interface_impl? (COLON KW_INLINE? type?)? attributes? LB constdef_list RB
+constdef_declaration ::= KW_CONSTDEF type_name interface_impl? (COLON KW_INLINE? non_generic_type)? attributes? LB constdef_list RB
 constdef_list ::= (constdef_constant COMMA?)+
 constdef_constant ::= CONST_IDENT attributes? [eq_expr_pin]
 
-enum_declaration ::= KW_ENUM type_name interface_impl? (COLON KW_INLINE? type? enum_param_list?)? generic_decl? attributes? LB enum_list RB
+enum_declaration ::= KW_ENUM type_name interface_impl? (COLON (KW_INLINE? non_generic_type)? enum_param_list?)? generic_decl? attributes? LB enum_list RB
 enum_param_list ::=  LP enum_param_decl (COMMA enum_param_decl)* RP
 enum_param_decl ::= type IDENT
 enum_list ::= (enum_constant COMMA?)+
@@ -280,9 +280,14 @@ initializer_list ::= LB (arg_list COMMA?)? RB { pin=2 }
 integer_type ::= KW_CHAR | KW_ICHAR | KW_SHORT | KW_USHORT | KW_INT | KW_UINT | KW_LONG | KW_ULONG | KW_INT128 | KW_UINT128
 float_type ::= KW_FLOAT16 | KW_FLOAT | KW_DOUBLE | KW_FLOAT128 | KW_BFLOAT16
 private struct_type ::= path? TYPE_IDENT generic_parameters? { pin=2 }
+private non_generic_struct_type ::= path? TYPE_IDENT { pin=2 }
 private const_paren_expr ::= LP constant_expr RP
 
-base_type ::= KW_VOID
+type_suffix ::= STAR | LBT PLUS RBT | LBT (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
+type ::= base_type type_suffix*
+optional_type ::= type QUESTION?
+
+private non_generic_base_type_content ::= KW_VOID
     | KW_BOOL
     | integer_type
     | float_type
@@ -295,15 +300,14 @@ base_type ::= KW_VOID
     | KW_FAULT
     | KW_ANY
     | KW_TYPEID
-    | struct_type
+    | non_generic_struct_type
     | CT_TYPE_IDENT
     | KW_CT_REFLECT grouped_expr
     | KW_CT_TYPEOF grouped_expr
     | KW_CT_TYPEFROM const_paren_expr
-
-type_suffix ::= STAR | LBT PLUS RBT | LBT (STAR | QUESTION | DIV | UNDERSCORE | constant_expr)? RBT | LVEC (STAR | constant_expr) RVEC
-type ::= base_type type_suffix*
-optional_type ::= type QUESTION?
+non_generic_base_type ::= non_generic_base_type_content
+non_generic_type ::= non_generic_base_type type_suffix*
+base_type ::= struct_type | non_generic_base_type_content
 
 
 // -- STATEMENTS --
@@ -356,7 +360,7 @@ ct_switch_stmt ::= KW_CT_SWITCH constant_expr? COLON ct_switch_body KW_CT_ENDSWI
 ct_foreach_stmt ::= KW_CT_FOREACH CT_IDENT (COMMA CT_IDENT)? COLON expr COLON statement_list? KW_CT_ENDFOREACH
 ct_for_stmt ::= KW_CT_FOR for_cond COLON statement_list? KW_CT_ENDFOR
 
-const_declaration_stmt ::= KW_CONST type? CONST_IDENT attributes? eq_expr_pin EOS { pin=3 }
+const_declaration_stmt ::= KW_CONST ((type CONST_IDENT attributes? [eq_expr_pin]) | (CONST_IDENT attributes? eq_expr_pin)) EOS { pin=3 }
 local_declaration_stmt ::= local_decl_storage? optional_type decl_stmt_after_type EOS { pin=2 }
 
 assert_stmt ::= KW_ASSERT LP expr (COMMA expr)* RP EOS
@@ -459,7 +463,7 @@ compound_init_expr ::= LP type RP initializer_list
 local_ident_expr ::= CT_IDENT | HASH_IDENT
 type_access_expr ::= type SCOPE access_ident
 enum_access_expr ::= base_type DOT CONST_IDENT
-ct_feature_expr ::= KW_CT_FEATURE LP CONST_IDENT RP
+ct_feature_expr ::= KW_CT_FEATURE LP expression_list RP
 type_expr ::= type !IDENT !CT_IDENT !KW_CT_EVAL !QUESTION
 ct_analyze ::= KW_CT_EVAL | KW_CT_REFLECT | KW_CT_STRINGIFY | KW_CT_EXPAND
 ct_arg_expr ::= KW_CT_VAARG (LBT (range_exp | range_loc) RBT)?
